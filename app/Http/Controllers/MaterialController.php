@@ -16,12 +16,21 @@ class MaterialController extends Controller
         // Empezamos una consulta base
         $query = Material::query();
 
-        // Si el usuario seleccionó una categoría en el filtro, filtramos los resultados
+        // 1. Filtro por categoría
         if ($request->has('filtrar_categoria') && $request->filtrar_categoria != '') {
             $query->where('categoria', $request->filtrar_categoria);
         }
 
-        // Obtenemos los materiales ya filtrados (o todos si no se seleccionó filtro)
+        // 2. Buscador por texto (No. Parte o Descripción)
+        if ($request->has('buscar') && $request->buscar != '') {
+            $termino = $request->buscar;
+            $query->where(function($q) use ($termino) {
+                $q->where('numero_parte', 'LIKE', '%' . $termino . '%')
+                  ->orWhere('descripcion', 'LIKE', '%' . $termino . '%');
+            });
+        }
+
+        // Obtenemos los materiales ya filtrados
         $materiales = $query->get(); 
 
         return view('materiales.index', compact('materiales')); 
