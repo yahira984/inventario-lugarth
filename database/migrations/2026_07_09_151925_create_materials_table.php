@@ -21,6 +21,7 @@ return new class extends Migration
         $table->integer('stock')->default(0);
         $table->string('fotografia')->nullable();
         $table->timestamps();
+        $table->string('codigo_barras')->nullable()->unique(); // El código único del material
     });
 }
 
