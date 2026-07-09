@@ -3,60 +3,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Inventario - Almacén</title>
+    <title>Control de Inventario - Almacen</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-        h1 { color: #2c3e50; margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
-        
-        /* Estilos para la barra superior */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
-        .btn-alta { background-color: #3498db; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; font-weight: bold; transition: background 0.3s; }
-        .btn-alta:hover { background-color: #2980b9; }
-        
-        /* Estilos del buscador y filtros */
-        .filter-form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .filter-form select, .filter-form input[type="text"] { 
-            padding: 9px 12px; 
-            border: 1px solid #ccd0d5; 
-            border-radius: 5px; 
-            font-size: 14px; 
-            outline: none; 
+        :root {
+            --bg: #edf1f5;
+            --surface: #ffffff;
+            --ink: #1f2933;
+            --muted: #607080;
+            --line: #d8e0e8;
+            --blue: #2563a8;
+            --blue-dark: #17426f;
+            --green: #188653;
+            --amber: #c77910;
+            --red: #c2413a;
+            --shadow: 0 18px 45px rgba(31, 41, 51, 0.12);
         }
-        .filter-form input[type="text"] { width: 250px; }
-        .filter-form select:focus, .filter-form input[type="text"]:focus { border-color: #3498db; }
-        .btn-filter { background-color: #2c3e50; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
-        .btn-filter:hover { background-color: #1a252f; }
-        .btn-clear { background-color: #95a5a6; color: white; text-decoration: none; padding: 10px 15px; border-radius: 5px; font-size: 14px; transition: background 0.3s; }
-        .btn-clear:hover { background-color: #7f8c8d; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #f8f9fa; color: #2c3e50; font-weight: 600; }
-        tr:hover { background-color: #f1f2f6; }
-        
-        .img-material { width: 70px; height: 70px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd; background-color: #f9f9f9; }
-        .no-photo { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #95a5a6; background-color: #f1f2f6; border-radius: 6px; border: 1px dashed #bdc3c7; }
-        
-        .badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9em; display: inline-block; }
-        .badge-success { background-color: #2ecc71; color: white; }
-        .badge-danger { background-color: #e74c3c; color: white; }
-        .badge-category { background-color: #e67e22; color: white; font-size: 0.85em; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            padding: 28px 18px;
+        }
+
+        .container {
+            width: min(1220px, 100%);
+            margin: 0 auto;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: center;
+            padding: 24px 28px;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--line);
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--blue-dark);
+            font-size: 28px;
+            line-height: 1.2;
+        }
+
+        .header-meta {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .btn-alta,
+        .btn-filter,
+        .btn-clear,
+        .btn-scan,
+        .close-btn {
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 800;
+            font-family: inherit;
+            text-decoration: none;
+            transition: background 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-alta {
+            background-color: var(--blue);
+            color: #fff;
+            padding: 12px 16px;
+        }
+
+        .btn-alta:hover {
+            background-color: var(--blue-dark);
+            box-shadow: 0 10px 24px rgba(37, 99, 168, 0.22);
+        }
+
+        .toolbar {
+            padding: 20px 28px 0;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: auto minmax(220px, 1fr) minmax(210px, 280px) auto auto;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .filter-form select,
+        .filter-form input[type="text"] {
+            min-height: 44px;
+            padding: 10px 12px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            color: var(--ink);
+            font-family: inherit;
+        }
+
+        .filter-form select:focus,
+        .filter-form input[type="text"]:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 168, 0.16);
+        }
+
+        .btn-scan {
+            background-color: var(--amber);
+            color: white;
+            padding: 0 14px;
+        }
+
+        .btn-scan:hover {
+            background-color: #a8620c;
+        }
+
+        .btn-filter {
+            background-color: var(--green);
+            color: white;
+            padding: 0 16px;
+        }
+
+        .btn-filter:hover {
+            background-color: #116a40;
+        }
+
+        .btn-clear {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e6ecf2;
+            color: var(--ink);
+            padding: 0 14px;
+        }
+
+        .btn-clear:hover {
+            background-color: #d5dee8;
+        }
+
+        .alert-success {
+            margin: 20px 28px 0;
+            background-color: #eaf8f0;
+            color: #0f6b3e;
+            padding: 13px 15px;
+            border-radius: 6px;
+            border: 1px solid #a9dfbf;
+            font-weight: 700;
+        }
+
+        .table-wrap {
+            padding: 20px 28px 28px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 860px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 13px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--line);
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--blue-dark);
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background-color: #f7fbff;
+        }
+
+        .img-material {
+            width: 68px;
+            height: 68px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--line);
+            background-color: #f9fafb;
+        }
+
+        .no-photo {
+            width: 68px;
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--muted);
+            background-color: #f3f6f9;
+            border-radius: 6px;
+            border: 1px dashed #b7c3cf;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 0.86em;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background-color: #eaf8f0;
+            color: #0f6b3e;
+            border: 1px solid #a9dfbf;
+        }
+
+        .badge-danger {
+            background-color: #fff1f0;
+            color: #842029;
+            border: 1px solid #f2b8b5;
+        }
+
+        .badge-category {
+            background-color: #fff7e6;
+            color: #8a5700;
+            border: 1px solid #ffd98a;
+        }
+
+        .code-muted {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .empty-row {
+            text-align: center;
+            color: var(--muted);
+            padding: 44px;
+            font-weight: 700;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(14, 23, 34, 0.68);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: min(500px, 100%);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+        }
+
+        .modal-content h3 {
+            margin: 0 0 14px;
+            color: var(--blue-dark);
+        }
+
+        .close-btn {
+            background-color: var(--red);
+            color: white;
+            padding: 12px 18px;
+            width: 100%;
+            margin-top: 14px;
+        }
+
+        .close-btn:hover {
+            background-color: #9f312b;
+        }
+
+        #reader {
+            width: 100%;
+            min-height: 250px;
+        }
+
+        @media (max-width: 900px) {
+            .filter-form {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .filter-form input[type="text"],
+            .filter-form select {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 620px) {
+            body {
+                padding: 14px 10px;
+            }
+
+            .page-header,
+            .toolbar,
+            .table-wrap {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-form input[type="text"],
+            .filter-form select {
+                grid-column: auto;
+            }
+
+            .btn-scan,
+            .btn-filter,
+            .btn-clear {
+                min-height: 44px;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Consulta de Materiales en Almacén</h1>
-    
-    <div class="top-bar">
-        <a href="{{ route('materiales.create') }}" class="btn-alta">+ Registrar Entrada de Material</a>
+    <div class="page-header">
+        <div>
+            <h1>Inventario de Almacen</h1>
+            <p class="header-meta">Consulta por descripcion, no. de parte o codigo de barras.</p>
+        </div>
 
-        <form action="{{ route('materiales.index') }}" method="GET" class="filter-form">
-            <input type="text" name="buscar" placeholder="Buscar No. Parte o Descripción..." value="{{ request('buscar') }}">
+        <a href="{{ route('materiales.create') }}" class="btn-alta">+ Registrar Entrada</a>
+    </div>
+
+    <div class="toolbar">
+        <form action="{{ route('materiales.index') }}" method="GET" class="filter-form" id="searchForm">
+            <button type="button" class="btn-scan" onclick="abrirEscaner()">Escanear</button>
+
+            <input type="text" name="buscar" id="buscarInput" placeholder="No. parte, codigo o descripcion" value="{{ request('buscar') }}" autocomplete="off" autofocus>
 
             <select name="filtrar_categoria">
-                <option value="">-- Ver Todas las Categorías --</option>
+                <option value="">Todas las categorias</option>
                 <option value="EQUIPO ACERO AL CARBON" {{ request('filtrar_categoria') == 'EQUIPO ACERO AL CARBON' ? 'selected' : '' }}>EQUIPO ACERO AL CARBON</option>
                 <option value="EQUIPO ACERO INOXIDABLE" {{ request('filtrar_categoria') == 'EQUIPO ACERO INOXIDABLE' ? 'selected' : '' }}>EQUIPO ACERO INOXIDABLE</option>
                 <option value="EQUIPO TIPO ASA INOXIDABLE" {{ request('filtrar_categoria') == 'EQUIPO TIPO ASA INOXIDABLE' ? 'selected' : '' }}>EQUIPO TIPO ASA INOXIDABLE</option>
@@ -64,9 +372,9 @@
                 <option value="EQUIPO AC SIST DSPCH MEC LIQUID" {{ request('filtrar_categoria') == 'EQUIPO AC SIST DSPCH MEC LIQUID' ? 'selected' : '' }}>EQUIPO AC SIST DSPCH MEC LIQUID</option>
                 <option value="EQUIPO ACERO AL CARBON UPV" {{ request('filtrar_categoria') == 'EQUIPO ACERO AL CARBON UPV' ? 'selected' : '' }}>EQUIPO ACERO AL CARBON UPV</option>
             </select>
-            
+
             <button type="submit" class="btn-filter">Buscar</button>
-            
+
             @if(request('filtrar_categoria') || request('buscar'))
                 <a href="{{ route('materiales.index') }}" class="btn-clear">Limpiar</a>
             @endif
@@ -74,54 +382,151 @@
     </div>
 
     @if(session('success'))
-        <div style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+        <div class="alert-success">
             {{ session('success') }}
         </div>
     @endif
 
-    <table>
-        <thead>
-            <tr>
-                <th>Fotografía</th>
-                <th>Categoría</th>
-                <th>No. de Parte / Código</th>
-                <th>Descripción</th>
-                <th>Marca</th>
-                <th>Proveedor</th>
-                <th>Stock Actual</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($materiales as $material)
+    <div class="table-wrap">
+        <table>
+            <thead>
                 <tr>
-                    <td>
-                        @if($material->fotografia)
-                            <img src="{{ asset('storage/' . $material->fotografia) }}" class="img-material" alt="Foto">
-                        @else
-                            <div class="no-photo">Sin foto</div>
-                        @endif
-                    </td>
-                    <td><span class="badge badge-category">{{ $material->categoria }}</span></td>
-                    <td><strong>{{ $material->numero_parte ?? 'N/A' }}</strong></td>
-                    <td>{{ $material->descripcion }}</td>
-                    <td>{{ $material->marca ?? 'N/A' }}</td>
-                    <td>{{ $material->proveedor ?? 'N/A' }}</td>
-                    <td>
-                        <span class="badge {{ $material->stock > 0 ? 'badge-success' : 'badge-danger' }}">
-                            {{ $material->stock }} pzas
-                        </span>
-                    </td>
+                    <th>Foto</th>
+                    <th>Categoria</th>
+                    <th>No. Parte / Codigo</th>
+                    <th>Descripcion</th>
+                    <th>Marca</th>
+                    <th>Proveedor</th>
+                    <th>Stock</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="7" style="text-align: center; color: #7f8c8d; padding: 40px;">
-                        No se encontraron materiales con esa búsqueda.
-                    </td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @forelse($materiales as $material)
+                    <tr>
+                        <td>
+                            @if($material->fotografia)
+                                <img src="{{ asset('storage/' . $material->fotografia) }}" class="img-material" alt="Foto">
+                            @else
+                                <div class="no-photo">Sin foto</div>
+                            @endif
+                        </td>
+                        <td><span class="badge badge-category">{{ $material->categoria }}</span></td>
+                        <td>
+                            <strong>{{ $material->numero_parte ?? 'N/A' }}</strong>
+                            @if($material->codigo_barras)
+                                <span class="code-muted">{{ $material->codigo_barras }}</span>
+                            @endif
+                        </td>
+                        <td>{{ $material->descripcion }}</td>
+                        <td>{{ $material->marca ?? 'N/A' }}</td>
+                        <td>{{ $material->proveedor ?? 'N/A' }}</td>
+                        <td>
+                            <span class="badge {{ $material->stock > 0 ? 'badge-success' : 'badge-danger' }}">
+                                {{ $material->stock }} pzas
+                            </span>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="7" class="empty-row">
+                            No se encontraron materiales.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<div id="scannerModal" class="modal">
+    <div class="modal-content">
+        <h3>Escanear Codigo</h3>
+        <div id="reader"></div>
+        <button type="button" class="close-btn" onclick="cerrarEscaner()">Cancelar</button>
+    </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+    const buscarInput = document.getElementById('buscarInput');
+    const searchForm = document.getElementById('searchForm');
+    let html5QrcodeScanner = null;
+    let scannerBuffer = '';
+    let scannerBufferInicio = 0;
+    let scannerUltimaTecla = 0;
+    let scannerResetTimer = null;
+
+    function buscarCodigoEscaneado(codigo) {
+        const codigoLimpio = codigo.trim();
+
+        if (!codigoLimpio) {
+            return;
+        }
+
+        buscarInput.value = codigoLimpio;
+        cerrarEscaner();
+        searchForm.submit();
+    }
+
+    function abrirEscaner() {
+        document.getElementById('scannerModal').style.display = 'flex';
+
+        html5QrcodeScanner = new Html5QrcodeScanner(
+            'reader',
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            false
+        );
+
+        html5QrcodeScanner.render((textoDecodificado) => {
+            buscarCodigoEscaneado(textoDecodificado);
+        }, () => {});
+    }
+
+    function cerrarEscaner() {
+        document.getElementById('scannerModal').style.display = 'none';
+
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.clear();
+        }
+    }
+
+    buscarInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            buscarCodigoEscaneado(buscarInput.value);
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.ctrlKey || event.altKey || event.metaKey || document.activeElement === buscarInput) {
+            return;
+        }
+
+        const ahora = Date.now();
+
+        if (event.key.length === 1) {
+            if (ahora - scannerUltimaTecla > 80) {
+                scannerBuffer = '';
+                scannerBufferInicio = ahora;
+            }
+
+            scannerBuffer += event.key;
+            scannerUltimaTecla = ahora;
+            clearTimeout(scannerResetTimer);
+            scannerResetTimer = setTimeout(() => {
+                scannerBuffer = '';
+            }, 160);
+            return;
+        }
+
+        if (event.key === 'Enter' && scannerBuffer.length >= 6 && ahora - scannerBufferInicio < 1200) {
+            event.preventDefault();
+            const codigo = scannerBuffer;
+            scannerBuffer = '';
+            buscarCodigoEscaneado(codigo);
+        }
+    });
+</script>
 
 </body>
 </html>

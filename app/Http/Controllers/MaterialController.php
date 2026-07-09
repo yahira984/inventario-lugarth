@@ -26,6 +26,7 @@ class MaterialController extends Controller
             $termino = $request->buscar;
             $query->where(function($q) use ($termino) {
                 $q->where('numero_parte', 'LIKE', '%' . $termino . '%')
+                  ->orWhere('codigo_barras', 'LIKE', '%' . $termino . '%')
                   ->orWhere('descripcion', 'LIKE', '%' . $termino . '%');
             });
         }
@@ -45,18 +46,66 @@ class MaterialController extends Controller
         return view('materiales.create');
     }
 
+    public function buscarPorCodigo(Request $request)
+    {
+        $codigo = trim((string) $request->query('codigo', ''));
+
+        if ($codigo === '') {
+            return response()->json(['encontrado' => false]);
+        }
+
+        $material = Material::where('codigo_barras', $codigo)->first();
+
+        if (! $material) {
+            return response()->json(['encontrado' => false]);
+        }
+
+        return response()->json([
+            'encontrado' => true,
+            'categoria' => $material->categoria,
+            'numero_parte' => $material->numero_parte,
+            'descripcion' => $material->descripcion,
+            'marca' => $material->marca,
+            'proveedor' => $material->proveedor,
+            'stock' => $material->stock,
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+        $entrada = $request->validate([
+            'codigo_barras' => 'nullable|string|max:255',
+            'stock'        => 'required|integer|min:0',
+        ]);
+
+        $codigoBarras = trim((string) ($entrada['codigo_barras'] ?? ''));
+        $request->merge(['codigo_barras' => $codigoBarras !== '' ? $codigoBarras : null]);
+
+        if ($codigoBarras !== '') {
+            $materialExistente = Material::where('codigo_barras', $codigoBarras)->first();
+
+            if ($materialExistente) {
+                $cantidadEntrada = (int) $entrada['stock'];
+                $materialExistente->increment('stock', $cantidadEntrada);
+                $materialExistente->refresh();
+
+                return redirect()
+                    ->route('materiales.index')
+                    ->with('success', "Entrada registrada: se agregaron {$cantidadEntrada} pzas a {$materialExistente->descripcion}. Stock actual: {$materialExistente->stock} pzas.");
+            }
+        }
+
         $request->validate([
             'categoria'    => 'required|string', // Validación de categoría
             'numero_parte' => 'nullable|string',
+            'codigo_barras' => 'nullable|string|max:255|unique:materials,codigo_barras',
             'descripcion'  => 'required|string',
             'marca'        => 'nullable|string',
             'proveedor'    => 'nullable|string',
-            'stock'        => 'required|integer',
+            'stock'        => 'required|integer|min:0',
             'fotografia'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
