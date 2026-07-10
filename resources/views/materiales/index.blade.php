@@ -305,7 +305,7 @@
             min-height: 250px;
         }
 
-        /* ✅ NUEVO: Estilos para los botones de acción */
+        /* Acciones */
         .action-buttons {
             display: flex;
             gap: 8px;
@@ -357,7 +357,7 @@
             transform: translateY(-1px);
         }
 
-        /* ✅ NUEVO: Modal de confirmación de eliminación */
+        /* Modal de confirmación de eliminación */
         .modal-confirm-content {
             background-color: #fff;
             padding: 28px 24px 24px;
@@ -487,6 +487,23 @@
 </head>
 <body>
 
+<!-- Contenedor alineado a la derecha con estilos CSS en línea -->
+<div style="text-align: right; margin-bottom: 20px; width: 100%; padding-right: 20px;">
+    <form method="POST" action="{{ route('logout') }}" style="display: inline-block;">
+        @csrf
+        <!-- Botón con estilos forzados para que combine con tu sistema -->
+        <button type="submit" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            
+            <!-- Icono con ancho y alto forzados a 18px -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" style="margin-right: 8px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            
+            Cerrar Sesión
+        </button>
+    </form>
+</div>
+
 <div class="container">
     <div class="page-header">
         <div>
@@ -538,7 +555,6 @@
                     <th>Marca</th>
                     <th>Proveedor</th>
                     <th>Stock</th>
-                    {{-- ✅ NUEVO: Columna de acciones --}}
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -567,7 +583,6 @@
                                 {{ $material->stock }} pzas
                             </span>
                         </td>
-                        {{-- ✅ NUEVO: Botones editar y eliminar --}}
                         <td>
                             <div class="action-buttons">
                                 <a href="{{ route('materiales.edit', ['material' => $material->id]) }}" class="btn-edit">
@@ -597,7 +612,6 @@
     </div>
 </div>
 
-{{-- Scanner modal (sin cambios) --}}
 <div id="scannerModal" class="modal">
     <div class="modal-content">
         <h3>Escanear Codigo</h3>
@@ -606,7 +620,6 @@
     </div>
 </div>
 
-{{-- ✅ NUEVO: Modal de confirmación de eliminación --}}
 <div id="deleteModal" class="modal">
     <div class="modal-confirm-content">
         <div class="modal-confirm-icon">🗑️</div>
@@ -619,7 +632,6 @@
     </div>
 </div>
 
-{{-- ✅ NUEVO: Formulario oculto para el DELETE --}}
 <form id="deleteForm" method="POST" style="display:none;">
     @csrf
     @method('DELETE')
@@ -706,7 +718,6 @@
         }
     });
 
-    // ✅ NUEVO: Lógica del modal de eliminación
     let deleteUrl = null;
 
 function confirmarEliminar(url, nombre) {
