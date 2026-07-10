@@ -29,7 +29,7 @@
             background: var(--bg);
             color: var(--ink);
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            padding: 32px 18px;
+            padding: 0;
         }
 
         .container {
@@ -312,6 +312,10 @@
 </head>
 <body>
 
+<div class="app-shell">
+@include('materiales.partials.sidebar')
+
+<main class="app-content">
 <div class="container">
     <div class="form-header">
         <h2>Entrada de Material</h2>
@@ -391,6 +395,9 @@
             <a href="{{ route('materiales.index') }}" class="btn-cancel">Cancelar y regresar al listado</a>
         </div>
     </form>
+</div>
+
+</main>
 </div>
 
 <div id="scannerModal" class="modal">

@@ -22,6 +22,13 @@ class MaterialController extends Controller
         }
 
         // Buscador por número de parte, código de barras o descripción
+        if ($request->boolean('sin_codigo')) {
+            $query->where(function ($q) {
+                $q->whereNull('codigo_barras')
+                    ->orWhere('codigo_barras', '');
+            });
+        }
+
         if ($request->filled('buscar')) {
             $termino = trim($request->buscar);
 

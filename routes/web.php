@@ -1,46 +1,35 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\FacturaXmlController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| 1. RUTAS PÚBLICAS (Antes de iniciar sesión)
-|--------------------------------------------------------------------------
-*/
-
-// Al entrar a la raíz, te avienta directo a tu login colorido
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-
-/*
-|--------------------------------------------------------------------------
-| 2. RUTAS PROTEGIDAS (Solo para usuarios logueados)
-|--------------------------------------------------------------------------
-*/
 Route::middleware('auth')->group(function () {
-    
-    // Panel de Control Principal (Dashboard)
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return redirect()->route('materiales.index');
     })->name('dashboard');
 
-    // --- TUS RUTAS DE MATERIALES (¡Ya recuperadas!) ---
-    Route::get('materiales/buscar-por-codigo', [MaterialController::class, 'buscarPorCodigo'])->name('materiales.buscarPorCodigo');
-    Route::resource('materiales', MaterialController::class);
+    Route::get('materiales/buscar-por-codigo', [MaterialController::class, 'buscarPorCodigo'])
+        ->name('materiales.buscarPorCodigo');
 
-    // Gestión del Perfil de Usuario
+    Route::get('materiales/importar-xml', [FacturaXmlController::class, 'create'])
+        ->name('materiales.xml.create');
+    Route::post('materiales/importar-xml/preview', [FacturaXmlController::class, 'preview'])
+        ->name('materiales.xml.preview');
+    Route::post('materiales/importar-xml/guardar', [FacturaXmlController::class, 'store'])
+        ->name('materiales.xml.store');
+
+    Route::resource('materiales', MaterialController::class)
+        ->parameters(['materiales' => 'material']);
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-/*
-|--------------------------------------------------------------------------
-| 3. RUTAS DE AUTENTICACIÓN (Breeze / Login / Registro)
-|--------------------------------------------------------------------------
-*/
 require __DIR__.'/auth.php';
