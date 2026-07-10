@@ -29,7 +29,7 @@
             background: var(--bg);
             color: var(--ink);
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            padding: 28px 18px;
+            padding: 0;
         }
 
         .container {
@@ -67,6 +67,7 @@
         }
 
         .btn-alta,
+        .btn-xml,
         .btn-filter,
         .btn-clear,
         .btn-scan,
@@ -87,9 +88,26 @@
             padding: 12px 16px;
         }
 
-        .btn-alta:hover {
+        .btn-xml {
+            background-color: var(--green);
+            color: #fff;
+            padding: 12px 16px;
+        }
+
+        .btn-alta:hover,
+        .btn-xml:hover {
             background-color: var(--blue-dark);
             box-shadow: 0 10px 24px rgba(37, 99, 168, 0.22);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .legacy-logout {
+            display: none;
         }
 
         .toolbar {
@@ -313,6 +331,7 @@
         }
 
         .btn-edit,
+        .btn-code,
         .btn-delete {
             display: inline-flex;
             align-items: center;
@@ -335,7 +354,14 @@
             border: 1px solid #bdd0f0;
         }
 
-        .btn-edit:hover {
+        .btn-code {
+            background-color: #fff7e6;
+            color: #8a5700;
+            border: 1px solid #ffd98a;
+        }
+
+        .btn-edit:hover,
+        .btn-code:hover {
             background-color: var(--blue);
             color: #fff;
             border-color: var(--blue);
@@ -487,8 +513,13 @@
 </head>
 <body>
 
+<div class="app-shell">
+@include('materiales.partials.sidebar')
+
+<main class="app-content">
+
 <!-- Contenedor alineado a la derecha con estilos CSS en línea -->
-<div style="text-align: right; margin-bottom: 20px; width: 100%; padding-right: 20px;">
+<div class="legacy-logout" style="text-align: right; margin-bottom: 20px; width: 100%; padding-right: 20px;">
     <form method="POST" action="{{ route('logout') }}" style="display: inline-block;">
         @csrf
         <!-- Botón con estilos forzados para que combine con tu sistema -->
@@ -511,11 +542,18 @@
             <p class="header-meta">Consulta por descripcion, no. de parte o codigo de barras.</p>
         </div>
 
-        <a href="{{ route('materiales.create') }}" class="btn-alta">+ Registrar Entrada</a>
+        <div class="header-actions">
+            <a href="{{ route('materiales.xml.create') }}" class="btn-xml">Importar XML</a>
+            <a href="{{ route('materiales.create') }}" class="btn-alta">+ Registrar Entrada</a>
+        </div>
     </div>
 
     <div class="toolbar">
         <form action="{{ route('materiales.index') }}" method="GET" class="filter-form" id="searchForm">
+            @if(request('sin_codigo'))
+                <input type="hidden" name="sin_codigo" value="1">
+            @endif
+
             <button type="button" class="btn-scan" onclick="abrirEscaner()">Escanear</button>
 
             <input type="text" name="buscar" id="buscarInput" placeholder="No. parte, codigo o descripcion" value="{{ request('buscar') }}" autocomplete="off" autofocus>
@@ -541,6 +579,12 @@
     @if(session('success'))
         <div class="alert-success">
             {{ session('success') }}
+        </div>
+    @endif
+
+    @if(request('sin_codigo'))
+        <div class="alert-success">
+            Mostrando materiales sin codigo de barras. Usa "Agregar codigo" para completar cada registro.
         </div>
     @endif
 
@@ -573,6 +617,8 @@
                             <strong>{{ $material->numero_parte ?? 'N/A' }}</strong>
                             @if($material->codigo_barras)
                                 <span class="code-muted">{{ $material->codigo_barras }}</span>
+                            @else
+                                <span class="code-muted">Sin codigo de barras</span>
                             @endif
                         </td>
                         <td>{{ $material->descripcion }}</td>
@@ -585,13 +631,18 @@
                         </td>
                         <td>
                             <div class="action-buttons">
-                                <a href="{{ route('materiales.edit', ['material' => $material->id]) }}" class="btn-edit">
+                                @unless($material->codigo_barras)
+                                    <a href="{{ route('materiales.edit', $material) }}" class="btn-code">
+                                        Agregar codigo
+                                    </a>
+                                @endunless
+                                <a href="{{ route('materiales.edit', $material) }}" class="btn-edit">
                                     ✏️ Editar
                                 </a>
                                 <button
                                     type="button"
                                     class="btn-delete"
-                                    data-delete-url="{{ route('materiales.destroy', ['material' => $material->id]) }}"
+                                    data-delete-url="{{ route('materiales.destroy', $material) }}"
                                     data-material-name="{{ $material->descripcion }}"
                                     onclick="confirmarEliminar( this.dataset.deleteUrl,this.dataset.materialName)"
                                 >
@@ -610,6 +661,9 @@
             </tbody>
         </table>
     </div>
+</div>
+
+</main>
 </div>
 
 <div id="scannerModal" class="modal">
