@@ -305,6 +305,141 @@
             min-height: 250px;
         }
 
+        /* ✅ NUEVO: Estilos para los botones de acción */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-edit,
+        .btn-delete {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 13px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-edit {
+            background-color: #e8f0fb;
+            color: var(--blue-dark);
+            border: 1px solid #bdd0f0;
+        }
+
+        .btn-edit:hover {
+            background-color: var(--blue);
+            color: #fff;
+            border-color: var(--blue);
+            box-shadow: 0 4px 12px rgba(37, 99, 168, 0.22);
+            transform: translateY(-1px);
+        }
+
+        .btn-delete {
+            background-color: #fef1f0;
+            color: var(--red);
+            border: 1px solid #f2b8b5;
+        }
+
+        .btn-delete:hover {
+            background-color: var(--red);
+            color: #fff;
+            border-color: var(--red);
+            box-shadow: 0 4px 12px rgba(194, 65, 58, 0.22);
+            transform: translateY(-1px);
+        }
+
+        /* ✅ NUEVO: Modal de confirmación de eliminación */
+        .modal-confirm-content {
+            background-color: #fff;
+            padding: 28px 24px 24px;
+            border-radius: 10px;
+            width: min(420px, 100%);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+        }
+
+        .modal-confirm-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background-color: #fff1f0;
+            border: 2px solid #f2b8b5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 24px;
+        }
+
+        .modal-confirm-content h3 {
+            margin: 0 0 8px;
+            color: var(--ink);
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .modal-confirm-content p {
+            margin: 0 0 22px;
+            color: var(--muted);
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .modal-confirm-content p strong {
+            color: var(--ink);
+        }
+
+        .modal-confirm-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-confirm-cancel {
+            flex: 1;
+            padding: 11px;
+            border-radius: 6px;
+            border: 1px solid var(--line);
+            background-color: #f3f6f9;
+            color: var(--ink);
+            font-weight: 800;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-confirm-cancel:hover {
+            background-color: #e6ecf2;
+        }
+
+        .btn-confirm-delete {
+            flex: 1;
+            padding: 11px;
+            border-radius: 6px;
+            border: none;
+            background-color: var(--red);
+            color: #fff;
+            font-weight: 800;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-confirm-delete:hover {
+            background-color: #9f312b;
+            box-shadow: 0 4px 14px rgba(194, 65, 58, 0.28);
+        }
+
         @media (max-width: 900px) {
             .filter-form {
                 grid-template-columns: 1fr 1fr;
@@ -341,6 +476,11 @@
             .btn-filter,
             .btn-clear {
                 min-height: 44px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 5px;
             }
         }
     </style>
@@ -398,6 +538,8 @@
                     <th>Marca</th>
                     <th>Proveedor</th>
                     <th>Stock</th>
+                    {{-- ✅ NUEVO: Columna de acciones --}}
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -425,10 +567,27 @@
                                 {{ $material->stock }} pzas
                             </span>
                         </td>
+                        {{-- ✅ NUEVO: Botones editar y eliminar --}}
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{{ route('materiales.edit', ['material' => $material->id]) }}" class="btn-edit">
+                                    ✏️ Editar
+                                </a>
+                                <button
+                                    type="button"
+                                    class="btn-delete"
+                                    data-delete-url="{{ route('materiales.destroy', ['material' => $material->id]) }}"
+                                    data-material-name="{{ $material->descripcion }}"
+                                    onclick="confirmarEliminar( this.dataset.deleteUrl,this.dataset.materialName)"
+                                >
+                                    🗑️ Eliminar
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="empty-row">
+                        <td colspan="8" class="empty-row">
                             No se encontraron materiales.
                         </td>
                     </tr>
@@ -438,6 +597,7 @@
     </div>
 </div>
 
+{{-- Scanner modal (sin cambios) --}}
 <div id="scannerModal" class="modal">
     <div class="modal-content">
         <h3>Escanear Codigo</h3>
@@ -445,6 +605,25 @@
         <button type="button" class="close-btn" onclick="cerrarEscaner()">Cancelar</button>
     </div>
 </div>
+
+{{-- ✅ NUEVO: Modal de confirmación de eliminación --}}
+<div id="deleteModal" class="modal">
+    <div class="modal-confirm-content">
+        <div class="modal-confirm-icon">🗑️</div>
+        <h3>Eliminar material</h3>
+        <p>Estas a punto de eliminar: <br><strong id="deleteNombre"></strong><br>Esta accion no se puede deshacer.</p>
+        <div class="modal-confirm-actions">
+            <button type="button" class="btn-confirm-cancel" onclick="cerrarModalEliminar()">Cancelar</button>
+            <button type="button" class="btn-confirm-delete" onclick="ejecutarEliminar()">Si, eliminar</button>
+        </div>
+    </div>
+</div>
+
+{{-- ✅ NUEVO: Formulario oculto para el DELETE --}}
+<form id="deleteForm" method="POST" style="display:none;">
+    @csrf
+    @method('DELETE')
+</form>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
@@ -525,6 +704,36 @@
             scannerBuffer = '';
             buscarCodigoEscaneado(codigo);
         }
+    });
+
+    // ✅ NUEVO: Lógica del modal de eliminación
+    let deleteUrl = null;
+
+function confirmarEliminar(url, nombre) {
+    deleteUrl = url;
+
+    document.getElementById('deleteNombre').textContent = nombre;
+    document.getElementById('deleteModal').style.display = 'flex';
+}
+
+function cerrarModalEliminar() {
+    deleteUrl = null;
+    document.getElementById('deleteModal').style.display = 'none';
+}
+
+function ejecutarEliminar() {
+    if (!deleteUrl) {
+        return;
+    }
+
+    const form = document.getElementById('deleteForm');
+    form.action = deleteUrl;
+    form.submit();
+}
+
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('deleteModal').addEventListener('click', function (e) {
+        if (e.target === this) cerrarModalEliminar();
     });
 </script>
 
