@@ -428,7 +428,7 @@
     <div class="page-header">
         <div>
             <h1>Inventario de Almacen</h1>
-            <p class="header-meta">Consulta por descripcion, no. de parte o codigo de barras.</p>
+            <p class="header-meta">Consulta por descripción, no. de parte o código de barras.</p>
         </div>
 
         <div class="header-actions">
@@ -445,7 +445,7 @@
 
             <button type="button" class="btn-scan" onclick="abrirEscaner()">Escanear</button>
 
-            <input type="text" name="buscar" id="buscarInput" placeholder="No. parte, codigo o descripcion" value="{{ request('buscar') }}" autocomplete="off" autofocus>
+            <input type="text" name="buscar" id="buscarInput" placeholder="No. parte, código o descripción" value="{{ request('buscar') }}" autocomplete="off" autofocus>
 
             <select name="filtrar_categoria">
                 <option value="">Todas las categorias</option>
@@ -473,7 +473,7 @@
 
     @if(request('sin_codigo'))
         <div class="alert-success">
-            Mostrando materiales sin codigo de barras. Usa "Agregar codigo" para completar cada registro.
+            Mostrando materiales sin código de barras. Usa "Agregar código" para completar cada registro.
         </div>
     @endif
 
@@ -483,8 +483,8 @@
                 <tr>
                     <th>Foto</th>
                     <th>Categoria</th>
-                    <th>No. Parte / Codigo</th>
-                    <th>Descripcion</th>
+                    <th>No. Parte / Código</th>
+                    <th>Descripción</th>
                     <th>Marca</th>
                     <th>Proveedor</th>
                     <th>Stock</th>
@@ -507,7 +507,7 @@
                             @if($material->codigo_barras)
                                 <span class="code-muted">{{ $material->codigo_barras }}</span>
                             @else
-                                <span class="code-muted">Sin codigo de barras</span>
+                                <span class="code-muted">Sin código de barras</span>
                             @endif
                         </td>
                         <td>{{ $material->descripcion }}</td>
@@ -522,7 +522,7 @@
                             <div class="action-buttons">
                                 @unless($material->codigo_barras)
                                     <a href="{{ route('materiales.edit', $material) }}" class="btn-code">
-                                        Agregar codigo
+                                        Agregar código
                                     </a>
                                 @endunless
                                 <a href="{{ route('materiales.edit', $material) }}" class="btn-edit">
@@ -557,7 +557,7 @@
 
 <div id="scannerModal" class="modal">
     <div class="modal-content">
-        <h3>Escanear Codigo</h3>
+        <h3>Escanear Código</h3>
         <div id="reader"></div>
         <button type="button" class="close-btn" onclick="cerrarEscaner()">Cancelar</button>
     </div>

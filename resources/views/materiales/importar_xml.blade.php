@@ -243,7 +243,7 @@
 
     <!-- Alerta Informativa Futurista -->
     <div class="alert-info">
-        El XML no trae codigo de barras. Se usara NoIdentificacion como No. de Parte y la descripcion del concepto como nombre del material[cite: 4].
+        El XML no trae código de barras. Se usará NoIdentificacion como No. de Parte y la descripción del concepto como nombre del material.
     </div>
 
     @if(session('error'))
@@ -262,6 +262,9 @@
         <div class="form-group">
             <label for="xml_file">Archivo XML de factura</label>
             <input type="file" name="xml_file" id="xml_file" accept=".xml,text/xml,application/xml" required>
+            <div class="help-text" style="margin-top: 10px; text-align: left;">
+                Sube el archivo .xml descargado del SAT. No subas el PDF.
+            </div>
         </div>
 
         <div class="form-actions">
@@ -272,7 +275,7 @@
     </form>
 
     <div class="help-text">
-        Se extrae: cantidad, NoIdentificacion, descripcion, ClaveProdServ, unidad, precio, importe, proveedor, folio fiscal UUID y folio de factura[cite: 4].
+        Se extrae: cantidad, NoIdentificacion, descripción, ClaveProdServ, unidad, precio, importe, proveedor, folio fiscal UUID y folio de factura.
     </div>
 </div>
 </main>

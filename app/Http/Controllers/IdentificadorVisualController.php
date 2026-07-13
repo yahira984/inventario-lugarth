@@ -33,7 +33,7 @@ class IdentificadorVisualController extends Controller
             'fotografia.required' => 'Toma una foto o selecciona una imagen para buscar sugerencias.',
             'fotografia.image' => 'El archivo debe ser una imagen.',
             'fotografia.mimes' => 'La imagen debe ser JPG, JPEG, PNG o WEBP.',
-            'fotografia.max' => 'La imagen no debe pesar mas de 8 MB.',
+            'fotografia.max' => 'La imagen no debe pesar más de 8 MB.',
         ]);
 
         $archivo = $datos['fotografia'];

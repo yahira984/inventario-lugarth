@@ -9,7 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -33,7 +33,15 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', Password::min(8)],
+        ], [
+            'name.required' => 'Escribe el nombre de la persona que usará la cuenta.',
+            'email.required' => 'Escribe un correo para la cuenta.',
+            'email.email' => 'El correo no tiene formato válido. Ejemplo: usuario@empresa.com.',
+            'email.unique' => 'Ese correo ya tiene una cuenta registrada. Inicia sesión o usa otro correo.',
+            'password.required' => 'Crea una contraseña para la cuenta.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres. Faltan caracteres para que sea válida.',
+            'password.confirmed' => 'Las contraseñas no coinciden. Escríbelas igual en ambos campos.',
         ]);
 
         $user = User::create([
