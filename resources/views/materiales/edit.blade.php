@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Material - AppLugarth</title>
+
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2875/2875878.png" type="image/png">
+    
     <style>
         /* --- ESTILOS ULTRA-FUTURISTAS MASTER (Modo Edición) --- */
         :root {
@@ -28,12 +31,21 @@
         }
 
         .app-shell { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
-        .app-content { flex: 1; padding: 40px 20px; overflow-y: auto; display: flex; justify-content: center; }
+        
+        /* AQUI ESTÁ EL CAMBIO CLAVE: display: block para evitar aplastamientos */
+        .app-content { 
+            flex: 1; 
+            padding: 40px 20px; 
+            overflow-y: auto; 
+            display: block; 
+        }
 
         /* --- CONTENEDOR DEL FORMULARIO --- */
         .container {
             width: 100%;
             max-width: 900px;
+            /* Se centra automáticamente con margin auto y se deja espacio abajo */
+            margin: 0 auto 60px auto; 
             background: var(--surface);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
@@ -41,6 +53,9 @@
             border-radius: 20px;
             box-shadow: var(--shadow-glass), inset 0 0 20px rgba(56, 189, 248, 0.05);
             padding: 40px;
+            height: auto; /* Fuerza a que crezca con el contenido */
+            display: block;
+            overflow: visible;
         }
 
         .page-header { margin-bottom: 30px; border-bottom: 1px solid var(--line); padding-bottom: 20px; }
@@ -94,6 +109,11 @@
             background: rgba(0, 0, 0, 0.6);
         }
 
+        select option {
+            background-color: #0f172a;
+            color: #ffffff;
+        }
+
         /* --- BOTONES --- */
         .form-actions { display: flex; gap: 16px; margin-top: 32px; }
 
@@ -128,72 +148,7 @@
             transition: all 0.3s;
         }
 
-        .field-help {
-            margin-top: 7px;
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.35;
-        }
-
-        #reader {
-            width: 100%;
-            min-height: 250px;
-        }
-
-        #reader button,
-        #reader a {
-            background: #eef6ff !important;
-            border: 1px solid #b7d9ff !important;
-            color: var(--blue-dark) !important;
-            border-radius: 6px !important;
-            padding: 9px 12px !important;
-            font-family: inherit !important;
-            font-size: 13px !important;
-            font-weight: 800 !important;
-            text-decoration: none !important;
-            cursor: pointer !important;
-        }
-
-        #reader button:hover,
-        #reader a:hover {
-            background: #d8ecff !important;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background-color: rgba(14, 23, 34, 0.68);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            width: min(500px, 100%);
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
-        }
-
-        .modal-content h3 {
-            margin: 0 0 14px;
-            color: var(--blue-dark);
-        }
-
-        .close-btn {
-            background-color: var(--red);
-            color: white;
-            padding: 12px 18px;
-            width: 100%;
-            margin-top: 14px;
-        }
-
-        .close-btn:hover {
-            background-color: #9f312b;
-        }
+        .btn-back:hover { border-color: #fff; color: #fff; }
 
         /* --- COMPONENTES ADICIONALES --- */
         .input-group { display: flex; gap: 12px; }
@@ -303,17 +258,20 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="fotografia">Fotografía</label>
-                        @if($material->fotografia)
-                            <div class="foto-actual">
-                                <img src="{{ asset('storage/' . $material->fotografia) }}" alt="Foto actual">
-                                <span>Foto actual. Sube una nueva para reemplazarla.</span>
-                            </div>
-                        @endif
-                        <input type="file" name="fotografia" id="fotografia" accept="image/*">
-                        <div class="field-help">Formatos permitidos: JPG, PNG o WEBP. Máximo 2 MB.</div>
-                        @error('fotografia') <span class="error">{{ $message }}</span> @enderror
-                    </div>
+    <label>Fotografía</label>
+    
+    @if($material->fotografia)
+        <div style="margin-bottom: 15px; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; display: flex; align-items: center; gap: 15px; width: max-content;">
+            <img src="{{ asset('storage/' . $material->fotografia) }}" alt="Foto actual" style="width: 90px; height: 90px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; flex-direction: column;">
+                <span style="color: #38bdf8; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Imagen actual</span>
+                <span style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Sube una nueva para reemplazarla</span>
+            </div>
+        </div>
+    @endif
+
+    <input type="file" name="fotografia" accept="image/*">
+</div>
 
                 <div class="form-actions">
                     <a href="{{ route('materiales.index') }}" class="btn-back">Cancelar</a>
