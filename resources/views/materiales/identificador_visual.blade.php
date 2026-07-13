@@ -143,6 +143,15 @@
         .score { color: var(--emerald-glow); font-weight: bold; font-size: 12px; }
         .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; padding: 4px 12px; border-radius: 6px; font-size: 11px; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); }
         .btn-secondary:hover { background: var(--blue-glow); }
+        .empty-result, .muted {
+            color: var(--muted);
+            border: 1px solid rgba(56, 189, 248, 0.22);
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 13px;
+            font-weight: 700;
+        }
 
         @media (max-width: 768px) {
             .scanner-body { grid-template-columns: 1fr; }
@@ -202,24 +211,32 @@
                 <div class="results-header">
                     <strong>Sugerencias</strong>
                 </div>
-                <div class="result-grid">
-                    @foreach($resultados as $material)
-                        <article class="result-card">
-                            <img src="{{ asset('storage/' . $material->fotografia) }}" class="result-photo" alt="Foto">
-                            <div class="result-info">
-                                <div class="result-title">{{ $material->descripcion }}</div>
-                                <div class="result-meta">
-                                    <span>Marca: {{ $material->marca }}</span>
-                                    <span>Stock: {{ $material->stock }} pzas</span>
+                @if($busquedaRealizada && $resultados->isEmpty())
+                    <div class="empty-result">
+                        No encontre una coincidencia visual confiable. Solo se muestran materiales con foto y parecido fuerte.
+                    </div>
+                @elseif(!$busquedaRealizada)
+                    <p class="muted">Aqui apareceran solo las coincidencias fuertes.</p>
+                @else
+                    <div class="result-grid">
+                        @foreach($resultados as $material)
+                            <article class="result-card">
+                                <img src="{{ asset('storage/' . $material->fotografia) }}" class="result-photo" alt="Foto">
+                                <div class="result-info">
+                                    <div class="result-title">{{ $material->descripcion }}</div>
+                                    <div class="result-meta">
+                                        <span>Marca: {{ $material->marca }}</span>
+                                        <span>Stock: {{ $material->stock }} pzas</span>
+                                    </div>
+                                    <div class="score-row">
+                                        <span class="score">{{ $material->puntaje_visual }} pts</span>
+                                        <a href="{{ route('materiales.edit', $material) }}" class="btn-secondary">Ver</a>
+                                    </div>
                                 </div>
-                                <div class="score-row">
-                                    <span class="score">{{ $material->puntaje_visual ?? '95' }} pts</span>
-                                    <a href="{{ route('materiales.edit', $material) }}" class="btn-secondary">Ver</a>
-                                </div>
-                            </div>
-                        </article>
-                    @endforeach
-                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @endif
             </section>
         </div>
     </main>
