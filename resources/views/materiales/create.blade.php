@@ -94,6 +94,18 @@
             box-shadow: inset 0 0 15px rgba(239, 68, 68, 0.1);
         }
         .alert-danger ul { margin: 8px 0 0 0; padding-left: 20px; }
+        .field-error {
+            margin-top: 8px;
+            color: #fca5a5;
+            font-size: 12px;
+            font-weight: 800;
+        }
+        .field-help {
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.35;
+        }
 
         .scan-status {
             margin-top: 10px;
@@ -314,12 +326,12 @@
 <div class="container">
     <div class="form-header">
         <h2>Entrada de Material</h2>
-        <p class="header-meta">Camara o escaner USB, el mismo codigo manda.</p>
+        <p class="header-meta">Cámara o escáner USB, el mismo código manda.</p>
     </div>
 
     @if ($errors->any())
         <div class="alert-danger">
-            <strong>Ocurrio un error:</strong>
+            <strong>Revisa estos datos:</strong>
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -333,55 +345,70 @@
 
         <div class="form-grid">
             <div class="form-group full">
-                <label for="codigo_barras">Codigo de Barras / SKU</label>
+                <label for="codigo_barras">Código de Barras / SKU</label>
                 <div class="input-group">
-                    <input type="text" name="codigo_barras" id="codigo_barras" placeholder="Escanea o escribe el codigo" autocomplete="off" autofocus>
-                    <button type="button" class="btn-scan" onclick="abrirEscaner()">Escanear camara</button>
+                    <input type="text" name="codigo_barras" id="codigo_barras" value="{{ old('codigo_barras') }}" placeholder="Escanea o escribe el código" autocomplete="off" autofocus>
+                    <button type="button" class="btn-scan" onclick="abrirEscaner()">Escanear cámara</button>
                 </div>
+                <div class="field-help">Puedes escanear con cámara, pistola USB o escribirlo manualmente.</div>
                 <div id="codigo_status" class="scan-status"></div>
+                @error('codigo_barras') <div class="field-error">{{ $message }}</div> @enderror
             </div>
 
             <div class="form-group">
                 <label for="categoria">Categoria / Tipo de Equipo *</label>
                 <select name="categoria" id="categoria" required data-material-field>
                     <option value="">-- Selecciona una categoria --</option>
-                    <option value="EQUIPO ACERO AL CARBON">EQUIPO ACERO AL CARBON</option>
-                    <option value="EQUIPO ACERO INOXIDABLE">EQUIPO ACERO INOXIDABLE</option>
-                    <option value="EQUIPO TIPO ASA INOXIDABLE">EQUIPO TIPO ASA INOXIDABLE</option>
-                    <option value="EQUIPO AC SIST DSPCH MEC FILL">EQUIPO AC SIST DSPCH MEC FILL</option>
-                    <option value="EQUIPO AC SIST DSPCH MEC LIQUID">EQUIPO AC SIST DSPCH MEC LIQUID</option>
-                    <option value="EQUIPO ACERO AL CARBON UPV">EQUIPO ACERO AL CARBON UPV</option>
+                    @foreach([
+                        'EQUIPO ACERO AL CARBON',
+                        'EQUIPO ACERO INOXIDABLE',
+                        'EQUIPO TIPO ASA INOXIDABLE',
+                        'EQUIPO AC SIST DSPCH MEC FILL',
+                        'EQUIPO AC SIST DSPCH MEC LIQUID',
+                        'EQUIPO ACERO AL CARBON UPV',
+                    ] as $categoria)
+                        <option value="{{ $categoria }}" {{ old('categoria') === $categoria ? 'selected' : '' }}>{{ $categoria }}</option>
+                    @endforeach
                 </select>
+                @error('categoria') <div class="field-error">{{ $message }}</div> @enderror
             </div>
 
             <div class="form-group">
-                <label for="numero_parte">No. de Parte / Codigo</label>
-                <input type="text" name="numero_parte" id="numero_parte" placeholder="Ej. 3176MS" data-material-field>
+                <label for="numero_parte">No. de Parte / Código</label>
+                <input type="text" name="numero_parte" id="numero_parte" value="{{ old('numero_parte') }}" placeholder="Ej. 3176MS" data-material-field>
+                @error('numero_parte') <div class="field-error">{{ $message }}</div> @enderror
             </div>
 
             <div class="form-group full">
-                <label for="descripcion">Descripcion del Material *</label>
-                <textarea name="descripcion" id="descripcion" placeholder="Detalles del componente" required data-material-field></textarea>
+                <label for="descripcion">Descripción del Material *</label>
+                <textarea name="descripcion" id="descripcion" placeholder="Detalles del componente" required data-material-field>{{ old('descripcion') }}</textarea>
+                @error('descripcion') <div class="field-error">{{ $message }}</div> @enderror
             </div>
 
             <div class="form-group">
                 <label for="marca">Marca</label>
-                <input type="text" name="marca" id="marca" placeholder="Ej. BETTS" data-material-field>
+                <input type="text" name="marca" id="marca" value="{{ old('marca') }}" placeholder="Ej. BETTS" data-material-field>
+                @error('marca') <div class="field-error">{{ $message }}</div> @enderror
             </div>
 
             <div class="form-group">
                 <label for="proveedor">Proveedor</label>
-                <input type="text" name="proveedor" id="proveedor" placeholder="Ej. Promotora Industrial RG" data-material-field>
+                <input type="text" name="proveedor" id="proveedor" value="{{ old('proveedor') }}" placeholder="Ej. Promotora Industrial RG" data-material-field>
+                @error('proveedor') <div class="field-error">{{ $message }}</div> @enderror
             </div>
 
             <div class="form-group">
                 <label for="stock">Cantidad de Entrada *</label>
-                <input type="number" name="stock" id="stock" placeholder="0" min="0" required>
+                <input type="number" name="stock" id="stock" value="{{ old('stock') }}" placeholder="0" min="0" required>
+                <div class="field-help">Escribe solo números enteros. Ejemplo: 1, 5, 20.</div>
+                @error('stock') <div class="field-error">{{ $message }}</div> @enderror
             </div>
 
             <div class="form-group">
-                <label for="fotografia">Fotografia</label>
+                <label for="fotografia">Fotografía</label>
                 <input type="file" name="fotografia" id="fotografia" accept="image/*" data-material-field>
+                <div class="field-help">Formatos permitidos: JPG, PNG o WEBP. Máximo 2 MB.</div>
+                @error('fotografia') <div class="field-error">{{ $message }}</div> @enderror
             </div>
         </div>
 
@@ -397,7 +424,7 @@
 
 <div id="scannerModal" class="modal">
     <div class="modal-content">
-        <h3>Escanear Codigo de Barras</h3>
+        <h3>Escanear Código de Barras</h3>
         <div id="reader"></div>
         <button type="button" class="close-btn" onclick="cerrarEscaner()">Cancelar</button>
     </div>
@@ -471,7 +498,7 @@
         stockInput.placeholder = 'Cantidad nueva a sumar';
         bloquearCamposMaterial(true);
         submitButton.textContent = 'Registrar Entrada al Stock';
-        setEstadoCodigo(`Codigo ya registrado: ${data.descripcion}. Stock actual: ${data.stock} pzas. Al guardar se sumara la cantidad capturada.`, 'success');
+        setEstadoCodigo(`Código ya registrado: ${data.descripcion}. Stock actual: ${data.stock} pzas. Al guardar se sumará la cantidad capturada.`, 'success');
         stockInput.focus();
     }
 
@@ -481,7 +508,7 @@
         stockInput.value = '';
         stockInput.placeholder = 'Cantidad inicial';
         submitButton.textContent = 'Guardar Material en Inventario';
-        setEstadoCodigo('Codigo nuevo detectado. Captura los datos para registrarlo por primera vez.', 'warning');
+        setEstadoCodigo('Código nuevo detectado. Captura los datos para registrarlo por primera vez.', 'warning');
         document.getElementById('categoria').focus();
     }
 
@@ -498,12 +525,12 @@
 
         ultimoCodigoConsultado = codigoLimpio;
         codigoBarrasInput.value = codigoLimpio;
-        setEstadoCodigo('Buscando codigo en inventario...', 'info');
+        setEstadoCodigo('Buscando código en inventario...', 'info');
 
         fetch(`{{ route('materiales.buscarPorCodigo') }}?codigo=${encodeURIComponent(codigoLimpio)}`)
             .then((response) => {
                 if (!response.ok) {
-                    throw new Error('No se pudo consultar el codigo.');
+                    throw new Error('No se pudo consultar el código.');
                 }
 
                 return response.json();
@@ -517,10 +544,10 @@
                 prepararMaterialNuevo();
             })
             .catch((error) => {
-                console.error('Error al consultar el codigo:', error);
+                console.error('Error al consultar el código:', error);
                 ultimoCodigoConsultado = '';
                 bloquearCamposMaterial(false);
-                setEstadoCodigo('No se pudo consultar el codigo. Intenta otra vez.', 'error');
+                setEstadoCodigo('No se pudo consultar el código. Intenta otra vez.', 'error');
             });
     }
 

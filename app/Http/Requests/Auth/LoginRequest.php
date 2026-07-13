@@ -29,7 +29,17 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Escribe tu correo para iniciar sesión.',
+            'email.email' => 'El correo no tiene formato válido. Ejemplo: usuario@empresa.com.',
+            'password.required' => 'Escribe tu contraseña para continuar.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres. Revisa que no falten dígitos o letras.',
         ];
     }
 
@@ -46,7 +56,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => 'No pudimos iniciar sesión. Revisa el correo y vuelve a escribir la contraseña completa.',
             ]);
         }
 
@@ -69,10 +79,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+            'email' => "Demasiados intentos. Espera {$seconds} segundos antes de volver a intentar.",
         ]);
     }
 

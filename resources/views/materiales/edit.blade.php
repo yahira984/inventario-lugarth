@@ -252,6 +252,13 @@
             font-weight: 700;
         }
 
+        .field-help {
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -325,7 +332,7 @@
         <div class="container">
             <div class="page-header">
                 <h1>Editar Material</h1>
-                <p>Actualiza datos, stock y codigo de barras. Puedes escanear con camara o pistolita USB.</p>
+                <p>Actualiza datos, stock y código de barras. Puedes escanear con cámara o pistolita USB.</p>
             </div>
 
             @if ($errors->any())
@@ -345,17 +352,18 @@
 
                 <div class="form-grid">
                     <div class="form-group full">
-                        <label for="codigo_barras">Codigo de Barras</label>
+                        <label for="codigo_barras">Código de Barras</label>
                         <div class="input-group">
-                            <input type="text" name="codigo_barras" id="codigo_barras" value="{{ old('codigo_barras', $material->codigo_barras) }}" placeholder="Escanea o escribe el codigo" autocomplete="off" autofocus>
-                            <button type="button" class="btn-scan" onclick="abrirEscaner()">Escanear camara</button>
+                            <input type="text" name="codigo_barras" id="codigo_barras" value="{{ old('codigo_barras', $material->codigo_barras) }}" placeholder="Escanea o escribe el código" autocomplete="off" autofocus>
+                            <button type="button" class="btn-scan" onclick="abrirEscaner()">Escanear cámara</button>
                         </div>
+                        <div class="field-help">Si el código pertenece a otro material, el sistema te avisará antes de guardar.</div>
                         <div id="codigo_status" class="code-status"></div>
                         @error('codigo_barras') <span class="error">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="form-group full">
-                        <label for="descripcion">Descripcion *</label>
+                        <label for="descripcion">Descripción *</label>
                         <textarea name="descripcion" id="descripcion" required>{{ old('descripcion', $material->descripcion) }}</textarea>
                         @error('descripcion') <span class="error">{{ $message }}</span> @enderror
                     </div>
@@ -401,11 +409,12 @@
                     <div class="form-group">
                         <label for="stock">Stock *</label>
                         <input type="number" name="stock" id="stock" value="{{ old('stock', $material->stock) }}" min="0" required>
+                        <div class="field-help">Escribe el stock total actual del material, no la cantidad a sumar.</div>
                         @error('stock') <span class="error">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="form-group">
-                        <label for="fotografia">Fotografia</label>
+                        <label for="fotografia">Fotografía</label>
                         @if($material->fotografia)
                             <div class="foto-actual">
                                 <img src="{{ asset('storage/' . $material->fotografia) }}" alt="Foto actual">
@@ -413,6 +422,7 @@
                             </div>
                         @endif
                         <input type="file" name="fotografia" id="fotografia" accept="image/*">
+                        <div class="field-help">Formatos permitidos: JPG, PNG o WEBP. Máximo 2 MB.</div>
                         @error('fotografia') <span class="error">{{ $message }}</span> @enderror
                     </div>
                 </div>
@@ -428,7 +438,7 @@
 
 <div id="scannerModal" class="modal">
     <div class="modal-content">
-        <h3>Escanear Codigo de Barras</h3>
+        <h3>Escanear Código de Barras</h3>
         <div id="reader"></div>
         <button type="button" class="close-btn" onclick="cerrarEscaner()">Cancelar</button>
     </div>
@@ -487,19 +497,19 @@
             .then((response) => response.json())
             .then((data) => {
                 if (!data.encontrado) {
-                    setCodigoStatus('Codigo disponible para este material.', 'success');
+                    setCodigoStatus('Código disponible para este material.', 'success');
                     return;
                 }
 
                 if (Number(data.id) === Number(materialId)) {
-                    setCodigoStatus('Este codigo ya pertenece a este material.', 'success');
+                    setCodigoStatus('Este código ya pertenece a este material.', 'success');
                     return;
                 }
 
-                setCodigoStatus(`Cuidado: este codigo ya pertenece a "${data.descripcion}".`, 'error');
+                setCodigoStatus(`Cuidado: este código ya pertenece a "${data.descripcion}".`, 'error');
             })
             .catch(() => {
-                setCodigoStatus('No se pudo validar el codigo ahora. Laravel lo revisara al guardar.', 'warning');
+                setCodigoStatus('No se pudo validar el código ahora. Laravel lo revisará al guardar.', 'warning');
             });
     }
 

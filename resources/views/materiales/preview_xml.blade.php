@@ -234,7 +234,7 @@
 
     <div class="content">
         <div class="notice">
-            Revisa antes de importar. Si el No. de Parte ya existe, se suma stock. Si no existe, se crea material nuevo sin codigo de barras.
+            Revisa antes de importar. Si el No. de Parte ya existe, se suma stock. Si no existe, se crea material nuevo sin código de barras.
         </div>
 
         <form action="{{ route('materiales.xml.store') }}" method="POST">
@@ -249,7 +249,7 @@
                             <th>Estado</th>
                             <th>Cantidad</th>
                             <th>No. Parte</th>
-                            <th>Descripcion</th>
+                            <th>Descripción</th>
                             <th>Clave SAT</th>
                             <th>Unidad</th>
                             <th>Categoria</th>
