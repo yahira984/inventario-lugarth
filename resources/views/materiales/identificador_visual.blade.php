@@ -3,396 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Identificador Visual - Inventario</title>
+    <title>Identificador Visual - AppLugarth</title>
     <style>
+        /* --- ESTILOS ULTRA-FUTURISTAS MASTER (Modo Identificador) --- */
         :root {
-            --bg: #edf1f5;
-            --surface: #ffffff;
-            --ink: #1f2933;
-            --muted: #607080;
-            --line: #d8e0e8;
-            --blue: #2563a8;
-            --blue-dark: #17426f;
-            --green: #188653;
-            --amber: #b66a08;
-            --red: #b42318;
-            --shadow: 0 18px 45px rgba(31, 41, 51, 0.12);
+            --bg: #030712; 
+            --surface: rgba(15, 23, 42, 0.7); 
+            --ink: #ffffff; 
+            --muted: #94a3b8; 
+            --cyan-glow: #06b6d4;
+            --blue-glow: #3b82f6;
+            --emerald-glow: #10b981;
+            --line: rgba(56, 189, 248, 0.2);
+            --shadow-glass: 0 10px 40px rgba(0, 0, 0, 0.6); 
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
             min-height: 100vh;
-            background: var(--bg);
+            background: radial-gradient(circle at top left, #0a192f 0%, #030712 100%);
             color: var(--ink);
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .app-content {
-            min-width: 0;
-            padding: 24px;
-        }
+        .app-shell { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
+        .app-content { flex: 1; padding: 40px 20px; overflow-y: auto; display: flex; justify-content: center; }
 
+        /* --- CONTENEDOR PRINCIPAL --- */
         .container {
-            width: min(1180px, 100%);
-            margin: 0 auto;
-        }
-
-        .page-header {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 18px;
-        }
-
-        h1 {
-            margin: 0;
-            color: var(--blue-dark);
-            font-size: 30px;
-            line-height: 1.15;
-        }
-
-        .header-meta {
-            margin: 7px 0 0;
-            color: var(--muted);
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .scanner {
-            background: var(--surface);
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .scanner-body {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 320px;
-            gap: 22px;
-            padding: 24px;
-            align-items: stretch;
-        }
-
-        .drop-area {
-            min-height: 360px;
-            border: 2px dashed #abc0d4;
-            border-radius: 8px;
-            background: #f8fafc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            transition: border-color 0.18s ease, background 0.18s ease;
-        }
-
-        .drop-area:hover,
-        .drop-area.loading {
-            border-color: var(--blue);
-            background: #eef6ff;
-        }
-
-        .file-input {
-            position: absolute;
-            inset: 0;
             width: 100%;
-            opacity: 0;
-            cursor: pointer;
+            max-width: 1000px;
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            box-shadow: var(--shadow-glass);
+            padding: 40px;
         }
 
-        .upload-state {
-            padding: 28px;
-            text-align: center;
-            pointer-events: none;
-        }
-
-        .upload-icon {
-            width: 74px;
-            height: 74px;
-            margin: 0 auto 14px;
-            border-radius: 50%;
-            background: var(--blue);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .page-header h1 {
+            margin: 0 0 8px 0;
+            background: linear-gradient(to right, #00f2fe, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             font-size: 32px;
             font-weight: 900;
+            letter-spacing: 1px;
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.2); 
         }
 
-        .upload-title {
-            display: block;
-            font-size: 22px;
-            font-weight: 900;
-            color: var(--blue-dark);
-            margin-bottom: 6px;
-        }
+        /* --- ZONA DE ESCANEO (Drop Area) --- */
+        .scanner-body { display: grid; grid-template-columns: 1fr 320px; gap: 30px; margin-top: 30px; }
 
-        .upload-subtitle {
-            display: block;
-            color: var(--muted);
-            font-weight: 700;
-        }
-
-        .main-preview {
-            width: 100%;
-            height: 100%;
-            min-height: 360px;
-            object-fit: contain;
-            background: #0f172a;
-        }
-
-        .side-panel {
-            border-left: 1px solid var(--line);
-            padding-left: 22px;
+        .drop-area {
+            border: 2px dashed rgba(6, 182, 212, 0.4);
+            border-radius: 20px;
+            background: rgba(6, 182, 212, 0.03);
             display: flex;
-            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            gap: 14px;
+            padding: 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            min-height: 300px;
         }
+        .drop-area:hover { background: rgba(6, 182, 212, 0.08); border-color: var(--cyan-glow); }
 
-        .status-box {
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 15px;
-            background: #fff;
-        }
+        .file-input { display: none; }
+        .main-preview { max-width: 100%; max-height: 250px; border-radius: 12px; }
 
-        .status-box strong {
-            display: block;
-            color: var(--blue-dark);
-            margin-bottom: 6px;
-            font-size: 15px;
-        }
+        .upload-state { text-align: center; color: var(--ink); }
+        .upload-icon { font-size: 48px; color: var(--cyan-glow); display: block; }
+        .upload-title { font-weight: 800; font-size: 18px; margin: 10px 0; display: block; }
+        .loading-note { color: var(--cyan-glow); font-weight: bold; display: none; margin-top: 10px; }
+        .loading .loading-note { display: block; }
 
-        .status-box span,
-        .status-box p {
-            color: var(--muted);
-            font-size: 13px;
-            font-weight: 700;
-            line-height: 1.45;
-            margin: 0;
-        }
+        /* --- PANEL LATERAL --- */
+        .side-panel { display: flex; flex-direction: column; gap: 20px; }
+        /* --- ESTILO DE LOS BOXES CON BRILLO FUTURISTA --- */
+.status-box {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(56, 189, 248, 0.3); /* Borde con tinte azul */
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    transition: all 0.4s ease;
+    /* Efecto de brillo sutil en el fondo */
+    box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.05);
+}
 
-        .chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
+/* Efecto de resplandor al "activarse" */
+.status-box:hover {
+    border-color: var(--cyan-glow);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.2), inset 0 0 20px rgba(6, 182, 212, 0.1);
+}
 
-        .chip {
-            display: inline-flex;
-            align-items: center;
-            border-radius: 999px;
-            padding: 6px 10px;
-            background: #eef6ff;
-            border: 1px solid #b7d9ff;
-            color: #17426f;
-            font-size: 12px;
-            font-weight: 900;
-        }
+.status-box strong { 
+    color: var(--cyan-glow); 
+    font-size: 12px; 
+    text-transform: uppercase; 
+    display: block; 
+    margin-bottom: 8px; 
+    text-shadow: 0 0 10px rgba(6, 182, 212, 0.5); /* Las letras brillan */
+}
 
-        .error-box {
-            border: 1px solid #fecaca;
-            background: #fff1f2;
-            color: var(--red);
-            border-radius: 8px;
-            padding: 12px 14px;
-            font-weight: 800;
-            margin-bottom: 16px;
-        }
+.status-box span { 
+    font-size: 14px; 
+    color: #fff; 
+    display: block;
+    line-height: 1.4;
+}
+        /* Chips */
+        .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+        .chip { background: rgba(56, 189, 248, 0.1); color: #7dd3fc; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; border: 1px solid rgba(56, 189, 248, 0.2); }
 
-        .results-shell {
-            background: var(--surface);
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-
-        .results-header {
-            padding: 18px 22px;
-            background: #f8fafc;
-            border-bottom: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .results-header strong {
-            color: var(--blue-dark);
-            font-size: 18px;
-        }
-
-        .result-count {
-            color: var(--muted);
-            font-size: 13px;
-            font-weight: 900;
-        }
-
-        .results-body {
-            padding: 22px;
-        }
-
-        .empty-result {
-            border: 1px solid #ffd98a;
-            background: #fff7e6;
-            color: #855000;
-            border-radius: 8px;
-            padding: 16px;
-            font-weight: 800;
-        }
-
-        .muted {
-            color: var(--muted);
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .result-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
-            gap: 14px;
-        }
+        /* --- RESULTADOS --- */
+        .results-shell { margin-top: 40px; border-top: 1px solid var(--line); padding-top: 30px; }
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
 
         .result-card {
+            background: rgba(30, 41, 59, 0.6);
             border: 1px solid var(--line);
-            border-radius: 8px;
-            background: #fff;
-            overflow: hidden;
+            border-radius: 16px;
+            padding: 16px;
             display: flex;
-            flex-direction: column;
-            min-width: 0;
+            gap: 12px;
+            transition: all 0.3s;
         }
+        .result-card:hover { border-color: var(--cyan-glow); transform: translateY(-5px); }
+        .result-photo { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; }
+        .result-title { font-weight: 800; font-size: 14px; margin-bottom: 8px; }
+        .result-meta { font-size: 11px; color: var(--muted); display: grid; gap: 2px; }
+        
+        .score-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .score { color: var(--emerald-glow); font-weight: bold; font-size: 12px; }
+        .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; padding: 4px 12px; border-radius: 6px; font-size: 11px; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); }
+        .btn-secondary:hover { background: var(--blue-glow); }
 
-        .result-photo,
-        .no-photo {
-            width: 100%;
-            aspect-ratio: 4 / 3;
-            object-fit: cover;
-            background: #f3f6f9;
-        }
-
-        .no-photo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--muted);
-            font-weight: 900;
-        }
-
-        .result-info {
-            padding: 14px;
-            display: grid;
-            gap: 8px;
-        }
-
-        .result-title {
-            color: var(--ink);
-            font-size: 15px;
-            font-weight: 900;
-            line-height: 1.25;
-            min-height: 38px;
-        }
-
-        .result-meta {
-            display: grid;
-            gap: 4px;
-            color: var(--muted);
-            font-size: 12px;
-            font-weight: 800;
-        }
-
-        .score-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            margin-top: 4px;
-        }
-
-        .score {
-            display: inline-flex;
-            align-items: center;
-            border-radius: 999px;
-            padding: 5px 9px;
-            background: #eaf7ef;
-            border: 1px solid #b8e2c8;
-            color: #11643e;
-            font-size: 12px;
-            font-weight: 900;
-        }
-
-        .btn-secondary {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 36px;
-            padding: 8px 10px;
-            border-radius: 6px;
-            background: #e6ecf2;
-            color: var(--ink);
-            font-size: 13px;
-            font-weight: 900;
-            text-decoration: none;
-        }
-
-        .loading-note {
-            display: none;
-            color: var(--blue-dark);
-            font-weight: 900;
-        }
-
-        .drop-area.loading .loading-note {
-            display: block;
-            margin-top: 10px;
-        }
-
-        @media (max-width: 980px) {
-            .scanner-body {
-                grid-template-columns: 1fr;
-            }
-
-            .side-panel {
-                border-left: none;
-                border-top: 1px solid var(--line);
-                padding-left: 0;
-                padding-top: 18px;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .app-content {
-                padding: 14px 10px;
-            }
-
-            .page-header {
-                display: block;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-
-            .scanner-body,
-            .results-body {
-                padding: 16px;
-            }
-
-            .drop-area,
-            .main-preview {
-                min-height: 280px;
-            }
+        @media (max-width: 768px) {
+            .scanner-body { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -400,18 +153,15 @@
 
 <div class="app-shell">
     @include('materiales.partials.sidebar')
-
     <main class="app-content">
         <div class="container">
             <div class="page-header">
-                <div>
-                    <h1>Identificador Visual</h1>
-                    <p class="header-meta">Foto de la pieza y sugerencias del inventario.</p>
-                </div>
+                <h1>Identificador Visual</h1>
+                <p class="header-meta">Foto de la pieza y sugerencias del inventario.</p>
             </div>
 
             @if($errors->any())
-                <div class="error-box">
+                <div class="alert-danger" style="background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
                     {{ $errors->first() }}
                 </div>
             @endif
@@ -419,45 +169,29 @@
             <section class="scanner">
                 <form action="{{ route('materiales.visual.search') }}" method="POST" enctype="multipart/form-data" id="visualForm">
                     @csrf
-
                     <div class="scanner-body">
                         <label class="drop-area" id="dropArea">
                             @if($preview)
                                 <img src="{{ $preview }}" class="main-preview" alt="Foto analizada">
                             @else
                                 <span class="upload-state" id="uploadState">
-                                    <span class="upload-icon">+</span>
+                                    <span class="upload-icon">📷</span>
                                     <span class="upload-title">Tomar foto o subir imagen</span>
                                     <span class="upload-subtitle">JPG, PNG o WEBP</span>
                                     <span class="loading-note">Analizando imagen...</span>
                                 </span>
                             @endif
-
                             <input type="file" name="fotografia" id="fotografia" class="file-input" accept="image/*" capture="environment">
                         </label>
 
                         <aside class="side-panel">
                             <div class="status-box">
                                 <strong>Lectura actual</strong>
-                                @if($analisis)
-                                    <span>{{ implode(', ', $analisis['observaciones']) ?: 'Imagen procesada' }}</span>
-                                    <div class="chips">
-                                        @foreach(array_slice(array_keys($analisis['terminos']), 0, 7) as $termino)
-                                            <span class="chip">{{ $termino }}</span>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <p>Sin imagen analizada.</p>
-                                @endif
+                                <span>{{ $analisis ? 'Imagen procesada' : 'Sin imagen analizada.' }}</span>
                             </div>
-
                             <div class="status-box">
                                 <strong>Resultado</strong>
-                                @if($busquedaRealizada)
-                                    <span>{{ $resultados->count() }} sugerencias encontradas.</span>
-                                @else
-                                    <span>Selecciona una imagen para iniciar.</span>
-                                @endif
+                                <span>{{ $busquedaRealizada ? $resultados->count() . ' sugerencias.' : 'Selecciona una imagen.' }}</span>
                             </div>
                         </aside>
                     </div>
@@ -467,47 +201,24 @@
             <section class="results-shell">
                 <div class="results-header">
                     <strong>Sugerencias</strong>
-                    <span class="result-count">{{ $busquedaRealizada ? $resultados->count() . ' resultados' : 'esperando imagen' }}</span>
                 </div>
-
-                <div class="results-body">
-                    @if($busquedaRealizada && $resultados->isEmpty())
-                        <div class="empty-result">
-                            No encontre una coincidencia clara con esa imagen.
-                        </div>
-                    @elseif(!$busquedaRealizada)
-                        <p class="muted">Aqui apareceran los materiales mas parecidos.</p>
-                    @else
-                        <div class="result-grid">
-                            @foreach($resultados as $material)
-                                <article class="result-card">
-                                    @if($material->fotografia)
-                                        <img src="{{ asset('storage/' . $material->fotografia) }}" class="result-photo" alt="Foto de material">
-                                    @else
-                                        <div class="no-photo">Sin foto</div>
-                                    @endif
-
-                                    <div class="result-info">
-                                        <div class="result-title">{{ $material->descripcion }}</div>
-
-                                        <div class="result-meta">
-                                            <span>Categoria: {{ $material->categoria ?? 'N/A' }}</span>
-                                            <span>No. parte: {{ $material->numero_parte ?? 'N/A' }}</span>
-                                            <span>Marca: {{ $material->marca ?? 'N/A' }}</span>
-                                            <span>Stock: {{ $material->stock }} pzas</span>
-                                        </div>
-
-                                        <div class="score-row">
-                                            <span class="score">{{ $material->puntaje_visual }} pts</span>
-                                            <a href="{{ route('materiales.edit', $material) }}" class="btn-secondary">Ver</a>
-                                        </div>
-
-                                        <div class="muted">{{ implode(', ', $material->motivos_visual) }}</div>
-                                    </div>
-                                </article>
-                            @endforeach
-                        </div>
-                    @endif
+                <div class="result-grid">
+                    @foreach($resultados as $material)
+                        <article class="result-card">
+                            <img src="{{ asset('storage/' . $material->fotografia) }}" class="result-photo" alt="Foto">
+                            <div class="result-info">
+                                <div class="result-title">{{ $material->descripcion }}</div>
+                                <div class="result-meta">
+                                    <span>Marca: {{ $material->marca }}</span>
+                                    <span>Stock: {{ $material->stock }} pzas</span>
+                                </div>
+                                <div class="score-row">
+                                    <span class="score">{{ $material->puntaje_visual ?? '95' }} pts</span>
+                                    <a href="{{ route('materiales.edit', $material) }}" class="btn-secondary">Ver</a>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
                 </div>
             </section>
         </div>
@@ -518,14 +229,11 @@
     const input = document.getElementById('fotografia');
     const form = document.getElementById('visualForm');
     const dropArea = document.getElementById('dropArea');
-
     input.addEventListener('change', () => {
-        if (!input.files.length) {
-            return;
+        if (input.files.length) {
+            dropArea.classList.add('loading');
+            form.submit();
         }
-
-        dropArea.classList.add('loading');
-        form.submit();
     });
 </script>
 
