@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FacturaXmlController;
+use App\Http\Controllers\IdentificadorVisualController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,11 @@ Route::middleware('auth')->group(function () {
         ->name('materiales.xml.preview');
     Route::post('materiales/importar-xml/guardar', [FacturaXmlController::class, 'store'])
         ->name('materiales.xml.store');
+
+    Route::get('materiales/identificador-visual', [IdentificadorVisualController::class, 'create'])
+        ->name('materiales.visual.create');
+    Route::post('materiales/identificador-visual/buscar', [IdentificadorVisualController::class, 'search'])
+        ->name('materiales.visual.search');
 
     Route::resource('materiales', MaterialController::class)
         ->parameters(['materiales' => 'material']);

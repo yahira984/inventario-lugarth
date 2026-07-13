@@ -269,6 +269,10 @@
             <span class="nav-mark">XML</span>
             <span class="nav-text">Importar XML</span>
         </a>
+        <a href="{{ route('materiales.visual.create') }}" title="Identificador visual" class="sidebar-link {{ request()->routeIs('materiales.visual.*') ? 'active' : '' }}">
+            <span class="nav-mark">VI</span>
+            <span class="nav-text">Identificador visual</span>
+        </a>
         <a href="{{ route('materiales.index', ['sin_codigo' => 1]) }}" title="Agregar codigos" class="sidebar-link {{ request('sin_codigo') ? 'active' : '' }}">
             <span class="nav-mark">CB</span>
             <span class="nav-text">Agregar codigos</span>
