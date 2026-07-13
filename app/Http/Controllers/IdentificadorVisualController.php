@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Material;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 class IdentificadorVisualController extends Controller
 {
+    private const PUNTAJE_MINIMO = 60;
+
     public function create()
     {
         return view('materiales.identificador_visual', [
@@ -36,170 +37,53 @@ class IdentificadorVisualController extends Controller
         ]);
 
         $archivo = $datos['fotografia'];
-        $analisis = $this->analizarImagen($archivo->getRealPath(), $archivo->getMimeType());
+        $descriptor = $this->descriptorImagen($archivo->getRealPath());
 
         return view('materiales.identificador_visual', [
-            'resultados' => $this->buscarMateriales($analisis),
-            'analisis' => $analisis,
+            'resultados' => $this->buscarMateriales($descriptor),
+            'analisis' => [
+                'descriptor' => $descriptor,
+                'observaciones' => $this->observacionesDescriptor($descriptor),
+                'terminos' => [],
+            ],
             'preview' => $this->previewDataUri($archivo->getRealPath(), $archivo->getMimeType()),
             'busquedaRealizada' => true,
         ]);
     }
 
-    private function buscarMateriales(array $analisis): Collection
+    private function buscarMateriales(array $descriptorFoto): Collection
     {
-        $terminos = $analisis['terminos'] ?? [];
-        $descriptorFoto = $analisis['descriptor'] ?? [];
-
-        $resultados = Material::query()
+        return Material::query()
+            ->whereNotNull('fotografia')
+            ->where('fotografia', '<>', '')
             ->get()
-            ->map(function (Material $material) use ($terminos, $descriptorFoto) {
-                $texto = $this->normalizarTexto(implode(' ', [
-                    $material->numero_parte,
-                    $material->codigo_barras,
-                    $material->descripcion,
-                    $material->marca,
-                    $material->proveedor,
-                    $material->categoria,
-                ]));
-
-                $puntaje = 0;
-                $motivos = [];
-
-                foreach ($terminos as $termino => $peso) {
-                    if ($termino !== '' && Str::contains($texto, $termino)) {
-                        $puntaje += $peso;
-                        $motivos[] = "texto: {$termino}";
-                    }
-                }
-
-                if ($material->fotografia) {
-                    $descriptorMaterial = $this->descriptorMaterial($material->fotografia);
-                    $puntosVisuales = $this->compararDescriptores($descriptorFoto, $descriptorMaterial);
-
-                    if ($puntosVisuales > 0) {
-                        $puntaje += $puntosVisuales;
-                        $motivos[] = 'foto parecida';
-                    }
-                }
-
-                if ($puntaje === 0 && $material->stock > 0 && $material->fotografia) {
-                    $puntaje = 1;
-                    $motivos[] = 'con foto en inventario';
-                }
+            ->map(function (Material $material) use ($descriptorFoto) {
+                $descriptorMaterial = $this->descriptorMaterial($material->fotografia);
+                [$puntaje, $motivos] = $this->compararDescriptores($descriptorFoto, $descriptorMaterial);
 
                 $material->puntaje_visual = $puntaje;
-                $material->motivos_visual = array_slice(array_unique($motivos), 0, 4);
+                $material->motivos_visual = $motivos;
 
                 return $material;
             })
-            ->filter(fn (Material $material) => $material->puntaje_visual > 0)
+            ->filter(fn (Material $material) => $material->puntaje_visual >= self::PUNTAJE_MINIMO)
             ->sortByDesc('puntaje_visual')
-            ->take(24)
-            ->values();
-
-        if ($resultados->isNotEmpty()) {
-            return $resultados;
-        }
-
-        return Material::query()
-            ->where('stock', '>', 0)
-            ->latest()
             ->take(12)
-            ->get()
-            ->each(function (Material $material) {
-                $material->puntaje_visual = 1;
-                $material->motivos_visual = ['revision manual'];
-            });
+            ->values();
     }
 
-    private function analizarImagen(string $ruta, ?string $mime = null): array
-    {
-        $descriptor = $this->descriptorImagen($ruta, $mime);
-        $terminos = [];
-        $observaciones = [];
-
-        $color = $descriptor['color'] ?? null;
-        if ($color === 'plateado') {
-            $terminos += [
-                'acero inoxidable' => 14,
-                'inoxidable' => 12,
-                'galvanizado' => 10,
-                'zinc' => 8,
-                'cromado' => 8,
-                'acero' => 6,
-            ];
-            $observaciones[] = 'color metalico claro';
-        } elseif ($color === 'dorado') {
-            $terminos += [
-                'laton' => 14,
-                'bronce' => 10,
-                'cobre' => 8,
-                'dorado' => 6,
-            ];
-            $observaciones[] = 'tono dorado';
-        } elseif ($color === 'oscuro') {
-            $terminos += [
-                'negro' => 10,
-                'pavonado' => 10,
-                'acero al carbon' => 8,
-                'goma' => 6,
-            ];
-            $observaciones[] = 'pieza oscura';
-        }
-
-        $forma = $descriptor['forma'] ?? null;
-        if ($forma === 'alargada') {
-            $terminos += [
-                'tornillo' => 16,
-                'perno' => 14,
-                'pija' => 12,
-                'birlo' => 10,
-                'esparrago' => 8,
-                'varilla' => 6,
-            ];
-            $observaciones[] = 'forma alargada';
-        } elseif ($forma === 'redonda') {
-            $terminos += [
-                'tuerca' => 14,
-                'arandela' => 14,
-                'rondana' => 12,
-                'buje' => 8,
-            ];
-            $observaciones[] = 'forma corta o redonda';
-        } elseif ($forma === 'media') {
-            $terminos += [
-                'conector' => 10,
-                'abrazadera' => 10,
-                'valvula' => 8,
-                'perno' => 6,
-                'tornillo' => 6,
-            ];
-            $observaciones[] = 'forma media';
-        }
-
-        if (($descriptor['calidad'] ?? '') !== 'ok') {
-            $observaciones[] = 'lectura basica de imagen';
-        }
-
-        return [
-            'descriptor' => $descriptor,
-            'terminos' => $terminos,
-            'observaciones' => $observaciones,
-        ];
-    }
-
-    private function descriptorImagen(string $ruta, ?string $mime = null): array
+    private function descriptorImagen(string $ruta): array
     {
         $tamano = @getimagesize($ruta);
         $descriptor = [
             'calidad' => 'basica',
+            'sha1' => is_file($ruta) ? @sha1_file($ruta) : null,
             'width' => $tamano[0] ?? null,
             'height' => $tamano[1] ?? null,
-            'aspect_ratio' => isset($tamano[0], $tamano[1]) && $tamano[1] > 0
-                ? round($tamano[0] / $tamano[1], 3)
-                : null,
-            'foreground_ratio' => null,
+            'ahash' => null,
+            'dhash' => null,
+            'histogram' => [],
+            'aspect_ratio' => null,
             'brightness' => null,
             'color' => null,
             'forma' => null,
@@ -218,6 +102,9 @@ class IdentificadorVisualController extends Controller
         if (!$imagen) {
             return $descriptor;
         }
+
+        $descriptor['ahash'] = $this->averageHash($imagen);
+        $descriptor['dhash'] = $this->differenceHash($imagen);
 
         $originalW = imagesx($imagen);
         $originalH = imagesy($imagen);
@@ -240,6 +127,7 @@ class IdentificadorVisualController extends Controller
         $bTotal = 0;
         $brilloTotal = 0;
         $saturacionTotal = 0;
+        $histograma = array_fill(0, 64, 0);
 
         for ($y = 0; $y < $h; $y += 2) {
             for ($x = 0; $x < $w; $x += 2) {
@@ -259,6 +147,7 @@ class IdentificadorVisualController extends Controller
                     $bTotal += $b;
                     $brilloTotal += $brillo;
                     $saturacionTotal += $saturacion;
+                    $histograma[$this->histogramIndex($r, $g, $b)]++;
                 }
             }
         }
@@ -284,6 +173,7 @@ class IdentificadorVisualController extends Controller
             'foreground_ratio' => round($pixelesObjeto / max(1, (($w / 2) * ($h / 2))), 4),
             'brightness' => round($brilloProm, 2),
             'saturation' => round($saturacionProm, 2),
+            'histogram' => array_map(fn (int $valor) => $valor / $pixelesObjeto, $histograma),
             'color' => $this->clasificarColor($rProm, $gProm, $bProm, $brilloProm, $saturacionProm),
             'forma' => $this->clasificarForma($ratioObjeto),
         ]);
@@ -300,33 +190,175 @@ class IdentificadorVisualController extends Controller
         return $this->descriptorImagen($ruta);
     }
 
-    private function compararDescriptores(array $foto, array $material): int
+    private function compararDescriptores(array $foto, array $material): array
     {
         if (($foto['calidad'] ?? '') !== 'ok' || ($material['calidad'] ?? '') !== 'ok') {
-            return 0;
+            return [0, ['foto no comparable']];
         }
 
-        $puntaje = 0;
+        if (($foto['sha1'] ?? null) && ($foto['sha1'] ?? null) === ($material['sha1'] ?? null)) {
+            return [100, ['imagen exacta']];
+        }
+
+        $aDist = $this->hammingDistance($foto['ahash'] ?? '', $material['ahash'] ?? '');
+        $dDist = $this->hammingDistance($foto['dhash'] ?? '', $material['dhash'] ?? '');
+        $histograma = $this->histogramSimilarity($foto['histogram'] ?? [], $material['histogram'] ?? []);
+        $aspecto = $this->aspectSimilarity($foto['aspect_ratio'] ?? null, $material['aspect_ratio'] ?? null);
+
+        $puntaje = (int) round(
+            $this->scorePorDistancia($aDist, 64, 36) +
+            $this->scorePorDistancia($dDist, 64, 36) +
+            ($histograma * 20) +
+            ($aspecto * 8)
+        );
+
+        $puntaje = min(99, max(0, $puntaje));
+
+        if (($aDist + $dDist) <= 4 && $histograma >= 0.86) {
+            $puntaje = max($puntaje, 96);
+        } elseif (($aDist + $dDist) <= 9 && $histograma >= 0.75) {
+            $puntaje = max($puntaje, 88);
+        }
+
+        $motivos = [];
+        if ($puntaje >= 95) {
+            $motivos[] = 'imagen practicamente igual';
+        } elseif ($puntaje >= 80) {
+            $motivos[] = 'muy parecida';
+        } elseif ($puntaje >= self::PUNTAJE_MINIMO) {
+            $motivos[] = 'parecida';
+        }
 
         if (($foto['forma'] ?? null) && ($foto['forma'] ?? null) === ($material['forma'] ?? null)) {
-            $puntaje += 14;
+            $motivos[] = 'forma similar';
         }
 
         if (($foto['color'] ?? null) && ($foto['color'] ?? null) === ($material['color'] ?? null)) {
-            $puntaje += 12;
+            $motivos[] = 'color similar';
         }
 
-        if (($foto['aspect_ratio'] ?? null) && ($material['aspect_ratio'] ?? null)) {
-            $diferencia = abs(log(max(0.01, $foto['aspect_ratio']) / max(0.01, $material['aspect_ratio'])));
-            $puntaje += max(0, (int) round(12 - ($diferencia * 10)));
+        return [$puntaje, array_slice(array_unique($motivos), 0, 4)];
+    }
+
+    private function averageHash($imagen): string
+    {
+        $muestra = $this->resizeForHash($imagen, 8, 8);
+        $grises = [];
+        $total = 0;
+
+        for ($y = 0; $y < 8; $y++) {
+            for ($x = 0; $x < 8; $x++) {
+                [$r, $g, $b] = $this->rgbAt($muestra, $x, $y);
+                $gris = ($r * 0.299) + ($g * 0.587) + ($b * 0.114);
+                $grises[] = $gris;
+                $total += $gris;
+            }
         }
 
-        if (($foto['brightness'] ?? null) && ($material['brightness'] ?? null)) {
-            $diferencia = abs($foto['brightness'] - $material['brightness']);
-            $puntaje += max(0, (int) round(8 - ($diferencia / 24)));
+        imagedestroy($muestra);
+        $promedio = $total / 64;
+
+        return implode('', array_map(fn (float $gris) => $gris >= $promedio ? '1' : '0', $grises));
+    }
+
+    private function differenceHash($imagen): string
+    {
+        $muestra = $this->resizeForHash($imagen, 9, 8);
+        $bits = [];
+
+        for ($y = 0; $y < 8; $y++) {
+            for ($x = 0; $x < 8; $x++) {
+                [$r1, $g1, $b1] = $this->rgbAt($muestra, $x, $y);
+                [$r2, $g2, $b2] = $this->rgbAt($muestra, $x + 1, $y);
+                $gris1 = ($r1 * 0.299) + ($g1 * 0.587) + ($b1 * 0.114);
+                $gris2 = ($r2 * 0.299) + ($g2 * 0.587) + ($b2 * 0.114);
+                $bits[] = $gris1 > $gris2 ? '1' : '0';
+            }
         }
 
-        return $puntaje;
+        imagedestroy($muestra);
+
+        return implode('', $bits);
+    }
+
+    private function resizeForHash($imagen, int $w, int $h)
+    {
+        $muestra = imagecreatetruecolor($w, $h);
+        imagecopyresampled($muestra, $imagen, 0, 0, 0, 0, $w, $h, imagesx($imagen), imagesy($imagen));
+
+        return $muestra;
+    }
+
+    private function hammingDistance(string $a, string $b): int
+    {
+        if (strlen($a) !== strlen($b) || $a === '') {
+            return 64;
+        }
+
+        $distancia = 0;
+        for ($i = 0; $i < strlen($a); $i++) {
+            if ($a[$i] !== $b[$i]) {
+                $distancia++;
+            }
+        }
+
+        return $distancia;
+    }
+
+    private function histogramSimilarity(array $a, array $b): float
+    {
+        if (count($a) !== count($b) || count($a) === 0) {
+            return 0;
+        }
+
+        $similaridad = 0;
+        foreach ($a as $indice => $valor) {
+            $similaridad += min($valor, $b[$indice] ?? 0);
+        }
+
+        return min(1, max(0, $similaridad));
+    }
+
+    private function aspectSimilarity(?float $a, ?float $b): float
+    {
+        if (!$a || !$b) {
+            return 0;
+        }
+
+        $diferencia = abs(log(max(0.01, $a) / max(0.01, $b)));
+
+        return max(0, 1 - min(1, $diferencia / 1.2));
+    }
+
+    private function scorePorDistancia(int $distancia, int $maximo, int $peso): float
+    {
+        return max(0, (1 - min($distancia, $maximo) / $maximo) * $peso);
+    }
+
+    private function histogramIndex(int $r, int $g, int $b): int
+    {
+        $rBin = min(3, intdiv($r, 64));
+        $gBin = min(3, intdiv($g, 64));
+        $bBin = min(3, intdiv($b, 64));
+
+        return ($rBin * 16) + ($gBin * 4) + $bBin;
+    }
+
+    private function observacionesDescriptor(array $descriptor): array
+    {
+        $observaciones = ['comparacion visual estricta'];
+
+        if (($descriptor['forma'] ?? null) === 'alargada') {
+            $observaciones[] = 'forma alargada';
+        } elseif (($descriptor['forma'] ?? null) === 'redonda') {
+            $observaciones[] = 'forma redonda';
+        }
+
+        if ($descriptor['color'] ?? null) {
+            $observaciones[] = 'tono ' . $descriptor['color'];
+        }
+
+        return $observaciones;
     }
 
     private function colorPromedioEsquinas($imagen, int $w, int $h): array
@@ -404,15 +436,5 @@ class IdentificadorVisualController extends Controller
         }
 
         return 'data:' . $mime . ';base64,' . base64_encode($contenido);
-    }
-
-    private function normalizarTexto(string $texto): string
-    {
-        return Str::of($texto)
-            ->ascii()
-            ->lower()
-            ->replaceMatches('/[^a-z0-9.]+/', ' ')
-            ->squish()
-            ->toString();
     }
 }
