@@ -4,6 +4,7 @@ use App\Http\Controllers\FacturaXmlController;
 use App\Http\Controllers\IdentificadorVisualController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SalidaMaterialController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -29,6 +30,11 @@ Route::middleware('auth')->group(function () {
         ->name('materiales.visual.create');
     Route::post('materiales/identificador-visual/buscar', [IdentificadorVisualController::class, 'search'])
         ->name('materiales.visual.search');
+
+    Route::get('materiales/salidas', [SalidaMaterialController::class, 'create'])
+        ->name('materiales.salidas.create');
+    Route::post('materiales/salidas', [SalidaMaterialController::class, 'store'])
+        ->name('materiales.salidas.store');
 
     Route::resource('materiales', MaterialController::class)
         ->parameters(['materiales' => 'material']);

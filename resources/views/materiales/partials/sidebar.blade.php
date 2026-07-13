@@ -1016,6 +1016,43 @@
             </a>
 
             <a
+                href="{{ route('materiales.salidas.create') }}"
+                title="Registrar salida"
+                data-label="Registrar salida"
+                class="sidebar-link {{ request()->routeIs('materiales.salidas.*') ? 'active' : '' }}"
+            >
+                <span class="nav-mark" aria-hidden="true">
+                    <svg
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M5 12h14M13 6l6 6-6 6"
+                        />
+                    </svg>
+                </span>
+
+                <span class="nav-text">Registrar salida</span>
+
+                <svg
+                    class="nav-arrow"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m9 18 6-6-6-6"
+                    />
+                </svg>
+            </a>
+
+            <a
                 href="{{ route('materiales.xml.create') }}"
                 title="Importar XML"
                 data-label="Importar XML"

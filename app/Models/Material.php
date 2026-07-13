@@ -10,4 +10,9 @@ class Material extends Model
     use HasFactory;
     
     protected $fillable = ['categoria', 'numero_parte', 'codigo_barras', 'descripcion', 'marca', 'proveedor', 'stock', 'fotografia'];
+
+    public function movimientos()
+    {
+        return $this->hasMany(MaterialMovimiento::class);
+    }
 }

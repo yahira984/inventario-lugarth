@@ -135,6 +135,30 @@
             line-height: 1.35;
         }
 
+        #reader {
+            width: 100%;
+            min-height: 250px;
+        }
+
+        #reader button,
+        #reader a {
+            background: #eef6ff !important;
+            border: 1px solid #b7d9ff !important;
+            color: var(--blue-dark) !important;
+            border-radius: 6px !important;
+            padding: 9px 12px !important;
+            font-family: inherit !important;
+            font-size: 13px !important;
+            font-weight: 800 !important;
+            text-decoration: none !important;
+            cursor: pointer !important;
+        }
+
+        #reader button:hover,
+        #reader a:hover {
+            background: #d8ecff !important;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -333,6 +357,8 @@
             cerrarEscaner();
             validarCodigoEscaneado();
         }, () => {});
+
+        observarTraduccionEscaner();
     }
 
     function cerrarEscaner() {
@@ -341,6 +367,67 @@
         if (html5QrcodeScanner) {
             html5QrcodeScanner.clear();
         }
+
+        if (window.escanerTraductorObserver) {
+            window.escanerTraductorObserver.disconnect();
+            window.escanerTraductorObserver = null;
+        }
+    }
+
+    function traducirEscanerHtml5() {
+        const traducciones = {
+            'Request Camera Permissions': 'Permitir cámara',
+            'Scan an Image File': 'Escanear una imagen guardada',
+            'Scan using camera directly': 'Escanear con cámara',
+            'Select Camera': 'Seleccionar cámara',
+            'Start Scanning': 'Iniciar escaneo',
+            'Stop Scanning': 'Detener escaneo',
+            'Choose Image': 'Elegir imagen',
+            'Scanning': 'Escaneando',
+            'Idle': 'Listo',
+            'No camera found': 'No se encontró cámara',
+            'Camera permission denied': 'Permiso de cámara denegado',
+            'Unable to query supported devices.': 'No se pudieron consultar las cámaras disponibles.',
+            'Camera access is only supported in secure context like https or localhost.': 'La cámara solo funciona en localhost o con una conexión segura HTTPS.',
+        };
+
+        const walker = document.createTreeWalker(
+            document.getElementById('reader'),
+            NodeFilter.SHOW_TEXT
+        );
+
+        const nodos = [];
+        while (walker.nextNode()) {
+            nodos.push(walker.currentNode);
+        }
+
+        nodos.forEach((nodo) => {
+            const texto = nodo.nodeValue.trim();
+
+            if (traducciones[texto]) {
+                nodo.nodeValue = nodo.nodeValue.replace(texto, traducciones[texto]);
+            }
+        });
+    }
+
+    function observarTraduccionEscaner() {
+        traducirEscanerHtml5();
+
+        if (window.escanerTraductorObserver) {
+            window.escanerTraductorObserver.disconnect();
+        }
+
+        const reader = document.getElementById('reader');
+        window.escanerTraductorObserver = new MutationObserver(traducirEscanerHtml5);
+        window.escanerTraductorObserver.observe(reader, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+        });
+
+        setTimeout(traducirEscanerHtml5, 100);
+        setTimeout(traducirEscanerHtml5, 400);
+        setTimeout(traducirEscanerHtml5, 1000);
     }
 
     function setCodigoStatus(mensaje, tipo) {
