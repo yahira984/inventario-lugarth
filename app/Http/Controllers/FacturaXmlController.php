@@ -21,8 +21,9 @@ class FacturaXmlController extends Controller
             'xml_file' => ['required', 'file', 'mimes:xml,txt', 'max:4096'],
         ], [
             'xml_file.required' => 'Selecciona un archivo XML de factura.',
-            'xml_file.mimes' => 'El archivo debe ser XML.',
-            'xml_file.max' => 'El XML no debe pesar mas de 4 MB.',
+            'xml_file.file' => 'El XML no se recibió como archivo válido.',
+            'xml_file.mimes' => 'El archivo debe ser XML. Si descargaste una factura del SAT, sube el archivo con terminación .xml.',
+            'xml_file.max' => 'El XML no debe pesar más de 4 MB.',
         ]);
 
         $xmlString = file_get_contents($request->file('xml_file')->getRealPath());
@@ -56,7 +57,10 @@ class FacturaXmlController extends Controller
             'items.*.categoria' => ['required', 'string', 'max:255'],
             'items.*.importar' => ['nullable', 'boolean'],
         ], [
-            'items.*.categoria.required' => 'Selecciona categoria para cada producto a importar.',
+            'payload.required' => 'La vista previa se perdió. Sube el XML otra vez.',
+            'items.required' => 'No hay productos seleccionados para importar.',
+            'items.min' => 'Selecciona al menos un producto para importar.',
+            'items.*.categoria.required' => 'Selecciona categoría para cada producto que vas a importar.',
         ]);
 
         $factura = json_decode(base64_decode($datos['payload']), true);
@@ -127,7 +131,7 @@ class FacturaXmlController extends Controller
             $xml = new SimpleXMLElement($xmlString);
         } catch (\Throwable $exception) {
             throw ValidationException::withMessages([
-                'xml_file' => 'No se pudo leer el XML. Verifica que sea un CFDI valido.',
+                'xml_file' => 'No se pudo leer el XML. Verifica que sea un CFDI válido descargado del SAT.',
             ]);
         }
 
@@ -142,7 +146,7 @@ class FacturaXmlController extends Controller
 
         if (count($conceptosXml) === 0) {
             throw ValidationException::withMessages([
-                'xml_file' => 'El XML no trae conceptos CFDI para importar.',
+                'xml_file' => 'El XML no trae conceptos CFDI para importar. Verifica que sea la factura correcta.',
             ]);
         }
 

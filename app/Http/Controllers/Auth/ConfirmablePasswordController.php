@@ -24,12 +24,19 @@ class ConfirmablePasswordController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $request->validate([
+            'password' => ['required', 'string', 'min:8'],
+        ], [
+            'password.required' => 'Escribe tu contraseña para confirmar.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+        ]);
+
         if (! Auth::guard('web')->validate([
             'email' => $request->user()->email,
             'password' => $request->password,
         ])) {
             throw ValidationException::withMessages([
-                'password' => __('auth.password'),
+                'password' => 'La contraseña no es correcta. Vuelve a escribirla con cuidado.',
             ]);
         }
 

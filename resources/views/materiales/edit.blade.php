@@ -128,7 +128,48 @@
             transition: all 0.3s;
         }
 
-        .btn-back:hover { border-color: #fff; color: #fff; }
+        .field-help {
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(14, 23, 34, 0.68);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: min(500px, 100%);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+        }
+
+        .modal-content h3 {
+            margin: 0 0 14px;
+            color: var(--blue-dark);
+        }
+
+        .close-btn {
+            background-color: var(--red);
+            color: white;
+            padding: 12px 18px;
+            width: 100%;
+            margin-top: 14px;
+        }
+
+        .close-btn:hover {
+            background-color: #9f312b;
+        }
 
         /* --- COMPONENTES ADICIONALES --- */
         .input-group { display: flex; gap: 12px; }
@@ -153,23 +194,37 @@
     </style>
 </head>
 <body>
-    <div class="app-shell">
-        @include('materiales.partials.sidebar')
-        <main class="app-content">
-            <div class="container">
-                <div class="page-header">
-                    <h1>Editar Material</h1>
-                    <p>Actualiza datos, stock y código de barras.</p>
+
+<div class="app-shell">
+    @include('materiales.partials.sidebar')
+
+    <main class="app-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>Editar Material</h1>
+                <p>Actualiza datos, stock y código de barras. Puedes escanear con cámara o pistolita USB.</p>
+            </div>
+
+            @if ($errors->any())
+                <div class="alert-danger">
+                    <strong>Revisa estos datos:</strong>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
 
-                @if ($errors->any())
-                    <div class="alert-danger">
-                        <strong>Revisa estos datos:</strong>
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label for="codigo_barras">Código de Barras</label>
+                        <div class="input-group">
+                            <input type="text" name="codigo_barras" id="codigo_barras" value="{{ old('codigo_barras', $material->codigo_barras) }}" placeholder="Escanea o escribe el código" autocomplete="off" autofocus>
+                            <button type="button" class="btn-scan" onclick="abrirEscaner()">Escanear cámara</button>
+                        </div>
+                        <div class="field-help">Si el código pertenece a otro material, el sistema te avisará antes de guardar.</div>
+                        <div id="codigo_status" class="code-status"></div>
+                        @error('codigo_barras') <span class="error">{{ $message }}</span> @enderror
                     </div>
                 @endif
 
@@ -186,10 +241,11 @@
                             <div id="codigo_status" class="code-status"></div>
                         </div>
 
-                        <div class="form-group full">
-                            <label>Descripción *</label>
-                            <textarea name="descripcion" required>{{ old('descripcion', $material->descripcion) }}</textarea>
-                        </div>
+                    <div class="form-group full">
+                        <label for="descripcion">Descripción *</label>
+                        <textarea name="descripcion" id="descripcion" required>{{ old('descripcion', $material->descripcion) }}</textarea>
+                        @error('descripcion') <span class="error">{{ $message }}</span> @enderror
+                    </div>
 
                         <div class="form-group">
                             <label>Categoría *</label>
@@ -215,32 +271,152 @@
                             <input type="text" name="proveedor" value="{{ old('proveedor', $material->proveedor) }}">
                         </div>
 
-                        <div class="form-group">
-                            <label>Stock *</label>
-                            <input type="number" name="stock" value="{{ old('stock', $material->stock) }}" required>
-                        </div>
+                    <div class="form-group">
+                        <label for="stock">Stock *</label>
+                        <input type="number" name="stock" id="stock" value="{{ old('stock', $material->stock) }}" min="0" required>
+                        <div class="field-help">Escribe el stock total actual del material, no la cantidad a sumar.</div>
+                        @error('stock') <span class="error">{{ $message }}</span> @enderror
+                    </div>
 
-                        <div class="form-group">
-                            <label>Fotografía</label>
-                            <input type="file" name="fotografia" accept="image/*">
-                            <!-- Aquí está lo que faltaba: mostrar la imagen si existe -->
-                            @if($material->fotografia)
-                            <div style="margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 10px; display: inline-block;">
-                            <img src="{{ asset('storage/' . $material->fotografia) }}" alt="Foto actual" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; display: block;">
-                            <span style="font-size: 10px; color: var(--muted); margin-top: 5px; display: block;">Foto actual cargada</span>
-                        </div>
+                    <div class="form-group">
+                        <label for="fotografia">Fotografía</label>
+                        @if($material->fotografia)
+                            <div class="foto-actual">
+                                <img src="{{ asset('storage/' . $material->fotografia) }}" alt="Foto actual">
+                                <span>Foto actual. Sube una nueva para reemplazarla.</span>
+                            </div>
                         @endif
-                        </div>
+                        <input type="file" name="fotografia" id="fotografia" accept="image/*">
+                        <div class="field-help">Formatos permitidos: JPG, PNG o WEBP. Máximo 2 MB.</div>
+                        @error('fotografia') <span class="error">{{ $message }}</span> @enderror
                     </div>
 
-                    <div class="form-actions">
-                        <a href="{{ route('materiales.index') }}" class="btn-back">Cancelar</a>
-                        <button type="submit" class="btn-save">Guardar Cambios</button>
-                    </div>
-                </form>
-            </div>
-        </main>
+                <div class="form-actions">
+                    <a href="{{ route('materiales.index') }}" class="btn-back">Cancelar</a>
+                    <button type="submit" class="btn-save">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<div id="scannerModal" class="modal">
+    <div class="modal-content">
+        <h3>Escanear Código de Barras</h3>
+        <div id="reader"></div>
+        <button type="button" class="close-btn" onclick="cerrarEscaner()">Cancelar</button>
     </div>
-    <!-- (Modal scanner omitido por brevedad, usa el mismo de la pantalla anterior) -->
+</div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+    const materialId = {{ $material->id }};
+    const codigoInput = document.getElementById('codigo_barras');
+    const codigoStatus = document.getElementById('codigo_status');
+    let html5QrcodeScanner = null;
+    let scannerBuffer = '';
+    let scannerBufferInicio = 0;
+    let scannerUltimaTecla = 0;
+    let scannerResetTimer = null;
+
+    function abrirEscaner() {
+        document.getElementById('scannerModal').style.display = 'flex';
+
+        html5QrcodeScanner = new Html5QrcodeScanner(
+            'reader',
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            false
+        );
+
+        html5QrcodeScanner.render((textoDecodificado) => {
+            codigoInput.value = textoDecodificado.trim();
+            cerrarEscaner();
+            validarCodigoEscaneado();
+        }, () => {});
+    }
+
+    function cerrarEscaner() {
+        document.getElementById('scannerModal').style.display = 'none';
+
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.clear();
+        }
+    }
+
+    function setCodigoStatus(mensaje, tipo) {
+        codigoStatus.textContent = mensaje;
+        codigoStatus.className = `code-status ${tipo}`;
+    }
+
+    function validarCodigoEscaneado() {
+        const codigo = codigoInput.value.trim();
+
+        if (!codigo) {
+            codigoStatus.className = 'code-status';
+            codigoStatus.textContent = '';
+            return;
+        }
+
+        fetch(`{{ route('materiales.buscarPorCodigo') }}?codigo=${encodeURIComponent(codigo)}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (!data.encontrado) {
+                    setCodigoStatus('Código disponible para este material.', 'success');
+                    return;
+                }
+
+                if (Number(data.id) === Number(materialId)) {
+                    setCodigoStatus('Este código ya pertenece a este material.', 'success');
+                    return;
+                }
+
+                setCodigoStatus(`Cuidado: este código ya pertenece a "${data.descripcion}".`, 'error');
+            })
+            .catch(() => {
+                setCodigoStatus('No se pudo validar el código ahora. Laravel lo revisará al guardar.', 'warning');
+            });
+    }
+
+    codigoInput.addEventListener('blur', validarCodigoEscaneado);
+
+    codigoInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            validarCodigoEscaneado();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.ctrlKey || event.altKey || event.metaKey || document.activeElement === codigoInput) {
+            return;
+        }
+
+        const ahora = Date.now();
+
+        if (event.key.length === 1) {
+            if (ahora - scannerUltimaTecla > 80) {
+                scannerBuffer = '';
+                scannerBufferInicio = ahora;
+            }
+
+            scannerBuffer += event.key;
+            scannerUltimaTecla = ahora;
+            clearTimeout(scannerResetTimer);
+            scannerResetTimer = setTimeout(() => {
+                scannerBuffer = '';
+            }, 160);
+            return;
+        }
+
+        if (event.key === 'Enter' && scannerBuffer.length >= 6 && ahora - scannerBufferInicio < 1200) {
+            event.preventDefault();
+            codigoInput.value = scannerBuffer;
+            scannerBuffer = '';
+            validarCodigoEscaneado();
+            codigoInput.focus();
+        }
+    });
+</script>
+
 </body>
 </html>
