@@ -158,6 +158,7 @@
         .btn-blue { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
         .btn-green { background: linear-gradient(135deg, #10b981, #059669); }
         .btn-soft { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.14); }
+        .header-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
 
         .selected-card {
             display: none;
@@ -387,7 +388,11 @@
                     <p class="header-meta">Escanea código, usa pistola USB o selecciona el producto manualmente.</p>
                 </div>
 
-                <a href="{{ route('materiales.index') }}" class="btn btn-soft">Volver al inventario</a>
+                <div class="header-actions">
+                    <a href="{{ route('reportes.salidas.csv') }}" class="btn btn-green">Excel</a>
+                    <a href="{{ route('reportes.salidas.pdf') }}" class="btn btn-blue">PDF</a>
+                    <a href="{{ route('materiales.index') }}" class="btn btn-soft">Volver al inventario</a>
+                </div>
             </div>
 
             @if(session('success'))

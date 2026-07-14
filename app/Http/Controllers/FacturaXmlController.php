@@ -12,11 +12,15 @@ class FacturaXmlController extends Controller
 {
     public function create()
     {
+        abort_unless(auth()->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para importar XML.');
+
         return view('materiales.importar_xml');
     }
 
     public function preview(Request $request)
     {
+        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para importar XML.');
+
         $request->validate([
             'xml_file' => ['required', 'file', 'mimes:xml,txt', 'max:4096'],
         ], [
@@ -51,6 +55,8 @@ class FacturaXmlController extends Controller
 
     public function store(Request $request)
     {
+        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para importar XML.');
+
         $datos = $request->validate([
             'payload' => ['required', 'string'],
             'items' => ['required', 'array', 'min:1'],

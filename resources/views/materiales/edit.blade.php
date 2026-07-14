@@ -165,6 +165,13 @@
         .code-status { margin-top: 10px; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 600; display: none; }
         .code-status.success { display: block; background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-left: 3px solid #10b981; }
         .code-status.error { display: block; background: rgba(239, 68, 68, 0.15); color: #f87171; border-left: 3px solid #ef4444; }
+        .field-help { margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.4; }
+        .error { margin-top: 7px; color: #fca5a5; font-size: 12px; font-weight: 800; }
+        .modal { display: none; position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.84); backdrop-filter: blur(8px); align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .modal-content { background: #0f172a; border: 1px solid rgba(6, 182, 212, 0.32); padding: 26px; border-radius: 18px; width: min(460px, 100%); box-shadow: var(--shadow-glass); }
+        .modal-content h3 { text-align: center; margin: 0 0 14px; }
+        .close-btn { width: 100%; margin-top: 16px; padding: 14px; border: none; border-radius: 10px; background: rgba(239, 68, 68, 0.14); color: #fca5a5; font-weight: 900; cursor: pointer; }
+        #reader { width: 100%; min-height: 250px; border-radius: 12px; overflow: hidden; border: 2px dashed rgba(6, 182, 212, 0.5); }
 
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
@@ -194,6 +201,7 @@
                     </ul>
                 </div>
 
+                {{--
                 <div class="form-grid">
                     <div class="form-group full">
                         <label for="codigo_barras">Código de Barras</label>
@@ -205,7 +213,8 @@
                         <div id="codigo_status" class="code-status"></div>
                         @error('codigo_barras') <span class="error">{{ $message }}</span> @enderror
                     </div>
-                @endif
+                --}}
+            @endif
 
                 <form action="{{ route('materiales.update', $material) }}" method="POST" enctype="multipart/form-data">
                     @csrf
@@ -217,7 +226,9 @@
                                 <input type="text" name="codigo_barras" id="codigo_barras" value="{{ old('codigo_barras', $material->codigo_barras) }}">
                                 <button type="button" class="btn-scan" onclick="abrirEscaner()">Escanear</button>
                             </div>
+                            <div class="field-help">Si el codigo pertenece a otro material, el sistema te avisara antes de guardar.</div>
                             <div id="codigo_status" class="code-status"></div>
+                            @error('codigo_barras') <span class="error">{{ $message }}</span> @enderror
                         </div>
 
                     <div class="form-group full">
@@ -255,6 +266,20 @@
                         <input type="number" name="stock" id="stock" value="{{ old('stock', $material->stock) }}" min="0" required>
                         <div class="field-help">Escribe el stock total actual del material, no la cantidad a sumar.</div>
                         @error('stock') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock_minimo">Stock minimo</label>
+                        <input type="number" name="stock_minimo" id="stock_minimo" value="{{ old('stock_minimo', $material->stock_minimo) }}" min="0">
+                        <div class="field-help">El sistema lo marcara en rojo cuando el stock llegue a este numero.</div>
+                        @error('stock_minimo') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="costo_unitario">Costo unitario</label>
+                        <input type="number" name="costo_unitario" id="costo_unitario" value="{{ old('costo_unitario', $material->costo_unitario) }}" min="0" step="0.01">
+                        <div class="field-help">Se usa para calcular valor de inventario y reportes.</div>
+                        @error('costo_unitario') <span class="error">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="form-group">

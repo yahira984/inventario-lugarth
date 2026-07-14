@@ -77,7 +77,7 @@
         }
 
         /* Botones Principales con Degradados Premium */
-        .btn-alta, .btn-xml, .btn-filter, .btn-scan, .close-btn {
+        .btn-alta, .btn-xml, .btn-report, .btn-filter, .btn-scan, .close-btn {
             border: none;
             border-radius: 12px;
             cursor: pointer;
@@ -103,7 +103,17 @@
             box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
         }
 
-        .btn-alta:hover, .btn-xml:hover {
+        .btn-report {
+            background: linear-gradient(135deg, #334155 0%, #0f172a 100%);
+            padding: 14px 18px;
+            border: 1px solid rgba(125, 211, 252, 0.2);
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.45);
+        }
+        .btn-dashboard { background: linear-gradient(135deg, #0ea5e9 0%, #1d4ed8 100%); }
+        .btn-excel { background: linear-gradient(135deg, #10b981 0%, #047857 100%); }
+        .btn-pdf { background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); }
+
+        .btn-alta:hover, .btn-xml:hover, .btn-report:hover {
             transform: translateY(-3px) scale(1.02);
             filter: brightness(1.1);
         }
@@ -317,7 +327,24 @@
             border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
+        .badge-warning {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.24), rgba(220, 38, 38, 0.4));
+            color: #fed7aa;
+            box-shadow: 0 0 18px rgba(249, 115, 22, 0.26);
+            border: 1px solid rgba(249, 115, 22, 0.42);
+        }
+
+        tr.stock-critical {
+            background: linear-gradient(90deg, rgba(127, 29, 29, 0.34), rgba(15, 23, 42, 0.72));
+        }
+
+        tr.stock-critical td:first-child {
+            border-left: 3px solid #ef4444;
+            box-shadow: inset 7px 0 16px rgba(239, 68, 68, 0.24);
+        }
+
         .code-muted { display: block; color: var(--cyan-glow); font-size: 12px; margin-top: 6px; font-weight: 600;}
+        .stock-meta { display: block; margin-top: 7px; color: var(--muted); font-size: 11px; font-weight: 700; line-height: 1.45; }
         td strong { font-size: 16px; letter-spacing: 0.5px; }
 
         /* --- BOTONES DE ACCIÓN FLOTANTES --- */
@@ -327,7 +354,7 @@
             align-items: center;
         }
 
-        .btn-edit, .btn-code, .btn-delete {
+        .btn-edit, .btn-code, .btn-delete, .btn-label {
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -367,6 +394,20 @@
             box-shadow: 0 0 20px rgba(249, 115, 22, 0.6);
             transform: translateY(-2px);
         }
+
+        .btn-label {
+            background: rgba(14, 165, 233, 0.12);
+            color: #7dd3fc;
+            border: 1px solid rgba(14, 165, 233, 0.35);
+        }
+        .btn-label:hover {
+            background: #0ea5e9;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.48);
+            transform: translateY(-2px);
+        }
+
+        .action-buttons form { margin: 0; }
 
         /* Diseño Rojo Intenso para Eliminar */
         .btn-delete {
@@ -450,9 +491,16 @@
         </div>
 
         <div class="header-actions">
-            <a href="{{ route('materiales.salidas.create') }}" class="btn-xml">Registrar Salida</a>
-            <a href="{{ route('materiales.xml.create') }}" class="btn-xml">Importar XML</a>
-            <a href="{{ route('materiales.create') }}" class="btn-alta">+ Registrar Entrada</a>
+            <a href="{{ route('dashboard') }}" class="btn-report btn-dashboard">Dashboard</a>
+            <a href="{{ route('reportes.inventario.csv') }}" class="btn-report btn-excel">Excel</a>
+            <a href="{{ route('reportes.inventario.pdf') }}" class="btn-report btn-pdf">PDF</a>
+            @if(auth()->user()?->puedeMoverStock())
+                <a href="{{ route('materiales.salidas.create') }}" class="btn-xml">Registrar Salida</a>
+                <a href="{{ route('materiales.create') }}" class="btn-alta">+ Registrar Entrada</a>
+            @endif
+            @if(auth()->user()?->puedeAdministrarCatalogo())
+                <a href="{{ route('materiales.xml.create') }}" class="btn-xml">Importar XML</a>
+            @endif
         </div>
     </div>
 
@@ -512,7 +560,7 @@
             </thead>
             <tbody>
                 @forelse($materiales as $material)
-                    <tr>
+                    <tr class="{{ $material->requiereReposicion() ? 'stock-critical' : '' }}">
                         <td>
                             @if($material->fotografia)
                                 <img src="{{ asset('storage/' . $material->fotografia) }}" class="img-material" alt="Foto">
@@ -533,12 +581,56 @@
                         <td>{{ $material->marca ?? 'N/A' }}</td>
                         <td>{{ $material->proveedor ?? 'N/A' }}</td>
                         <td>
-                            <span class="badge {{ $material->stock > 0 ? 'badge-success' : 'badge-danger' }}">
+                            <span class="badge {{ $material->requiereReposicion() ? 'badge-warning' : ($material->stock > 0 ? 'badge-success' : 'badge-danger') }}">
                                 {{ $material->stock }} pzas
+                            </span>
+                            <span class="stock-meta">
+                                Min: {{ $material->stock_minimo ?? 0 }} pzas
+                                @if(($material->costo_unitario ?? 0) > 0)
+                                    <br>Valor: ${{ number_format($material->stock * $material->costo_unitario, 2) }}
+                                @endif
+                                @if($material->requiereReposicion())
+                                    <br><strong style="color:#fca5a5;">Stock critico</strong>
+                                @endif
                             </span>
                         </td>
                         <td>
                             <div class="action-buttons">
+                                @if($material->codigo_barras && auth()->user()?->puedeMoverStock())
+                                    <a href="{{ route('materiales.etiqueta', $material) }}" class="btn-label">
+                                        Etiqueta QR
+                                    </a>
+                                @endif
+
+                                @if(! $material->codigo_barras && auth()->user()?->puedeAdministrarCatalogo())
+                                    <form action="{{ route('materiales.etiqueta.generar', $material) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn-code">
+                                            Generar QR
+                                        </button>
+                                    </form>
+                                @elseif(! $material->codigo_barras)
+                                    <span class="code-muted">Pendiente de codigo</span>
+                                @endif
+
+                                @if(auth()->user()?->puedeAdministrarCatalogo())
+                                    <a href="{{ route('materiales.edit', $material) }}" class="btn-edit">
+                                        Editar
+                                    </a>
+                                    <button
+                                        type="button"
+                                        class="btn-delete"
+                                        data-delete-url="{{ route('materiales.destroy', $material) }}"
+                                        data-material-name="{{ $material->descripcion }}"
+                                        onclick="confirmarEliminar(this.dataset.deleteUrl, this.dataset.materialName)"
+                                    >
+                                        Eliminar
+                                    </button>
+                                @elseif(! auth()->user()?->puedeMoverStock())
+                                    <span class="code-muted">Solo consulta</span>
+                                @endif
+                            </div>
+                            <div class="action-buttons" style="display:none;">
                                 @unless($material->codigo_barras)
                                     <a href="{{ route('materiales.edit', $material) }}" class="btn-code">
                                         Agregar código

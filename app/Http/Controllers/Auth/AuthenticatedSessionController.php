@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -26,9 +27,17 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        if (! $request->user()?->aprobado()) {
+            Auth::guard('web')->logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'Tu cuenta ya esta registrada, pero todavia falta que un administrador apruebe tu correo y te asigne un rol.',
+            ]);
+        }
+
         $request->session()->regenerate();
 
-        return redirect()->intended('/materiales');
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**
