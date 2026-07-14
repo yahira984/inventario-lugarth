@@ -367,9 +367,15 @@
 
         @media (max-width: 640px) {
             .app-content { padding: 16px 10px; }
-            .container { padding: 20px; }
+            .container { padding: 18px 14px; border-radius: 16px; }
+            h1 { font-size: 26px; line-height: 1.12; }
+            .header-actions { display: grid; grid-template-columns: 1fr; margin-top: 16px; }
+            .header-actions .btn { width: 100%; }
             .input-row,
             .manual-search { grid-template-columns: 1fr; }
+            .manual-grid { grid-template-columns: 1fr; max-height: none; }
+            .panel { padding: 16px; }
+            .btn { width: 100%; }
             .history-item { grid-template-columns: auto minmax(0, 1fr); }
             .history-qty { grid-column: 2; }
         }
