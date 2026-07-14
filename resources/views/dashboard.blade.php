@@ -2,176 +2,2088 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Dashboard Gerencial - Inventario</title>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
-            --bg: #030712;
-            --surface: rgba(15, 23, 42, 0.72);
-            --panel: rgba(30, 41, 59, 0.68);
-            --ink: #fff;
+            --bg: #020617;
+            --surface: rgba(15, 23, 42, 0.78);
+            --panel: rgba(15, 23, 42, 0.72);
+            --panel-light: rgba(30, 41, 59, 0.68);
+
+            --ink: #ffffff;
             --muted: #94a3b8;
+
             --cyan: #06b6d4;
+            --blue: #3b82f6;
             --green: #10b981;
             --red: #ef4444;
             --amber: #f59e0b;
-            --line: rgba(56, 189, 248, 0.22);
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+
+            --line: rgba(56, 189, 248, 0.20);
+            --line-soft: rgba(148, 163, 184, 0.13);
+
+            --shadow:
+                0 20px 60px rgba(0, 0, 0, 0.58);
         }
 
-        * { box-sizing: border-box; }
-        body { margin: 0; min-height: 100vh; background: radial-gradient(circle at top left, #0a192f, var(--bg)); color: var(--ink); font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
-        .app-shell { display: flex; min-height: 100vh; }
-        .app-content { flex: 1; padding: 34px 20px; overflow-x: hidden; }
-        .container { width: min(1220px, 100%); margin: 0 auto; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 30px; box-shadow: 0 18px 55px rgba(0,0,0,.55); backdrop-filter: blur(16px); }
-        .header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-end; border-bottom: 1px solid var(--line); padding-bottom: 20px; margin-bottom: 22px; }
-        h1 { margin: 0; font-size: 32px; font-weight: 900; background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .meta { margin: 7px 0 0; color: var(--muted); font-weight: 700; }
-        .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
-        .card, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
-        .card span { display: block; color: var(--muted); font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; }
-        .card strong { font-size: 28px; }
-        .charts { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr); gap: 18px; }
-        .panel h2 { margin: 0 0 14px; font-size: 18px; color: #bae6fd; }
-        .critical { margin-top: 18px; }
-        .critical-list { display: grid; gap: 10px; }
-        .critical-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.28); border-radius: 12px; padding: 12px; }
-        .muted { color: var(--muted); font-size: 13px; font-weight: 700; }
-        .badge-red { color: #fca5a5; font-weight: 900; }
-        .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn { border-radius: 10px; min-height: 42px; padding: 0 14px; display: inline-flex; align-items: center; text-decoration: none; color: #fff; font-weight: 900; border: 1px solid rgba(255,255,255,.14); transition: transform .2s, filter .2s; }
-        .btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
-        .btn-inventory { background: linear-gradient(135deg, #10b981, #047857); }
-        .btn-exits { background: linear-gradient(135deg, #ef4444, #b91c1c); }
-        .btn-pdf { background: linear-gradient(135deg, #f59e0b, #b45309); }
-        .chart-shell { position: relative; min-height: 390px; }
-        .chart-shell.small { min-height: 310px; }
-        @media (max-width: 980px) { .cards, .charts { grid-template-columns: 1fr; } .header { display: block; } }
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 10% 0%,
+                    rgba(14, 165, 233, 0.14),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 90% 10%,
+                    rgba(139, 92, 246, 0.10),
+                    transparent 28%
+                ),
+                linear-gradient(
+                    145deg,
+                    #020617 0%,
+                    #061426 48%,
+                    #020617 100%
+                );
+
+            color: var(--ink);
+
+            font-family:
+                "Segoe UI",
+                Tahoma,
+                Geneva,
+                Verdana,
+                sans-serif;
+        }
+
+        button,
+        input,
+        select {
+            font-family: inherit;
+        }
+
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .app-content {
+            flex: 1;
+            min-width: 0;
+            padding: 34px 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: min(1320px, 100%);
+            margin: 0 auto;
+            padding: 30px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(15, 23, 42, 0.84),
+                    rgba(2, 6, 23, 0.82)
+                );
+
+            border: 1px solid var(--line);
+            border-radius: 24px;
+
+            box-shadow:
+                var(--shadow),
+                inset 0 0 35px rgba(56, 189, 248, 0.035);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+
+        /* =====================================================
+           ENCABEZADO
+        ===================================================== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 22px;
+
+            margin-bottom: 24px;
+            padding-bottom: 22px;
+
+            border-bottom: 1px solid var(--line);
+        }
+
+        .header-title-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 58px;
+            height: 58px;
+            flex-shrink: 0;
+
+            border: 1px solid rgba(56, 189, 248, 0.30);
+            border-radius: 17px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(14, 165, 233, 0.24),
+                    rgba(37, 99, 235, 0.12)
+                );
+
+            color: #7dd3fc;
+
+            box-shadow:
+                0 0 24px rgba(14, 165, 233, 0.13);
+        }
+
+        .header-icon svg {
+            width: 29px;
+            height: 29px;
+        }
+
+        h1 {
+            margin: 0;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #67e8f9,
+                    #38bdf8,
+                    #60a5fa
+                );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+
+            font-size: clamp(26px, 4vw, 36px);
+            font-weight: 950;
+            letter-spacing: -0.7px;
+        }
+
+        .meta {
+            margin: 7px 0 0;
+
+            color: var(--muted);
+
+            font-size: 14px;
+            font-weight: 650;
+            line-height: 1.5;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            min-height: 43px;
+            padding: 0 15px;
+
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 11px;
+
+            color: #ffffff;
+
+            font-size: 13px;
+            font-weight: 850;
+            text-decoration: none;
+
+            box-shadow:
+                0 7px 18px rgba(0, 0, 0, 0.23);
+
+            transition:
+                transform 0.2s,
+                filter 0.2s,
+                box-shadow 0.2s;
+        }
+
+        .btn svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+
+            box-shadow:
+                0 10px 25px rgba(0, 0, 0, 0.32);
+        }
+
+        .btn-inventory {
+            background:
+                linear-gradient(
+                    135deg,
+                    #10b981,
+                    #047857
+                );
+        }
+
+        .btn-exits {
+            background:
+                linear-gradient(
+                    135deg,
+                    #ef4444,
+                    #b91c1c
+                );
+        }
+
+        .btn-pdf {
+            background:
+                linear-gradient(
+                    135deg,
+                    #f59e0b,
+                    #b45309
+                );
+        }
+
+        /* =====================================================
+           TARJETAS KPI
+        ===================================================== */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+
+            margin-bottom: 20px;
+        }
+
+        .card {
+            position: relative;
+            min-width: 0;
+            overflow: hidden;
+
+            padding: 19px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 41, 59, 0.78),
+                    rgba(15, 23, 42, 0.78)
+                );
+
+            border: 1px solid var(--line-soft);
+            border-radius: 17px;
+
+            box-shadow:
+                0 14px 30px rgba(0, 0, 0, 0.24);
+
+            transition:
+                transform 0.25s,
+                border-color 0.25s,
+                box-shadow 0.25s;
+        }
+
+        .card::before {
+            content: "";
+
+            position: absolute;
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 3px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--card-color),
+                    transparent
+                );
+        }
+
+        .card::after {
+            content: "";
+
+            position: absolute;
+            right: -30px;
+            top: -30px;
+
+            width: 100px;
+            height: 100px;
+
+            border-radius: 50%;
+
+            background: var(--card-glow);
+            filter: blur(12px);
+
+            pointer-events: none;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: color-mix(
+                in srgb,
+                var(--card-color) 45%,
+                transparent
+            );
+
+            box-shadow:
+                0 18px 38px rgba(0, 0, 0, 0.32);
+        }
+
+        .card.cyan {
+            --card-color: #06b6d4;
+            --card-glow: rgba(6, 182, 212, 0.13);
+        }
+
+        .card.green {
+            --card-color: #10b981;
+            --card-glow: rgba(16, 185, 129, 0.13);
+        }
+
+        .card.amber {
+            --card-color: #f59e0b;
+            --card-glow: rgba(245, 158, 11, 0.13);
+        }
+
+        .card.purple {
+            --card-color: #8b5cf6;
+            --card-glow: rgba(139, 92, 246, 0.13);
+        }
+
+        .card-top {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+
+            margin-bottom: 14px;
+        }
+
+        .card-title {
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.9px;
+        }
+
+        .card-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 39px;
+            height: 39px;
+
+            border-radius: 11px;
+
+            background:
+                color-mix(
+                    in srgb,
+                    var(--card-color) 14%,
+                    transparent
+                );
+
+            border:
+                1px solid
+                color-mix(
+                    in srgb,
+                    var(--card-color) 30%,
+                    transparent
+                );
+
+            color: var(--card-color);
+        }
+
+        .card-icon svg {
+            width: 21px;
+            height: 21px;
+        }
+
+        .card-value {
+            position: relative;
+            z-index: 2;
+
+            display: block;
+
+            font-size: clamp(23px, 3vw, 31px);
+            font-weight: 950;
+            line-height: 1.1;
+            letter-spacing: -0.6px;
+
+            word-break: break-word;
+        }
+
+        .card-footer {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            margin-top: 10px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: var(--card-color);
+
+            box-shadow:
+                0 0 8px var(--card-color);
+        }
+
+        /* =====================================================
+           PANELES Y GRÁFICAS
+        ===================================================== */
+        .charts-main {
+            display: grid;
+            grid-template-columns:
+                minmax(0, 1.4fr)
+                minmax(330px, 0.8fr);
+
+            gap: 18px;
+
+            margin-bottom: 18px;
+        }
+
+        .charts-secondary {
+            display: grid;
+            grid-template-columns:
+                minmax(330px, 0.8fr)
+                minmax(0, 1.2fr);
+
+            gap: 18px;
+
+            margin-bottom: 18px;
+        }
+
+        .panel {
+            min-width: 0;
+            padding: 19px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 41, 59, 0.66),
+                    rgba(15, 23, 42, 0.75)
+                );
+
+            border: 1px solid var(--line-soft);
+            border-radius: 18px;
+
+            box-shadow:
+                0 15px 35px rgba(0, 0, 0, 0.28);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+
+            margin-bottom: 15px;
+        }
+
+        .panel-title-area {
+            min-width: 0;
+        }
+
+        .panel h2 {
+            margin: 0;
+
+            color: #e0f2fe;
+
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        .panel-description {
+            margin: 5px 0 0;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            font-weight: 650;
+            line-height: 1.5;
+        }
+
+        .panel-tag {
+            flex-shrink: 0;
+
+            padding: 6px 9px;
+
+            background: rgba(56, 189, 248, 0.09);
+
+            border: 1px solid rgba(56, 189, 248, 0.20);
+            border-radius: 8px;
+
+            color: #7dd3fc;
+
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .chart-shell {
+            position: relative;
+            height: 390px;
+            min-height: 390px;
+        }
+
+        .chart-shell.medium {
+            height: 330px;
+            min-height: 330px;
+        }
+
+        .chart-shell.health {
+            height: 295px;
+            min-height: 295px;
+        }
+
+        .chart-footer-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+
+            margin-top: 13px;
+        }
+
+        .chart-stat {
+            padding: 12px;
+
+            background: rgba(2, 6, 23, 0.33);
+
+            border: 1px solid rgba(148, 163, 184, 0.10);
+            border-radius: 11px;
+        }
+
+        .chart-stat span {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .chart-stat strong {
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .chart-stat.good strong {
+            color: #6ee7b7;
+        }
+
+        .chart-stat.danger strong {
+            color: #fca5a5;
+        }
+
+        /* =====================================================
+           ALERTAS CRÍTICAS
+        ===================================================== */
+        .critical {
+            margin-top: 0;
+        }
+
+        .critical-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+
+            margin-bottom: 15px;
+        }
+
+        .critical-title {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .critical-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 40px;
+            height: 40px;
+
+            background: rgba(239, 68, 68, 0.12);
+
+            border: 1px solid rgba(239, 68, 68, 0.28);
+            border-radius: 11px;
+
+            color: #f87171;
+        }
+
+        .critical-icon svg {
+            width: 21px;
+            height: 21px;
+        }
+
+        .critical-counter {
+            padding: 7px 11px;
+
+            background: rgba(239, 68, 68, 0.12);
+
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 999px;
+
+            color: #fca5a5;
+
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .critical-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .critical-item {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 14px;
+
+            padding: 13px 15px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(239, 68, 68, 0.10),
+                    rgba(127, 29, 29, 0.04)
+                );
+
+            border: 1px solid rgba(239, 68, 68, 0.24);
+            border-radius: 13px;
+
+            transition:
+                transform 0.2s,
+                border-color 0.2s,
+                background 0.2s;
+        }
+
+        .critical-item:hover {
+            transform: translateX(3px);
+
+            border-color: rgba(239, 68, 68, 0.44);
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(239, 68, 68, 0.15),
+                    rgba(127, 29, 29, 0.06)
+                );
+        }
+
+        .critical-item strong {
+            display: block;
+
+            color: #ffffff;
+
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .muted {
+            margin-top: 4px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            font-weight: 650;
+            line-height: 1.4;
+        }
+
+        .badge-red {
+            min-width: 110px;
+            padding: 8px 10px;
+
+            background: rgba(239, 68, 68, 0.10);
+
+            border: 1px solid rgba(239, 68, 68, 0.21);
+            border-radius: 9px;
+
+            color: #fca5a5;
+
+            font-size: 12px;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 150px;
+            padding: 20px;
+
+            background: rgba(16, 185, 129, 0.055);
+
+            border: 1px dashed rgba(16, 185, 129, 0.24);
+            border-radius: 13px;
+
+            color: #6ee7b7;
+            text-align: center;
+        }
+
+        .empty-state svg {
+            width: 37px;
+            height: 37px;
+            margin-bottom: 9px;
+        }
+
+        .empty-state strong {
+            font-size: 14px;
+        }
+
+        .empty-state span {
+            margin-top: 4px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+        @media (max-width: 1120px) {
+            .cards {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .charts-main,
+            .charts-secondary {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-shell {
+                height: 350px;
+                min-height: 350px;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .app-content {
+                padding: 20px 12px;
+            }
+
+            .container {
+                padding: 20px 15px;
+                border-radius: 18px;
+            }
+
+            .header {
+                display: block;
+            }
+
+            .header-title-area {
+                align-items: flex-start;
+            }
+
+            .actions {
+                justify-content: flex-start;
+                margin-top: 18px;
+            }
+
+            .btn {
+                flex: 1;
+                min-width: 145px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-shell,
+            .chart-shell.medium,
+            .chart-shell.health {
+                height: 310px;
+                min-height: 310px;
+            }
+
+            .panel {
+                padding: 15px;
+            }
+
+            .panel-header {
+                display: block;
+            }
+
+            .panel-tag {
+                display: inline-flex;
+                margin-top: 9px;
+            }
+
+            .critical-header {
+                align-items: flex-start;
+            }
+
+            .critical-item {
+                grid-template-columns: 1fr;
+            }
+
+            .badge-red {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 440px) {
+            .header-icon {
+                width: 48px;
+                height: 48px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .chart-footer-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* =====================================================
+           SCROLLBAR
+        ===================================================== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.23);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.42);
+            border-radius: 999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(56, 189, 248, 0.68);
+        }
     </style>
 </head>
+
 <body>
+
 <div class="app-shell">
+
     @include('materiales.partials.sidebar')
 
     <main class="app-content">
-        <div class="container">
-            <div class="header">
-                <div>
-                    <h1>Dashboard Gerencial</h1>
-                    <p class="meta">Consumo mensual, valor de inventario y alertas operativas.</p>
-                </div>
-                <div class="actions">
-                    <a href="{{ route('reportes.inventario.csv') }}" class="btn btn-inventory">Excel Inventario</a>
-                    <a href="{{ route('reportes.salidas.csv') }}" class="btn btn-exits">Excel Salidas</a>
-                    <a href="{{ route('reportes.inventario.pdf') }}" class="btn btn-pdf">PDF Inventario</a>
-                </div>
-            </div>
 
+        <div class="container">
+
+            <!-- =================================================
+                 ENCABEZADO
+            ================================================== -->
+            <header class="header">
+
+                <div class="header-title-area">
+
+                    <div class="header-icon">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M3 13.5h4.5V21H3v-7.5Zm6.75-6h4.5V21h-4.5V7.5Zm6.75-4.5H21v18h-4.5V3Z"
+                            />
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h1>Dashboard Gerencial</h1>
+
+                        <p class="meta">
+                            Monitoreo de consumo, valor de inventario,
+                            existencias y alertas operativas.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="actions">
+
+                    <a
+                        href="{{ route('reportes.inventario.csv') }}"
+                        class="btn btn-inventory"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M7.5 10.5 12 15m0 0 4.5-4.5M12 15V3"
+                            />
+                        </svg>
+
+                        Excel Inventario
+                    </a>
+
+                    <a
+                        href="{{ route('reportes.salidas.csv') }}"
+                        class="btn btn-exits"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3-3H9.75m9 0-3-3m3 3-3 3"
+                            />
+                        </svg>
+
+                        Excel Salidas
+                    </a>
+
+                    <a
+                        href="{{ route('reportes.inventario.pdf') }}"
+                        class="btn btn-pdf"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5A3.375 3.375 0 0 0 10.125 2.25H8.25m0 12.75h7.5m-7.5 3h4.5M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+                            />
+                        </svg>
+
+                        PDF Inventario
+                    </a>
+
+                </div>
+
+            </header>
+
+            <!-- =================================================
+                 TARJETAS DE INDICADORES
+            ================================================== -->
             <section class="cards">
-                <div class="card"><span>Materiales</span><strong>{{ number_format($totalMateriales) }}</strong></div>
-                <div class="card"><span>Piezas en stock</span><strong>{{ number_format($stockTotal) }}</strong></div>
-                <div class="card"><span>Valor inventario</span><strong>${{ number_format($valorInventario, 2) }}</strong></div>
-                <div class="card"><span>Salidas del mes</span><strong>{{ number_format($salidasMes) }}</strong></div>
+
+                <article class="card cyan">
+
+                    <div class="card-top">
+                        <p class="card-title">
+                            Materiales registrados
+                        </p>
+
+                        <div class="card-icon">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.8"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="m21 8.25-9-5.25-9 5.25m18 0-9 5.25m9-5.25V15l-9 5.25M3 8.25l9 5.25M3 8.25V15l9 5.25m0-6.75v6.75"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <strong class="card-value">
+                        {{ number_format($totalMateriales) }}
+                    </strong>
+
+                    <div class="card-footer">
+                        <span class="status-dot"></span>
+                        Productos diferentes en el sistema
+                    </div>
+
+                </article>
+
+                <article class="card green">
+
+                    <div class="card-top">
+                        <p class="card-title">
+                            Piezas en stock
+                        </p>
+
+                        <div class="card-icon">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.8"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M20.25 7.5 12 12.75 3.75 7.5M12 12.75V21m8.25-13.5L12 2.25 3.75 7.5m16.5 0v9L12 21l-8.25-4.5v-9"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <strong class="card-value">
+                        {{ number_format($stockTotal) }}
+                    </strong>
+
+                    <div class="card-footer">
+                        <span class="status-dot"></span>
+                        Existencias acumuladas
+                    </div>
+
+                </article>
+
+                <article class="card amber">
+
+                    <div class="card-top">
+                        <p class="card-title">
+                            Valor del inventario
+                        </p>
+
+                        <div class="card-icon">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.8"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M12 6v12m3-9.75c-.75-.75-1.5-1.125-3-1.125s-3 .75-3 2.25 1.5 2.25 3 2.25 3 .75 3 2.25-1.5 2.25-3 2.25-2.25-.375-3-1.125M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <strong class="card-value">
+                        ${{ number_format($valorInventario, 2) }}
+                    </strong>
+
+                    <div class="card-footer">
+                        <span class="status-dot"></span>
+                        Valor económico estimado
+                    </div>
+
+                </article>
+
+                <article class="card purple">
+
+                    <div class="card-top">
+                        <p class="card-title">
+                            Salidas del mes
+                        </p>
+
+                        <div class="card-icon">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.8"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3-3H9.75m9 0-3-3m3 3-3 3"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <strong class="card-value">
+                        {{ number_format($salidasMes) }}
+                    </strong>
+
+                    <div class="card-footer">
+                        <span class="status-dot"></span>
+                        Piezas consumidas en el periodo
+                    </div>
+
+                </article>
+
             </section>
 
-            <section class="charts">
-                <div class="panel">
-                    <h2>Materiales más consumidos del mes</h2>
+            <!-- =================================================
+                 GRÁFICAS PRINCIPALES
+            ================================================== -->
+            <section class="charts-main">
+
+                <article class="panel">
+
+                    <div class="panel-header">
+
+                        <div class="panel-title-area">
+                            <h2>
+                                Materiales más consumidos
+                            </h2>
+
+                            <p class="panel-description">
+                                Clasificación de los materiales con mayor
+                                cantidad de salidas durante el mes actual.
+                            </p>
+                        </div>
+
+                        <span class="panel-tag">
+                            Consumo mensual
+                        </span>
+
+                    </div>
+
                     <div class="chart-shell">
                         <canvas id="consumoChart"></canvas>
                     </div>
-                </div>
-                <div class="panel">
-                    <h2>Valor por categoría</h2>
-                    <div class="chart-shell small">
+
+                </article>
+
+                <article class="panel">
+
+                    <div class="panel-header">
+
+                        <div class="panel-title-area">
+                            <h2>
+                                Valor por categoría
+                            </h2>
+
+                            <p class="panel-description">
+                                Participación económica de cada categoría
+                                dentro del inventario.
+                            </p>
+                        </div>
+
+                        <span class="panel-tag">
+                            Distribución
+                        </span>
+
+                    </div>
+
+                    <div class="chart-shell medium">
                         <canvas id="valorChart"></canvas>
                     </div>
-                </div>
+
+                </article>
+
             </section>
 
-            <section class="panel critical">
-                <h2>Alertas de stock mínimo: {{ $stockCriticoTotal }}</h2>
-                <div class="critical-list">
-                    @forelse($stockCritico as $material)
-                        <div class="critical-item">
-                            <div>
-                                <strong>{{ $material->descripcion }}</strong>
-                                <div class="muted">{{ $material->numero_parte ?? 'N/A' }} · {{ $material->categoria ?? 'Sin categoría' }}</div>
-                            </div>
-                            <div class="badge-red">{{ $material->stock }} / mín. {{ $material->stock_minimo }}</div>
+            <!-- =================================================
+                 GRÁFICA NUEVA Y RESUMEN
+            ================================================== -->
+            <section class="charts-secondary">
+
+                <article class="panel">
+
+                    <div class="panel-header">
+
+                        <div class="panel-title-area">
+                            <h2>
+                                Estado general del inventario
+                            </h2>
+
+                            <p class="panel-description">
+                                Comparación entre materiales disponibles
+                                y materiales debajo del stock mínimo.
+                            </p>
                         </div>
-                    @empty
-                        <p class="muted">No hay materiales debajo del stock mínimo.</p>
-                    @endforelse
-                </div>
+
+                        <span class="panel-tag">
+                            Salud del stock
+                        </span>
+
+                    </div>
+
+                    <div class="chart-shell health">
+                        <canvas id="estadoInventarioChart"></canvas>
+                    </div>
+
+                    <div class="chart-footer-info">
+
+                        <div class="chart-stat good">
+                            <span>Stock saludable</span>
+
+                            <strong>
+                                {{ number_format(
+                                    max(
+                                        (int) $totalMateriales -
+                                        (int) $stockCriticoTotal,
+                                        0
+                                    )
+                                ) }}
+                            </strong>
+                        </div>
+
+                        <div class="chart-stat danger">
+                            <span>Stock crítico</span>
+
+                            <strong>
+                                {{ number_format($stockCriticoTotal) }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </article>
+
+                <!-- =================================================
+                     ALERTAS DE STOCK
+                ================================================== -->
+                <article class="panel critical">
+
+                    <div class="critical-header">
+
+                        <div class="critical-title">
+
+                            <div class="critical-icon">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.8"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M12 9v3.75m9.303 3.376c.866 1.5-.217 3.374-1.948 3.374H4.645c-1.73 0-2.813-1.874-1.948-3.374L10.052 3.38c.866-1.5 3.03-1.5 3.896 0l7.355 12.746ZM12 16.5h.008v.008H12V16.5Z"
+                                    />
+                                </svg>
+                            </div>
+
+                            <div>
+                                <h2>
+                                    Alertas de stock mínimo
+                                </h2>
+
+                                <p class="panel-description">
+                                    Materiales que requieren revisión o
+                                    reabastecimiento.
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <span class="critical-counter">
+                            {{ number_format($stockCriticoTotal) }}
+                            alertas
+                        </span>
+
+                    </div>
+
+                    <div class="critical-list">
+
+                        @forelse($stockCritico as $material)
+
+                            <div class="critical-item">
+
+                                <div>
+                                    <strong>
+                                        {{ $material->descripcion }}
+                                    </strong>
+
+                                    <div class="muted">
+                                        {{ $material->numero_parte ?? 'N/A' }}
+
+                                        ·
+
+                                        {{ $material->categoria ?? 'Sin categoría' }}
+                                    </div>
+                                </div>
+
+                                <div class="badge-red">
+                                    {{ number_format($material->stock) }}
+
+                                    /
+
+                                    mín.
+                                    {{ number_format($material->stock_minimo) }}
+                                </div>
+
+                            </div>
+
+                        @empty
+
+                            <div class="empty-state">
+
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.8"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="m4.5 12.75 6 6 9-13.5"
+                                    />
+                                </svg>
+
+                                <strong>
+                                    Inventario sin alertas críticas
+                                </strong>
+
+                                <span>
+                                    Todos los materiales se encuentran por
+                                    encima del stock mínimo.
+                                </span>
+
+                            </div>
+
+                        @endforelse
+
+                    </div>
+
+                </article>
+
             </section>
+
         </div>
+
     </main>
+
 </div>
 
 <script>
+    /* =========================================================
+       DATOS RECIBIDOS DESDE LARAVEL
+    ========================================================= */
     const consumoLabels = @json($consumoLabels);
     const consumoData = @json($consumoData);
+
     const valorLabels = @json($valorLabels);
     const valorData = @json($valorData);
-    const acortar = (texto, max = 34) => texto.length > max ? `${texto.slice(0, max - 3)}...` : texto;
 
-    new Chart(document.getElementById('consumoChart'), {
+    const totalMateriales =
+        Number(@json((int) $totalMateriales));
+
+    const stockCriticoTotal =
+        Number(@json((int) $stockCriticoTotal));
+
+    const materialesSaludables =
+        Math.max(totalMateriales - stockCriticoTotal, 0);
+
+
+    /* =========================================================
+       CONFIGURACIÓN GENERAL DE CHART.JS
+    ========================================================= */
+    Chart.defaults.color = '#cbd5e1';
+
+    Chart.defaults.font.family =
+        '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif';
+
+    Chart.defaults.plugins.tooltip.backgroundColor =
+        'rgba(2, 6, 23, 0.96)';
+
+    Chart.defaults.plugins.tooltip.titleColor =
+        '#ffffff';
+
+    Chart.defaults.plugins.tooltip.bodyColor =
+        '#cbd5e1';
+
+    Chart.defaults.plugins.tooltip.borderColor =
+        'rgba(56, 189, 248, 0.30)';
+
+    Chart.defaults.plugins.tooltip.borderWidth = 1;
+
+    Chart.defaults.plugins.tooltip.padding = 12;
+
+    Chart.defaults.plugins.tooltip.cornerRadius = 10;
+
+    Chart.defaults.plugins.tooltip.displayColors = true;
+
+
+    /* =========================================================
+       FUNCIONES AUXILIARES
+    ========================================================= */
+    const acortar = (texto, max = 35) => {
+        const valor = String(texto ?? '');
+
+        return valor.length > max
+            ? `${valor.slice(0, max - 3)}...`
+            : valor;
+    };
+
+
+    const formatoNumero = (numero) => {
+        return Number(numero || 0).toLocaleString(
+            'es-MX',
+            {
+                maximumFractionDigits: 0
+            }
+        );
+    };
+
+
+    const formatoMoneda = (numero) => {
+        return Number(numero || 0).toLocaleString(
+            'es-MX',
+            {
+                style: 'currency',
+                currency: 'MXN',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
+    };
+
+
+    /* =========================================================
+       PLUGIN PARA TEXTO CENTRAL EN GRÁFICAS DOUGHNUT
+    ========================================================= */
+    const textoCentralPlugin = {
+        id: 'textoCentral',
+
+        afterDraw(chart, args, opciones) {
+            if (!opciones || !opciones.mostrar) {
+                return;
+            }
+
+            const {
+                ctx,
+                chartArea
+            } = chart;
+
+            if (!chartArea) {
+                return;
+            }
+
+            const centroX =
+                (chartArea.left + chartArea.right) / 2;
+
+            const centroY =
+                (chartArea.top + chartArea.bottom) / 2;
+
+            ctx.save();
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            ctx.fillStyle =
+                opciones.colorPrincipal || '#ffffff';
+
+            ctx.font =
+                `900 ${opciones.tamanoPrincipal || 24}px "Segoe UI"`;
+
+            ctx.fillText(
+                opciones.textoPrincipal || '',
+                centroX,
+                centroY - 8
+            );
+
+            ctx.fillStyle =
+                opciones.colorSecundario || '#94a3b8';
+
+            ctx.font =
+                `700 ${opciones.tamanoSecundario || 11}px "Segoe UI"`;
+
+            ctx.fillText(
+                opciones.textoSecundario || '',
+                centroX,
+                centroY + 17
+            );
+
+            ctx.restore();
+        }
+    };
+
+    Chart.register(textoCentralPlugin);
+
+
+    /* =========================================================
+       GRÁFICA DE CONSUMO
+    ========================================================= */
+    const consumoCanvas =
+        document.getElementById('consumoChart');
+
+    const consumoContexto =
+        consumoCanvas.getContext('2d');
+
+    const gradienteConsumo =
+        consumoContexto.createLinearGradient(
+            0,
+            0,
+            650,
+            0
+        );
+
+    gradienteConsumo.addColorStop(
+        0,
+        'rgba(16, 185, 129, 0.95)'
+    );
+
+    gradienteConsumo.addColorStop(
+        0.55,
+        'rgba(6, 182, 212, 0.92)'
+    );
+
+    gradienteConsumo.addColorStop(
+        1,
+        'rgba(59, 130, 246, 0.88)'
+    );
+
+
+    new Chart(consumoContexto, {
         type: 'bar',
+
         data: {
-            labels: (consumoLabels.length ? consumoLabels : ['Sin salidas este mes']).map((label) => acortar(label)),
-            datasets: [{
-                label: 'Piezas consumidas',
-                data: consumoData.length ? consumoData : [0],
-                backgroundColor: '#10b981',
-                borderRadius: 8
-            }]
+            labels: (
+                consumoLabels.length
+                    ? consumoLabels
+                    : ['Sin salidas registradas este mes']
+            ).map((label) => acortar(label)),
+
+            datasets: [
+                {
+                    label: 'Piezas consumidas',
+
+                    data:
+                        consumoData.length
+                            ? consumoData
+                            : [0],
+
+                    backgroundColor:
+                        gradienteConsumo,
+
+                    borderColor:
+                        'rgba(103, 232, 249, 0.70)',
+
+                    borderWidth: 1,
+
+                    borderRadius: 9,
+
+                    borderSkipped: false,
+
+                    barThickness: 22,
+
+                    maxBarThickness: 26,
+
+                    hoverBackgroundColor:
+                        'rgba(34, 211, 238, 0.95)'
+                }
+            ]
         },
+
         options: {
             indexAxis: 'y',
+
             responsive: true,
+
             maintainAspectRatio: false,
+
+            animation: {
+                duration: 900,
+                easing: 'easeOutQuart'
+            },
+
+            interaction: {
+                intersect: false,
+                mode: 'nearest'
+            },
+
             plugins: {
-                legend: { display: false },
+                legend: {
+                    display: false
+                },
+
                 tooltip: {
                     callbacks: {
                         title(items) {
-                            return consumoLabels[items[0].dataIndex] || 'Sin salidas este mes';
+                            const indice =
+                                items[0].dataIndex;
+
+                            return (
+                                consumoLabels[indice] ||
+                                'Sin salidas registradas'
+                            );
+                        },
+
+                        label(context) {
+                            return (
+                                ` Piezas consumidas: ` +
+                                formatoNumero(context.raw)
+                            );
                         }
                     }
                 }
             },
-            scales: {
-                x: { beginAtZero: true, ticks: { color: '#94a3b8', precision: 0 }, grid: { color: 'rgba(148,163,184,.14)' } },
-                y: { ticks: { color: '#e2e8f0', font: { weight: '700' } }, grid: { display: false } }
-            }
-        }
-    });
 
-    new Chart(document.getElementById('valorChart'), {
-        type: 'doughnut',
-        data: {
-            labels: valorLabels.length ? valorLabels : ['Sin valor capturado'],
-            datasets: [{
-                data: valorData.length ? valorData : [1],
-                backgroundColor: ['#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#3b82f6', '#ef4444']
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom', labels: { color: '#fff', boxWidth: 14 } },
-                tooltip: {
-                    callbacks: {
-                        label(context) {
-                            return `${context.label}: $${Number(context.raw || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            scales: {
+                x: {
+                    beginAtZero: true,
+
+                    ticks: {
+                        color: '#94a3b8',
+                        precision: 0,
+
+                        font: {
+                            size: 11,
+                            weight: '700'
+                        },
+
+                        callback(value) {
+                            return formatoNumero(value);
                         }
+                    },
+
+                    grid: {
+                        color:
+                            'rgba(148, 163, 184, 0.11)',
+
+                        drawBorder: false
+                    },
+
+                    border: {
+                        display: false
+                    }
+                },
+
+                y: {
+                    ticks: {
+                        color: '#e2e8f0',
+
+                        font: {
+                            size: 11,
+                            weight: '750'
+                        },
+
+                        padding: 8
+                    },
+
+                    grid: {
+                        display: false
+                    },
+
+                    border: {
+                        display: false
                     }
                 }
             }
         }
     });
+
+
+    /* =========================================================
+       GRÁFICA DE VALOR POR CATEGORÍA
+    ========================================================= */
+    const coloresCategorias = [
+        '#06b6d4',
+        '#10b981',
+        '#f59e0b',
+        '#ec4899',
+        '#3b82f6',
+        '#ef4444',
+        '#8b5cf6',
+        '#14b8a6',
+        '#f97316'
+    ];
+
+
+    const totalValorCategorias =
+        valorData.reduce(
+            (acumulado, valor) =>
+                acumulado + Number(valor || 0),
+            0
+        );
+
+
+    new Chart(
+        document.getElementById('valorChart'),
+        {
+            type: 'doughnut',
+
+            data: {
+                labels:
+                    valorLabels.length
+                        ? valorLabels
+                        : ['Sin valor capturado'],
+
+                datasets: [
+                    {
+                        data:
+                            valorData.length
+                                ? valorData
+                                : [1],
+
+                        backgroundColor:
+                            coloresCategorias,
+
+                        borderColor:
+                            'rgba(15, 23, 42, 0.95)',
+
+                        borderWidth: 4,
+
+                        hoverBorderColor:
+                            '#FFFF',
+
+                        hoverOffset: 9,
+
+                        spacing: 2
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                cutout: '67%',
+
+                animation: {
+                    animateRotate: true,
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                },
+
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+
+                        labels: {
+                            color: '#e2e8f0',
+
+                            boxWidth: 11,
+                            boxHeight: 11,
+
+                            padding: 14,
+
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+
+                            font: {
+                                size: 10,
+                                weight: '700'
+                            },
+
+                            generateLabels(chart) {
+                                const datos =
+                                    chart.data;
+
+                                if (
+                                    !datos.labels.length ||
+                                    !datos.datasets.length
+                                ) {
+                                    return [];
+                                }
+
+                                return datos.labels.map(
+                                    (label, indice) => {
+                                        const meta =
+                                            chart.getDatasetMeta(0);
+
+                                        const estilo =
+                                            meta.controller
+                                                .getStyle(indice);
+
+                                        return {
+                                            text:
+                                                acortar(label, 25),
+
+                                            fillStyle:
+                                                estilo.backgroundColor,
+
+                                            strokeStyle:
+                                                estilo.borderColor,
+
+                                            lineWidth:
+                                                estilo.borderWidth,
+
+                                            hidden:
+                                                !chart.getDataVisibility(
+                                                    indice
+                                                ),
+
+                                            index: indice,
+
+                                            pointStyle:
+                                                'circle'
+                                        };
+                                    }
+                                );
+                            }
+                        }
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label(context) {
+                                const valor =
+                                    Number(
+                                        context.raw || 0
+                                    );
+
+                                const porcentaje =
+                                    totalValorCategorias > 0
+                                        ? (
+                                            valor /
+                                            totalValorCategorias *
+                                            100
+                                        ).toFixed(1)
+                                        : '0.0';
+
+                                return (
+                                    ` ${context.label}: ` +
+                                    `${formatoMoneda(valor)} ` +
+                                    `(${porcentaje}%)`
+                                );
+                            }
+                        }
+                    },
+
+                    textoCentral: {
+                        mostrar: true,
+
+                        textoPrincipal:
+                            valorData.length
+                                ? formatoMoneda(
+                                    totalValorCategorias
+                                )
+                                : '$0.00',
+
+                        textoSecundario:
+                            'VALOR TOTAL',
+
+                        tamanoPrincipal: 19,
+
+                        tamanoSecundario: 10,
+
+                        colorPrincipal: '#ffffff',
+
+                        colorSecundario: '#94a3b8'
+                    }
+                }
+            }
+        }
+    );
+
+
+    /* =========================================================
+       NUEVA GRÁFICA: ESTADO GENERAL DEL INVENTARIO
+    ========================================================= */
+    const totalParaPorcentaje =
+        totalMateriales > 0
+            ? totalMateriales
+            : 1;
+
+    const porcentajeSaludable =
+        totalMateriales > 0
+            ? (
+                materialesSaludables /
+                totalParaPorcentaje *
+                100
+            ).toFixed(0)
+            : 0;
+
+
+    new Chart(
+        document.getElementById(
+            'estadoInventarioChart'
+        ),
+        {
+            type: 'doughnut',
+
+            data: {
+                labels: [
+                    'Stock saludable',
+                    'Stock crítico'
+                ],
+
+                datasets: [
+                    {
+                        data:
+                            totalMateriales > 0
+                                ? [
+                                    materialesSaludables,
+                                    stockCriticoTotal
+                                ]
+                                : [1, 0],
+
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.90)',
+                            'rgba(239, 68, 68, 0.90)'
+                        ],
+
+                        borderColor: [
+                            'rgba(110, 231, 183, 0.85)',
+                            'rgba(252, 165, 165, 0.85)'
+                        ],
+
+                        borderWidth: 2,
+
+                        hoverOffset: 8,
+
+                        spacing: 3
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                cutout: '74%',
+
+                circumference: 300,
+
+                rotation: -150,
+
+                animation: {
+                    animateRotate: true,
+                    duration: 1100,
+                    easing: 'easeOutQuart'
+                },
+
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+
+                        labels: {
+                            color: '#e2e8f0',
+
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+
+                            boxWidth: 10,
+                            boxHeight: 10,
+
+                            padding: 16,
+
+                            font: {
+                                size: 11,
+                                weight: '750'
+                            }
+                        }
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label(context) {
+                                const valor =
+                                    Number(
+                                        context.raw || 0
+                                    );
+
+                                const porcentaje =
+                                    totalMateriales > 0
+                                        ? (
+                                            valor /
+                                            totalMateriales *
+                                            100
+                                        ).toFixed(1)
+                                        : '0.0';
+
+                                return (
+                                    ` ${context.label}: ` +
+                                    `${formatoNumero(valor)} ` +
+                                    `materiales (${porcentaje}%)`
+                                );
+                            }
+                        }
+                    },
+
+                    textoCentral: {
+                        mostrar: true,
+
+                        textoPrincipal:
+                            `${porcentajeSaludable}%`,
+
+                        textoSecundario:
+                            'SALUDABLE',
+
+                        tamanoPrincipal: 29,
+
+                        tamanoSecundario: 10,
+
+                        colorPrincipal: '#6ee7b7',
+
+                        colorSecundario: '#94a3b8'
+                    }
+                }
+            }
+        }
+    );
 </script>
+
 </body>
 </html>
