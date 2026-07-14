@@ -49,7 +49,19 @@
         .help-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
         .help-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
         .help-card strong { display: block; margin-bottom: 6px; }
-        @media (max-width: 900px) { .help-grid { grid-template-columns: 1fr; } .app-content { padding: 18px 10px; } }
+        @media (max-width: 900px) {
+            .help-grid { grid-template-columns: 1fr; }
+            .app-content { padding: 18px 10px; }
+            .container { padding: 18px 14px; border-radius: 16px; }
+            h1 { font-size: 26px; line-height: 1.12; }
+            table { min-width: 820px; }
+            form { align-items: stretch; }
+        }
+
+        @media (max-width: 520px) {
+            .table-wrap { margin-inline: -4px; }
+            select, button, .approval-toggle { min-height: 44px; }
+        }
     </style>
 </head>
 <body>

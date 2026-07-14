@@ -1446,19 +1446,19 @@
     /* =========================================================
        CONFIGURACIÓN GENERAL DE CHART.JS
     ========================================================= */
-    Chart.defaults.color = '#cbd5e1';
+    Chart.defaults.color = '#334155';
 
     Chart.defaults.font.family =
         '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif';
 
     Chart.defaults.plugins.tooltip.backgroundColor =
-        'rgba(2, 6, 23, 0.96)';
+        'rgba(15, 23, 42, 0.96)';
 
     Chart.defaults.plugins.tooltip.titleColor =
         '#ffffff';
 
     Chart.defaults.plugins.tooltip.bodyColor =
-        '#cbd5e1';
+        '#e2e8f0';
 
     Chart.defaults.plugins.tooltip.borderColor =
         'rgba(56, 189, 248, 0.30)';
@@ -1707,7 +1707,7 @@
 
                     grid: {
                         color:
-                            'rgba(148, 163, 184, 0.11)',
+                            'rgba(148, 163, 184, 0.24)',
 
                         drawBorder: false
                     },
@@ -1719,7 +1719,7 @@
 
                 y: {
                     ticks: {
-                        color: '#e2e8f0',
+                        color: '#334155',
 
                         font: {
                             size: 11,
@@ -1788,7 +1788,7 @@
                             coloresCategorias,
 
                         borderColor:
-                            'rgba(15, 23, 42, 0.95)',
+                            '#ffffff',
 
                         borderWidth: 4,
 
@@ -1820,7 +1820,7 @@
                         position: 'bottom',
 
                         labels: {
-                            color: '#e2e8f0',
+                            color: '#334155',
 
                             boxWidth: 11,
                             boxHeight: 11,
@@ -1927,7 +1927,7 @@
 
                         tamanoSecundario: 10,
 
-                        colorPrincipal: '#ffffff',
+                        colorPrincipal: '#102033',
 
                         colorSecundario: '#94a3b8'
                     }
@@ -2019,7 +2019,7 @@
                         position: 'bottom',
 
                         labels: {
-                            color: '#e2e8f0',
+                            color: '#334155',
 
                             usePointStyle: true,
                             pointStyle: 'circle',

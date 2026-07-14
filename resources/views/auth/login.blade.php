@@ -6,6 +6,58 @@
     <title>Login - AppLugarth</title>
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2875/2875878.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(180deg, #ffffff 0%, #f6f8fb 48%, #eef4fb 100%) !important;
+            color: #102033;
+        }
+
+        body > .absolute.inset-0.bg-cover {
+            display: none !important;
+        }
+
+        body > .absolute.inset-0.bg-gradient-to-br {
+            background: transparent !important;
+            backdrop-filter: none !important;
+        }
+
+        body > .relative {
+            background: #ffffff !important;
+            border: 1px solid #dbe5f0 !important;
+            border-top: 1px solid #dbe5f0 !important;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.10) !important;
+        }
+
+        h1 {
+            color: #102033 !important;
+        }
+
+        h1 + p,
+        a {
+            color: #2563eb !important;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        input:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14) !important;
+        }
+
+        button[type="submit"] {
+            background: #2563eb !important;
+            box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22) !important;
+        }
+
+        button[type="submit"]:hover {
+            background: #1d4ed8 !important;
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body class="min-h-screen flex items-center justify-center relative bg-gray-900 px-4">
     <div class="absolute inset-0 bg-cover bg-center z-0" style="background-image: url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop');"></div>

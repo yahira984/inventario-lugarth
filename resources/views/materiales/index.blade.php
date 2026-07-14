@@ -457,6 +457,92 @@
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.5); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(6, 182, 212, 0.8); }
+
+        @media (max-width: 860px) {
+            .container {
+                border-radius: 16px;
+            }
+
+            .page-header {
+                display: block;
+                padding: 22px 16px;
+            }
+
+            h1 {
+                font-size: 26px;
+                line-height: 1.12;
+            }
+
+            .header-actions {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+                margin-top: 16px;
+            }
+
+            .header-actions a,
+            .header-actions button,
+            .btn-alta,
+            .btn-xml,
+            .btn-report {
+                width: 100%;
+                justify-content: center;
+                padding: 13px 10px;
+                text-align: center;
+                font-size: 12px;
+            }
+
+            .toolbar {
+                padding: 16px;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .filter-form select,
+            .filter-form input[type="text"],
+            .btn-scan,
+            .btn-filter,
+            .btn-clear {
+                width: 100%;
+                min-height: 46px;
+            }
+
+            .table-wrap {
+                padding: 14px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            table {
+                min-width: 820px;
+            }
+
+            .action-buttons {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 460px) {
+            .header-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                border-radius: 14px;
+            }
+
+            .page-header {
+                padding: 18px 14px;
+            }
+
+            .table-wrap {
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
