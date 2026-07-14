@@ -1,10 +1,14 @@
 <?php
 
 use App\Http\Controllers\FacturaXmlController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EtiquetaController;
 use App\Http\Controllers\IdentificadorVisualController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\SalidaMaterialController;
+use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -12,12 +16,24 @@ Route::get('/', function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return redirect()->route('materiales.index');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('materiales/buscar-por-codigo', [MaterialController::class, 'buscarPorCodigo'])
         ->name('materiales.buscarPorCodigo');
+
+    Route::get('reportes/inventario.csv', [ReporteController::class, 'inventarioCsv'])
+        ->name('reportes.inventario.csv');
+    Route::get('reportes/inventario-pdf', [ReporteController::class, 'inventarioPdf'])
+        ->name('reportes.inventario.pdf');
+    Route::get('reportes/salidas.csv', [ReporteController::class, 'salidasCsv'])
+        ->name('reportes.salidas.csv');
+    Route::get('reportes/salidas-pdf', [ReporteController::class, 'salidasPdf'])
+        ->name('reportes.salidas.pdf');
+
+    Route::post('materiales/{material}/generar-etiqueta', [EtiquetaController::class, 'generar'])
+        ->name('materiales.etiqueta.generar');
+    Route::get('materiales/{material}/etiqueta', [EtiquetaController::class, 'mostrar'])
+        ->name('materiales.etiqueta');
 
     Route::get('materiales/importar-xml', [FacturaXmlController::class, 'create'])
         ->name('materiales.xml.create');
@@ -30,6 +46,11 @@ Route::middleware('auth')->group(function () {
         ->name('materiales.visual.create');
     Route::post('materiales/identificador-visual/buscar', [IdentificadorVisualController::class, 'search'])
         ->name('materiales.visual.search');
+
+    Route::get('usuarios/permisos', [UserRoleController::class, 'index'])
+        ->name('usuarios.roles.index');
+    Route::patch('usuarios/{user}/permisos', [UserRoleController::class, 'update'])
+        ->name('usuarios.roles.update');
 
     Route::get('materiales/salidas', [SalidaMaterialController::class, 'create'])
         ->name('materiales.salidas.create');

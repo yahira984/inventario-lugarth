@@ -423,6 +423,20 @@
             </div>
 
             <div class="form-group">
+                <label for="stock_minimo">Stock mínimo</label>
+                <input type="number" name="stock_minimo" id="stock_minimo" value="{{ old('stock_minimo', 0) }}" placeholder="0" min="0" data-material-field>
+                <div class="field-help">Cuando el stock llegue a este número, el inventario lo marcará en rojo.</div>
+                @error('stock_minimo') <div class="field-error">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="costo_unitario">Costo unitario</label>
+                <input type="number" name="costo_unitario" id="costo_unitario" value="{{ old('costo_unitario', 0) }}" placeholder="0.00" min="0" step="0.01" data-material-field>
+                <div class="field-help">Sirve para calcular el valor del inventario en el dashboard y reportes.</div>
+                @error('costo_unitario') <div class="field-error">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="form-group">
                 <label for="fotografia">Fotografía</label>
                 <input type="file" name="fotografia" id="fotografia" accept="image/*" data-material-field>
                 <div class="field-help">Formatos permitidos: JPG, PNG o WEBP. Máximo 2 MB.</div>

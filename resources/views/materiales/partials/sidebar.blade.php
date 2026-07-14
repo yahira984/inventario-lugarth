@@ -942,6 +942,25 @@
 
         <nav class="sidebar-nav" id="sidebarNav">
             <a
+                href="{{ route('dashboard') }}"
+                title="Dashboard"
+                data-label="Dashboard"
+                class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+            >
+                <span class="nav-mark" aria-hidden="true">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 13h6V4H4v9ZM14 20h6V4h-6v16ZM4 20h6v-4H4v4Z" />
+                    </svg>
+                </span>
+
+                <span class="nav-text">Dashboard</span>
+
+                <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
+                </svg>
+            </a>
+
+            <a
                 href="{{ route('materiales.index') }}"
                 title="Inventario"
                 data-label="Inventario"
@@ -978,6 +997,7 @@
                 </svg>
             </a>
 
+            @if(auth()->user()?->puedeMoverStock())
             <a
                 href="{{ route('materiales.create') }}"
                 title="Registrar entrada"
@@ -1051,7 +1071,9 @@
                     />
                 </svg>
             </a>
+            @endif
 
+            @if(auth()->user()?->puedeAdministrarCatalogo())
             <a
                 href="{{ route('materiales.xml.create') }}"
                 title="Importar XML"
@@ -1093,6 +1115,28 @@
                     />
                 </svg>
             </a>
+            @endif
+
+            @if(auth()->user()?->puedeAdministrarCatalogo())
+            <a
+                href="{{ route('usuarios.roles.index') }}"
+                title="Usuarios y permisos"
+                data-label="Usuarios"
+                class="sidebar-link {{ request()->routeIs('usuarios.roles.*') ? 'active' : '' }}"
+            >
+                <span class="nav-mark" aria-hidden="true">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11c1.66 0 3-1.57 3-3.5S17.66 4 16 4s-3 1.57-3 3.5 1.34 3.5 3 3.5ZM8 11c1.66 0 3-1.57 3-3.5S9.66 4 8 4 5 5.57 5 7.5 6.34 11 8 11ZM2.5 20c.7-3.1 2.75-5 5.5-5s4.8 1.9 5.5 5M10.5 20c.56-2.35 2.38-4 5.5-4 2.75 0 4.8 1.55 5.5 4" />
+                    </svg>
+                </span>
+
+                <span class="nav-text">Usuarios</span>
+
+                <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
+                </svg>
+            </a>
+            @endif
 
             <a
                 href="{{ route('materiales.visual.create') }}"
@@ -1132,6 +1176,7 @@
                 </svg>
             </a>
 
+            @if(auth()->user()?->puedeAdministrarCatalogo())
             <a
                 href="{{ route('materiales.index', ['sin_codigo' => 1]) }}"
                 title="Agregar códigos"
@@ -1168,6 +1213,7 @@
                     />
                 </svg>
             </a>
+            @endif
         </nav>
     </div>
 

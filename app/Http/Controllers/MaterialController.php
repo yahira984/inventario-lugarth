@@ -6,6 +6,7 @@ use App\Models\Material;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class MaterialController extends Controller
 {
@@ -51,6 +52,8 @@ class MaterialController extends Controller
      */
     public function create()
     {
+        abort_unless(auth()->user()?->puedeMoverStock(), 403, 'No tienes permiso para registrar entradas.');
+
         return view('materiales.create');
     }
 
@@ -94,6 +97,8 @@ class MaterialController extends Controller
      */
     public function store(Request $request)
     {
+        abort_unless($request->user()?->puedeMoverStock(), 403, 'No tienes permiso para registrar entradas.');
+
         /*
          * Primero revisamos si el código de barras ya pertenece
          * a un material registrado.
@@ -141,6 +146,12 @@ class MaterialController extends Controller
             }
         }
 
+        if (! $request->user()?->puedeAdministrarCatalogo()) {
+            throw ValidationException::withMessages([
+                'codigo_barras' => 'Este código no existe. Pide a un administrador registrar el material nuevo.',
+            ]);
+        }
+
         $tablaMateriales = (new Material())->getTable();
 
         /*
@@ -159,6 +170,8 @@ class MaterialController extends Controller
             'marca' => ['nullable', 'string', 'max:255'],
             'proveedor' => ['nullable', 'string', 'max:255'],
             'stock' => ['required', 'integer', 'min:0'],
+            'stock_minimo' => ['nullable', 'integer', 'min:0'],
+            'costo_unitario' => ['nullable', 'numeric', 'min:0'],
             'fotografia' => [
                 'nullable',
                 'image',
@@ -172,6 +185,10 @@ class MaterialController extends Controller
             'stock.required' => 'Escribe la cantidad que entra al inventario.',
             'stock.integer' => 'La cantidad debe ser un número entero. Ejemplo: 1, 5, 20.',
             'stock.min' => 'La cantidad no puede ser negativa.',
+            'stock_minimo.integer' => 'El stock mínimo debe ser un número entero.',
+            'stock_minimo.min' => 'El stock mínimo no puede ser negativo.',
+            'costo_unitario.numeric' => 'El costo unitario debe ser un número.',
+            'costo_unitario.min' => 'El costo unitario no puede ser negativo.',
             'fotografia.image' => 'El archivo seleccionado debe ser una imagen.',
             'fotografia.mimes' => 'La fotografía debe ser JPG, JPEG, PNG o WEBP.',
             'fotografia.max' => 'La fotografía no debe pesar más de 2 MB.',
@@ -182,6 +199,9 @@ class MaterialController extends Controller
                 ->file('fotografia')
                 ->store('materiales', 'public');
         }
+
+        $datos['stock_minimo'] = (int) ($datos['stock_minimo'] ?? 0);
+        $datos['costo_unitario'] = (float) ($datos['costo_unitario'] ?? 0);
 
         Material::create($datos);
 
@@ -206,6 +226,8 @@ class MaterialController extends Controller
      */
     public function edit(Material $material)
     {
+        abort_unless(auth()->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para editar materiales.');
+
         return view('materiales.edit', compact('material'));
     }
 
@@ -214,6 +236,8 @@ class MaterialController extends Controller
      */
     public function update(Request $request, Material $material)
     {
+        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para editar materiales.');
+
         /*
          * Convertimos un código vacío en null.
          */
@@ -248,6 +272,8 @@ class MaterialController extends Controller
             'marca' => ['nullable', 'string', 'max:255'],
             'proveedor' => ['nullable', 'string', 'max:255'],
             'stock' => ['required', 'integer', 'min:0'],
+            'stock_minimo' => ['nullable', 'integer', 'min:0'],
+            'costo_unitario' => ['nullable', 'numeric', 'min:0'],
             'fotografia' => [
                 'nullable',
                 'image',
@@ -285,6 +311,9 @@ class MaterialController extends Controller
                 ->store('materiales', 'public');
         }
 
+        $datos['stock_minimo'] = (int) ($datos['stock_minimo'] ?? 0);
+        $datos['costo_unitario'] = (float) ($datos['costo_unitario'] ?? 0);
+
         $material->update($datos);
 
         return redirect()
@@ -300,6 +329,8 @@ class MaterialController extends Controller
      */
     public function destroy(Material $material)
     {
+        abort_unless(auth()->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para eliminar materiales.');
+
         /*
          * Eliminamos la fotografía del almacenamiento,
          * siempre que exista.

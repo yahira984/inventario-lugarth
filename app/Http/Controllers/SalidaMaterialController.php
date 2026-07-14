@@ -14,6 +14,8 @@ class SalidaMaterialController extends Controller
 {
     public function create(Request $request): View
     {
+        abort_unless($request->user()?->puedeMoverStock(), 403, 'No tienes permiso para registrar salidas.');
+
         $buscar = trim((string) $request->query('buscar', ''));
 
         $materiales = Material::query()
@@ -46,6 +48,8 @@ class SalidaMaterialController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless($request->user()?->puedeMoverStock(), 403, 'No tienes permiso para registrar salidas.');
+
         $datos = $request->validate([
             'material_id' => ['nullable', 'integer', 'exists:materials,id'],
             'codigo_barras' => ['nullable', 'string', 'max:255'],

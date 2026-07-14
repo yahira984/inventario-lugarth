@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
@@ -48,12 +47,14 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'consultor',
+            'approved_at' => null,
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect('/materiales');
+        return redirect()
+            ->route('login')
+            ->with('status', 'Cuenta registrada. Un administrador debe aprobar tu correo y asignarte un rol antes de entrar.');
     }
 }
