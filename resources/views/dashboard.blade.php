@@ -2019,7 +2019,7 @@
                         position: 'bottom',
 
                         labels: {
-                            color: '#334155',
+                            color: '#04224b',
 
                             usePointStyle: true,
                             pointStyle: 'circle',
