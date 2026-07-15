@@ -12,14 +12,14 @@
         :root {
             --bg: #030712; 
             --surface: rgba(15, 23, 42, 0.6); 
-            --ink: #ffffff; 
-            --muted: #94a3b8; 
-            --cyan-glow: #06b6d4;
-            --blue-glow: #3b82f6;
-            --emerald-glow: #10b981;
+            --ink: #320b79; 
+            --muted: #062858; 
+            --cyan-glow: #140b9c;
+            --blue-glow: #0c46a3;
+            --emerald-glow: #331085;
             --orange-glow: #f97316;
             --red-glow: #ef4444;
-            --line: rgba(56, 189, 248, 0.2);
+            --line: rgba(49, 18, 134, 0.2);
             --shadow-glass: 0 10px 40px rgba(0, 0, 0, 0.6); 
         }
 
@@ -58,7 +58,7 @@
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--line);
             border-radius: 20px;
-            box-shadow: var(--shadow-glass), inset 0 0 20px rgba(56, 189, 248, 0.05);
+            box-shadow: var(--shadow-glass), inset 0 0 20px rgba(14, 9, 88, 0.05);
             padding: 40px;
         }
 
@@ -70,13 +70,13 @@
 
         .form-header h2 {
             margin: 0 0 8px 0;
-            background: linear-gradient(to right, #00f2fe, #4facfe);
+            background: linear-gradient(to right, #1d0d58, #0e1358);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-size: 32px;
             font-weight: 900;
             letter-spacing: 1px;
-            text-shadow: 0 0 20px rgba(0, 242, 254, 0.2); 
+            text-shadow: 0 0 20px rgba(25, 13, 138, 0.2); 
         }
 
         .header-meta {
@@ -87,9 +87,9 @@
 
         /* --- ALERTAS --- */
         .alert-info {
-            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(59, 130, 246, 0.1));
+            background: linear-gradient(135deg, rgba(3, 5, 90, 0.15), rgba(28, 12, 97, 0.1));
             border-left: 4px solid var(--cyan-glow);
-            color: #bae6fd;
+            color: #25115c;
             padding: 20px 24px;
             border-radius: 12px;
             font-weight: 600;
@@ -102,7 +102,7 @@
         .alert-danger {
             background: rgba(239, 68, 68, 0.1);
             border-left: 4px solid var(--red-glow);
-            color: #fca5a5;
+            color: #0d0e69;
             padding: 16px 20px;
             border-radius: 12px;
             margin-bottom: 24px;
@@ -114,7 +114,7 @@
         .form-group { display: flex; flex-direction: column; margin-bottom: 24px; }
 
         label {
-            color: #38bdf8; 
+            color: #2b1569; 
             font-size: 12px;
             font-weight: 800;
             text-transform: uppercase;
@@ -126,10 +126,10 @@
             width: 100%;
             padding: 14px 16px;
             background: rgba(0, 0, 0, 0.4);
-            border: 1px dashed rgba(255, 255, 255, 0.3);
+            border: 1px dashed rgba(33, 17, 107, 0.3);
             border-radius: 12px;
             font-size: 14px;
-            color: #ffffff;
+            color: #1c0c61;
             font-family: inherit;
             transition: all 0.3s ease;
             outline: none;
@@ -138,15 +138,15 @@
 
         input[type="file"]:hover, input[type="file"]:focus {
             border-color: var(--cyan-glow);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+            box-shadow: 0 0 15px rgba(25, 15, 82, 0.3);
             background: rgba(0, 0, 0, 0.6);
         }
         
         /* Estilizar el botón interno del input file */
         input[type="file"]::file-selector-button {
-            background: rgba(56, 189, 248, 0.1);
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            color: #7dd3fc;
+            background: rgba(14, 15, 104, 0.1);
+            border: 1px solid rgba(15, 16, 87, 0.4);
+            color: #090f61;
             padding: 8px 16px;
             border-radius: 6px;
             margin-right: 16px;
@@ -168,8 +168,8 @@
         }
 
         .btn-submit {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #ffffff;
+            background: linear-gradient(135deg, #1c0974 0%, #1c0d61 100%);
+            color: #ffff;
             border: none;
             border-radius: 12px;
             padding: 16px 32px;
@@ -179,14 +179,14 @@
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 4px 15px rgba(39, 16, 104, 0.4);
             flex: 1;
             text-align: center;
         }
 
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+            box-shadow: 0 8px 25px rgba(23, 12, 116, 0.6);
             filter: brightness(1.1);
         }
 
@@ -196,7 +196,7 @@
             justify-content: center;
             background-color: transparent;
             color: var(--muted);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(17, 27, 163, 0.1);
             border-radius: 12px;
             padding: 14px 24px;
             font-weight: 700;
@@ -206,14 +206,14 @@
         }
 
         .btn-cancel:hover {
-            border-color: #ffffff;
-            color: #ffffff;
+            border-color: #2220be;
+            color: #08075a;
         }
 
         .help-text {
             margin-top: 30px;
             font-size: 13px;
-            color: #64748b;
+            color: #271163;
             text-align: center;
             line-height: 1.5;
         }
@@ -221,8 +221,8 @@
         /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-        ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.5); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.8); }
+        ::-webkit-scrollbar-thumb { background: rgba(15, 14, 119, 0.5); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(9, 16, 110, 0.8); }
 
         @media (max-width: 768px) {
             .form-actions { flex-direction: column; }

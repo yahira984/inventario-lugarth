@@ -14,10 +14,10 @@
             --surface: rgba(15, 23, 42, 0.7); 
             --ink: #ffffff; 
             --muted: #94a3b8; 
-            --cyan-glow: #06b6d4;
-            --blue-glow: #3b82f6;
-            --emerald-glow: #10b981;
-            --line: rgba(56, 189, 248, 0.2);
+            --cyan-glow: #0a1169;
+            --blue-glow: #1a0b5e;
+            --emerald-glow: #18117a;
+            --line: rgba(114, 56, 248, 0.2);
             --shadow-glass: 0 10px 40px rgba(0, 0, 0, 0.6); 
         }
 
@@ -48,13 +48,13 @@
 
         .page-header h1 {
             margin: 0 0 8px 0;
-            background: linear-gradient(to right, #00f2fe, #4facfe);
+            background: linear-gradient(to right, #130d66, #1a0d53);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-size: 32px;
             font-weight: 900;
             letter-spacing: 1px;
-            text-shadow: 0 0 20px rgba(0, 242, 254, 0.2); 
+            text-shadow: 0 0 20px rgba(13, 8, 77, 0.2); 
         }
 
         /* --- ZONA DE ESCANEO (Drop Area) --- */
@@ -121,7 +121,7 @@
 }
         /* Chips */
         .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-        .chip { background: rgba(56, 189, 248, 0.1); color: #7dd3fc; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; border: 1px solid rgba(56, 189, 248, 0.2); }
+        .chip { background: rgba(33, 15, 110, 0.1); color: #100950; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; border: 1px solid rgba(56, 189, 248, 0.2); }
 
         /* --- RESULTADOS --- */
         .results-shell { margin-top: 40px; border-top: 1px solid var(--line); padding-top: 30px; }
