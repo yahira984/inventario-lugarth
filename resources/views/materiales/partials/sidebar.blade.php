@@ -3,29 +3,68 @@
         --sidebar-width: 278px;
         --sidebar-collapsed-width: 88px;
 
-        --sidebar-bg-start: #0b1728;
-        --sidebar-bg-middle: #10253d;
-        --sidebar-bg-end: #123252;
+        --sidebar-blue-950: #061a3a;
+        --sidebar-blue-900: #08285b;
+        --sidebar-blue-800: #0b3a82;
+        --sidebar-blue-700: #0d4da8;
+        --sidebar-blue-600: #1261c9;
+        --sidebar-blue-500: #2477e8;
+        --sidebar-blue-300: #8ec5ff;
 
-        --sidebar-surface: rgba(255, 255, 255, 0.075);
-        --sidebar-surface-hover: rgba(255, 255, 255, 0.12);
-        --sidebar-border: rgba(255, 255, 255, 0.11);
+        --sidebar-white: #ffffff;
+        --sidebar-white-soft: #f5f9ff;
+        --sidebar-text: #f7fbff;
+        --sidebar-muted: #bed5ed;
 
-        --sidebar-text: #f4f8fc;
-        --sidebar-muted: #9fb2c9;
+        --sidebar-border: rgba(255, 255, 255, 0.16);
+        --sidebar-surface: rgba(255, 255, 255, 0.08);
+        --sidebar-surface-hover: rgba(255, 255, 255, 0.14);
 
-        --sidebar-blue: #3b82f6;
-        --sidebar-blue-light: #60a5fa;
-        --sidebar-cyan: #22d3ee;
-        --sidebar-green: #34d399;
-        --sidebar-red: #fb7185;
+        --sidebar-green: #36d399;
 
-        --sidebar-shadow: 14px 0 40px rgba(4, 12, 24, 0.18);
+        --sidebar-red: #dc2626;
+        --sidebar-red-dark: #991b1b;
+        --sidebar-red-light: #ef4444;
+
+        --sidebar-shadow: 18px 0 45px rgba(4, 22, 52, 0.24);
+
+        --ui-bg: #f3f7fc;
+        --ui-surface: #ffffff;
+        --ui-surface-soft: #f8fafc;
+        --ui-ink: #10233f;
+        --ui-muted: #64748b;
+        --ui-line: #dbe5f0;
+        --ui-blue: #1261c9;
+        --ui-blue-dark: #0b3a82;
+        --ui-blue-soft: #edf5ff;
+        --ui-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
     }
 
     * {
         box-sizing: border-box;
     }
+
+    html,
+    body {
+        background: var(--ui-bg);
+        color: var(--ui-ink);
+    }
+
+    body {
+        background-image:
+            linear-gradient(
+                180deg,
+                #ffffff 0%,
+                var(--ui-bg) 45%,
+                #eaf1fa 100%
+            );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Estructura principal
+    |--------------------------------------------------------------------------
+    */
 
     .app-shell {
         min-height: 100vh;
@@ -35,7 +74,15 @@
     }
 
     .app-shell.sidebar-collapsed {
-        grid-template-columns: var(--sidebar-collapsed-width) minmax(0, 1fr);
+        grid-template-columns:
+            var(--sidebar-collapsed-width)
+            minmax(0, 1fr);
+    }
+
+    .app-content {
+        min-width: 0;
+        padding: 28px 18px;
+        transition: padding 0.25s ease;
     }
 
     /*
@@ -47,32 +94,42 @@
     .sidebar {
         position: sticky;
         top: 0;
+        z-index: 1200;
+
         height: 100vh;
         display: flex;
         flex-direction: column;
         overflow: hidden;
+
         padding: 16px 14px;
+
         color: var(--sidebar-text);
+
         background:
             radial-gradient(
-                circle at 20% 4%,
-                rgba(59, 130, 246, 0.25),
-                transparent 26%
+                circle at 15% 2%,
+                rgba(74, 156, 255, 0.34),
+                transparent 25%
             ),
             radial-gradient(
-                circle at 110% 50%,
-                rgba(34, 211, 238, 0.12),
-                transparent 32%
+                circle at 110% 48%,
+                rgba(255, 255, 255, 0.12),
+                transparent 34%
             ),
             linear-gradient(
                 165deg,
-                var(--sidebar-bg-start) 0%,
-                var(--sidebar-bg-middle) 52%,
-                var(--sidebar-bg-end) 100%
+                var(--sidebar-blue-950) 0%,
+                var(--sidebar-blue-900) 35%,
+                var(--sidebar-blue-800) 68%,
+                var(--sidebar-blue-700) 100%
             );
-        border-right: 1px solid rgba(255, 255, 255, 0.06);
-        box-shadow: var(--sidebar-shadow);
-        z-index: 1200;
+
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+
+        box-shadow:
+            var(--sidebar-shadow),
+            inset -1px 0 0 rgba(255, 255, 255, 0.07);
+
         transition:
             width 0.28s ease,
             padding 0.28s ease,
@@ -83,8 +140,11 @@
         content: "";
         position: absolute;
         inset: 0;
+        z-index: 0;
         pointer-events: none;
-        opacity: 0.25;
+
+        opacity: 0.32;
+
         background-image:
             linear-gradient(
                 rgba(255, 255, 255, 0.025) 1px,
@@ -95,7 +155,8 @@
                 rgba(255, 255, 255, 0.025) 1px,
                 transparent 1px
             );
-        background-size: 24px 24px;
+
+        background-size: 28px 28px;
     }
 
     .sidebar::after {
@@ -103,13 +164,17 @@
         position: absolute;
         top: 0;
         right: 0;
-        width: 1px;
+        z-index: 1;
+
+        width: 2px;
         height: 100%;
-        background: linear-gradient(
-            transparent,
-            rgba(96, 165, 250, 0.5),
-            transparent
-        );
+
+        background:
+            linear-gradient(
+                transparent,
+                rgba(17, 47, 78, 0.8),
+                transparent
+            );
     }
 
     .sidebar > * {
@@ -119,17 +184,20 @@
 
     /*
     |--------------------------------------------------------------------------
-    | Encabezado y marca
+    | Encabezado
     |--------------------------------------------------------------------------
     */
 
     .sidebar-top {
-        min-height: 72px;
+        min-height: 74px;
+
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
+
         padding: 4px 3px 17px;
+
         border-bottom: 1px solid var(--sidebar-border);
     }
 
@@ -141,45 +209,66 @@
     }
 
     .sidebar-logo {
-        width: 44px;
-        height: 44px;
-        flex: 0 0 44px;
+        width: 46px;
+        height: 46px;
+        flex: 0 0 46px;
+
         display: inline-flex;
         align-items: center;
         justify-content: center;
+
         position: relative;
         overflow: hidden;
-        border-radius: 13px;
-        color: #ffffff;
+
+        color: var(--sidebar-blue-800);
+
         background:
             linear-gradient(
                 145deg,
-                var(--sidebar-blue-light),
-                #2563eb 55%,
-                #1d4ed8
+                #ffffff,
+                #eaf4ff
             );
-        border: 1px solid rgba(255, 255, 255, 0.25);
+
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        border-radius: 14px;
+
         box-shadow:
-            0 10px 24px rgba(37, 99, 235, 0.32),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            0 12px 26px rgba(0, 20, 55, 0.28),
+            inset 0 1px 0 rgba(255, 255, 255, 0.95);
     }
 
     .sidebar-logo::before {
         content: "";
         position: absolute;
-        width: 30px;
-        height: 30px;
-        top: -13px;
-        right: -10px;
+        top: -17px;
+        right: -12px;
+
+        width: 38px;
+        height: 38px;
+
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.22);
+        background: rgba(18, 97, 201, 0.13);
+    }
+
+    .sidebar-logo::after {
+        content: "";
+        position: absolute;
+        left: -10px;
+        bottom: -17px;
+
+        width: 32px;
+        height: 32px;
+
+        border-radius: 50%;
+        background: rgba(36, 119, 232, 0.12);
     }
 
     .sidebar-logo svg {
-        width: 24px;
-        height: 24px;
+        width: 25px;
+        height: 25px;
         position: relative;
-        z-index: 1;
+        z-index: 2;
+        stroke-width: 2;
     }
 
     .sidebar-brand {
@@ -201,59 +290,87 @@
     .sidebar-brand strong {
         display: block;
         overflow: hidden;
+
         color: #ffffff;
+
         font-size: 18px;
         font-weight: 900;
         letter-spacing: -0.02em;
         line-height: 1.2;
+
         text-overflow: ellipsis;
         white-space: nowrap;
+
+        text-shadow: 0 2px 8px rgba(0, 18, 45, 0.28);
     }
 
     .sidebar-brand span {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 7px;
+
         margin-top: 5px;
+
         color: var(--sidebar-muted);
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.04em;
+
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
         white-space: nowrap;
     }
 
     .sidebar-brand span::before {
         content: "";
-        width: 7px;
-        height: 7px;
-        flex: 0 0 7px;
+
+        width: 8px;
+        height: 8px;
+        flex: 0 0 8px;
+
+        border: 2px solid rgba(255, 255, 255, 0.45);
         border-radius: 50%;
+
         background: var(--sidebar-green);
-        box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.12);
+
+        box-shadow:
+            0 0 0 4px rgba(54, 211, 153, 0.12),
+            0 0 12px rgba(54, 211, 153, 0.6);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Botón contraer
+    | Botón para contraer
     |--------------------------------------------------------------------------
     */
 
     .sidebar-toggle {
-        width: 38px;
-        height: 38px;
-        flex: 0 0 38px;
+        width: 39px;
+        height: 39px;
+        flex: 0 0 39px;
+
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        position: relative;
-        border: 1px solid var(--sidebar-border);
+
+        border: 1px solid rgba(255, 255, 255, 0.22);
         border-radius: 11px;
-        color: #eaf2fb;
-        background: var(--sidebar-surface);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                145deg,
+                rgba(255, 255, 255, 0.15),
+                rgba(255, 255, 255, 0.07)
+            );
+
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.14),
+            0 8px 18px rgba(0, 19, 52, 0.14);
+
         font-family: inherit;
         cursor: pointer;
+
         transition:
             background 0.2s ease,
             border-color 0.2s ease,
@@ -262,10 +379,14 @@
     }
 
     .sidebar-toggle:hover {
-        background: var(--sidebar-surface-hover);
-        border-color: rgba(96, 165, 250, 0.45);
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.45);
+
         transform: translateY(-1px);
-        box-shadow: 0 7px 18px rgba(0, 0, 0, 0.18);
+
+        box-shadow:
+            0 9px 20px rgba(0, 18, 48, 0.24),
+            inset 0 1px 0 rgba(255, 255, 255, 0.18);
     }
 
     .sidebar-toggle:active {
@@ -291,11 +412,16 @@
     .sidebar-navigation {
         min-height: 0;
         flex: 1;
+
         overflow-y: auto;
         overflow-x: hidden;
+
         padding: 18px 0 12px;
+
         scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+        scrollbar-color:
+            rgba(255, 255, 255, 0.28)
+            transparent;
     }
 
     .sidebar-navigation::-webkit-scrollbar {
@@ -308,31 +434,37 @@
 
     .sidebar-navigation::-webkit-scrollbar-thumb {
         border-radius: 20px;
-        background: rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.22);
     }
 
     .sidebar-section-title {
         display: flex;
         align-items: center;
         gap: 9px;
-        margin: 0 10px 10px;
-        color: #7188a5;
+
+        margin: 0 10px 11px;
+
+        color: rgba(10, 59, 109, 0.68);
+
         font-size: 10px;
         font-weight: 900;
-        letter-spacing: 0.12em;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
         white-space: nowrap;
     }
 
     .sidebar-section-title::after {
         content: "";
+
         width: 100%;
         height: 1px;
-        background: linear-gradient(
-            90deg,
-            rgba(255, 255, 255, 0.13),
-            transparent
-        );
+
+        background:
+            linear-gradient(
+                90deg,
+                rgba(31, 10, 122, 0.22),
+                transparent
+            );
     }
 
     .sidebar-nav {
@@ -343,24 +475,34 @@
     .sidebar-link,
     .sidebar-logout {
         width: 100%;
-        min-height: 48px;
+        min-height: 49px;
+
         display: flex;
         align-items: center;
         position: relative;
+
         gap: 11px;
+
         padding: 8px 11px;
+
         overflow: hidden;
+
         border: 1px solid transparent;
-        border-radius: 12px;
-        color: #dce8f5;
+        border-radius: 13px;
+
+        color: #eaf4ff;
         background: transparent;
+
         font-family: inherit;
         font-size: 13px;
         font-weight: 800;
+
         text-align: left;
         text-decoration: none;
         white-space: nowrap;
+
         cursor: pointer;
+
         transition:
             color 0.2s ease,
             background 0.2s ease,
@@ -371,18 +513,23 @@
 
     .sidebar-link::before {
         content: "";
-        width: 3px;
-        height: 24px;
+
+        width: 4px;
+        height: 26px;
+
         position: absolute;
         left: 0;
         top: 50%;
-        border-radius: 0 4px 4px 0;
-        background: linear-gradient(
-            var(--sidebar-cyan),
-            var(--sidebar-blue-light)
-        );
+
+        border-radius: 0 5px 5px 0;
+
+        background: #ffffff;
+
         opacity: 0;
         transform: translateY(-50%) scaleY(0.2);
+
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+
         transition:
             opacity 0.2s ease,
             transform 0.2s ease;
@@ -390,61 +537,106 @@
 
     .sidebar-link::after {
         content: "";
-        width: 60px;
-        height: 60px;
+
+        width: 70px;
+        height: 70px;
+
         position: absolute;
-        right: -34px;
-        top: -37px;
+        right: -42px;
+        top: -43px;
+
         border-radius: 50%;
         pointer-events: none;
+
         opacity: 0;
-        background: rgba(96, 165, 250, 0.18);
+
+        background: rgba(255, 255, 255, 0.13);
+
         transition: opacity 0.2s ease;
     }
 
     .sidebar-link:hover {
         color: #ffffff;
-        background: rgba(255, 255, 255, 0.075);
-        border-color: rgba(255, 255, 255, 0.08);
-        transform: translateX(3px);
+
+        background:
+            linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.13),
+                rgba(255, 255, 255, 0.07)
+            );
+
+        border-color: rgba(255, 255, 255, 0.17);
+
+        transform: translateX(4px);
+
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.07),
+            0 8px 18px rgba(0, 18, 48, 0.1);
     }
 
     .sidebar-link:hover::after {
         opacity: 1;
     }
 
+    /*
+     * Enlace activo blanco sobre barra azul.
+     */
     .sidebar-link.active {
-        color: #ffffff;
+        color: var(--sidebar-blue-900);
+
         background:
             linear-gradient(
-                90deg,
-                rgba(37, 99, 235, 0.35),
-                rgba(59, 130, 246, 0.15)
+                135deg,
+                #ffffff,
+                #edf6ff
             );
-        border-color: rgba(96, 165, 250, 0.28);
+
+        border-color: rgba(255, 255, 255, 0.8);
+
         box-shadow:
-            0 9px 22px rgba(2, 10, 24, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            0 12px 28px rgba(0, 20, 55, 0.26),
+            inset 0 1px 0 rgba(255, 255, 255, 1);
+
+        transform: translateX(3px);
     }
 
     .sidebar-link.active::before {
         opacity: 1;
         transform: translateY(-50%) scaleY(1);
+
+        background: var(--sidebar-blue-500);
+
+        box-shadow: 0 0 12px rgba(36, 119, 232, 0.58);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Iconos de navegación
+    |--------------------------------------------------------------------------
+    */
+
     .nav-mark {
-        width: 32px;
-        height: 32px;
-        flex: 0 0 32px;
+        width: 33px;
+        height: 33px;
+        flex: 0 0 33px;
+
         display: inline-flex;
         align-items: center;
         justify-content: center;
+
         position: relative;
-        z-index: 1;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 9px;
-        color: #dce9f8;
-        background: rgba(255, 255, 255, 0.08);
+        z-index: 2;
+
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 10px;
+
+        color: #ffffff;
+
+        background: rgba(255, 255, 255, 0.11);
+
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
         transition:
             color 0.2s ease,
             background 0.2s ease,
@@ -453,28 +645,46 @@
     }
 
     .nav-mark svg {
-        width: 17px;
-        height: 17px;
+        width: 18px;
+        height: 18px;
         stroke-width: 2;
     }
 
-    .sidebar-link:hover .nav-mark,
+    .sidebar-link:hover .nav-mark {
+        color: var(--sidebar-blue-900);
+
+        background: #ffffff;
+        border-color: rgba(255, 255, 255, 0.8);
+
+        box-shadow:
+            0 8px 18px rgba(0, 18, 50, 0.22);
+
+        transform: scale(1.05);
+    }
+
     .sidebar-link.active .nav-mark {
         color: #ffffff;
-        background: linear-gradient(
-            145deg,
-            rgba(96, 165, 250, 0.9),
-            rgba(37, 99, 235, 0.9)
-        );
-        border-color: rgba(255, 255, 255, 0.23);
-        box-shadow: 0 7px 16px rgba(37, 99, 235, 0.25);
+
+        background:
+            linear-gradient(
+                145deg,
+                var(--sidebar-blue-500),
+                var(--sidebar-blue-700)
+            );
+
+        border-color: var(--sidebar-blue-500);
+
+        box-shadow:
+            0 8px 18px rgba(18, 97, 201, 0.3);
+
         transform: scale(1.04);
     }
 
     .nav-text {
         min-width: 0;
         position: relative;
-        z-index: 1;
+        z-index: 2;
+
         overflow: hidden;
         text-overflow: ellipsis;
     }
@@ -482,32 +692,42 @@
     .nav-arrow {
         width: 16px;
         height: 16px;
+
         margin-left: auto;
-        color: #7890ac;
+
+        color: rgba(222, 239, 255, 0.7);
+
         opacity: 0;
         transform: translateX(-5px);
+
         transition:
             opacity 0.2s ease,
             transform 0.2s ease,
             color 0.2s ease;
     }
 
-    .sidebar-link:hover .nav-arrow,
+    .sidebar-link:hover .nav-arrow {
+        color: #ffffff;
+        opacity: 1;
+        transform: translateX(0);
+    }
+
     .sidebar-link.active .nav-arrow {
-        color: #dceaff;
+        color: var(--sidebar-blue-700);
         opacity: 1;
         transform: translateX(0);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Pie y usuario
+    | Usuario
     |--------------------------------------------------------------------------
     */
 
     .sidebar-footer {
         margin-top: auto;
         padding-top: 15px;
+
         border-top: 1px solid var(--sidebar-border);
     }
 
@@ -515,45 +735,67 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 10px;
+
+        margin-bottom: 11px;
         padding: 11px;
+
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 13px;
-        background: rgba(255, 255, 255, 0.055);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 14px;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.13),
+                rgba(255, 255, 255, 0.07)
+            );
+
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.09),
+            0 10px 22px rgba(0, 18, 50, 0.13);
     }
 
     .sidebar-avatar {
-        width: 36px;
-        height: 36px;
-        flex: 0 0 36px;
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+
         display: inline-flex;
         align-items: center;
         justify-content: center;
+
         position: relative;
-        border-radius: 11px;
-        color: #ffffff;
-        background: linear-gradient(
-            145deg,
-            #0891b2,
-            #2563eb
-        );
+
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        border-radius: 12px;
+
+        color: var(--sidebar-blue-900);
+        background: #ffffff;
+
         font-size: 14px;
         font-weight: 900;
-        box-shadow: 0 6px 16px rgba(8, 145, 178, 0.22);
+
+        box-shadow:
+            0 8px 18px rgba(0, 17, 46, 0.22);
     }
 
     .sidebar-avatar::after {
         content: "";
-        width: 9px;
-        height: 9px;
+
+        width: 10px;
+        height: 10px;
+
         position: absolute;
-        right: -2px;
-        bottom: -2px;
-        border: 2px solid #112841;
+        right: -3px;
+        bottom: -3px;
+
+        border: 2px solid var(--sidebar-blue-800);
         border-radius: 50%;
+
         background: var(--sidebar-green);
+
+        box-shadow: 0 0 8px rgba(54, 211, 153, 0.55);
     }
 
     .sidebar-user-info {
@@ -563,9 +805,12 @@
 
     .sidebar-user-name {
         overflow: hidden;
-        color: #f5f9fe;
+
+        color: #ffffff;
+
         font-size: 12px;
         font-weight: 900;
+
         text-overflow: ellipsis;
         white-space: nowrap;
     }
@@ -573,55 +818,99 @@
     .sidebar-user-email {
         margin-top: 3px;
         overflow: hidden;
+
         color: var(--sidebar-muted);
+
         font-size: 10px;
         font-weight: 600;
+
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Botón cerrar sesión rojo
+    |--------------------------------------------------------------------------
+    */
+
+    .sidebar-footer form {
+        width: 100%;
+        margin: 0;
+    }
+
     .sidebar-logout {
-        color: #ffd4d9;
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--sidebar-red-light),
+                var(--sidebar-red)
+            );
+
+        border-color: rgba(255, 255, 255, 0.2);
+
+        box-shadow:
+            0 10px 22px rgba(153, 27, 27, 0.28),
+            inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    }
+
+    .sidebar-logout::before {
+        content: "";
+
+        width: 70px;
+        height: 70px;
+
+        position: absolute;
+        right: -40px;
+        top: -45px;
+
+        border-radius: 50%;
+
+        background: rgba(255, 255, 255, 0.16);
     }
 
     .sidebar-logout:hover {
         color: #ffffff;
-        background: rgba(244, 63, 94, 0.17);
-        border-color: rgba(251, 113, 133, 0.24);
-        transform: translateX(3px);
+
+        background:
+            linear-gradient(
+                135deg,
+                #dc2626,
+                var(--sidebar-red-dark)
+            );
+
+        border-color: rgba(255, 255, 255, 0.28);
+
+        transform: translateY(-2px);
+
+        box-shadow:
+            0 14px 30px rgba(127, 29, 29, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.16);
     }
 
     .sidebar-logout .nav-mark {
-        color: #ffc1ca;
-        background: rgba(244, 63, 94, 0.12);
-        border-color: rgba(251, 113, 133, 0.13);
+        color: var(--sidebar-red);
+
+        background: #ffffff;
+        border-color: rgba(255, 255, 255, 0.8);
+
+        box-shadow:
+            0 7px 16px rgba(127, 29, 29, 0.18);
     }
 
     .sidebar-logout:hover .nav-mark {
-        color: #ffffff;
-        background: linear-gradient(
-            145deg,
-            #fb7185,
-            #e11d48
-        );
-        box-shadow: 0 7px 16px rgba(225, 29, 72, 0.22);
+        color: var(--sidebar-red-dark);
+
+        background: #ffffff;
+
+        transform: scale(1.05);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Contenido principal
-    |--------------------------------------------------------------------------
-    */
-
-    .app-content {
-        min-width: 0;
-        padding: 28px 18px;
-        transition: padding 0.25s ease;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Estado contraído
+    | Barra contraída
     |--------------------------------------------------------------------------
     */
 
@@ -634,6 +923,7 @@
         flex-direction: column;
         justify-content: center;
         gap: 10px;
+
         padding-bottom: 14px;
     }
 
@@ -649,9 +939,12 @@
         width: 0;
         max-width: 0;
         margin: 0;
+
         overflow: hidden;
+
         opacity: 0;
         transform: translateX(-7px);
+
         pointer-events: none;
     }
 
@@ -666,8 +959,10 @@
     .app-shell.sidebar-collapsed .sidebar-link,
     .app-shell.sidebar-collapsed .sidebar-logout {
         justify-content: center;
+
         padding-left: 8px;
         padding-right: 8px;
+
         overflow: visible;
     }
 
@@ -682,6 +977,7 @@
 
     .app-shell.sidebar-collapsed .sidebar-user-card {
         justify-content: center;
+
         padding-left: 8px;
         padding-right: 8px;
     }
@@ -695,30 +991,56 @@
     .app-shell.sidebar-collapsed .sidebar-link::after,
     .app-shell.sidebar-collapsed .sidebar-logout::after {
         content: attr(data-label);
+
         width: auto;
         height: auto;
         min-width: max-content;
+
         position: absolute;
         top: 50%;
         right: auto;
         left: calc(100% + 14px);
         z-index: 1500;
-        padding: 8px 11px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
+
+        padding: 9px 12px;
+
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 9px;
+
         color: #ffffff;
-        background: #102238;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.26);
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--sidebar-blue-900),
+                var(--sidebar-blue-700)
+            );
+
+        box-shadow:
+            0 12px 28px rgba(0, 18, 48, 0.3);
+
         font-size: 11px;
         font-weight: 800;
         line-height: 1;
         white-space: nowrap;
+
         opacity: 0;
         transform: translate(-7px, -50%);
+
         pointer-events: none;
+
         transition:
             opacity 0.18s ease,
             transform 0.18s ease;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar-logout::after {
+        background:
+            linear-gradient(
+                135deg,
+                var(--sidebar-red),
+                var(--sidebar-red-dark)
+            );
     }
 
     .app-shell.sidebar-collapsed .sidebar-link:hover::after,
@@ -729,39 +1051,58 @@
 
     /*
     |--------------------------------------------------------------------------
-    | Fondo para menú móvil
+    | Menú móvil
     |--------------------------------------------------------------------------
     */
 
     .sidebar-mobile-overlay {
         display: none;
+
         position: fixed;
         inset: 0;
         z-index: 1100;
-        background: rgba(5, 12, 22, 0.62);
-        backdrop-filter: blur(3px);
+
+        background: rgba(4, 16, 38, 0.66);
+
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
     }
 
     .sidebar-mobile-trigger {
         display: none;
+
         width: auto;
         min-height: 44px;
+
         align-items: center;
-        gap: 10px;
+        gap: 9px;
+
         position: fixed;
         top: 12px;
         left: 12px;
         z-index: 1600;
+
         padding: 0 14px;
-        border: 1px solid rgba(125, 211, 252, 0.34);
+
+        border: 1px solid var(--sidebar-blue-700);
         border-radius: 12px;
+
         color: #ffffff;
+
         background:
-            linear-gradient(135deg, rgba(14, 165, 233, 0.96), rgba(37, 99, 235, 0.96));
-        box-shadow: 0 12px 30px rgba(2, 10, 24, 0.35);
+            linear-gradient(
+                135deg,
+                var(--sidebar-blue-600),
+                var(--sidebar-blue-800)
+            );
+
+        box-shadow:
+            0 12px 28px rgba(5, 42, 95, 0.34);
+
         font-family: inherit;
         font-size: 13px;
         font-weight: 900;
+
         cursor: pointer;
     }
 
@@ -780,21 +1121,28 @@
         .app-shell,
         .app-shell.sidebar-collapsed {
             display: block;
+
             width: 100%;
             min-height: 100vh;
             height: auto;
+
             overflow: visible;
         }
 
         .sidebar {
             width: min(310px, 88vw);
             height: 100vh;
+
             position: fixed;
             top: 0;
             left: 0;
+
             padding: 16px 14px;
+
             transform: translateX(-105%);
-            box-shadow: 18px 0 45px rgba(3, 10, 20, 0.38);
+
+            box-shadow:
+                20px 0 50px rgba(2, 13, 32, 0.44);
         }
 
         .app-shell.mobile-menu-open .sidebar {
@@ -809,7 +1157,9 @@
             flex-direction: row;
             justify-content: space-between;
             gap: 12px;
+
             padding-bottom: 17px;
+
             border-bottom: 1px solid var(--sidebar-border);
         }
 
@@ -834,9 +1184,12 @@
             width: auto;
             max-width: none;
             margin: initial;
+
             overflow: visible;
+
             opacity: 1;
             transform: none;
+
             pointer-events: auto;
         }
 
@@ -848,12 +1201,14 @@
         .app-shell.sidebar-collapsed .sidebar-link,
         .app-shell.sidebar-collapsed .sidebar-logout {
             justify-content: flex-start;
+
             padding-left: 11px;
             padding-right: 11px;
         }
 
         .app-shell.sidebar-collapsed .sidebar-user-card {
             justify-content: flex-start;
+
             padding-left: 11px;
             padding-right: 11px;
         }
@@ -892,9 +1247,9 @@
         }
 
         .sidebar-logo {
-            width: 41px;
-            height: 41px;
-            flex-basis: 41px;
+            width: 42px;
+            height: 42px;
+            flex-basis: 42px;
         }
 
         .sidebar-brand strong {
@@ -910,8 +1265,9 @@
 
     .sidebar-link:focus-visible,
     .sidebar-logout:focus-visible,
-    .sidebar-toggle:focus-visible {
-        outline: 3px solid rgba(96, 165, 250, 0.55);
+    .sidebar-toggle:focus-visible,
+    .sidebar-mobile-trigger:focus-visible {
+        outline: 3px solid rgba(142, 197, 255, 0.8);
         outline-offset: 2px;
     }
 
@@ -931,117 +1287,9 @@
 
     /*
     |--------------------------------------------------------------------------
-    | Tema claro minimalista global
+    | Tema azul y blanco para el contenido
     |--------------------------------------------------------------------------
     */
-
-    :root {
-        --ui-bg: #f6f8fb;
-        --ui-surface: #ffffff;
-        --ui-surface-soft: #f8fafc;
-        --ui-ink: #102033;
-        --ui-muted: #64748b;
-        --ui-line: #dbe5f0;
-        --ui-blue: #2563eb;
-        --ui-blue-dark: #1d4ed8;
-        --ui-blue-soft: #eff6ff;
-        --ui-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
-    }
-
-    html,
-    body {
-        background: var(--ui-bg) !important;
-        color: var(--ui-ink) !important;
-    }
-
-    body {
-        background-image:
-            linear-gradient(180deg, #ffffff 0%, var(--ui-bg) 42%, #eef4fb 100%) !important;
-    }
-
-    .sidebar {
-        color: var(--ui-ink) !important;
-        background: var(--ui-surface) !important;
-        border-right: 1px solid var(--ui-line) !important;
-        box-shadow: 8px 0 30px rgba(15, 23, 42, 0.06) !important;
-    }
-
-    .sidebar::before {
-        display: none !important;
-    }
-
-    .sidebar::after {
-        background: linear-gradient(transparent, #bfdbfe, transparent) !important;
-    }
-
-    .sidebar-top {
-        border-bottom-color: var(--ui-line) !important;
-    }
-
-    .sidebar-brand strong,
-    .sidebar-user-name {
-        color: var(--ui-ink) !important;
-    }
-
-    .sidebar-brand span,
-    .sidebar-user-email,
-    .sidebar-section-title,
-    .nav-arrow {
-        color: var(--ui-muted) !important;
-    }
-
-    .sidebar-logo,
-    .nav-mark,
-    .sidebar-link.active .nav-mark,
-    .sidebar-link:hover .nav-mark {
-        background: var(--ui-blue) !important;
-        color: #ffffff !important;
-        border-color: #1d4ed8 !important;
-        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18) !important;
-    }
-
-    .sidebar-link,
-    .sidebar-logout {
-        color: #334155 !important;
-        border-radius: 10px !important;
-    }
-
-    .sidebar-link:hover,
-    .sidebar-link.active {
-        color: var(--ui-blue-dark) !important;
-        background: var(--ui-blue-soft) !important;
-        border-color: #bfdbfe !important;
-        box-shadow: none !important;
-        transform: translateX(3px);
-    }
-
-    .sidebar-link::before {
-        background: var(--ui-blue) !important;
-    }
-
-    .sidebar-toggle,
-    .sidebar-user-card {
-        background: var(--ui-surface-soft) !important;
-        border-color: var(--ui-line) !important;
-        color: var(--ui-ink) !important;
-        box-shadow: none !important;
-    }
-
-    .sidebar-logout {
-        color: #dc2626 !important;
-    }
-
-    .sidebar-logout:hover {
-        background: #fef2f2 !important;
-        border-color: #fecaca !important;
-        color: #b91c1c !important;
-    }
-
-    .sidebar-mobile-trigger {
-        background: var(--ui-blue) !important;
-        border-color: var(--ui-blue-dark) !important;
-        box-shadow: 0 12px 24px rgba(37, 99, 235, 0.22) !important;
-    }
 
     .container,
     .panel,
@@ -1053,20 +1301,29 @@
     .critical-item,
     .modal-content,
     .modal-confirm-content {
-        background: var(--ui-surface) !important;
-        color: var(--ui-ink) !important;
-        border: 1px solid var(--ui-line) !important;
-        box-shadow: var(--ui-shadow) !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
+        background: var(--ui-surface);
+        color: var(--ui-ink);
+
+        border: 1px solid var(--ui-line);
+
+        box-shadow: var(--ui-shadow);
+
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
     }
 
     .page-header,
     .header,
     .panel-header,
     .critical-header {
-        background: transparent !important;
-        border-color: var(--ui-line) !important;
+        background:
+            linear-gradient(
+                135deg,
+                #ffffff,
+                #f7fbff
+            );
+
+        border-color: var(--ui-line);
     }
 
     h1,
@@ -1077,10 +1334,12 @@
     .selected-name,
     td strong,
     .user-name {
-        color: var(--ui-ink) !important;
-        background: none !important;
-        -webkit-text-fill-color: currentColor !important;
-        text-shadow: none !important;
+        color: var(--ui-ink);
+
+        background: none;
+        -webkit-text-fill-color: currentColor;
+
+        text-shadow: none;
     }
 
     .header-meta,
@@ -1090,7 +1349,7 @@
     .stock-meta,
     .code-muted,
     .card span {
-        color: var(--ui-muted) !important;
+        color: var(--ui-muted);
     }
 
     input,
@@ -1098,10 +1357,12 @@
     textarea,
     .filter-form input[type="text"],
     .filter-form select {
-        background: #ffffff !important;
-        color: var(--ui-ink) !important;
-        border: 1px solid #cbd5e1 !important;
-        box-shadow: none !important;
+        background: #ffffff;
+        color: var(--ui-ink);
+
+        border: 1px solid #cbd5e1;
+
+        box-shadow: none;
     }
 
     input:focus,
@@ -1109,72 +1370,81 @@
     textarea:focus,
     .filter-form input[type="text"]:focus,
     .filter-form select:focus {
-        border-color: var(--ui-blue) !important;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12) !important;
-        background: #ffffff !important;
+        border-color: var(--ui-blue);
+
+        box-shadow:
+            0 0 0 4px rgba(18, 97, 201, 0.13);
+
+        background: #ffffff;
     }
 
     table {
-        background: #ffffff !important;
-        border-spacing: 0 !important;
+        background: #ffffff;
+        border-spacing: 0;
     }
 
     thead th,
     th {
-        background: #f8fafc !important;
-        color: #475569 !important;
-        border-color: var(--ui-line) !important;
+        background: #f2f7fd;
+        color: #335171;
+
+        border-color: var(--ui-line);
     }
 
     tbody tr,
     tbody td,
     td {
-        background: #ffffff !important;
-        color: var(--ui-ink) !important;
-        border-color: #edf2f7 !important;
+        background: #ffffff;
+        color: var(--ui-ink);
+
+        border-color: #edf2f7;
     }
 
     tbody tr:hover,
     tbody tr:hover td {
-        background: #f8fbff !important;
+        background: #f4f9ff;
     }
 
     .no-photo {
-        background: #f8fafc !important;
-        color: var(--ui-muted) !important;
-        border-color: #cbd5e1 !important;
-    }
+        background: #f8fafc;
+        color: var(--ui-muted);
 
-    .img-material,
-    img {
-        box-shadow: none !important;
+        border-color: #cbd5e1;
     }
 
     .badge,
     .role-pill {
-        background: #eff6ff !important;
-        color: #1d4ed8 !important;
-        border: 1px solid #bfdbfe !important;
-        box-shadow: none !important;
+        background: #edf5ff;
+        color: var(--ui-blue-dark);
+
+        border: 1px solid #b9d7f8;
+
+        box-shadow: none;
     }
 
     .badge-success,
     .status-pill.ok,
     .stock-pill {
-        background: #ecfdf5 !important;
-        color: #047857 !important;
-        border: 1px solid #a7f3d0 !important;
+        background: #ecfdf5;
+        color: #047857;
+
+        border: 1px solid #a7f3d0;
     }
 
     .badge-danger,
     .status-pill.pending,
     .stock-pill.empty,
     .badge-warning {
-        background: #fff7ed !important;
-        color: #c2410c !important;
-        border: 1px solid #fed7aa !important;
+        background: #fff7ed;
+        color: #c2410c;
+
+        border: 1px solid #fed7aa;
     }
 
+    /*
+     * Botones generales azules.
+     * No se aplica al botón rojo del sidebar.
+     */
     .btn,
     .btn-alta,
     .btn-xml,
@@ -1192,20 +1462,32 @@
     .btn-label,
     .btn-delete,
     .btn-clear,
-    button[type="submit"],
+    button[type="submit"]:not(.sidebar-logout),
     .close-btn {
         min-height: 42px;
-        color: #ffffff !important;
-        background: var(--ui-blue) !important;
-        border: 1px solid var(--ui-blue-dark) !important;
-        border-radius: 10px !important;
-        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.16) !important;
+
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--ui-blue),
+                var(--ui-blue-dark)
+            );
+
+        border: 1px solid var(--ui-blue-dark);
+        border-radius: 10px;
+
+        box-shadow:
+            0 8px 18px rgba(18, 97, 201, 0.17);
+
         transform: none;
+
         transition:
             transform 0.18s ease,
             box-shadow 0.18s ease,
             background 0.18s ease,
-            border-color 0.18s ease !important;
+            border-color 0.18s ease;
     }
 
     .btn:hover,
@@ -1225,77 +1507,60 @@
     .btn-label:hover,
     .btn-delete:hover,
     .btn-clear:hover,
-    button[type="submit"]:hover,
+    button[type="submit"]:not(.sidebar-logout):hover,
     .close-btn:hover {
-        background: var(--ui-blue-dark) !important;
-        border-color: #1e40af !important;
-        box-shadow: 0 12px 26px rgba(37, 99, 235, 0.24) !important;
-        transform: translateY(-2px) !important;
-        filter: none !important;
-    }
+        background:
+            linear-gradient(
+                135deg,
+                var(--ui-blue-dark),
+                #062b67
+            );
 
-    .btn-dashboard,
-    .btn-blue,
-    .btn-primary {
-        background: #2563eb !important;
-    }
+        border-color: #062b67;
 
-    .btn-excel,
-    .btn-green,
-    .btn-xml {
-        background: #0f72d9 !important;
-    }
+        box-shadow:
+            0 12px 26px rgba(11, 58, 130, 0.25);
 
-    .btn-pdf,
-    .btn-scan,
-    .btn-code {
-        background: #1e88e5 !important;
-    }
-
-    .btn-alta,
-    .btn-submit,
-    .btn-save,
-    .btn-filter {
-        background: #1d4ed8 !important;
-    }
-
-    .btn-delete,
-    .close-btn {
-        background: #1f64d1 !important;
+        transform: translateY(-2px);
     }
 
     .btn-clear,
     .btn-soft {
-        background: #ffffff !important;
-        color: var(--ui-blue-dark) !important;
-        border-color: #bfdbfe !important;
-        box-shadow: none !important;
+        background: #ffffff;
+        color: var(--ui-blue-dark);
+
+        border-color: #b9d7f8;
+
+        box-shadow: none;
     }
 
     .btn-clear:hover,
     .btn-soft:hover {
-        background: var(--ui-blue-soft) !important;
-        color: #1e40af !important;
+        background: var(--ui-blue-soft);
+        color: #062b67;
     }
 
     .alert-success {
-        background: #ecfdf5 !important;
-        color: #047857 !important;
-        border: 1px solid #a7f3d0 !important;
-        box-shadow: none !important;
+        background: #ecfdf5;
+        color: #047857;
+
+        border: 1px solid #a7f3d0;
+
+        box-shadow: none;
     }
 
     .alert-danger,
     .field-error,
     .error {
-        background: #fef2f2 !important;
-        color: #b91c1c !important;
-        border-color: #fecaca !important;
+        background: #fef2f2;
+        color: #b91c1c;
+
+        border-color: #fecaca;
     }
 
     #reader {
-        background: #ffffff !important;
-        border-color: #bfdbfe !important;
+        background: #ffffff;
+        border-color: #b9d7f8;
     }
 </style>
 
@@ -1303,13 +1568,24 @@
     type="button"
     class="sidebar-mobile-trigger"
     id="sidebarMobileTrigger"
-    aria-label="Abrir menu principal"
+    aria-label="Abrir menú principal"
     aria-expanded="false"
 >
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16" />
+    <svg
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+    >
+        <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 7h16M4 12h16M4 17h16"
+        />
     </svg>
-    <span>Menu</span>
+
+    <span>Menú</span>
 </button>
 
 <aside class="sidebar" aria-label="Menú principal">
@@ -1364,6 +1640,8 @@
         </div>
 
         <nav class="sidebar-nav" id="sidebarNav">
+
+            {{-- DASHBOARD --}}
             <a
                 href="{{ route('dashboard') }}"
                 title="Dashboard"
@@ -1371,18 +1649,37 @@
                 class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
             >
                 <span class="nav-mark" aria-hidden="true">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 13h6V4H4v9ZM14 20h6V4h-6v16ZM4 20h6v-4H4v4Z" />
+                    <svg
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M4 13h6V4H4v9ZM14 20h6V4h-6v16ZM4 20h6v-4H4v4Z"
+                        />
                     </svg>
                 </span>
 
                 <span class="nav-text">Dashboard</span>
 
-                <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
+                <svg
+                    class="nav-arrow"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m9 18 6-6-6-6"
+                    />
                 </svg>
             </a>
 
+            {{-- INVENTARIO --}}
             <a
                 href="{{ route('materiales.index') }}"
                 title="Inventario"
@@ -1421,146 +1718,169 @@
             </a>
 
             @if(auth()->user()?->puedeMoverStock())
-            <a
-                href="{{ route('materiales.create') }}"
-                title="Registrar entrada"
-                data-label="Registrar entrada"
-                class="sidebar-link {{ request()->routeIs('materiales.create') ? 'active' : '' }}"
-            >
-                <span class="nav-mark" aria-hidden="true">
+
+                {{-- REGISTRAR ENTRADA --}}
+                <a
+                    href="{{ route('materiales.create') }}"
+                    title="Registrar entrada"
+                    data-label="Registrar entrada"
+                    class="sidebar-link {{ request()->routeIs('materiales.create') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M12 5v14M5 12h14"
+                            />
+                        </svg>
+                    </span>
+
+                    <span class="nav-text">Registrar entrada</span>
+
                     <svg
+                        class="nav-arrow"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                     >
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            d="M12 5v14M5 12h14"
+                            d="m9 18 6-6-6-6"
                         />
                     </svg>
-                </span>
+                </a>
 
-                <span class="nav-text">Registrar entrada</span>
-
-                <svg
-                    class="nav-arrow"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
+                {{-- REGISTRAR SALIDA --}}
+                <a
+                    href="{{ route('materiales.salidas.create') }}"
+                    title="Registrar salida"
+                    data-label="Registrar salida"
+                    class="sidebar-link {{ request()->routeIs('materiales.salidas.*') ? 'active' : '' }}"
                 >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m9 18 6-6-6-6"
-                    />
-                </svg>
-            </a>
+                    <span class="nav-mark" aria-hidden="true">
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M5 12h14M13 6l6 6-6 6"
+                            />
+                        </svg>
+                    </span>
 
-            <a
-                href="{{ route('materiales.salidas.create') }}"
-                title="Registrar salida"
-                data-label="Registrar salida"
-                class="sidebar-link {{ request()->routeIs('materiales.salidas.*') ? 'active' : '' }}"
-            >
-                <span class="nav-mark" aria-hidden="true">
+                    <span class="nav-text">Registrar salida</span>
+
                     <svg
+                        class="nav-arrow"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                     >
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            d="M5 12h14M13 6l6 6-6 6"
+                            d="m9 18 6-6-6-6"
                         />
                     </svg>
-                </span>
-
-                <span class="nav-text">Registrar salida</span>
-
-                <svg
-                    class="nav-arrow"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m9 18 6-6-6-6"
-                    />
-                </svg>
-            </a>
+                </a>
             @endif
 
             @if(auth()->user()?->puedeAdministrarCatalogo())
-            <a
-                href="{{ route('materiales.xml.create') }}"
-                title="Importar XML"
-                data-label="Importar XML"
-                class="sidebar-link {{ request()->routeIs('materiales.xml.*') ? 'active' : '' }}"
-            >
-                <span class="nav-mark" aria-hidden="true">
+
+                {{-- IMPORTAR XML --}}
+                <a
+                    href="{{ route('materiales.xml.create') }}"
+                    title="Importar XML"
+                    data-label="Importar XML"
+                    class="sidebar-link {{ request()->routeIs('materiales.xml.*') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                            />
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M14 2v6h6M8 13l-2 2 2 2M16 13l2 2-2 2M13 12l-2 6"
+                            />
+                        </svg>
+                    </span>
+
+                    <span class="nav-text">Importar XML</span>
+
                     <svg
+                        class="nav-arrow"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                     >
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                            d="m9 18 6-6-6-6"
                         />
+                    </svg>
+                </a>
+
+                {{-- USUARIOS --}}
+                <a
+                    href="{{ route('usuarios.roles.index') }}"
+                    title="Usuarios y permisos"
+                    data-label="Usuarios"
+                    class="sidebar-link {{ request()->routeIs('usuarios.roles.*') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M16 11c1.66 0 3-1.57 3-3.5S17.66 4 16 4s-3 1.57-3 3.5 1.34 3.5 3 3.5ZM8 11c1.66 0 3-1.57 3-3.5S9.66 4 8 4 5 5.57 5 7.5 6.34 11 8 11ZM2.5 20c.7-3.1 2.75-5 5.5-5s4.8 1.9 5.5 5M10.5 20c.56-2.35 2.38-4 5.5-4 2.75 0 4.8 1.55 5.5 4"
+                            />
+                        </svg>
+                    </span>
+
+                    <span class="nav-text">Usuarios</span>
+
+                    <svg
+                        class="nav-arrow"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            d="M14 2v6h6M8 13l-2 2 2 2M16 13l2 2-2 2M13 12l-2 6"
+                            d="m9 18 6-6-6-6"
                         />
                     </svg>
-                </span>
-
-                <span class="nav-text">Importar XML</span>
-
-                <svg
-                    class="nav-arrow"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m9 18 6-6-6-6"
-                    />
-                </svg>
-            </a>
+                </a>
             @endif
 
-            @if(auth()->user()?->puedeAdministrarCatalogo())
-            <a
-                href="{{ route('usuarios.roles.index') }}"
-                title="Usuarios y permisos"
-                data-label="Usuarios"
-                class="sidebar-link {{ request()->routeIs('usuarios.roles.*') ? 'active' : '' }}"
-            >
-                <span class="nav-mark" aria-hidden="true">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11c1.66 0 3-1.57 3-3.5S17.66 4 16 4s-3 1.57-3 3.5 1.34 3.5 3 3.5ZM8 11c1.66 0 3-1.57 3-3.5S9.66 4 8 4 5 5.57 5 7.5 6.34 11 8 11ZM2.5 20c.7-3.1 2.75-5 5.5-5s4.8 1.9 5.5 5M10.5 20c.56-2.35 2.38-4 5.5-4 2.75 0 4.8 1.55 5.5 4" />
-                    </svg>
-                </span>
-
-                <span class="nav-text">Usuarios</span>
-
-                <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
-                </svg>
-            </a>
-            @endif
-
+            {{-- IDENTIFICADOR VISUAL --}}
             <a
                 href="{{ route('materiales.visual.create') }}"
                 title="Identificador visual"
@@ -1600,42 +1920,44 @@
             </a>
 
             @if(auth()->user()?->puedeAdministrarCatalogo())
-            <a
-                href="{{ route('materiales.index', ['sin_codigo' => 1]) }}"
-                title="Agregar códigos"
-                data-label="Agregar códigos"
-                class="sidebar-link {{ request('sin_codigo') ? 'active' : '' }}"
-            >
-                <span class="nav-mark" aria-hidden="true">
+
+                {{-- AGREGAR CÓDIGOS --}}
+                <a
+                    href="{{ route('materiales.index', ['sin_codigo' => 1]) }}"
+                    title="Agregar códigos"
+                    data-label="Agregar códigos"
+                    class="sidebar-link {{ request('sin_codigo') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M3 5v14M6 5v14M10 5v14M14 5v14M18 5v14M21 5v14"
+                            />
+                        </svg>
+                    </span>
+
+                    <span class="nav-text">Agregar códigos</span>
+
                     <svg
+                        class="nav-arrow"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                     >
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            d="M3 5v14M6 5v14M10 5v14M14 5v14M18 5v14M21 5v14"
+                            d="m9 18 6-6-6-6"
                         />
                     </svg>
-                </span>
-
-                <span class="nav-text">Agregar códigos</span>
-
-                <svg
-                    class="nav-arrow"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m9 18 6-6-6-6"
-                    />
-                </svg>
-            </a>
+                </a>
             @endif
         </nav>
     </div>
@@ -1698,10 +2020,18 @@
     (() => {
         const shell = document.querySelector('.app-shell');
         const toggle = document.getElementById('sidebarToggle');
-        const mobileTrigger = document.getElementById('sidebarMobileTrigger');
-        const overlay = document.getElementById('sidebarMobileOverlay');
-        const sidebarLinks = document.querySelectorAll('.sidebar-link');
-        const compactQuery = window.matchMedia('(max-width: 860px)');
+        const mobileTrigger = document.getElementById(
+            'sidebarMobileTrigger'
+        );
+        const overlay = document.getElementById(
+            'sidebarMobileOverlay'
+        );
+        const sidebarLinks = document.querySelectorAll(
+            '.sidebar-link'
+        );
+        const compactQuery = window.matchMedia(
+            '(max-width: 860px)'
+        );
 
         if (!shell || !toggle) {
             return;
@@ -1709,8 +2039,12 @@
 
         function actualizarAccesibilidad() {
             const esMovil = compactQuery.matches;
-            const menuMovilAbierto = shell.classList.contains('mobile-menu-open');
-            const sidebarContraida = shell.classList.contains('sidebar-collapsed');
+            const menuMovilAbierto = shell.classList.contains(
+                'mobile-menu-open'
+            );
+            const sidebarContraida = shell.classList.contains(
+                'sidebar-collapsed'
+            );
 
             if (esMovil) {
                 toggle.setAttribute(
@@ -1821,7 +2155,10 @@
         }
 
         if (overlay) {
-            overlay.addEventListener('click', cerrarMenuMovil);
+            overlay.addEventListener(
+                'click',
+                cerrarMenuMovil
+            );
         }
 
         sidebarLinks.forEach((link) => {
@@ -1841,7 +2178,9 @@
             }
         });
 
-        if (typeof compactQuery.addEventListener === 'function') {
+        if (
+            typeof compactQuery.addEventListener === 'function'
+        ) {
             compactQuery.addEventListener(
                 'change',
                 aplicarEstadoGuardado
