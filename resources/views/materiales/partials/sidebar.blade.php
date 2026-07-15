@@ -1835,43 +1835,45 @@
 
         <nav class="sidebar-nav" id="sidebarNav">
 
-            {{-- DASHBOARD --}}
-            <a
-                href="{{ route('dashboard') }}"
-                title="Dashboard"
-                data-label="Dashboard"
-                class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-            >
-                <span class="nav-mark" aria-hidden="true">
+            @if(auth()->user()?->esAdministrador())
+                {{-- DASHBOARD --}}
+                <a
+                    href="{{ route('dashboard') }}"
+                    title="Dashboard"
+                    data-label="Dashboard"
+                    class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M4 13h6V4H4v9ZM14 20h6V4h-6v16ZM4 20h6v-4H4v4Z"
+                            />
+                        </svg>
+                    </span>
+
+                    <span class="nav-text">Dashboard</span>
+
                     <svg
+                        class="nav-arrow"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                     >
                         <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M4 13h6V4H4v9ZM14 20h6V4h-6v16ZM4 20h6v-4H4v4Z"
-                        />
-                    </svg>
-                </span>
-
-                <span class="nav-text">Dashboard</span>
-
-                <svg
-                    class="nav-arrow"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                >
-                    <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
                         d="m9 18 6-6-6-6"
                     />
                 </svg>
-            </a>
+                </a>
+            @endif
 
             {{-- INVENTARIO --}}
             <a
