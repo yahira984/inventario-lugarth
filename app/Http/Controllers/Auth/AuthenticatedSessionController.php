@@ -37,6 +37,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if (! $request->user()?->esAdministrador()) {
+            return redirect()->route('materiales.index');
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
