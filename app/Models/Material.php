@@ -9,22 +9,38 @@ class Material extends Model
 {
     use HasFactory;
     
-   protected $fillable = [
-    'categoria',
-    'numero_parte',
-     'codigo_barras',
-      'descripcion',
-       'marca',
+    protected $fillable = [
+        'categoria',
+        'almacen',
+        'numero_parte',
+        'codigo_barras',
+        'clave_sat',
+        'clave_unidad',
+        'unidad',
+        'descripcion',
+        'marca',
         'proveedor',
-         'stock',
-          'fotografia',
-           'evidencia_foto'
-           ];
+        'proveedor_rfc',
+        'stock',
+        'stock_minimo',
+        'stock_maximo',
+        'costo_unitario',
+        'moneda',
+        'factura_uuid',
+        'factura_folio',
+        'factura_fecha',
+        'xml_importado_at',
+        'fotografia',
+        'evidencia_foto',
+    ];
 
     protected $casts = [
         'stock' => 'integer',
         'stock_minimo' => 'integer',
+        'stock_maximo' => 'integer',
         'costo_unitario' => 'decimal:2',
+        'factura_fecha' => 'datetime',
+        'xml_importado_at' => 'datetime',
     ];
 
     public function requiereReposicion(): bool

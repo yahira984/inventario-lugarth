@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Material;
+use App\Models\MaterialCategory;
+use App\Models\MaterialMovimiento;
+use App\Support\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -50,6 +53,7 @@ class FacturaXmlController extends Controller
         return view('materiales.preview_xml', [
             'factura' => $factura,
             'payload' => base64_encode(json_encode($factura, JSON_UNESCAPED_UNICODE)),
+            'categorias' => $this->categoriasDisponibles(),
         ]);
     }
 
@@ -102,24 +106,82 @@ class FacturaXmlController extends Controller
                 $material = Material::where('numero_parte', $numeroParte)->first();
 
                 if ($material) {
-                    $material->increment('stock', $cantidad);
+                    $stockAnterior = $material->stock;
+                    $material->update([
+                        'stock' => $stockAnterior + $cantidad,
+                        'clave_sat' => $concepto['clave_prod_serv'] ?? $material->clave_sat,
+                        'clave_unidad' => $concepto['clave_unidad'] ?? $material->clave_unidad,
+                        'unidad' => $concepto['unidad'] ?? $material->unidad,
+                        'costo_unitario' => (float) ($concepto['valor_unitario'] ?? $material->costo_unitario),
+                        'moneda' => $factura['moneda'] ?: ($material->moneda ?: 'MXN'),
+                        'proveedor' => $factura['emisor']['nombre'] ?? $material->proveedor,
+                        'proveedor_rfc' => $factura['emisor']['rfc'] ?? $material->proveedor_rfc,
+                        'factura_uuid' => $factura['uuid'] ?? $material->factura_uuid,
+                        'factura_folio' => trim(($factura['serie'] ?? '') . ' ' . ($factura['folio'] ?? '')) ?: $material->factura_folio,
+                        'factura_fecha' => $factura['fecha'] ?? $material->factura_fecha,
+                        'xml_importado_at' => now(),
+                    ]);
+
+                    MaterialMovimiento::create([
+                        'material_id' => $material->id,
+                        'user_id' => auth()->id(),
+                        'tipo' => 'entrada',
+                        'cantidad' => $cantidad,
+                        'stock_anterior' => $stockAnterior,
+                        'stock_nuevo' => $material->stock,
+                        'codigo_barras' => $material->codigo_barras,
+                        'referencia' => 'XML ' . (($factura['uuid'] ?? '') ?: ($factura['folio'] ?? '')),
+                        'motivo' => 'Entrada importada desde XML',
+                    ]);
+
                     $resumen['actualizados']++;
                     continue;
                 }
 
-                Material::create([
+                $nuevo = Material::create([
                     'categoria' => $datos['items'][$indice]['categoria'],
                     'numero_parte' => $numeroParte,
                     'codigo_barras' => null,
+                    'clave_sat' => $concepto['clave_prod_serv'] ?? null,
+                    'clave_unidad' => $concepto['clave_unidad'] ?? null,
+                    'unidad' => $concepto['unidad'] ?? null,
                     'descripcion' => $descripcion,
                     'marca' => $factura['addenda']['marca'] ?? null,
                     'proveedor' => $factura['emisor']['nombre'] ?? null,
+                    'proveedor_rfc' => $factura['emisor']['rfc'] ?? null,
                     'stock' => $cantidad,
+                    'stock_minimo' => 0,
+                    'stock_maximo' => 0,
+                    'costo_unitario' => (float) ($concepto['valor_unitario'] ?? 0),
+                    'moneda' => $factura['moneda'] ?: 'MXN',
+                    'factura_uuid' => $factura['uuid'] ?? null,
+                    'factura_folio' => trim(($factura['serie'] ?? '') . ' ' . ($factura['folio'] ?? '')) ?: null,
+                    'factura_fecha' => $factura['fecha'] ?? null,
+                    'xml_importado_at' => now(),
+                ]);
+
+                MaterialMovimiento::create([
+                    'material_id' => $nuevo->id,
+                    'user_id' => auth()->id(),
+                    'tipo' => 'entrada',
+                    'cantidad' => $cantidad,
+                    'stock_anterior' => 0,
+                    'stock_nuevo' => $cantidad,
+                    'codigo_barras' => null,
+                    'referencia' => 'XML ' . (($factura['uuid'] ?? '') ?: ($factura['folio'] ?? '')),
+                    'motivo' => 'Alta importada desde XML',
                 ]);
 
                 $resumen['creados']++;
             }
         });
+
+        AuditLogger::registrar('XML', 'Importacion de factura', "Importo XML con {$resumen['creados']} materiales nuevos y {$resumen['actualizados']} actualizados.", [
+            'uuid' => $factura['uuid'] ?? null,
+            'folio' => $factura['folio'] ?? null,
+            'proveedor' => $factura['emisor']['nombre'] ?? null,
+            'resumen' => $resumen,
+        ], $request);
 
         return redirect()
             ->route('materiales.index')
@@ -165,6 +227,7 @@ class FacturaXmlController extends Controller
         foreach ($conceptosXml as $concepto) {
             $conceptos[] = [
                 'clave_prod_serv' => (string) ($concepto['ClaveProdServ'] ?? ''),
+                'clave_unidad' => (string) ($concepto['ClaveUnidad'] ?? ''),
                 'numero_parte' => (string) ($concepto['NoIdentificacion'] ?? ''),
                 'descripcion' => (string) ($concepto['Descripcion'] ?? ''),
                 'cantidad' => (float) ($concepto['Cantidad'] ?? 0),
@@ -194,6 +257,19 @@ class FacturaXmlController extends Controller
             'addenda' => $this->leerAddenda($xml),
             'conceptos' => $conceptos,
         ];
+    }
+
+    private function categoriasDisponibles()
+    {
+        return MaterialCategory::query()
+            ->where('activa', true)
+            ->orderBy('nombre')
+            ->pluck('nombre')
+            ->merge(Material::query()->whereNotNull('categoria')->distinct()->orderBy('categoria')->pluck('categoria'))
+            ->map(fn ($categoria) => trim((string) $categoria))
+            ->filter()
+            ->unique(fn ($categoria) => strtoupper($categoria))
+            ->values();
     }
 
     private function leerAddenda(SimpleXMLElement $xml): array

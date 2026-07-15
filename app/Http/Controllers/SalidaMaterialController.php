@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Material;
 use App\Models\MaterialMovimiento;
+use App\Support\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,11 +25,15 @@ class SalidaMaterialController extends Controller
                     $q->where('descripcion', 'LIKE', '%' . $buscar . '%')
                         ->orWhere('numero_parte', 'LIKE', '%' . $buscar . '%')
                         ->orWhere('codigo_barras', 'LIKE', '%' . $buscar . '%')
-                        ->orWhere('marca', 'LIKE', '%' . $buscar . '%');
+                        ->orWhere('marca', 'LIKE', '%' . $buscar . '%')
+                        ->orWhere('categoria', 'LIKE', '%' . $buscar . '%')
+                        ->orWhere('almacen', 'LIKE', '%' . $buscar . '%')
+                        ->orWhere('proveedor', 'LIKE', '%' . $buscar . '%');
                 });
             })
             ->orderByRaw('stock <= 0')
             ->orderBy('descripcion')
+            ->orderBy('categoria')
             ->limit(40)
             ->get();
 
@@ -74,9 +79,19 @@ class SalidaMaterialController extends Controller
             ]);
         }
 
-        $material = $materialId
-            ? Material::find($materialId)
-            : Material::where('codigo_barras', $codigoBarras)->first();
+        if ($materialId) {
+            $material = Material::find($materialId);
+        } else {
+            $materialesPorCodigo = Material::where('codigo_barras', $codigoBarras)->get();
+
+            if ($materialesPorCodigo->count() > 1) {
+                throw ValidationException::withMessages([
+                    'codigo_barras' => 'Ese codigo aparece en varios materiales. Busca el producto manualmente y selecciona la categoria correcta.',
+                ]);
+            }
+
+            $material = $materialesPorCodigo->first();
+        }
 
         if (!$material) {
             throw ValidationException::withMessages([
@@ -119,6 +134,12 @@ class SalidaMaterialController extends Controller
                 'motivo' => $datos['motivo'] ?? null,
             ]);
         });
+
+        AuditLogger::registrar('Salidas', 'Salida de almacen', "Registro salida de {$cantidad} piezas de {$material->descripcion}.", [
+            'material_id' => $material->id,
+            'cantidad' => $cantidad,
+            'referencia' => $datos['referencia'] ?? null,
+        ], $request);
 
         return redirect()
             ->route('materiales.salidas.create')

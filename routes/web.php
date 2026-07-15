@@ -1,9 +1,15 @@
 <?php
 
 use App\Http\Controllers\FacturaXmlController;
+use App\Http\Controllers\AdminMaterialController;
+use App\Http\Controllers\AdminProveedorController;
+use App\Http\Controllers\AdminSalidaController;
+use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\DatabaseBackupController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EtiquetaController;
 use App\Http\Controllers\IdentificadorVisualController;
+use App\Http\Controllers\MaterialCategoryController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReporteController;
@@ -34,6 +40,8 @@ Route::middleware('auth')->group(function () {
         ->name('materiales.etiqueta.generar');
     Route::get('materiales/{material}/etiqueta', [EtiquetaController::class, 'mostrar'])
         ->name('materiales.etiqueta');
+    Route::patch('materiales/{material}/codigo-barras', [MaterialController::class, 'guardarCodigoBarras'])
+        ->name('materiales.codigo.guardar');
 
     Route::get('materiales/importar-xml', [FacturaXmlController::class, 'create'])
         ->name('materiales.xml.create');
@@ -52,12 +60,38 @@ Route::middleware('auth')->group(function () {
     Route::patch('usuarios/{user}/permisos', [UserRoleController::class, 'update'])
         ->name('usuarios.roles.update');
 
+    Route::get('admin/proveedores', [AdminProveedorController::class, 'index'])
+        ->name('admin.proveedores.index');
+    Route::get('admin/proveedores/{proveedor}', [AdminProveedorController::class, 'show'])
+        ->name('admin.proveedores.show');
+    Route::get('admin/materiales-completo', [AdminMaterialController::class, 'index'])
+        ->name('admin.materiales.index');
+    Route::get('admin/salidas', [AdminSalidaController::class, 'index'])
+        ->name('admin.salidas.index');
+    Route::get('admin/auditoria', [AuditLogController::class, 'index'])
+        ->name('admin.auditoria.index');
+    Route::delete('admin/auditoria/{auditLog}', [AuditLogController::class, 'destroy'])
+        ->name('admin.auditoria.destroy');
+    Route::delete('admin/auditoria', [AuditLogController::class, 'clear'])
+        ->name('admin.auditoria.clear');
+    Route::get('admin/respaldos', [DatabaseBackupController::class, 'index'])
+        ->name('admin.backups.index');
+    Route::post('admin/respaldos', [DatabaseBackupController::class, 'store'])
+        ->name('admin.backups.store');
+    Route::post('admin/respaldos/restaurar', [DatabaseBackupController::class, 'restore'])
+        ->name('admin.backups.restore');
+    Route::resource('admin/categorias', MaterialCategoryController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->parameters(['categorias' => 'categoria'])
+        ->names('admin.categorias');
+
     Route::get('materiales/salidas', [SalidaMaterialController::class, 'create'])
         ->name('materiales.salidas.create');
     Route::post('materiales/salidas', [SalidaMaterialController::class, 'store'])
         ->name('materiales.salidas.store');
 
     Route::resource('materiales', MaterialController::class)
+        ->except(['show'])
         ->parameters(['materiales' => 'material']);
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

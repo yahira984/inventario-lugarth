@@ -238,17 +238,26 @@
                     </div>
 
                         <div class="form-group">
-                            <label>Categoría *</label>
-                            <select name="categoria" required>
-                                @foreach(['IMPORTADO XML','EQUIPO ACERO AL CARBON','EQUIPO ACERO INOXIDABLE','EQUIPO TIPO ASA INOXIDABLE','EQUIPO AC SIST DSPCH MEC FILL','EQUIPO AC SIST DSPCH MEC LIQUID','EQUIPO ACERO AL CARBON UPV'] as $cat)
+                            <label>Categoría</label>
+                            <select name="categoria">
+                                <option value="">Sin categoria</option>
+                                @foreach($categorias as $cat)
                                     <option value="{{ $cat }}" {{ old('categoria', $material->categoria) === $cat ? 'selected' : '' }}>{{ $cat }}</option>
                                 @endforeach
                             </select>
+                            @if(auth()->user()?->puedeAdministrarCatalogo())
+                                <div class="field-help">Puedes crear mas categorias en Administracion > Categorias.</div>
+                            @endif
                         </div>
 
                         <div class="form-group">
                             <label>No. de Parte</label>
                             <input type="text" name="numero_parte" value="{{ old('numero_parte', $material->numero_parte) }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Almacen</label>
+                            <input type="text" name="almacen" value="{{ old('almacen', $material->almacen) }}">
                         </div>
 
                         <div class="form-group">
@@ -261,9 +270,24 @@
                             <input type="text" name="proveedor" value="{{ old('proveedor', $material->proveedor) }}">
                         </div>
 
+                        <div class="form-group">
+                            <label>RFC proveedor</label>
+                            <input type="text" name="proveedor_rfc" value="{{ old('proveedor_rfc', $material->proveedor_rfc) }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Clave SAT</label>
+                            <input type="text" name="clave_sat" value="{{ old('clave_sat', $material->clave_sat) }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Unidad</label>
+                            <input type="text" name="unidad" value="{{ old('unidad', $material->unidad) }}">
+                        </div>
+
                     <div class="form-group">
-                        <label for="stock">Stock *</label>
-                        <input type="number" name="stock" id="stock" value="{{ old('stock', $material->stock) }}" min="0" required>
+                        <label for="stock">Stock</label>
+                        <input type="number" name="stock" id="stock" value="{{ old('stock', $material->stock) }}" min="0">
                         <div class="field-help">Escribe el stock total actual del material, no la cantidad a sumar.</div>
                         @error('stock') <span class="error">{{ $message }}</span> @enderror
                     </div>
@@ -273,6 +297,13 @@
                         <input type="number" name="stock_minimo" id="stock_minimo" value="{{ old('stock_minimo', $material->stock_minimo) }}" min="0">
                         <div class="field-help">El sistema lo marcara en rojo cuando el stock llegue a este numero.</div>
                         @error('stock_minimo') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock_maximo">Stock maximo</label>
+                        <input type="number" name="stock_maximo" id="stock_maximo" value="{{ old('stock_maximo', $material->stock_maximo) }}" min="0">
+                        <div class="field-help">Ayuda a detectar exceso de inventario.</div>
+                        @error('stock_maximo') <span class="error">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="form-group">

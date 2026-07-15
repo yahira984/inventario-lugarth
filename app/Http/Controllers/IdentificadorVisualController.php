@@ -53,7 +53,7 @@ class IdentificadorVisualController extends Controller
 
     private function buscarMateriales(array $descriptorFoto): Collection
     {
-        return Material::query()
+        $comparados = Material::query()
             ->whereNotNull('fotografia')
             ->where('fotografia', '<>', '')
             ->get()
@@ -65,11 +65,62 @@ class IdentificadorVisualController extends Controller
                 $material->motivos_visual = $motivos;
 
                 return $material;
-            })
+            });
+
+        $resultados = $comparados
             ->filter(fn (Material $material) => $material->puntaje_visual >= self::PUNTAJE_MINIMO)
             ->sortByDesc('puntaje_visual')
-            ->take(12)
             ->values();
+
+        return $this->expandirVariantesMismaPieza($resultados)
+            ->sortByDesc('puntaje_visual')
+            ->take(20)
+            ->values();
+    }
+
+    private function expandirVariantesMismaPieza(Collection $resultados): Collection
+    {
+        if ($resultados->isEmpty() || (int) $resultados->max('puntaje_visual') < 90) {
+            return $resultados;
+        }
+
+        $porGrupo = $resultados
+            ->filter(fn (Material $material) => $material->puntaje_visual >= 90)
+            ->groupBy(fn (Material $material) => $this->llavePieza($material))
+            ->map(fn (Collection $grupo) => (int) $grupo->max('puntaje_visual'));
+
+        if ($porGrupo->isEmpty()) {
+            return $resultados;
+        }
+
+        $variantes = Material::query()
+            ->whereNotNull('fotografia')
+            ->where('fotografia', '<>', '')
+            ->whereNotIn('id', $resultados->pluck('id')->all())
+            ->get()
+            ->filter(fn (Material $material) => $porGrupo->has($this->llavePieza($material)))
+            ->map(function (Material $material) use ($porGrupo) {
+                $puntajeBase = (int) $porGrupo->get($this->llavePieza($material), 90);
+                $material->puntaje_visual = max(90, min(99, $puntajeBase - 1));
+                $material->motivos_visual = ['misma pieza en otra categoria'];
+
+                return $material;
+            });
+
+        return $resultados->concat($variantes);
+    }
+
+    private function llavePieza(Material $material): string
+    {
+        return $this->normalizarTexto($material->descripcion) . '|' . $this->normalizarTexto($material->marca);
+    }
+
+    private function normalizarTexto(?string $texto): string
+    {
+        $texto = trim((string) $texto);
+        $texto = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $texto) ?: $texto;
+
+        return preg_replace('/[^A-Z0-9]+/', ' ', strtoupper($texto)) ?: '';
     }
 
     private function descriptorImagen(string $ruta): array

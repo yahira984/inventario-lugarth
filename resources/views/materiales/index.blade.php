@@ -354,7 +354,7 @@
             align-items: center;
         }
 
-        .btn-edit, .btn-code, .btn-delete, .btn-label {
+        .btn-edit, .btn-code, .btn-delete, .btn-label, .btn-barcode {
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -392,6 +392,19 @@
             background: var(--orange-glow);
             color: #fff;
             box-shadow: 0 0 20px rgba(249, 115, 22, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-barcode {
+            background: rgba(37, 99, 235, 0.12);
+            color: #bfdbfe;
+            border: 1px solid rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-barcode:hover {
+            background: #2563eb;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.45);
             transform: translateY(-2px);
         }
 
@@ -448,6 +461,16 @@
         .modal-confirm-content p { margin: 0 0 24px; color: var(--muted); font-size: 15px; text-align: center; line-height: 1.6; }
         .modal-confirm-content p strong { color: #fff; font-size: 16px;}
         .modal-confirm-actions { display: flex; gap: 12px; }
+        .barcode-form { display: grid; gap: 14px; }
+        .barcode-form label { color: #e5edf8; font-weight: 800; font-size: 13px; }
+        .barcode-form input { width: 100%; min-height: 48px; border-radius: 12px; border: 1px solid rgba(148, 163, 184, .35); background: rgba(15, 23, 42, .85); color: #fff; padding: 0 14px; font-size: 16px; box-sizing: border-box; }
+        .barcode-form input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 4px rgba(56, 189, 248, .16); }
+        .barcode-help { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; text-align: left; }
+        .barcode-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-save-code { min-height: 44px; border: 0; border-radius: 12px; background: #2563eb; color: #fff; font-weight: 900; cursor: pointer; }
+        .btn-save-code:hover { background: #1d4ed8; transform: translateY(-1px); }
+        .btn-camera-code { min-height: 44px; border: 1px solid rgba(56, 189, 248, .42); border-radius: 12px; background: rgba(56, 189, 248, .1); color: #bae6fd; font-weight: 900; cursor: pointer; }
+        .btn-camera-code:hover { background: rgba(56, 189, 248, .22); color: #fff; transform: translateY(-1px); }
         .btn-confirm-cancel { flex: 1; padding: 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .btn-confirm-cancel:hover { background: rgba(255,255,255,0.1); }
         .btn-confirm-delete { flex: 1; padding: 14px; border-radius: 10px; border: none; background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; font-weight: 800; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
@@ -602,12 +625,9 @@
 
             <select name="filtrar_categoria">
                 <option value="">Todas las categorias</option>
-                <option value="EQUIPO ACERO AL CARBON" {{ request('filtrar_categoria') == 'EQUIPO ACERO AL CARBON' ? 'selected' : '' }}>EQUIPO ACERO AL CARBON</option>
-                <option value="EQUIPO ACERO INOXIDABLE" {{ request('filtrar_categoria') == 'EQUIPO ACERO INOXIDABLE' ? 'selected' : '' }}>EQUIPO ACERO INOXIDABLE</option>
-                <option value="EQUIPO TIPO ASA INOXIDABLE" {{ request('filtrar_categoria') == 'EQUIPO TIPO ASA INOXIDABLE' ? 'selected' : '' }}>EQUIPO TIPO ASA INOXIDABLE</option>
-                <option value="EQUIPO AC SIST DSPCH MEC FILL" {{ request('filtrar_categoria') == 'EQUIPO AC SIST DSPCH MEC FILL' ? 'selected' : '' }}>EQUIPO AC SIST DSPCH MEC FILL</option>
-                <option value="EQUIPO AC SIST DSPCH MEC LIQUID" {{ request('filtrar_categoria') == 'EQUIPO AC SIST DSPCH MEC LIQUID' ? 'selected' : '' }}>EQUIPO AC SIST DSPCH MEC LIQUID</option>
-                <option value="EQUIPO ACERO AL CARBON UPV" {{ request('filtrar_categoria') == 'EQUIPO ACERO AL CARBON UPV' ? 'selected' : '' }}>EQUIPO ACERO AL CARBON UPV</option>
+                @foreach($categorias as $categoria)
+                    <option value="{{ $categoria }}" {{ request('filtrar_categoria') == $categoria ? 'selected' : '' }}>{{ $categoria }}</option>
+                @endforeach
             </select>
 
             <button type="submit" class="btn-filter">Buscar</button>
@@ -689,10 +709,18 @@
                                 @endif
 
                                 @if(! $material->codigo_barras && auth()->user()?->puedeAdministrarCatalogo())
+                                    <button
+                                        type="button"
+                                        class="btn-barcode"
+                                        onclick="abrirModalCodigo('{{ route('materiales.codigo.guardar', $material) }}', @js($material->descripcion))"
+                                    >
+                                        Agregar codigo de barras
+                                    </button>
+
                                     <form action="{{ route('materiales.etiqueta.generar', $material) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn-code">
-                                            Generar QR
+                                            Generar QR interno
                                         </button>
                                     </form>
                                 @elseif(! $material->codigo_barras)
@@ -747,6 +775,9 @@
             </tbody>
         </table>
     </div>
+    <div style="padding: 0 30px 30px;">
+        {{ $materiales->links() }}
+    </div>
 </div>
 
 </main>
@@ -754,9 +785,39 @@
 
 <div id="scannerModal" class="modal">
     <div class="modal-content">
-        <h3>Escanear Código</h3>
+        <h3 id="scannerTitle">Escanear Codigo</h3>
         <div id="reader"></div>
         <button type="button" class="close-btn" onclick="cerrarEscaner()">Cancelar</button>
+    </div>
+</div>
+
+<div id="barcodeModal" class="modal">
+    <div class="modal-content">
+        <h3>Agregar codigo de barras</h3>
+        <form method="POST" id="barcodeForm" class="barcode-form">
+            @csrf
+            @method('PATCH')
+            <p class="barcode-help">
+                Producto: <strong id="barcodeMaterialName"></strong>
+            </p>
+            <label for="barcodeInput">Codigo de barras real del producto</label>
+            <input
+                type="text"
+                name="codigo_barras"
+                id="barcodeInput"
+                placeholder="Escanea con pistolita USB o escribe el codigo"
+                autocomplete="off"
+                required
+            >
+            <p class="barcode-help">
+                Si usas pistolita USB, solo coloca el cursor aqui y escanea. Si estas en celular, puedes usar la camara.
+            </p>
+            <div class="barcode-actions">
+                <button type="button" class="btn-camera-code" onclick="abrirEscanerParaCodigo()">Escanear con camara</button>
+                <button type="submit" class="btn-save-code">Guardar codigo</button>
+            </div>
+        </form>
+        <button type="button" class="close-btn" onclick="cerrarModalCodigo()">Cancelar</button>
     </div>
 </div>
 
@@ -781,7 +842,13 @@
 <script>
     const buscarInput = document.getElementById('buscarInput');
     const searchForm = document.getElementById('searchForm');
+    const barcodeModal = document.getElementById('barcodeModal');
+    const barcodeForm = document.getElementById('barcodeForm');
+    const barcodeInput = document.getElementById('barcodeInput');
+    const barcodeMaterialName = document.getElementById('barcodeMaterialName');
+    const scannerTitle = document.getElementById('scannerTitle');
     let html5QrcodeScanner = null;
+    let scannerTarget = 'buscar';
     let scannerBuffer = '';
     let scannerBufferInicio = 0;
     let scannerUltimaTecla = 0;
@@ -800,6 +867,8 @@
     }
 
     function abrirEscaner() {
+        scannerTarget = 'buscar';
+        scannerTitle.textContent = 'Escanear codigo para buscar';
         document.getElementById('scannerModal').style.display = 'flex';
 
         html5QrcodeScanner = new Html5QrcodeScanner(
@@ -809,10 +878,46 @@
         );
 
         html5QrcodeScanner.render((textoDecodificado) => {
-            buscarCodigoEscaneado(textoDecodificado);
+            usarCodigoEscaneado(textoDecodificado);
         }, () => {});
 
         observarTraduccionEscaner();
+    }
+
+    function abrirEscanerParaCodigo() {
+        scannerTarget = 'asignar';
+        scannerTitle.textContent = 'Escanear codigo de barras';
+        document.getElementById('scannerModal').style.display = 'flex';
+
+        html5QrcodeScanner = new Html5QrcodeScanner(
+            'reader',
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            false
+        );
+
+        html5QrcodeScanner.render((textoDecodificado) => {
+            usarCodigoEscaneado(textoDecodificado);
+        }, () => {});
+
+        observarTraduccionEscaner();
+    }
+
+    function usarCodigoEscaneado(codigo) {
+        const codigoLimpio = codigo.trim();
+
+        if (!codigoLimpio) {
+            return;
+        }
+
+        if (scannerTarget === 'asignar') {
+            barcodeInput.value = codigoLimpio;
+            cerrarEscaner();
+            barcodeInput.focus();
+            barcodeInput.select();
+            return;
+        }
+
+        buscarCodigoEscaneado(codigoLimpio);
     }
 
     function cerrarEscaner() {
@@ -826,6 +931,21 @@
             window.escanerTraductorObserver.disconnect();
             window.escanerTraductorObserver = null;
         }
+    }
+
+    function abrirModalCodigo(url, nombre) {
+        barcodeForm.action = url;
+        barcodeInput.value = '';
+        barcodeMaterialName.textContent = nombre;
+        barcodeModal.style.display = 'flex';
+
+        setTimeout(() => barcodeInput.focus(), 80);
+    }
+
+    function cerrarModalCodigo() {
+        barcodeForm.action = '';
+        barcodeInput.value = '';
+        barcodeModal.style.display = 'none';
     }
 
     function traducirEscanerHtml5() {
@@ -892,7 +1012,13 @@
     });
 
     document.addEventListener('keydown', (event) => {
-        if (event.ctrlKey || event.altKey || event.metaKey || document.activeElement === buscarInput) {
+        if (
+            event.ctrlKey
+            || event.altKey
+            || event.metaKey
+            || document.activeElement === buscarInput
+            || document.activeElement === barcodeInput
+        ) {
             return;
         }
 
@@ -917,6 +1043,14 @@
             event.preventDefault();
             const codigo = scannerBuffer;
             scannerBuffer = '';
+
+            if (barcodeModal.style.display === 'flex') {
+                barcodeInput.value = codigo.trim();
+                barcodeInput.focus();
+                barcodeInput.select();
+                return;
+            }
+
             buscarCodigoEscaneado(codigo);
         }
     });
@@ -948,6 +1082,10 @@ function ejecutarEliminar() {
     // Cerrar modal al hacer clic fuera
     document.getElementById('deleteModal').addEventListener('click', function (e) {
         if (e.target === this) cerrarModalEliminar();
+    });
+
+    barcodeModal.addEventListener('click', function (e) {
+        if (e.target === this) cerrarModalCodigo();
     });
 </script>
 

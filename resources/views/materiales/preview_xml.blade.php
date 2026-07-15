@@ -320,6 +320,8 @@
                                     <th>Descripción</th>
                                     <th>Clave SAT</th>
                                     <th>Unidad</th>
+                                    <th>Precio unitario</th>
+                                    <th>Importe</th>
                                     <th>Categoría</th>
                                 </tr>
                             </thead>
@@ -341,15 +343,13 @@
                                         <td>{{ $concepto['descripcion'] }}</td>
                                         <td>{{ $concepto['clave_prod_serv'] ?: 'N/A' }}</td>
                                         <td>{{ $concepto['unidad'] ?: 'N/A' }}</td>
+                                        <td>${{ number_format((float) ($concepto['valor_unitario'] ?? 0), 2) }}</td>
+                                        <td>${{ number_format((float) ($concepto['importe'] ?? 0), 2) }}</td>
                                         <td>
                                             <select name="items[{{ $index }}][categoria]" required>
-                                                <option value="IMPORTADO XML">IMPORTADO XML</option>
-                                                <option value="EQUIPO ACERO AL CARBON">EQUIPO ACERO AL CARBON</option>
-                                                <option value="EQUIPO ACERO INOXIDABLE">EQUIPO ACERO INOXIDABLE</option>
-                                                <option value="EQUIPO TIPO ASA INOXIDABLE">EQUIPO TIPO ASA INOXIDABLE</option>
-                                                <option value="EQUIPO AC SIST DSPCH MEC FILL">EQUIPO AC SIST DSPCH MEC FILL</option>
-                                                <option value="EQUIPO AC SIST DSPCH MEC LIQUID">EQUIPO AC SIST DSPCH MEC LIQUID</option>
-                                                <option value="EQUIPO ACERO AL CARBON UPV">EQUIPO ACERO AL CARBON UPV</option>
+                                                @foreach($categorias as $categoria)
+                                                    <option value="{{ $categoria }}" {{ $categoria === 'IMPORTADO XML' ? 'selected' : '' }}>{{ $categoria }}</option>
+                                                @endforeach
                                             </select>
                                         </td>
                                     </tr>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Support\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -45,6 +46,12 @@ class UserRoleController extends Controller
             'role' => $datos['role'],
             'approved_at' => $aprobado ? ($user->approved_at ?? now()) : null,
         ]);
+
+        AuditLogger::registrar('Usuarios', 'Permisos', "Actualizo permisos de {$user->name}.", [
+            'user_id' => $user->id,
+            'role' => $datos['role'],
+            'aprobado' => $aprobado,
+        ], $request);
 
         return back()->with('success', 'Permisos y aprobacion actualizados correctamente.');
     }
