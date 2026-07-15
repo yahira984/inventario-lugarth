@@ -561,11 +561,11 @@
         background:
             linear-gradient(
                 90deg,
-                rgba(255, 255, 255, 0.13),
-                rgba(255, 255, 255, 0.07)
+                rgba(19, 9, 110, 0.13),
+                rgba(19, 9, 110, 0.13)
             );
 
-        border-color: rgba(255, 255, 255, 0.17);
+        border-color: rgba(19, 9, 110, 0.13);
 
         transform: translateX(4px);
 
@@ -695,7 +695,7 @@
 
         margin-left: auto;
 
-        color: rgba(222, 239, 255, 0.7);
+        color: rgba(18, 97, 201, 0.3);
 
         opacity: 0;
         transform: translateX(-5px);
@@ -741,18 +741,18 @@
 
         overflow: hidden;
 
-        border: 1px solid rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(18, 97, 201, 0.3);
         border-radius: 14px;
 
         background:
             linear-gradient(
                 135deg,
-                rgba(255, 255, 255, 0.13),
-                rgba(255, 255, 255, 0.07)
+                rgba(18, 97, 201, 0.3),
+                rgba(18, 97, 201, 0.3)
             );
 
         box-shadow:
-            inset 0 1px 0 rgba(255, 255, 255, 0.09),
+            inset 0 1px 0 rgba(18, 97, 201, 0.3),
             0 10px 22px rgba(0, 18, 50, 0.13);
     }
 
