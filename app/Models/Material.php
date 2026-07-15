@@ -9,18 +9,17 @@ class Material extends Model
 {
     use HasFactory;
     
-    protected $fillable = [
-        'categoria',
-        'numero_parte',
-        'codigo_barras',
-        'descripcion',
-        'marca',
+   protected $fillable = [
+    'categoria',
+    'numero_parte',
+     'codigo_barras',
+      'descripcion',
+       'marca',
         'proveedor',
-        'stock',
-        'stock_minimo',
-        'costo_unitario',
-        'fotografia',
-    ];
+         'stock',
+          'fotografia',
+           'evidencia_foto'
+           ];
 
     protected $casts = [
         'stock' => 'integer',
