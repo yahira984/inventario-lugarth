@@ -1562,6 +1562,200 @@
         background: #ffffff;
         border-color: #b9d7f8;
     }
+
+    .sidebar-logo {
+        background: #ffffff url("{{ asset('images/logo.png') }}") center / cover no-repeat !important;
+    }
+
+    .sidebar-logo::before,
+    .sidebar-logo::after,
+    .sidebar-logo svg {
+        display: none !important;
+    }
+
+    .legacy-hidden {
+        display: none !important;
+    }
+
+    .sidebar-link[data-label="Dashboard"] { order: 10; }
+    .sidebar-link[data-label="Inventario"] { order: 20; }
+    .sidebar-link[data-label="Registrar entrada"] { order: 30; }
+    .sidebar-link[data-label="Registrar salida"] { order: 40; }
+    .sidebar-link[data-label="Agregar codigos"] { order: 50; }
+    .sidebar-link[data-label="Importar XML"] { order: 60; }
+    .sidebar-link[data-label="Categorias"] { order: 70; }
+    .sidebar-link[data-label="Proveedores"] { order: 80; }
+    .sidebar-link[data-label="Catalogo"] { order: 90; }
+    .sidebar-link[data-label="Usuarios"] { order: 100; }
+    .sidebar-link[data-label="Salidas admin"] { order: 110; }
+    .sidebar-link[data-label="Auditoria"] { order: 120; }
+    .sidebar-link[data-label="Respaldos"] { order: 130; }
+    .sidebar-link[data-label="Identificador visual"] { order: 140; }
+
+    /*
+     * Modo contraido limpio: solo iconos, sin choques con el footer.
+     */
+    .app-shell.sidebar-collapsed .sidebar {
+        padding: 14px 10px !important;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar-top {
+        min-height: auto !important;
+        gap: 9px !important;
+        padding: 0 0 12px !important;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar-logo {
+        width: 44px !important;
+        height: 44px !important;
+        flex: 0 0 44px !important;
+        border-radius: 13px !important;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar-toggle {
+        width: 38px !important;
+        height: 38px !important;
+        flex: 0 0 38px !important;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar-navigation {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        padding: 12px 0 10px !important;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar-nav {
+        gap: 7px !important;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar-link,
+    .app-shell.sidebar-collapsed .sidebar-logout {
+        width: 56px !important;
+        min-height: 44px !important;
+        margin-inline: auto !important;
+        padding: 6px !important;
+        justify-content: center !important;
+        border-radius: 14px !important;
+    }
+
+    .app-shell.sidebar-collapsed .nav-mark {
+        width: 32px !important;
+        height: 32px !important;
+        flex: 0 0 32px !important;
+        border-radius: 10px !important;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar-user-card {
+        display: none !important;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar-footer {
+        padding-top: 10px !important;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar-footer form {
+        display: grid !important;
+        gap: 8px !important;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar-link::after,
+    .app-shell.sidebar-collapsed .sidebar-logout::after {
+        display: none !important;
+    }
+
+    .app-content input,
+    .app-content input[type="text"],
+    .app-content input[type="number"],
+    .app-content input[type="email"],
+    .app-content input[type="password"],
+    .app-content input[type="file"],
+    .app-content select,
+    .app-content textarea,
+    .manual-search input,
+    .filter-form input[type="text"],
+    .filter-form select,
+    .input-row input,
+    .approval-toggle,
+    .barcode-form input {
+        background: #ffffff !important;
+        color: #10233f !important;
+        border-color: #b8c8dc !important;
+        box-shadow: none !important;
+        -webkit-text-fill-color: #10233f !important;
+    }
+
+    .app-content input::placeholder,
+    .app-content textarea::placeholder {
+        color: #64748b !important;
+        opacity: 1 !important;
+        -webkit-text-fill-color: #64748b !important;
+    }
+
+    .app-content label,
+    .app-content .field-help,
+    .app-content .muted,
+    .app-content .header-meta,
+    .app-content .meta,
+    .app-content .panel-description,
+    .app-content .card-title,
+    .app-content .chart-stat span,
+    .app-content .stock-meta,
+    .app-content .code-muted {
+        color: #475569 !important;
+        -webkit-text-fill-color: #475569 !important;
+    }
+
+    .app-content h1,
+    .app-content h2,
+    .app-content h3,
+    .app-content .manual-title,
+    .app-content .selected-name,
+    .app-content .user-name,
+    .app-content td,
+    .app-content th {
+        color: #0f2742 !important;
+        -webkit-text-fill-color: #0f2742 !important;
+    }
+
+    .chart-stat,
+    .status,
+    .code-status,
+    .selected-card,
+    .manual-card,
+    .history-item,
+    .help-card {
+        background: #ffffff !important;
+        color: #10233f !important;
+        border-color: #dbe5f0 !important;
+    }
+
+    .chart-stat.good strong,
+    .stock-pill,
+    .status.success,
+    .code-status.success {
+        color: #047857 !important;
+        -webkit-text-fill-color: #047857 !important;
+    }
+
+    .chart-stat.danger strong,
+    .status.error,
+    .code-status.error,
+    .field-error,
+    .error {
+        color: #b91c1c !important;
+        -webkit-text-fill-color: #b91c1c !important;
+    }
+
+    .app-content button:disabled,
+    .app-content .btn:disabled {
+        opacity: 0.72 !important;
+        color: #475569 !important;
+        background: #e2e8f0 !important;
+        border-color: #cbd5e1 !important;
+        cursor: not-allowed !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
 </style>
 
 <button
@@ -1797,6 +1991,23 @@
             @endif
 
             @if(auth()->user()?->puedeAdministrarCatalogo())
+                <a
+                    href="{{ route('materiales.index', ['sin_codigo' => 1]) }}"
+                    title="Agregar codigos"
+                    data-label="Agregar codigos"
+                    class="sidebar-link {{ request('sin_codigo') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 5v14M6 5v14M10 5v14M14 5v14M18 5v14M21 5v14" />
+                        </svg>
+                    </span>
+                    <span class="nav-text">Agregar codigos</span>
+                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
+                </a>
+            @endif
+
+            @if(auth()->user()?->puedeAdministrarCatalogo())
 
                 {{-- IMPORTAR XML --}}
                 <a
@@ -1841,6 +2052,12 @@
                     </svg>
                 </a>
 
+                <a href="{{ route('admin.categorias.index') }}" title="Categorias" data-label="Categorias" class="sidebar-link {{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">
+                    <span class="nav-mark" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h7" /></svg></span>
+                    <span class="nav-text">Categorias</span>
+                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
+                </a>
+
                 {{-- USUARIOS --}}
                 <a
                     href="{{ route('usuarios.roles.index') }}"
@@ -1877,6 +2094,38 @@
                             d="m9 18 6-6-6-6"
                         />
                     </svg>
+                </a>
+            @endif
+
+            @if(auth()->user()?->puedeAdministrarCatalogo())
+                <a href="{{ route('admin.proveedores.index') }}" title="Proveedores" data-label="Proveedores" class="sidebar-link {{ request()->routeIs('admin.proveedores.*') ? 'active' : '' }}">
+                    <span class="nav-mark" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M6 7v13h12V7M8 11h8M8 15h5M9 7V4h6v3" /></svg></span>
+                    <span class="nav-text">Proveedores</span>
+                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
+                </a>
+
+                <a href="{{ route('admin.materiales.index') }}" title="Catalogo completo" data-label="Catalogo" class="sidebar-link {{ request()->routeIs('admin.materiales.*') ? 'active' : '' }}">
+                    <span class="nav-mark" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16v14H4zM8 9h8M8 13h8M8 17h4" /></svg></span>
+                    <span class="nav-text">Catalogo completo</span>
+                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
+                </a>
+
+                <a href="{{ route('admin.salidas.index') }}" title="Salidas admin" data-label="Salidas admin" class="sidebar-link {{ request()->routeIs('admin.salidas.*') ? 'active' : '' }}">
+                    <span class="nav-mark" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6M5 5v14" /></svg></span>
+                    <span class="nav-text">Salidas admin</span>
+                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
+                </a>
+
+                <a href="{{ route('admin.auditoria.index') }}" title="Auditoria" data-label="Auditoria" class="sidebar-link {{ request()->routeIs('admin.auditoria.*') ? 'active' : '' }}">
+                    <span class="nav-mark" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-5M12 3l7 4v5c0 5-3 8-7 9-4-1-7-4-7-9V7l7-4z" /></svg></span>
+                    <span class="nav-text">Auditoria</span>
+                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
+                </a>
+
+                <a href="{{ route('admin.backups.index') }}" title="Respaldos" data-label="Respaldos" class="sidebar-link {{ request()->routeIs('admin.backups.*') ? 'active' : '' }}">
+                    <span class="nav-mark" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7c0 1.7 3.6 3 8 3s8-1.3 8-3-3.6-3-8-3-8 1.3-8 3zm0 0v10c0 1.7 3.6 3 8 3s8-1.3 8-3V7" /></svg></span>
+                    <span class="nav-text">Respaldos</span>
+                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
                 </a>
             @endif
 
@@ -1926,7 +2175,7 @@
                     href="{{ route('materiales.index', ['sin_codigo' => 1]) }}"
                     title="Agregar códigos"
                     data-label="Agregar códigos"
-                    class="sidebar-link {{ request('sin_codigo') ? 'active' : '' }}"
+                    class="sidebar-link legacy-hidden {{ request('sin_codigo') ? 'active' : '' }}"
                 >
                     <span class="nav-mark" aria-hidden="true">
                         <svg
@@ -1982,6 +2231,15 @@
 
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
+
+                <a href="{{ route('profile.edit') }}" class="sidebar-link" title="Ver perfil" data-label="Perfil" style="margin-bottom: 8px;">
+                    <span class="nav-mark" aria-hidden="true">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 21a8 8 0 0 1 16 0" />
+                        </svg>
+                    </span>
+                    <span class="nav-text">Ver perfil</span>
+                </a>
 
                 <button
                     type="submit"

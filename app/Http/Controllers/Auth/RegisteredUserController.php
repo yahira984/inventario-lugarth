@@ -43,15 +43,24 @@ class RegisteredUserController extends Controller
             'password.confirmed' => 'Las contraseñas no coinciden. Escríbelas igual en ambos campos.',
         ]);
 
+        $esPrimerUsuario = User::count() === 0;
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'consultor',
-            'approved_at' => null,
+            'role' => $esPrimerUsuario ? 'administrador' : 'consultor',
+            'approved_at' => $esPrimerUsuario ? now() : null,
         ]);
 
         event(new Registered($user));
+
+        if ($esPrimerUsuario) {
+            auth()->login($user);
+
+            return redirect()->route('dashboard')
+                ->with('success', 'Primer usuario creado como administrador.');
+        }
 
         return redirect()
             ->route('login')

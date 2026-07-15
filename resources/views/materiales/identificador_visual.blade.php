@@ -141,6 +141,22 @@
         .result-photo { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; }
         .result-title { font-weight: 800; font-size: 14px; margin-bottom: 8px; }
         .result-meta { font-size: 11px; color: var(--muted); display: grid; gap: 2px; }
+        .category-badge {
+            display: inline-flex;
+            width: fit-content;
+            max-width: 100%;
+            border-radius: 8px;
+            padding: 5px 8px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: #ffffff;
+            border: 1px solid rgba(37, 99, 235, 0.55);
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+            font-size: 10px;
+            font-weight: 900;
+            line-height: 1.15;
+            text-transform: uppercase;
+        }
         
         .score-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
         .score { color: var(--emerald-glow); font-weight: bold; font-size: 12px; }
@@ -226,9 +242,12 @@
                             <article class="result-card">
                                 <img src="{{ asset('storage/' . $material->fotografia) }}" class="result-photo" alt="Foto">
                                 <div class="result-info">
+                                    <div class="category-badge">{{ $material->categoria ?: 'Sin categoria' }}</div>
                                     <div class="result-title">{{ $material->descripcion }}</div>
                                     <div class="result-meta">
+                                        <span>No. parte: {{ $material->numero_parte ?: 'N/A' }}</span>
                                         <span>Marca: {{ $material->marca }}</span>
+                                        <span>Almacen: {{ $material->almacen ?: 'Sin definir' }}</span>
                                         <span>Stock: {{ $material->stock }} pzas</span>
                                     </div>
                                     <div class="score-row">

@@ -19,20 +19,26 @@ class ReporteController extends Controller
         $callback = function () {
             $out = fopen('php://output', 'w');
             fputs($out, "\xEF\xBB\xBF");
-            fputcsv($out, ['Categoría', 'No. Parte', 'Código Barras', 'Descripción', 'Marca', 'Proveedor', 'Stock', 'Stock mínimo', 'Costo unitario', 'Valor']);
+            fputcsv($out, ['Categoria', 'Almacen', 'No. Parte', 'Codigo Barras', 'Clave SAT', 'Unidad', 'Descripcion', 'Marca', 'Proveedor', 'RFC Proveedor', 'Stock', 'Stock minimo', 'Stock maximo', 'Costo unitario', 'Moneda', 'Valor']);
 
             Material::query()->orderBy('descripcion')->chunk(200, function ($materiales) use ($out) {
                 foreach ($materiales as $material) {
                     fputcsv($out, [
                         $material->categoria,
+                        $material->almacen,
                         $material->numero_parte,
                         $material->codigo_barras,
+                        $material->clave_sat,
+                        $material->unidad,
                         $material->descripcion,
                         $material->marca,
                         $material->proveedor,
+                        $material->proveedor_rfc,
                         $material->stock,
                         $material->stock_minimo,
+                        $material->stock_maximo,
                         $material->costo_unitario,
+                        $material->moneda,
                         (float) $material->stock * (float) $material->costo_unitario,
                     ]);
                 }
@@ -54,7 +60,7 @@ class ReporteController extends Controller
         $callback = function () {
             $out = fopen('php://output', 'w');
             fputs($out, "\xEF\xBB\xBF");
-            fputcsv($out, ['Fecha', 'Material', 'No. Parte', 'Código', 'Cantidad', 'Stock anterior', 'Stock nuevo', 'Referencia', 'Motivo', 'Usuario']);
+            fputcsv($out, ['Fecha', 'Material', 'No. Parte', 'Codigo', 'Cantidad', 'Stock anterior', 'Stock nuevo', 'Referencia', 'Motivo', 'Usuario']);
 
             MaterialMovimiento::query()
                 ->with(['material', 'user'])

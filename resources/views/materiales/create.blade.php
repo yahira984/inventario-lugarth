@@ -3,101 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Material - ERP Inventario</title>
+    <title>Registrar entrada - Inventario Lugarth</title>
     <style>
-        /* === ESTRUCTURA PRINCIPAL Y SIDEBAR === */
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #f4f6f9; 
-            margin: 0; 
-            color: #333; 
-            display: flex; /* Esto pone el sidebar y el contenido uno al lado del otro */
-            min-height: 100vh;
-        }
-        
-        .main-content {
-            flex: 1; /* Toma todo el espacio restante a la derecha del sidebar */
-            padding: 40px 20px;
-            box-sizing: border-box;
-            height: 100vh;
-            overflow-y: auto; /* Permite scroll solo en el contenido */
-        }
-
-        /* === DISEÑO DEL FORMULARIO GERENCIAL === */
-        .container { 
-            max-width: 700px; 
-            margin: 0 auto; 
-            background: #fff; 
-            padding: 40px; 
-            border-radius: 10px; 
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); 
-        }
-        h2 { 
-            color: #2c3e50; 
-            margin-top: 0; 
-            margin-bottom: 30px; 
-            border-bottom: 3px solid #3498db; 
-            padding-bottom: 10px; 
-            text-align: center;
-            font-size: 24px;
-        }
-        .form-group { margin-bottom: 22px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; color: #34495e; font-size: 14px; }
-        
-        input[type="text"], input[type="number"], textarea, select, input[type="file"] { 
-            width: 100%; padding: 12px 15px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 15px; transition: all 0.3s ease; background-color: #fcfcfc;
-        }
-        input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus { 
-            border-color: #3498db; outline: none; background-color: #fff; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15); 
-        }
-        textarea { resize: vertical; min-height: 100px; }
-        input[type="file"] { background-color: #fff; padding: 10px; cursor: pointer; border: 1px dashed #adb5bd; }
-        
-        /* === BOTONES === */
-        .btn-submit { background-color: #2ecc71; color: white; border: none; padding: 14px 20px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; transition: background 0.3s; margin-top: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-submit:hover { background-color: #27ae60; box-shadow: 0 4px 6px rgba(46, 204, 113, 0.3); }
-        
-        .btn-cancel { display: block; text-align: center; margin-top: 20px; color: #7f8c8d; text-decoration: none; font-weight: 500; transition: color 0.3s; }
-        .btn-cancel:hover { color: #e74c3c; }
-
-        .input-group { display: flex; gap: 10px; }
-        .input-group input { flex: 1; }
-        
-        .btn-action { background-color: #f39c12; color: white; border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
-        .btn-action:hover { background-color: #d68910; }
-        
-        .btn-camera { background-color: #34495e; color: white; border: none; padding: 12px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; width: 100%; margin-bottom: 12px; }
-        .btn-camera:hover { background-color: #2c3e50; }
-
-        /* === CAJAS DE EVIDENCIA === */
-        .evidence-box { background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e9ecef; }
-        .evidence-box.highlight { background: #f0fbf4; border-color: #c3e6cb; margin-top: 20px; }
-
-        /* === MENSAJES DE ERROR === */
-        .alert-danger { background-color: #f8d7da; color: #721c24; padding: 15px 20px; border-radius: 6px; border: 1px solid #f5c6cb; margin-bottom: 25px; }
-        .alert-danger ul { margin: 10px 0 0 0; padding-left: 20px; }
-
-        /* === MODALES (CÁMARA Y ESCÁNER) === */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(3px); }
-        .modal-content { background-color: #fff; padding: 25px; border-radius: 10px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
-        .close-btn { background-color: #e74c3c; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; }
-        #videoElement { width: 100%; max-height: 350px; background-color: #000; border-radius: 8px; object-fit: cover; }
-        .btn-capture { background-color: #2ecc71; color: white; border: none; padding: 15px 20px; font-size: 18px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px; }
+        body { margin: 0; min-height: 100vh; font-family: "Segoe UI", Tahoma, sans-serif; background: #f6f8fb; color: #102033; }
+        .app-shell { display: flex; min-height: 100vh; }
+        .app-content { flex: 1; padding: 32px 18px; overflow-x: hidden; }
+        .container { max-width: 1180px; margin: 0 auto; }
+        .page-header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-end; margin-bottom: 18px; padding: 24px; background: #fff; border: 1px solid #dbe5f0; border-radius: 18px; box-shadow: 0 16px 40px rgba(15,23,42,.08); }
+        h1 { margin: 0 0 6px; font-size: clamp(28px, 4vw, 40px); line-height: 1.05; letter-spacing: 0; color: #0f2742; }
+        .meta { color: #64748b; font-size: 14px; font-weight: 700; }
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn, button { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #1d4ed8; background: #2563eb; color: #fff; padding: 0 14px; font-family: inherit; font-weight: 900; text-decoration: none; cursor: pointer; transition: transform .16s ease, background .16s ease, box-shadow .16s ease; }
+        .btn:hover, button:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 10px 22px rgba(37,99,235,.18); }
+        .btn-soft { background: #fff; color: #1d4ed8; border-color: #bfdbfe; box-shadow: none; }
+        .btn-soft:hover { background: #eff6ff; color: #0f3f88; }
+        .btn-danger { background: #dc2626; border-color: #b91c1c; }
+        .btn-danger:hover { background: #b91c1c; }
+        .form-shell { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr); gap: 18px; align-items: start; }
+        .card { background: #fff; border: 1px solid #dbe5f0; border-radius: 18px; padding: 22px; box-shadow: 0 16px 40px rgba(15,23,42,.08); }
+        .card + .card { margin-top: 18px; }
+        .section-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 14px; margin-bottom: 18px; border-bottom: 1px solid #e2e8f0; }
+        .section-title h2 { margin: 0; font-size: 20px; color: #0f2742; }
+        .section-title span { color: #64748b; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+        .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .field { min-width: 0; }
+        .field.full { grid-column: 1 / -1; }
+        label { display: block; margin-bottom: 7px; color: #334155; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; }
+        input, select, textarea { width: 100%; min-height: 46px; border: 1px solid #b8c8dc; border-radius: 11px; background: #fff; color: #102033; padding: 11px 13px; font-family: inherit; font-size: 15px; outline: none; box-sizing: border-box; }
+        textarea { min-height: 112px; resize: vertical; line-height: 1.45; }
+        input:focus, select:focus, textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,.13); }
+        input::placeholder, textarea::placeholder { color: #64748b; opacity: 1; }
+        .input-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+        .help { margin-top: 7px; color: #64748b; font-size: 12px; line-height: 1.45; font-weight: 600; }
+        .alert-danger { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 14px; padding: 14px 16px; margin-bottom: 18px; font-weight: 800; }
+        .alert-danger ul { margin: 8px 0 0; padding-left: 18px; }
+        .upload-box { border: 1px dashed #b8c8dc; border-radius: 14px; padding: 16px; background: #f8fafc; }
+        .upload-box input[type="file"] { border-style: dashed; background: #fff; }
+        .preview { display: none; width: 100%; max-width: 260px; aspect-ratio: 4 / 3; object-fit: cover; margin-top: 14px; border-radius: 12px; border: 1px solid #bfdbfe; box-shadow: 0 10px 24px rgba(15,23,42,.1); }
+        .side-note { display: grid; gap: 12px; color: #475569; font-size: 13px; line-height: 1.5; }
+        .note { padding: 14px; border-radius: 14px; background: #f8fafc; border: 1px solid #e2e8f0; }
+        .note strong { display: block; color: #0f2742; margin-bottom: 4px; }
+        .actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; margin-top: 18px; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, .72); align-items: center; justify-content: center; z-index: 1800; padding: 20px; backdrop-filter: blur(6px); }
+        .modal-content { width: min(520px, 100%); background: #fff; border: 1px solid #dbe5f0; border-radius: 18px; padding: 24px; box-shadow: 0 24px 70px rgba(15,23,42,.28); text-align: center; }
+        .modal-content h3 { margin: 0 0 14px; color: #0f2742; }
+        #reader { width: 100%; min-height: 260px; border: 2px dashed #bfdbfe; border-radius: 14px; overflow: hidden; background: #f8fafc; }
+        #videoElement { width: 100%; max-height: 360px; background: #020617; border-radius: 14px; object-fit: cover; }
+        @media (max-width: 980px) { .app-content { padding-top: 76px; } .page-header { display: block; } .header-actions { margin-top: 14px; } .form-shell { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { .app-content { padding: 76px 10px 18px; } .page-header, .card { padding: 18px; border-radius: 16px; } .grid, .actions, .input-row { grid-template-columns: 1fr; } .btn, button { width: 100%; } }
     </style>
 </head>
 <body>
-
-    <!-- INCLUSIÓN DEL SIDEBAR ORIGINAL -->
+<div class="app-shell">
     @include('materiales.partials.sidebar')
 
-    <!-- CONTENEDOR PRINCIPAL A LA DERECHA -->
-    <div class="main-content">
+    <main class="app-content">
         <div class="container">
-            <h2>Registrar Nuevo Material</h2>
+            <header class="page-header">
+                <div>
+                    <h1>Registrar entrada</h1>
+                    <div class="meta">Alta de material nuevo o entrada de stock usando codigo existente.</div>
+                </div>
+                <div class="header-actions">
+                    @if(auth()->user()?->puedeAdministrarCatalogo())
+                        <a href="{{ route('admin.categorias.index') }}" class="btn btn-soft">Categorias</a>
+                    @endif
+                    <a href="{{ route('materiales.index') }}" class="btn btn-soft">Volver al inventario</a>
+                </div>
+            </header>
 
             @if ($errors->any())
                 <div class="alert-danger">
-                    <strong>¡Atención! Hay un problema con los datos:</strong>
+                    <strong>Revisa estos datos antes de guardar:</strong>
                     <ul>
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -108,196 +85,289 @@
 
             <form action="{{ route('materiales.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                
-                <!-- CÓDIGO DE BARRAS -->
-                <div class="form-group">
-                    <label for="codigo_barras">Código de Barras / SKU (Escáner Inteligente)</label>
-                    <div class="input-group">
-                        <input type="text" name="codigo_barras" id="codigo_barras" placeholder="Escribe o escanea el código...">
-                        <button type="button" class="btn-action" onclick="abrirEscaner()">📷 Escanear</button>
+                <div class="form-shell">
+                    <div>
+                        <section class="card">
+                            <div class="section-title">
+                                <h2>Identificacion</h2>
+                                <span>Codigo y datos base</span>
+                            </div>
+
+                            <div class="grid">
+                                <div class="field full">
+                                    <label for="codigo_barras">Codigo de barras / SKU</label>
+                                    <div class="input-row">
+                                        <input type="text" name="codigo_barras" id="codigo_barras" value="{{ old('codigo_barras') }}" placeholder="Escanea con pistolita USB o escribe el codigo" autocomplete="off" autofocus>
+                                        <button type="button" onclick="abrirEscaner()">Escanear</button>
+                                    </div>
+                                    <div class="help">Si el codigo ya existe, el sistema llenara los datos y al guardar sumara la cantidad al stock.</div>
+                                </div>
+
+                                <div class="field">
+                                    <label for="categoria">Categoria</label>
+                                    <select name="categoria" id="categoria">
+                                        <option value="">Sin categoria</option>
+                                        @foreach($categorias as $categoria)
+                                            <option value="{{ $categoria }}" {{ old('categoria') === $categoria ? 'selected' : '' }}>{{ $categoria }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="field">
+                                    <label for="numero_parte">No. de parte</label>
+                                    <input type="text" name="numero_parte" id="numero_parte" value="{{ old('numero_parte') }}" placeholder="Ej. 3176MS">
+                                </div>
+
+                                <div class="field full">
+                                    <label for="descripcion">Descripcion del material *</label>
+                                    <textarea name="descripcion" id="descripcion" placeholder="Nombre claro del producto, medida, material o uso" required>{{ old('descripcion') }}</textarea>
+                                </div>
+
+                                <div class="field">
+                                    <label for="marca">Marca</label>
+                                    <input type="text" name="marca" id="marca" value="{{ old('marca') }}" placeholder="Ej. BETTS">
+                                </div>
+
+                                <div class="field">
+                                    <label for="unidad">Unidad</label>
+                                    <input type="text" name="unidad" id="unidad" value="{{ old('unidad') }}" placeholder="Pieza, metro, juego...">
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="card">
+                            <div class="section-title">
+                                <h2>Almacen y stock</h2>
+                                <span>Existencias</span>
+                            </div>
+
+                            <div class="grid">
+                                <div class="field full">
+                                    <label for="almacen">Almacen donde se guarda</label>
+                                    <input type="text" name="almacen" id="almacen" value="{{ old('almacen') }}" placeholder="Ej. Almacen principal, rack A, caja 3">
+                                </div>
+
+                                <div class="field">
+                                    <label for="stock">Cantidad de entrada</label>
+                                    <input type="number" name="stock" id="stock" value="{{ old('stock', 0) }}" min="0">
+                                </div>
+
+                                <div class="field">
+                                    <label for="costo_unitario">Precio por unidad</label>
+                                    <input type="number" name="costo_unitario" id="costo_unitario" value="{{ old('costo_unitario', 0) }}" min="0" step="0.01">
+                                </div>
+
+                                <div class="field">
+                                    <label for="stock_minimo">Stock minimo</label>
+                                    <input type="number" name="stock_minimo" id="stock_minimo" value="{{ old('stock_minimo', 0) }}" min="0">
+                                </div>
+
+                                <div class="field">
+                                    <label for="stock_maximo">Stock maximo</label>
+                                    <input type="number" name="stock_maximo" id="stock_maximo" value="{{ old('stock_maximo', 0) }}" min="0">
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="card">
+                            <div class="section-title">
+                                <h2>Proveedor y SAT</h2>
+                                <span>Datos administrativos</span>
+                            </div>
+
+                            <div class="grid">
+                                <div class="field">
+                                    <label for="proveedor">Proveedor</label>
+                                    <input type="text" name="proveedor" id="proveedor" value="{{ old('proveedor') }}" placeholder="Ej. Promotora Industrial RG">
+                                </div>
+
+                                <div class="field">
+                                    <label for="proveedor_rfc">RFC proveedor</label>
+                                    <input type="text" name="proveedor_rfc" id="proveedor_rfc" value="{{ old('proveedor_rfc') }}" placeholder="RFC si viene de factura">
+                                </div>
+
+                                <div class="field">
+                                    <label for="clave_sat">Clave SAT</label>
+                                    <input type="text" name="clave_sat" id="clave_sat" value="{{ old('clave_sat') }}" placeholder="ClaveProdServ">
+                                </div>
+
+                                <div class="field">
+                                    <label for="clave_unidad">Clave unidad SAT</label>
+                                    <input type="text" name="clave_unidad" id="clave_unidad" value="{{ old('clave_unidad') }}" placeholder="Ej. H87">
+                                </div>
+                            </div>
+                        </section>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="categoria">Categoría / Tipo de Equipo *</label>
-                    <select name="categoria" id="categoria" required>
-                        <option value="">-- Selecciona una Categoría --</option>
-                        <option value="EQUIPO ACERO AL CARBON">EQUIPO ACERO AL CARBON</option>
-                        <option value="EQUIPO ACERO INOXIDABLE">EQUIPO ACERO INOXIDABLE</option>
-                        <option value="EQUIPO TIPO ASA INOXIDABLE">EQUIPO TIPO ASA INOXIDABLE</option>
-                        <option value="EQUIPO AC SIST DSPCH MEC FILL">EQUIPO AC SIST DSPCH MEC FILL</option>
-                        <option value="EQUIPO AC SIST DSPCH MEC LIQUID">EQUIPO AC SIST DSPCH MEC LIQUID</option>
-                        <option value="EQUIPO ACERO AL CARBON UPV">EQUIPO ACERO AL CARBON UPV</option>
-                    </select>
-                </div>
+                    <aside>
+                        <section class="card">
+                            <div class="section-title">
+                                <h2>Fotografias</h2>
+                                <span>Evidencia</span>
+                            </div>
 
-                <div class="form-group">
-                    <label for="numero_parte">No. de Parte / Código Interno</label>
-                    <input type="text" name="numero_parte" id="numero_parte" placeholder="Ej. 3176MS">
-                </div>
+                            <div class="side-note">
+                                <div class="upload-box">
+                                    <label for="fotografia">Foto del producto</label>
+                                    <input type="file" name="fotografia" id="fotografia" accept="image/*" onchange="mostrarVistaPreviaArchivo(this, 'previewProducto')">
+                                    <img id="previewProducto" class="preview" alt="Vista previa del producto">
+                                </div>
 
-                <div class="form-group">
-                    <label for="descripcion">Descripción del Material *</label>
-                    <textarea name="descripcion" id="descripcion" placeholder="Detalles precisos del componente..." required></textarea>
-                </div>
+                                <div class="upload-box">
+                                    <label for="evidencia_foto">Evidencia de recepcion</label>
+                                    <button type="button" class="btn" onclick="abrirCamaraWeb()">Tomar foto</button>
+                                    <div class="help">Tambien puedes subir nota, remision, caja o etiqueta del proveedor.</div>
+                                    <input type="file" name="evidencia_foto" id="evidencia_foto" accept="image/*" onchange="mostrarVistaPreviaArchivo(this, 'previewEvidencia')" style="margin-top: 10px;">
+                                    <img id="previewEvidencia" class="preview" alt="Vista previa de evidencia">
+                                </div>
+                            </div>
+                        </section>
 
-                <div class="form-group">
-                    <label for="marca">Marca</label>
-                    <input type="text" name="marca" id="marca" placeholder="Ej. BETTS">
-                </div>
+                        <section class="card">
+                            <div class="section-title">
+                                <h2>Antes de guardar</h2>
+                                <span>Guia rapida</span>
+                            </div>
+                            <div class="side-note">
+                                <div class="note"><strong>Producto nuevo</strong>Solo la descripcion es obligatoria; lo demas se puede completar despues.</div>
+                                <div class="note"><strong>Codigo existente</strong>Escanea el codigo, escribe la cantidad y guarda para sumar stock.</div>
+                                <div class="note"><strong>Sin codigo fisico</strong>Despues puedes generar QR interno desde inventario.</div>
+                            </div>
+                        </section>
 
-                <div class="form-group">
-                    <label for="proveedor">Proveedor</label>
-                    <input type="text" name="proveedor" id="proveedor" placeholder="Ej. Promotora Industrial RG">
+                        <div class="actions">
+                            <button type="submit">Guardar entrada</button>
+                            <a href="{{ route('materiales.index') }}" class="btn btn-soft">Cancelar</a>
+                        </div>
+                    </aside>
                 </div>
-
-                <div class="form-group">
-                    <label for="stock">Cantidad de Entrada (Stock Inicial) *</label>
-                    <input type="number" name="stock" id="stock" placeholder="0" min="0" required>
-                </div>
-                
-                <!-- FOTO 1: PRODUCTO -->
-                <div class="form-group evidence-box">
-                    <label for="fotografia">1. Fotografía del Producto (Catálogo)</label>
-                    <input type="file" name="fotografia" id="fotografia" accept="image/*">
-                </div>
-                
-                <!-- FOTO 2: EVIDENCIA (CÁMARA PC/TABLET/MÓVIL) -->
-                <div class="form-group evidence-box highlight">
-                    <label for="evidencia_foto">2. Evidencia de Recepción (Nota, Remisión o Caja) *</label>
-                    
-                    <button type="button" class="btn-camera" onclick="abrirCamaraWeb()">📸 Tomar Foto con el Dispositivo</button>
-                    <div style="text-align: center; margin: 10px 0; font-size: 13px; color: #7f8c8d; text-transform: uppercase;">- Ó sube un archivo -</div>
-                    
-                    <input type="file" name="evidencia_foto" id="evidencia_foto" accept="image/*" onchange="mostrarVistaPrevia()">
-                    
-                    <div style="text-align: center;">
-                        <img id="vista-previa" style="display: none; width: 100%; max-width: 250px; margin-top: 15px; border-radius: 8px; border: 2px solid #2ecc71;" alt="Vista previa">
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn-submit">Guardar Registro en Almacén</button>
-                <a href="{{ route('materiales.index') }}" class="btn-cancel">Cancelar y volver al listado</a>
             </form>
         </div>
-    </div>
+    </main>
+</div>
 
-    <!-- === MODAL DEL ESCÁNER === -->
-    <div id="scannerModal" class="modal">
-        <div class="modal-content">
-            <h3 style="margin-top: 0; color: #2c3e50;">Escanear Código de Barras</h3>
-            <div id="reader" style="width: 100%;"></div>
-            <button type="button" class="close-btn" onclick="cerrarEscaner()">Cancelar Escaneo</button>
-        </div>
+<div id="scannerModal" class="modal">
+    <div class="modal-content">
+        <h3>Escanear codigo de barras</h3>
+        <div id="reader"></div>
+        <button type="button" class="btn btn-danger" style="width:100%; margin-top:16px;" onclick="cerrarEscaner()">Cancelar</button>
     </div>
+</div>
 
-    <!-- === MODAL DE LA CÁMARA WEB === -->
-    <div id="camaraModal" class="modal">
-        <div class="modal-content">
-            <h3 style="margin-top: 0; color: #2c3e50;">Capturar Evidencia Visual</h3>
-            <video id="videoElement" autoplay playsinline></video>
-            <canvas id="canvasElement" style="display: none;"></canvas>
-            
-            <button type="button" class="btn-capture" onclick="tomarFotoWeb()">✔ Capturar Imagen</button>
-            <button type="button" class="close-btn" onclick="cerrarCamaraWeb()" style="background-color: #95a5a6;">Cancelar</button>
-        </div>
+<div id="camaraModal" class="modal">
+    <div class="modal-content">
+        <h3>Capturar evidencia</h3>
+        <video id="videoElement" autoplay playsinline></video>
+        <canvas id="canvasElement" style="display:none;"></canvas>
+        <button type="button" class="btn" style="width:100%; margin-top:14px;" onclick="tomarFotoWeb()">Capturar imagen</button>
+        <button type="button" class="btn btn-soft" style="width:100%; margin-top:10px;" onclick="cerrarCamaraWeb()">Cancelar</button>
     </div>
+</div>
 
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <script>
-        // --- 1. LÓGICA DE VISTA PREVIA (Evidencia) ---
-        function mostrarVistaPrevia() {
-            const input = document.getElementById('evidencia_foto');
-            const vistaPrevia = document.getElementById('vista-previa');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    vistaPrevia.src = e.target.result;
-                    vistaPrevia.style.display = 'inline-block';
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+    let html5QrcodeScanner = null;
+    let streamVideo = null;
+
+    function mostrarVistaPreviaArchivo(input, previewId) {
+        const preview = document.getElementById(previewId);
+
+        if (!input.files || !input.files[0]) {
+            preview.style.display = 'none';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            preview.src = event.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function abrirEscaner() {
+        document.getElementById('scannerModal').style.display = 'flex';
+        html5QrcodeScanner = new Html5QrcodeScanner('reader', { fps: 10, qrbox: { width: 250, height: 250 } }, false);
+        html5QrcodeScanner.render((textoDecodificado) => {
+            document.getElementById('codigo_barras').value = textoDecodificado.trim();
+            cerrarEscaner();
+            consultarCodigoLocal(textoDecodificado);
+        }, () => {});
+    }
+
+    function cerrarEscaner() {
+        document.getElementById('scannerModal').style.display = 'none';
+
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.clear();
+            html5QrcodeScanner = null;
+        }
+    }
+
+    function consultarCodigoLocal(codigo) {
+        fetch(`{{ route('materiales.buscarPorCodigo') }}?codigo=${encodeURIComponent(codigo.trim())}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (!data.encontrado) {
+                    return;
                 }
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                vistaPrevia.style.display = 'none';
-            }
-        }
 
-        // --- 2. LÓGICA DE CÁMARA TABLET/PC ---
-        let streamVideo = null;
-        function abrirCamaraWeb() {
-            const video = document.getElementById('videoElement');
-            document.getElementById('camaraModal').style.display = 'flex';
+                document.getElementById('categoria').value = data.categoria || '';
+                document.getElementById('numero_parte').value = data.numero_parte || '';
+                document.getElementById('descripcion').value = data.descripcion || '';
+                document.getElementById('marca').value = data.marca || '';
+                document.getElementById('proveedor').value = data.proveedor || '';
+                document.getElementById('almacen').value = data.almacen || '';
+                document.getElementById('stock').focus();
+                alert('Material identificado. Escribe cuantas piezas entraron para sumar stock.');
+            })
+            .catch((error) => console.error('Error al consultar codigo:', error));
+    }
 
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-                .then(function(stream) {
-                    streamVideo = stream;
-                    video.srcObject = stream;
-                })
-                .catch(function(err) {
-                    alert("No se pudo acceder a la cámara. Verifica los permisos de tu navegador.");
-                    cerrarCamaraWeb();
-                });
-        }
+    function abrirCamaraWeb() {
+        const video = document.getElementById('videoElement');
+        document.getElementById('camaraModal').style.display = 'flex';
 
-        function cerrarCamaraWeb() {
-            document.getElementById('camaraModal').style.display = 'none';
-            if (streamVideo) {
-                streamVideo.getTracks().forEach(track => track.stop());
-            }
-        }
-
-        function tomarFotoWeb() {
-            const video = document.getElementById('videoElement');
-            const canvas = document.getElementById('canvasElement');
-            const context = canvas.getContext('2d');
-
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            canvas.toBlob(function(blob) {
-                const file = new File([blob], "evidencia_" + Date.now() + ".jpg", { type: "image/jpeg" });
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                document.getElementById('evidencia_foto').files = dataTransfer.files;
-
-                mostrarVistaPrevia();
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then((stream) => {
+                streamVideo = stream;
+                video.srcObject = stream;
+            })
+            .catch(() => {
+                alert('No se pudo acceder a la camara. Revisa permisos del navegador.');
                 cerrarCamaraWeb();
-            }, 'image/jpeg', 0.9);
-        }
+            });
+    }
 
-        // --- 3. LÓGICA DEL ESCÁNER INTELIGENTE ---
-        let html5QrcodeScanner = null;
-        function abrirEscaner() {
-            document.getElementById('scannerModal').style.display = 'flex';
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
-            html5QrcodeScanner.render((textoDecodificado) => {
-                document.getElementById('codigo_barras').value = textoDecodificado;
-                cerrarEscaner();
-                consultarCodigoLocal(textoDecodificado);
-            }, (error) => {});
-        }
+    function cerrarCamaraWeb() {
+        document.getElementById('camaraModal').style.display = 'none';
 
-        function cerrarEscaner() {
-            document.getElementById('scannerModal').style.display = 'none';
-            if (html5QrcodeScanner) { html5QrcodeScanner.clear(); }
+        if (streamVideo) {
+            streamVideo.getTracks().forEach((track) => track.stop());
+            streamVideo = null;
         }
+    }
 
-        function consultarCodigoLocal(codigo) {
-            fetch(`/materiales/buscar-por-codigo?codigo=${codigo}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.encontrado) {
-                        document.getElementById('categoria').value = data.categoria;
-                        document.getElementById('numero_parte').value = data.numero_parte;
-                        document.getElementById('descripcion').value = data.descripcion;
-                        document.getElementById('marca').value = data.marca;
-                        document.getElementById('proveedor').value = data.proveedor;
-                        document.getElementById('stock').focus();
-                        alert("✅ ¡Material identificado! Datos cargados automáticamente.");
-                    }
-                })
-                .catch(err => console.error("Error al consultar:", err));
-        }
-    </script>
+    function tomarFotoWeb() {
+        const video = document.getElementById('videoElement');
+        const canvas = document.getElementById('canvasElement');
+        const context = canvas.getContext('2d');
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob((blob) => {
+            const file = new File([blob], `evidencia_${Date.now()}.jpg`, { type: 'image/jpeg' });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+
+            const input = document.getElementById('evidencia_foto');
+            input.files = dataTransfer.files;
+            mostrarVistaPreviaArchivo(input, 'previewEvidencia');
+            cerrarCamaraWeb();
+        }, 'image/jpeg', 0.9);
+    }
+</script>
 </body>
 </html>

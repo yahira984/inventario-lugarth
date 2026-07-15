@@ -210,6 +210,35 @@
             font-weight: 700;
         }
 
+        .category-badge,
+        .storage-badge {
+            display: inline-flex;
+            width: fit-content;
+            max-width: 100%;
+            border-radius: 8px;
+            padding: 5px 8px;
+            font-size: 11px;
+            font-weight: 900;
+            line-height: 1.15;
+            text-transform: uppercase;
+        }
+
+        .category-badge {
+            margin-bottom: 7px;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: #ffffff;
+            border: 1px solid rgba(37, 99, 235, 0.55);
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+        }
+
+        .storage-badge {
+            margin-top: 7px;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: #ffffff;
+            border: 1px solid rgba(37, 99, 235, 0.55);
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+        }
+
         .status {
             display: none;
             border-radius: 10px;
@@ -440,6 +469,7 @@
                             <div>
                                 <div class="selected-name" id="selectedName">Sin producto seleccionado</div>
                                 <div class="muted" id="selectedMeta"></div>
+                                <div class="storage-badge" id="selectedCategory" style="display:none;"></div>
                             </div>
                         </div>
 
@@ -472,7 +502,7 @@
                     <h2>Buscar manualmente</h2>
 
                     <form action="{{ route('materiales.salidas.create') }}" method="GET" class="manual-search">
-                        <input type="text" name="buscar" value="{{ $buscar }}" placeholder="Descripción, no. parte, marca o código">
+                        <input type="text" name="buscar" value="{{ $buscar }}" placeholder="Descripcion, no. parte, categoria, almacen, marca o codigo">
                         <button type="submit" class="btn btn-green">Buscar</button>
                     </form>
 
@@ -486,8 +516,10 @@
                                 @endif
 
                                 <div>
+                                    <div class="category-badge">{{ $material->categoria ?: 'Sin categoria' }}</div>
                                     <div class="manual-title">{{ $material->descripcion }}</div>
                                     <div class="muted">{{ $material->numero_parte ?? 'N/A' }} · {{ $material->marca ?? 'Sin marca' }}</div>
+                                    <div class="muted">Almacen: {{ $material->almacen ?: 'Sin definir' }}</div>
                                     <span class="stock-pill {{ $material->stock <= 0 ? 'empty' : '' }}">{{ $material->stock }} pzas</span>
                                     <button
                                         type="button"
@@ -498,6 +530,8 @@
                                         data-numero-parte="{{ $material->numero_parte }}"
                                         data-codigo="{{ $material->codigo_barras }}"
                                         data-marca="{{ $material->marca }}"
+                                        data-categoria="{{ $material->categoria }}"
+                                        data-almacen="{{ $material->almacen }}"
                                         data-stock="{{ $material->stock }}"
                                         data-foto="{{ $material->fotografia ? asset('storage/' . $material->fotografia) : '' }}"
                                         onclick="seleccionarDesdeBoton(this)"
@@ -531,6 +565,9 @@
                                 <div class="muted">
                                     {{ $salida->created_at->format('d/m/Y H:i') }}
                                     · {{ $salida->user?->name ?? 'Usuario no disponible' }}
+                                    @if($salida->material?->categoria)
+                                        · {{ $salida->material->categoria }}
+                                    @endif
                                     @if($salida->referencia)
                                         · {{ $salida->referencia }}
                                     @endif
@@ -569,6 +606,7 @@
     const selectedCard = document.getElementById('selectedCard');
     const selectedName = document.getElementById('selectedName');
     const selectedMeta = document.getElementById('selectedMeta');
+    const selectedCategory = document.getElementById('selectedCategory');
     let html5QrcodeScanner = null;
     let busquedaTimer = null;
     let scannerBuffer = '';
@@ -586,6 +624,8 @@
         codigoInput.value = material.codigo_barras || codigoInput.value;
         selectedName.textContent = material.descripcion;
         selectedMeta.textContent = `No. parte: ${material.numero_parte || 'N/A'} · Marca: ${material.marca || 'N/A'} · Stock: ${material.stock} pzas`;
+        selectedCategory.textContent = `Categoria: ${material.categoria || 'Sin categoria'} · Almacen: ${material.almacen || 'Sin definir'}`;
+        selectedCategory.style.display = 'inline-flex';
         cantidadInput.max = material.stock;
         cantidadHelp.textContent = `Disponible: ${material.stock} pzas. No podrás registrar una salida mayor.`;
         selectedCard.classList.add('active');
@@ -613,6 +653,8 @@
             numero_parte: button.dataset.numeroParte,
             codigo_barras: button.dataset.codigo,
             marca: button.dataset.marca,
+            categoria: button.dataset.categoria,
+            almacen: button.dataset.almacen,
             stock: Number(button.dataset.stock),
             foto: button.dataset.foto
         });
@@ -639,7 +681,11 @@
                 if (!data.encontrado) {
                     materialInput.value = '';
                     selectedCard.classList.remove('active');
-                    setStatus('No encontramos ese código. Busca el material manualmente.', 'warning');
+                    if (data.multiples) {
+                        setStatus(data.mensaje, 'warning');
+                        return;
+                    }
+                    setStatus('No encontramos ese codigo. Busca el material manualmente.', 'warning');
                     return;
                 }
 
@@ -656,6 +702,8 @@
                     numero_parte: data.numero_parte,
                     codigo_barras: data.codigo_barras,
                     marca: data.marca,
+                    categoria: data.categoria,
+                    almacen: data.almacen,
                     stock: Number(data.stock),
                     foto: data.fotografia ? `{{ asset('storage') }}/${data.fotografia}` : ''
                 });
