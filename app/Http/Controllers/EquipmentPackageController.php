@@ -79,11 +79,20 @@ class EquipmentPackageController extends Controller
             ->where('es_plantilla_equipo', false)
             ->orderBy('descripcion')
             ->limit(500)
-            ->get(['id', 'descripcion', 'apodo', 'numero_parte', 'marca', 'stock']);
+            ->get(['id', 'descripcion', 'apodo', 'numero_parte', 'marca', 'unidad', 'fotografia', 'stock']);
 
         return view('equipos.show', [
             'equipo' => $equipo,
             'materiales' => $materiales,
+            'materialesEquipo' => $materiales->keyBy('id')->map(function (Material $material): array {
+                return [
+                    'descripcion' => $material->descripcion,
+                    'numero_parte' => $material->numero_parte,
+                    'apodo' => $material->apodo,
+                    'marca' => $material->marca,
+                    'unidad' => $material->unidad ?: 'pza',
+                ];
+            }),
         ]);
     }
 
@@ -94,7 +103,7 @@ class EquipmentPackageController extends Controller
         $datos = $request->validate([
             'material_id' => ['nullable', 'integer', 'exists:materials,id'],
             'numero_parte' => ['nullable', 'string', 'max:255'],
-            'descripcion' => ['required', 'string', 'max:255'],
+            'descripcion' => ['nullable', 'string', 'max:255'],
             'apodo' => ['nullable', 'string', 'max:255'],
             'marca' => ['nullable', 'string', 'max:255'],
             'cantidad_por_paquete' => ['required', 'numeric', 'min:0.01'],
@@ -107,6 +116,26 @@ class EquipmentPackageController extends Controller
         ]);
 
         $this->validarMaterialReal($datos['material_id'] ?? null);
+
+        if (! empty($datos['material_id'])) {
+            $material = Material::query()
+                ->whereKey($datos['material_id'])
+                ->where('es_plantilla_equipo', false)
+                ->firstOrFail();
+
+            $datos['descripcion'] = $material->descripcion;
+            $datos['numero_parte'] = $material->numero_parte;
+            $datos['apodo'] = $material->apodo;
+            $datos['marca'] = $material->marca;
+            $datos['unidad'] = $material->unidad ?: ($datos['unidad'] ?? 'pza');
+            $datos['fotografia'] = $material->fotografia;
+        }
+
+        if (blank($datos['descripcion'] ?? null)) {
+            throw ValidationException::withMessages([
+                'descripcion' => 'Selecciona una pieza del inventario o escribe la descripcion manualmente.',
+            ]);
+        }
 
         $equipo->items()->create($datos);
 
