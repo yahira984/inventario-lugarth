@@ -45,6 +45,8 @@
         .history-row { border:1px solid #d8e8f7; background:#f8fbff; border-radius:12px; padding:12px; }
         .piece-photo { width:82px; height:82px; object-fit:cover; border-radius:12px; border:1px solid #cfe0f2; background:#fff; box-shadow:0 8px 18px rgba(15,60,105,.12); margin-bottom:10px; display:block; }
         .piece-photo-empty { display:flex; align-items:center; justify-content:center; color:#58718a; font-size:11px; font-weight:900; text-transform:uppercase; border-style:dashed; }
+        .auto-filled { background:#f1f8ff; color:#34506b; }
+        .form-hint { margin:-4px 0 12px; color:#58718a; font-size:12px; font-weight:800; line-height:1.4; }
         @media (max-width: 980px) { .hero,.grid { display:block; } .form-grid { grid-template-columns:1fr; } .btn { width:100%; } table,thead,tbody,tr,td,th { display:block; } th { display:none; } td { border:1px solid #d8e8f7; border-radius:0; } td:first-child { border-radius:12px 12px 0 0; } td:last-child { border-radius:0 0 12px 12px; } }
     </style>
 </head>
@@ -140,19 +142,20 @@
                             @csrf
                             <div class="field">
                                 <label>Pieza de inventario real</label>
-                                <select name="material_id">
+                                <select name="material_id" id="materialRealSelect">
                                     <option value="">Sin vincular por ahora</option>
                                     @foreach($materiales as $material)
                                         <option value="{{ $material->id }}">{{ $material->descripcion }} {{ $material->apodo ? '(' . $material->apodo . ')' : '' }} · {{ $material->numero_parte ?: 'N/A' }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="field"><label>Descripcion</label><input name="descripcion" required placeholder="Ej. Cuello 20 soldable"></div>
+                            <p class="form-hint">Si seleccionas una pieza real, descripcion, no. parte, apodo, marca y unidad se llenan automaticamente. Solo ajusta la cantidad que usa este equipo y las notas si hacen falta.</p>
+                            <div class="field"><label>Descripcion</label><input name="descripcion" id="piezaDescripcion" placeholder="Ej. Cuello 20 soldable"></div>
                             <div class="form-grid">
-                                <div class="field"><label>No. parte</label><input name="numero_parte"></div>
-                                <div class="field"><label>Apodo</label><input name="apodo" placeholder="Como lo conocen"></div>
-                                <div class="field"><label>Marca</label><input name="marca"></div>
-                                <div class="field"><label>Unidad</label><input name="unidad" placeholder="pza"></div>
+                                <div class="field"><label>No. parte</label><input name="numero_parte" id="piezaNumeroParte"></div>
+                                <div class="field"><label>Apodo</label><input name="apodo" id="piezaApodo" placeholder="Como lo conocen"></div>
+                                <div class="field"><label>Marca</label><input name="marca" id="piezaMarca"></div>
+                                <div class="field"><label>Unidad</label><input name="unidad" id="piezaUnidad" placeholder="pza"></div>
                                 <div class="field full"><label>Cantidad por paquete</label><input type="number" name="cantidad_por_paquete" min="0.01" step="0.01" value="1" required></div>
                                 <div class="field full"><label>Notas</label><textarea name="notas"></textarea></div>
                             </div>
@@ -198,5 +201,46 @@
         </div>
     </main>
 </div>
+<script>
+    const materialesEquipo = @json($materialesEquipo);
+
+    const materialRealSelect = document.getElementById('materialRealSelect');
+    const camposAuto = [
+        document.getElementById('piezaDescripcion'),
+        document.getElementById('piezaNumeroParte'),
+        document.getElementById('piezaApodo'),
+        document.getElementById('piezaMarca'),
+        document.getElementById('piezaUnidad'),
+    ];
+
+    function aplicarEstadoAutomatico(activo) {
+        camposAuto.forEach((campo) => {
+            campo.readOnly = activo;
+            campo.classList.toggle('auto-filled', activo);
+        });
+    }
+
+    function llenarDatosDeMaterial() {
+        const material = materialesEquipo[materialRealSelect.value];
+
+        if (!material) {
+            camposAuto.forEach((campo) => {
+                campo.readOnly = false;
+                campo.classList.remove('auto-filled');
+            });
+            return;
+        }
+
+        document.getElementById('piezaDescripcion').value = material.descripcion || '';
+        document.getElementById('piezaNumeroParte').value = material.numero_parte || '';
+        document.getElementById('piezaApodo').value = material.apodo || '';
+        document.getElementById('piezaMarca').value = material.marca || '';
+        document.getElementById('piezaUnidad').value = material.unidad || 'pza';
+        aplicarEstadoAutomatico(true);
+    }
+
+    materialRealSelect?.addEventListener('change', llenarDatosDeMaterial);
+    llenarDatosDeMaterial();
+</script>
 </body>
 </html>
