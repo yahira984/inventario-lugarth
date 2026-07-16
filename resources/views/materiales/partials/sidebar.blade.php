@@ -616,9 +616,9 @@
     */
 
     .nav-mark {
-        width: 33px;
-        height: 33px;
-        flex: 0 0 33px;
+        width: 55px;
+        height: 55px;
+        flex: 0 0 55px;
 
         display: inline-flex;
         align-items: center;
@@ -1563,199 +1563,174 @@
         border-color: #b9d7f8;
     }
 
-    .sidebar-logo {
-        background: #ffffff url("{{ asset('images/logo.png') }}") center / cover no-repeat !important;
+    /*
+    |--------------------------------------------------------------------------
+    | Iconos con imágenes propias
+    | Guarda tu imagen en: public/images/logo.png
+    | En Blade se manda llamar como: asset('images/logo.png')
+    |--------------------------------------------------------------------------
+    */
+
+    .sidebar-logo img {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        display: block;
+        position: relative;
+        z-index: 2;
     }
 
-    .sidebar-logo::before,
-    .sidebar-logo::after,
-    .sidebar-logo svg {
-        display: none !important;
+    .nav-mark img {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        display: block;
     }
 
-    .legacy-hidden {
-        display: none !important;
+    .sidebar-link:hover .nav-mark img,
+    .sidebar-link.active .nav-mark img,
+    .sidebar-logout .nav-mark img,
+    .sidebar-logout:hover .nav-mark img {
+        filter: none;
     }
 
-    .sidebar-link[data-label="Dashboard"] { order: 10; }
-    .sidebar-link[data-label="Inventario"] { order: 20; }
-    .sidebar-link[data-label="Registrar entrada"] { order: 30; }
-    .sidebar-link[data-label="Registrar salida"] { order: 40; }
-    .sidebar-link[data-label="Agregar codigos"] { order: 50; }
-    .sidebar-link[data-label="Importar XML"] { order: 60; }
-    .sidebar-link[data-label="Categorias"] { order: 70; }
-    .sidebar-link[data-label="Proveedores"] { order: 80; }
-    .sidebar-link[data-label="Catalogo"] { order: 90; }
-    .sidebar-link[data-label="Usuarios"] { order: 100; }
-    .sidebar-link[data-label="Salidas admin"] { order: 110; }
-    .sidebar-link[data-label="Auditoria"] { order: 120; }
-    .sidebar-link[data-label="Respaldos"] { order: 130; }
-    .sidebar-link[data-label="Identificador visual"] { order: 140; }
 
     /*
-     * Modo contraido limpio: solo iconos, sin choques con el footer.
+    |--------------------------------------------------------------------------
+    | Colores personalizados por opción del menú
+    | Solo agregamos clases y variables. No cambia rutas ni permisos.
+    |--------------------------------------------------------------------------
+    */
+
+    .sidebar-link {
+        --menu-color: var(--sidebar-blue-500);
+        --menu-dark: var(--sidebar-blue-800);
+        --menu-rgb: 36, 119, 232;
+    }
+
+    .sidebar-link.menu-dashboard {
+        --menu-color: #1680ea;
+        --menu-dark: #063b8c;
+        --menu-rgb: 22, 128, 234;
+    }
+
+    .sidebar-link.menu-inventario {
+        --menu-color: #1261c9;
+        --menu-dark: #08285b;
+        --menu-rgb: 18, 97, 201;
+    }
+
+    .sidebar-link.menu-entrada {
+        --menu-color: #16a34a;
+        --menu-dark: #166534;
+        --menu-rgb: 22, 163, 74;
+    }
+
+    .sidebar-link.menu-salida {
+        --menu-color: #dc2626;
+        --menu-dark: #991b1b;
+        --menu-rgb: 220, 38, 38;
+    }
+
+    .sidebar-link.menu-xml {
+        --menu-color: #d97706;
+        --menu-dark: #92400e;
+        --menu-rgb: 217, 119, 6;
+    }
+
+    .sidebar-link.menu-usuarios {
+        --menu-color: #7c3aed;
+        --menu-dark: #4c1d95;
+        --menu-rgb: 124, 58, 237;
+    }
+
+    .sidebar-link.menu-visual {
+        --menu-color: #0891b2;
+        --menu-dark: #155e75;
+        --menu-rgb: 8, 145, 178;
+    }
+
+    .sidebar-link.menu-codigos {
+        --menu-color: #ea580c;
+        --menu-dark: #9a3412;
+        --menu-rgb: 234, 88, 12;
+    }
+
+    .sidebar-link::before {
+        background: var(--menu-color) !important;
+        box-shadow: 0 0 12px rgba(var(--menu-rgb), 0.68) !important;
+    }
+
+    .sidebar-link:hover {
+        background:
+            linear-gradient(
+                90deg,
+                rgba(var(--menu-rgb), 0.28),
+                rgba(var(--menu-rgb), 0.13)
+            ) !important;
+        border-color: rgba(var(--menu-rgb), 0.48) !important;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.08),
+            0 8px 18px rgba(var(--menu-rgb), 0.18) !important;
+    }
+
+    .sidebar-link:hover .nav-mark,
+    .sidebar-link.active .nav-mark {
+        color: #ffffff !important;
+        background:
+            linear-gradient(
+                145deg,
+                var(--menu-color),
+                var(--menu-dark)
+            ) !important;
+        border-color: rgba(255, 255, 255, 0.35) !important;
+        box-shadow: 0 8px 18px rgba(var(--menu-rgb), 0.36) !important;
+    }
+
+    .sidebar-link.active {
+        color: #ffffff !important;
+        background:
+            linear-gradient(
+                90deg,
+                rgba(var(--menu-rgb), 0.95),
+                rgba(var(--menu-rgb), 0.62)
+            ) !important;
+        border-color: rgba(255, 255, 255, 0.26) !important;
+        box-shadow:
+            0 12px 28px rgba(var(--menu-rgb), 0.28),
+            inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+    }
+
+    .sidebar-link.active::before {
+        background: #ffffff !important;
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.75) !important;
+    }
+
+    .sidebar-link.active .nav-arrow,
+    .sidebar-link:hover .nav-arrow {
+        color: #ffffff !important;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar-link::after {
+        background:
+            linear-gradient(
+                135deg,
+                var(--menu-color),
+                var(--menu-dark)
+            ) !important;
+        border-color: rgba(255, 255, 255, 0.18) !important;
+        box-shadow: 0 12px 28px rgba(var(--menu-rgb), 0.34) !important;
+    }
+
+    /*
+     * Mantiene tus imágenes originales y colorea el contenedor de cada opción.
      */
-    .app-shell.sidebar-collapsed .sidebar {
-        padding: 14px 10px !important;
+    .sidebar-link .nav-mark img,
+    .sidebar-link:hover .nav-mark img,
+    .sidebar-link.active .nav-mark img {
+        filter: none !important;
     }
 
-    .app-shell.sidebar-collapsed .sidebar-top {
-        min-height: auto !important;
-        gap: 9px !important;
-        padding: 0 0 12px !important;
-    }
-
-    .app-shell.sidebar-collapsed .sidebar-logo {
-        width: 44px !important;
-        height: 44px !important;
-        flex: 0 0 44px !important;
-        border-radius: 13px !important;
-    }
-
-    .app-shell.sidebar-collapsed .sidebar-toggle {
-        width: 38px !important;
-        height: 38px !important;
-        flex: 0 0 38px !important;
-    }
-
-    .app-shell.sidebar-collapsed .sidebar-navigation {
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
-        padding: 12px 0 10px !important;
-    }
-
-    .app-shell.sidebar-collapsed .sidebar-nav {
-        gap: 7px !important;
-    }
-
-    .app-shell.sidebar-collapsed .sidebar-link,
-    .app-shell.sidebar-collapsed .sidebar-logout {
-        width: 56px !important;
-        min-height: 44px !important;
-        margin-inline: auto !important;
-        padding: 6px !important;
-        justify-content: center !important;
-        border-radius: 14px !important;
-    }
-
-    .app-shell.sidebar-collapsed .nav-mark {
-        width: 32px !important;
-        height: 32px !important;
-        flex: 0 0 32px !important;
-        border-radius: 10px !important;
-    }
-
-    .app-shell.sidebar-collapsed .sidebar-user-card {
-        display: none !important;
-    }
-
-    .app-shell.sidebar-collapsed .sidebar-footer {
-        padding-top: 10px !important;
-    }
-
-    .app-shell.sidebar-collapsed .sidebar-footer form {
-        display: grid !important;
-        gap: 8px !important;
-    }
-
-    .app-shell.sidebar-collapsed .sidebar-link::after,
-    .app-shell.sidebar-collapsed .sidebar-logout::after {
-        display: none !important;
-    }
-
-    .app-content input,
-    .app-content input[type="text"],
-    .app-content input[type="number"],
-    .app-content input[type="email"],
-    .app-content input[type="password"],
-    .app-content input[type="file"],
-    .app-content select,
-    .app-content textarea,
-    .manual-search input,
-    .filter-form input[type="text"],
-    .filter-form select,
-    .input-row input,
-    .approval-toggle,
-    .barcode-form input {
-        background: #ffffff !important;
-        color: #10233f !important;
-        border-color: #b8c8dc !important;
-        box-shadow: none !important;
-        -webkit-text-fill-color: #10233f !important;
-    }
-
-    .app-content input::placeholder,
-    .app-content textarea::placeholder {
-        color: #64748b !important;
-        opacity: 1 !important;
-        -webkit-text-fill-color: #64748b !important;
-    }
-
-    .app-content label,
-    .app-content .field-help,
-    .app-content .muted,
-    .app-content .header-meta,
-    .app-content .meta,
-    .app-content .panel-description,
-    .app-content .card-title,
-    .app-content .chart-stat span,
-    .app-content .stock-meta,
-    .app-content .code-muted {
-        color: #475569 !important;
-        -webkit-text-fill-color: #475569 !important;
-    }
-
-    .app-content h1,
-    .app-content h2,
-    .app-content h3,
-    .app-content .manual-title,
-    .app-content .selected-name,
-    .app-content .user-name,
-    .app-content td,
-    .app-content th {
-        color: #0f2742 !important;
-        -webkit-text-fill-color: #0f2742 !important;
-    }
-
-    .chart-stat,
-    .status,
-    .code-status,
-    .selected-card,
-    .manual-card,
-    .history-item,
-    .help-card {
-        background: #ffffff !important;
-        color: #10233f !important;
-        border-color: #dbe5f0 !important;
-    }
-
-    .chart-stat.good strong,
-    .stock-pill,
-    .status.success,
-    .code-status.success {
-        color: #047857 !important;
-        -webkit-text-fill-color: #047857 !important;
-    }
-
-    .chart-stat.danger strong,
-    .status.error,
-    .code-status.error,
-    .field-error,
-    .error {
-        color: #b91c1c !important;
-        -webkit-text-fill-color: #b91c1c !important;
-    }
-
-    .app-content button:disabled,
-    .app-content .btn:disabled {
-        opacity: 0.72 !important;
-        color: #475569 !important;
-        background: #e2e8f0 !important;
-        border-color: #cbd5e1 !important;
-        cursor: not-allowed !important;
-        box-shadow: none !important;
-        transform: none !important;
-    }
 </style>
 
 <button
@@ -1786,17 +1761,7 @@
     <div class="sidebar-top">
         <div class="sidebar-brand-wrapper">
             <div class="sidebar-logo" aria-hidden="true">
-                <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M3 10.5 12 4l9 6.5M5 9.5V20h14V9.5M8 20v-6h8v6M8 10h.01M12 10h.01M16 10h.01"
-                    />
-                </svg>
+                <img src="{{ asset('images/logo.png') }}" alt="">
             </div>
 
             <div class="sidebar-brand">
@@ -1835,65 +1800,43 @@
 
         <nav class="sidebar-nav" id="sidebarNav">
 
-            @if(auth()->user()?->esAdministrador())
-                {{-- DASHBOARD --}}
-                <a
-                    href="{{ route('dashboard') }}"
-                    title="Dashboard"
-                    data-label="Dashboard"
-                    class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+            {{-- DASHBOARD --}}
+            <a
+                href="{{ route('dashboard') }}"
+                title="Dashboard"
+                data-label="Dashboard"
+                class="sidebar-link menu-dashboard {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+            >
+                <span class="nav-mark" aria-hidden="true">
+                    <img src="{{ asset('images/dashboard.png') }}" alt="">
+                </span>
+
+                <span class="nav-text">Dashboard</span>
+
+                <svg
+                    class="nav-arrow"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
                 >
-                    <span class="nav-mark" aria-hidden="true">
-                        <svg
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M4 13h6V4H4v9ZM14 20h6V4h-6v16ZM4 20h6v-4H4v4Z"
-                            />
-                        </svg>
-                    </span>
-
-                    <span class="nav-text">Dashboard</span>
-
-                    <svg
-                        class="nav-arrow"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
-                        <path
+                    <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
                         d="m9 18 6-6-6-6"
                     />
                 </svg>
-                </a>
-            @endif
+            </a>
 
             {{-- INVENTARIO --}}
             <a
                 href="{{ route('materiales.index') }}"
                 title="Inventario"
                 data-label="Inventario"
-                class="sidebar-link {{ request()->routeIs('materiales.index') && !request('sin_codigo') ? 'active' : '' }}"
+                class="sidebar-link menu-inventario {{ request()->routeIs('materiales.index') && !request('sin_codigo') ? 'active' : '' }}"
             >
                 <span class="nav-mark" aria-hidden="true">
-                    <svg
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M4 6h16M4 12h16M4 18h16M7 6v12"
-                        />
-                    </svg>
+                    <img src="{{ asset('images/inventario.png') }}" alt="">
                 </span>
 
                 <span class="nav-text">Inventario</span>
@@ -1920,20 +1863,10 @@
                     href="{{ route('materiales.create') }}"
                     title="Registrar entrada"
                     data-label="Registrar entrada"
-                    class="sidebar-link {{ request()->routeIs('materiales.create') ? 'active' : '' }}"
+                    class="sidebar-link menu-entrada {{ request()->routeIs('materiales.create') ? 'active' : '' }}"
                 >
                     <span class="nav-mark" aria-hidden="true">
-                        <svg
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M12 5v14M5 12h14"
-                            />
-                        </svg>
+                        <img src="{{ asset('images/entrada.png') }}" alt="">
                     </span>
 
                     <span class="nav-text">Registrar entrada</span>
@@ -1958,20 +1891,10 @@
                     href="{{ route('materiales.salidas.create') }}"
                     title="Registrar salida"
                     data-label="Registrar salida"
-                    class="sidebar-link {{ request()->routeIs('materiales.salidas.*') ? 'active' : '' }}"
+                    class="sidebar-link menu-salida {{ request()->routeIs('materiales.salidas.*') ? 'active' : '' }}"
                 >
                     <span class="nav-mark" aria-hidden="true">
-                        <svg
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M5 12h14M13 6l6 6-6 6"
-                            />
-                        </svg>
+                        <img src="{{ asset('images/salida.jpg') }}" alt="">
                     </span>
 
                     <span class="nav-text">Registrar salida</span>
@@ -1993,48 +1916,16 @@
             @endif
 
             @if(auth()->user()?->puedeAdministrarCatalogo())
-                <a
-                    href="{{ route('materiales.index', ['sin_codigo' => 1]) }}"
-                    title="Agregar codigos"
-                    data-label="Agregar codigos"
-                    class="sidebar-link {{ request('sin_codigo') ? 'active' : '' }}"
-                >
-                    <span class="nav-mark" aria-hidden="true">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 5v14M6 5v14M10 5v14M14 5v14M18 5v14M21 5v14" />
-                        </svg>
-                    </span>
-                    <span class="nav-text">Agregar codigos</span>
-                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
-                </a>
-            @endif
-
-            @if(auth()->user()?->puedeAdministrarCatalogo())
 
                 {{-- IMPORTAR XML --}}
                 <a
                     href="{{ route('materiales.xml.create') }}"
                     title="Importar XML"
                     data-label="Importar XML"
-                    class="sidebar-link {{ request()->routeIs('materiales.xml.*') ? 'active' : '' }}"
+                    class="sidebar-link menu-xml {{ request()->routeIs('materiales.xml.*') ? 'active' : '' }}"
                 >
                     <span class="nav-mark" aria-hidden="true">
-                        <svg
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-                            />
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M14 2v6h6M8 13l-2 2 2 2M16 13l2 2-2 2M13 12l-2 6"
-                            />
-                        </svg>
+                        <img src="{{ asset('images/xml.png') }}" alt="">
                     </span>
 
                     <span class="nav-text">Importar XML</span>
@@ -2054,31 +1945,15 @@
                     </svg>
                 </a>
 
-                <a href="{{ route('admin.categorias.index') }}" title="Categorias" data-label="Categorias" class="sidebar-link {{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">
-                    <span class="nav-mark" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h7" /></svg></span>
-                    <span class="nav-text">Categorias</span>
-                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
-                </a>
-
                 {{-- USUARIOS --}}
                 <a
                     href="{{ route('usuarios.roles.index') }}"
                     title="Usuarios y permisos"
                     data-label="Usuarios"
-                    class="sidebar-link {{ request()->routeIs('usuarios.roles.*') ? 'active' : '' }}"
+                    class="sidebar-link menu-usuarios {{ request()->routeIs('usuarios.roles.*') ? 'active' : '' }}"
                 >
                     <span class="nav-mark" aria-hidden="true">
-                        <svg
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M16 11c1.66 0 3-1.57 3-3.5S17.66 4 16 4s-3 1.57-3 3.5 1.34 3.5 3 3.5ZM8 11c1.66 0 3-1.57 3-3.5S9.66 4 8 4 5 5.57 5 7.5 6.34 11 8 11ZM2.5 20c.7-3.1 2.75-5 5.5-5s4.8 1.9 5.5 5M10.5 20c.56-2.35 2.38-4 5.5-4 2.75 0 4.8 1.55 5.5 4"
-                            />
-                        </svg>
+                        <img src="{{ asset('images/usuarios.png') }}" alt="">
                     </span>
 
                     <span class="nav-text">Usuarios</span>
@@ -2099,58 +1974,15 @@
                 </a>
             @endif
 
-            @if(auth()->user()?->puedeAdministrarCatalogo())
-                <a href="{{ route('admin.proveedores.index') }}" title="Proveedores" data-label="Proveedores" class="sidebar-link {{ request()->routeIs('admin.proveedores.*') ? 'active' : '' }}">
-                    <span class="nav-mark" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M6 7v13h12V7M8 11h8M8 15h5M9 7V4h6v3" /></svg></span>
-                    <span class="nav-text">Proveedores</span>
-                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
-                </a>
-
-                <a href="{{ route('admin.materiales.index') }}" title="Catalogo completo" data-label="Catalogo" class="sidebar-link {{ request()->routeIs('admin.materiales.*') ? 'active' : '' }}">
-                    <span class="nav-mark" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16v14H4zM8 9h8M8 13h8M8 17h4" /></svg></span>
-                    <span class="nav-text">Catalogo completo</span>
-                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
-                </a>
-
-                <a href="{{ route('admin.salidas.index') }}" title="Salidas admin" data-label="Salidas admin" class="sidebar-link {{ request()->routeIs('admin.salidas.*') ? 'active' : '' }}">
-                    <span class="nav-mark" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6M5 5v14" /></svg></span>
-                    <span class="nav-text">Salidas admin</span>
-                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
-                </a>
-
-                <a href="{{ route('admin.auditoria.index') }}" title="Auditoria" data-label="Auditoria" class="sidebar-link {{ request()->routeIs('admin.auditoria.*') ? 'active' : '' }}">
-                    <span class="nav-mark" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-5M12 3l7 4v5c0 5-3 8-7 9-4-1-7-4-7-9V7l7-4z" /></svg></span>
-                    <span class="nav-text">Auditoria</span>
-                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
-                </a>
-
-                <a href="{{ route('admin.backups.index') }}" title="Respaldos" data-label="Respaldos" class="sidebar-link {{ request()->routeIs('admin.backups.*') ? 'active' : '' }}">
-                    <span class="nav-mark" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7c0 1.7 3.6 3 8 3s8-1.3 8-3-3.6-3-8-3-8 1.3-8 3zm0 0v10c0 1.7 3.6 3 8 3s8-1.3 8-3V7" /></svg></span>
-                    <span class="nav-text">Respaldos</span>
-                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
-                </a>
-            @endif
-
             {{-- IDENTIFICADOR VISUAL --}}
             <a
                 href="{{ route('materiales.visual.create') }}"
                 title="Identificador visual"
                 data-label="Identificador visual"
-                class="sidebar-link {{ request()->routeIs('materiales.visual.*') ? 'active' : '' }}"
+                class="sidebar-link menu-visual {{ request()->routeIs('materiales.visual.*') ? 'active' : '' }}"
             >
                 <span class="nav-mark" aria-hidden="true">
-                    <svg
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
-                        />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
+                    <img src="{{ asset('images/camara.png') }}" alt="">
                 </span>
 
                 <span class="nav-text">Identificador visual</span>
@@ -2177,20 +2009,10 @@
                     href="{{ route('materiales.index', ['sin_codigo' => 1]) }}"
                     title="Agregar códigos"
                     data-label="Agregar códigos"
-                    class="sidebar-link legacy-hidden {{ request('sin_codigo') ? 'active' : '' }}"
+                    class="sidebar-link menu-codigos {{ request('sin_codigo') ? 'active' : '' }}"
                 >
                     <span class="nav-mark" aria-hidden="true">
-                        <svg
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M3 5v14M6 5v14M10 5v14M14 5v14M18 5v14M21 5v14"
-                            />
-                        </svg>
+                        <img src="{{ asset('images/codigo.jpg') }}" alt="">
                     </span>
 
                     <span class="nav-text">Agregar códigos</span>
@@ -2234,15 +2056,6 @@
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
 
-                <a href="{{ route('profile.edit') }}" class="sidebar-link" title="Ver perfil" data-label="Perfil" style="margin-bottom: 8px;">
-                    <span class="nav-mark" aria-hidden="true">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 21a8 8 0 0 1 16 0" />
-                        </svg>
-                    </span>
-                    <span class="nav-text">Ver perfil</span>
-                </a>
-
                 <button
                     type="submit"
                     class="sidebar-logout"
@@ -2250,17 +2063,7 @@
                     data-label="Cerrar sesión"
                 >
                     <span class="nav-mark" aria-hidden="true">
-                        <svg
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M10 17l5-5-5-5M15 12H3M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"
-                            />
-                        </svg>
+                        <img src="{{ asset('images/logo.png') }}" alt="">
                     </span>
 
                     <span class="nav-text">Cerrar sesión</span>
