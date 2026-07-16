@@ -238,6 +238,12 @@
                     </div>
 
                         <div class="form-group">
+                            <label>Apodo / nombre comun</label>
+                            <input type="text" name="apodo" value="{{ old('apodo', $material->apodo) }}" placeholder="Como lo conocen en almacen">
+                            <div class="field-help">Tambien se usa en el buscador.</div>
+                        </div>
+
+                        <div class="form-group">
                             <label>Categoría</label>
                             <select name="categoria">
                                 <option value="">Sin categoria</option>

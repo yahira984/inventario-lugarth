@@ -18,6 +18,8 @@ class Material extends Model
         'clave_unidad',
         'unidad',
         'descripcion',
+        'apodo',
+        'es_plantilla_equipo',
         'marca',
         'proveedor',
         'proveedor_rfc',
@@ -38,6 +40,7 @@ class Material extends Model
         'stock' => 'integer',
         'stock_minimo' => 'integer',
         'stock_maximo' => 'integer',
+        'es_plantilla_equipo' => 'boolean',
         'costo_unitario' => 'decimal:2',
         'factura_fecha' => 'datetime',
         'xml_importado_at' => 'datetime',
@@ -51,5 +54,10 @@ class Material extends Model
     public function movimientos()
     {
         return $this->hasMany(MaterialMovimiento::class);
+    }
+
+    public function nombreBusqueda(): string
+    {
+        return trim($this->descripcion . ($this->apodo ? " ({$this->apodo})" : ''));
     }
 }

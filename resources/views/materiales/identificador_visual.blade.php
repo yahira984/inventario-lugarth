@@ -79,8 +79,23 @@
         .main-preview { max-width: 100%; max-height: 250px; border-radius: 12px; }
 
         .upload-state { text-align: center; color: var(--ink); }
-        .upload-icon { font-size: 48px; color: var(--cyan-glow); display: block; }
+        .upload-icon { font-size: 0; color: var(--cyan-glow); display: block; }
+        .upload-icon::before { content: "Camara"; font-size: 28px; font-weight: 900; }
         .upload-title { font-weight: 800; font-size: 18px; margin: 10px 0; display: block; }
+        .upload-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 14px; }
+        .upload-action {
+            display: inline-flex;
+            min-height: 42px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            padding: 0 14px;
+            color: #ffffff;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            font-size: 13px;
+            font-weight: 900;
+        }
+        .upload-action.secondary { background: linear-gradient(135deg, #16a34a, #15803d); }
         .loading-note { color: var(--cyan-glow); font-weight: bold; display: none; margin-top: 10px; }
         .loading .loading-note { display: block; }
 
@@ -206,6 +221,10 @@
                                     <span class="upload-icon">📷</span>
                                     <span class="upload-title">Tomar foto o subir imagen</span>
                                     <span class="upload-subtitle">JPG, PNG o WEBP</span>
+                                    <span class="upload-actions">
+                                        <span class="upload-action">Tomar foto</span>
+                                        <span class="upload-action secondary">Subir imagen</span>
+                                    </span>
                                     <span class="loading-note">Analizando imagen...</span>
                                 </span>
                             @endif
@@ -246,6 +265,7 @@
                                     <div class="result-title">{{ $material->descripcion }}</div>
                                     <div class="result-meta">
                                         <span>No. parte: {{ $material->numero_parte ?: 'N/A' }}</span>
+                                        @if($material->apodo)<span>Apodo: {{ $material->apodo }}</span>@endif
                                         <span>Marca: {{ $material->marca }}</span>
                                         <span>Almacen: {{ $material->almacen ?: 'Sin definir' }}</span>
                                         <span>Stock: {{ $material->stock }} pzas</span>

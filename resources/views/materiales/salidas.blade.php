@@ -505,7 +505,7 @@
                     <h2>Buscar manualmente</h2>
 
                     <form action="{{ route('materiales.salidas.create') }}" method="GET" class="manual-search">
-                        <input type="text" name="buscar" value="{{ $buscar }}" placeholder="Descripcion, no. parte, categoria, almacen, marca o codigo">
+                        <input type="text" name="buscar" value="{{ $buscar }}" placeholder="Descripcion, apodo, no. parte, categoria, almacen, marca o codigo">
                         <button type="submit" class="btn btn-green">Buscar</button>
                     </form>
 
@@ -521,6 +521,9 @@
                                 <div>
                                     <div class="category-badge">{{ $material->categoria ?: 'Sin categoria' }}</div>
                                     <div class="manual-title">{{ $material->descripcion }}</div>
+                                    @if($material->apodo)
+                                        <div class="muted">Apodo: {{ $material->apodo }}</div>
+                                    @endif
                                     <div class="muted">{{ $material->numero_parte ?? 'N/A' }} · {{ $material->marca ?? 'Sin marca' }}</div>
                                     <div class="muted">Almacen: {{ $material->almacen ?: 'Sin definir' }}</div>
                                     <span class="stock-pill {{ $material->stock <= 0 ? 'empty' : '' }}">{{ $material->stock }} pzas</span>
@@ -530,6 +533,7 @@
                                         style="width: 100%; margin-top: 10px;"
                                         data-id="{{ $material->id }}"
                                         data-descripcion="{{ $material->descripcion }}"
+                                        data-apodo="{{ $material->apodo }}"
                                         data-numero-parte="{{ $material->numero_parte }}"
                                         data-codigo="{{ $material->codigo_barras }}"
                                         data-marca="{{ $material->marca }}"
@@ -626,7 +630,7 @@
         materialInput.value = material.id;
         codigoInput.value = material.codigo_barras || codigoInput.value;
         selectedName.textContent = material.descripcion;
-        selectedMeta.textContent = `No. parte: ${material.numero_parte || 'N/A'} · Marca: ${material.marca || 'N/A'} · Stock: ${material.stock} pzas`;
+        selectedMeta.textContent = `${material.apodo ? 'Apodo: ' + material.apodo + ' · ' : ''}No. parte: ${material.numero_parte || 'N/A'} · Marca: ${material.marca || 'N/A'} · Stock: ${material.stock} pzas`;
         selectedCategory.textContent = `Categoria: ${material.categoria || 'Sin categoria'} · Almacen: ${material.almacen || 'Sin definir'}`;
         selectedCategory.style.display = 'inline-flex';
         cantidadInput.max = material.stock;
@@ -653,6 +657,7 @@
         seleccionarMaterial({
             id: button.dataset.id,
             descripcion: button.dataset.descripcion,
+            apodo: button.dataset.apodo,
             numero_parte: button.dataset.numeroParte,
             codigo_barras: button.dataset.codigo,
             marca: button.dataset.marca,
@@ -702,6 +707,7 @@
                 seleccionarMaterial({
                     id: data.id,
                     descripcion: data.descripcion,
+                    apodo: data.apodo,
                     numero_parte: data.numero_parte,
                     codigo_barras: data.codigo_barras,
                     marca: data.marca,

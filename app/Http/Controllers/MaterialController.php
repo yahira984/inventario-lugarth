@@ -20,6 +20,10 @@ class MaterialController extends Controller
     {
         $query = Material::query();
 
+        if (! ($request->boolean('ver_plantillas') && $this->usuarioPuedeAdministrarCatalogo($request))) {
+            $query->where('es_plantilla_equipo', false);
+        }
+
         if ($request->boolean('sin_codigo')) {
             $query->whereNull('codigo_barras');
         }
@@ -33,6 +37,7 @@ class MaterialController extends Controller
             $query->where(function ($q) use ($termino) {
                 $q->where('numero_parte', 'LIKE', "%{$termino}%")
                     ->orWhere('descripcion', 'LIKE', "%{$termino}%")
+                    ->orWhere('apodo', 'LIKE', "%{$termino}%")
                     ->orWhere('codigo_barras', 'LIKE', "%{$termino}%")
                     ->orWhere('marca', 'LIKE', "%{$termino}%")
                     ->orWhere('proveedor', 'LIKE', "%{$termino}%")
@@ -67,7 +72,9 @@ class MaterialController extends Controller
         $codigo = trim((string) $request->input('codigo_barras', ''));
 
         if ($codigo !== '') {
-            $material = Material::where('codigo_barras', $codigo)->first();
+            $material = Material::where('codigo_barras', $codigo)
+                ->where('es_plantilla_equipo', false)
+                ->first();
 
             if ($material) {
                 $cantidad = max(0, (int) $request->input('stock', 0));
@@ -243,6 +250,7 @@ class MaterialController extends Controller
     public function buscarPorCodigo(Request $request)
     {
         $materiales = Material::where('codigo_barras', $request->codigo)
+            ->where('es_plantilla_equipo', false)
             ->orderBy('categoria')
             ->orderBy('descripcion')
             ->limit(10)
@@ -260,6 +268,7 @@ class MaterialController extends Controller
                     'numero_parte' => $material->numero_parte,
                     'codigo_barras' => $material->codigo_barras,
                     'descripcion' => $material->descripcion,
+                    'apodo' => $material->apodo,
                     'marca' => $material->marca,
                     'proveedor' => $material->proveedor,
                     'stock' => $material->stock,
@@ -279,6 +288,7 @@ class MaterialController extends Controller
                 'numero_parte' => $material->numero_parte,
                 'codigo_barras' => $material->codigo_barras,
                 'descripcion' => $material->descripcion,
+                'apodo' => $material->apodo,
                 'marca' => $material->marca,
                 'proveedor' => $material->proveedor,
                 'stock' => $material->stock,
@@ -305,6 +315,7 @@ class MaterialController extends Controller
             'clave_unidad' => ['nullable', 'string', 'max:30'],
             'unidad' => ['nullable', 'string', 'max:80'],
             'descripcion' => ['required', 'string'],
+            'apodo' => ['nullable', 'string', 'max:255'],
             'marca' => ['nullable', 'string', 'max:255'],
             'proveedor' => ['nullable', 'string', 'max:255'],
             'proveedor_rfc' => ['nullable', 'string', 'max:20'],
@@ -350,7 +361,7 @@ class MaterialController extends Controller
             ->where('activa', true)
             ->orderBy('nombre')
             ->pluck('nombre')
-            ->merge(Material::query()->whereNotNull('categoria')->distinct()->orderBy('categoria')->pluck('categoria'))
+            ->merge(Material::query()->where('es_plantilla_equipo', false)->whereNotNull('categoria')->distinct()->orderBy('categoria')->pluck('categoria'))
             ->map(fn ($categoria) => trim((string) $categoria))
             ->filter()
             ->unique(fn ($categoria) => strtoupper($categoria))

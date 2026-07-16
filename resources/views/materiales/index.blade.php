@@ -621,7 +621,7 @@
 
             <button type="button" class="btn-scan" onclick="abrirEscaner()" style="background: #e6be0d !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 0 20px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important;">Escanear</button>
 
-            <input type="text" name="buscar" id="buscarInput" placeholder="No. parte, código o descripción" value="{{ request('buscar') }}" autocomplete="off" autofocus>
+            <input type="text" name="buscar" id="buscarInput" placeholder="No. parte, codigo, descripcion o apodo" value="{{ request('buscar') }}" autocomplete="off" autofocus>
 
             <select name="filtrar_categoria">
                 <option value="">Todas las categorias</option>
@@ -683,7 +683,12 @@
                                 <span class="code-muted">Sin código de barras</span>
                             @endif
                         </td>
-                        <td>{{ $material->descripcion }}</td>
+                        <td>
+                            {{ $material->descripcion }}
+                            @if($material->apodo)
+                                <div style="margin-top:4px; color:#075985; font-size:12px; font-weight:900;">Apodo: {{ $material->apodo }}</div>
+                            @endif
+                        </td>
                         <td>{{ $material->marca ?? 'N/A' }}</td>
                         <td>{{ $material->proveedor ?? 'N/A' }}</td>
                         <td>

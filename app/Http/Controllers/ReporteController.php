@@ -21,7 +21,7 @@ class ReporteController extends Controller
             fputs($out, "\xEF\xBB\xBF");
             fputcsv($out, ['Categoria', 'Almacen', 'No. Parte', 'Codigo Barras', 'Clave SAT', 'Unidad', 'Descripcion', 'Marca', 'Proveedor', 'RFC Proveedor', 'Stock', 'Stock minimo', 'Stock maximo', 'Costo unitario', 'Moneda', 'Valor']);
 
-            Material::query()->orderBy('descripcion')->chunk(200, function ($materiales) use ($out) {
+            Material::query()->where('es_plantilla_equipo', false)->orderBy('descripcion')->chunk(200, function ($materiales) use ($out) {
                 foreach ($materiales as $material) {
                     fputcsv($out, [
                         $material->categoria,
@@ -92,7 +92,7 @@ class ReporteController extends Controller
     public function inventarioPdf(): View
     {
         return view('reportes.inventario_pdf', [
-            'materiales' => Material::query()->orderBy('descripcion')->get(),
+            'materiales' => Material::query()->where('es_plantilla_equipo', false)->orderBy('descripcion')->get(),
         ]);
     }
 
