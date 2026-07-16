@@ -54,6 +54,7 @@ class IdentificadorVisualController extends Controller
     private function buscarMateriales(array $descriptorFoto): Collection
     {
         $comparados = Material::query()
+            ->where('es_plantilla_equipo', false)
             ->whereNotNull('fotografia')
             ->where('fotografia', '<>', '')
             ->get()
@@ -94,6 +95,7 @@ class IdentificadorVisualController extends Controller
         }
 
         $variantes = Material::query()
+            ->where('es_plantilla_equipo', false)
             ->whereNotNull('fotografia')
             ->where('fotografia', '<>', '')
             ->whereNotIn('id', $resultados->pluck('id')->all())

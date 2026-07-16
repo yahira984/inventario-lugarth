@@ -127,6 +127,11 @@
                                 </div>
 
                                 <div class="field">
+                                    <label for="apodo">Apodo / nombre comun</label>
+                                    <input type="text" name="apodo" id="apodo" value="{{ old('apodo') }}" placeholder="Ej. banderola, cuello, empaque chico">
+                                </div>
+
+                                <div class="field">
                                     <label for="marca">Marca</label>
                                     <input type="text" name="marca" id="marca" value="{{ old('marca') }}" placeholder="Ej. BETTS">
                                 </div>
@@ -261,6 +266,10 @@
     <div class="modal-content">
         <h3>Capturar evidencia</h3>
         <video id="videoElement" autoplay playsinline></video>
+        <div id="zoomControl" style="display:none; margin-top:12px;">
+            <label for="cameraZoom" style="display:block; color:#075985; font-weight:900; font-size:12px; text-transform:uppercase; margin-bottom:6px;">Zoom de camara</label>
+            <input type="range" id="cameraZoom" min="1" max="1" step="0.1" value="1" style="width:100%;">
+        </div>
         <canvas id="canvasElement" style="display:none;"></canvas>
         <button type="button" class="btn" style="width:100%; margin-top:14px; background: #16a34a !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;" onclick="tomarFotoWeb()">Capturar imagen</button>
         <button type="button" class="btn" style="width:100%; margin-top:10px; background: #b91c1c !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;" onclick="cerrarCamaraWeb()">Cancelar</button>
@@ -271,6 +280,7 @@
 <script>
     let html5QrcodeScanner = null;
     let streamVideo = null;
+    let videoTrack = null;
 
     function mostrarVistaPreviaArchivo(input, previewId) {
         const preview = document.getElementById(previewId);
@@ -318,6 +328,7 @@
                 document.getElementById('categoria').value = data.categoria || '';
                 document.getElementById('numero_parte').value = data.numero_parte || '';
                 document.getElementById('descripcion').value = data.descripcion || '';
+                document.getElementById('apodo').value = data.apodo || '';
                 document.getElementById('marca').value = data.marca || '';
                 document.getElementById('proveedor').value = data.proveedor || '';
                 document.getElementById('almacen').value = data.almacen || '';
@@ -334,7 +345,9 @@
         navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
             .then((stream) => {
                 streamVideo = stream;
+                videoTrack = stream.getVideoTracks()[0] || null;
                 video.srcObject = stream;
+                prepararZoomCamara();
             })
             .catch(() => {
                 alert('No se pudo acceder a la camara. Revisa permisos del navegador.');
@@ -348,8 +361,44 @@
         if (streamVideo) {
             streamVideo.getTracks().forEach((track) => track.stop());
             streamVideo = null;
+            videoTrack = null;
         }
+
+        document.getElementById('zoomControl').style.display = 'none';
     }
+
+    function prepararZoomCamara() {
+        const zoomControl = document.getElementById('zoomControl');
+        const zoomInput = document.getElementById('cameraZoom');
+
+        if (!videoTrack || typeof videoTrack.getCapabilities !== 'function') {
+            zoomControl.style.display = 'none';
+            return;
+        }
+
+        const capabilities = videoTrack.getCapabilities();
+
+        if (!capabilities.zoom) {
+            zoomControl.style.display = 'none';
+            return;
+        }
+
+        zoomInput.min = capabilities.zoom.min ?? 1;
+        zoomInput.max = capabilities.zoom.max ?? 1;
+        zoomInput.step = capabilities.zoom.step ?? 0.1;
+        zoomInput.value = capabilities.zoom.min ?? 1;
+        zoomControl.style.display = 'block';
+    }
+
+    document.getElementById('cameraZoom').addEventListener('input', (event) => {
+        if (!videoTrack) {
+            return;
+        }
+
+        videoTrack.applyConstraints({
+            advanced: [{ zoom: Number(event.target.value) }]
+        }).catch(() => {});
+    });
 
     function tomarFotoWeb() {
         const video = document.getElementById('videoElement');

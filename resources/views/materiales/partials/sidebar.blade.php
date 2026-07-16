@@ -1632,6 +1632,12 @@
         --menu-rgb: 220, 38, 38;
     }
 
+    .sidebar-link.menu-equipos {
+        --menu-color: #9333ea;
+        --menu-dark: #581c87;
+        --menu-rgb: 147, 51, 234;
+    }
+
     .sidebar-link.menu-xml {
         --menu-color: #d97706;
         --menu-dark: #92400e;
@@ -1654,6 +1660,42 @@
         --menu-color: #ea580c;
         --menu-dark: #9a3412;
         --menu-rgb: 234, 88, 12;
+    }
+
+    .sidebar-link.menu-categorias {
+        --menu-color: #0d9488;
+        --menu-dark: #115e59;
+        --menu-rgb: 13, 148, 136;
+    }
+
+    .sidebar-link.menu-proveedores {
+        --menu-color: #ca8a04;
+        --menu-dark: #854d0e;
+        --menu-rgb: 202, 138, 4;
+    }
+
+    .sidebar-link.menu-catalogo {
+        --menu-color: #2563eb;
+        --menu-dark: #1e3a8a;
+        --menu-rgb: 37, 99, 235;
+    }
+
+    .sidebar-link.menu-salidas-admin {
+        --menu-color: #e11d48;
+        --menu-dark: #9f1239;
+        --menu-rgb: 225, 29, 72;
+    }
+
+    .sidebar-link.menu-auditoria {
+        --menu-color: #4f46e5;
+        --menu-dark: #312e81;
+        --menu-rgb: 79, 70, 229;
+    }
+
+    .sidebar-link.menu-respaldos {
+        --menu-color: #475569;
+        --menu-dark: #1e293b;
+        --menu-rgb: 71, 85, 105;
     }
 
     .sidebar-link::before {
@@ -1800,33 +1842,35 @@
 
         <nav class="sidebar-nav" id="sidebarNav">
 
-            {{-- DASHBOARD --}}
-            <a
-                href="{{ route('dashboard') }}"
-                title="Dashboard"
-                data-label="Dashboard"
-                class="sidebar-link menu-dashboard {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-            >
-                <span class="nav-mark" aria-hidden="true">
-                    <img src="{{ asset('images/dashboard.png') }}" alt="">
-                </span>
-
-                <span class="nav-text">Dashboard</span>
-
-                <svg
-                    class="nav-arrow"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
+            @if(auth()->user()?->esAdministrador())
+                {{-- DASHBOARD --}}
+                <a
+                    href="{{ route('dashboard') }}"
+                    title="Dashboard"
+                    data-label="Dashboard"
+                    class="sidebar-link menu-dashboard {{ request()->routeIs('dashboard') ? 'active' : '' }}"
                 >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m9 18 6-6-6-6"
-                    />
-                </svg>
-            </a>
+                    <span class="nav-mark" aria-hidden="true">
+                        <img src="{{ asset('images/dashboard.png') }}" alt="">
+                    </span>
+
+                    <span class="nav-text">Dashboard</span>
+
+                    <svg
+                        class="nav-arrow"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="m9 18 6-6-6-6"
+                        />
+                    </svg>
+                </a>
+            @endif
 
             {{-- INVENTARIO --}}
             <a
@@ -1913,6 +1957,34 @@
                         />
                     </svg>
                 </a>
+
+                {{-- EQUIPOS / PAQUETES --}}
+                <a
+                    href="{{ route('equipos.index') }}"
+                    title="Equipos y paquetes"
+                    data-label="Equipos"
+                    class="sidebar-link menu-equipos {{ request()->routeIs('equipos.*') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <img src="{{ asset('images/registro.png') }}" alt="">
+                    </span>
+
+                    <span class="nav-text">Equipos</span>
+
+                    <svg
+                        class="nav-arrow"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="m9 18 6-6-6-6"
+                        />
+                    </svg>
+                </a>
             @endif
 
             @if(auth()->user()?->puedeAdministrarCatalogo())
@@ -1970,6 +2042,102 @@
                             stroke-linejoin="round"
                             d="m9 18 6-6-6-6"
                         />
+                    </svg>
+                </a>
+
+                {{-- CATEGORIAS --}}
+                <a
+                    href="{{ route('admin.categorias.index') }}"
+                    title="Categorias"
+                    data-label="Categorias"
+                    class="sidebar-link menu-categorias {{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <img src="{{ asset('images/categorias.svg') }}" alt="">
+                    </span>
+                    <span class="nav-text">Categorias</span>
+                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
+                    </svg>
+                </a>
+
+                {{-- PROVEEDORES --}}
+                <a
+                    href="{{ route('admin.proveedores.index') }}"
+                    title="Proveedores"
+                    data-label="Proveedores"
+                    class="sidebar-link menu-proveedores {{ request()->routeIs('admin.proveedores.*') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <img src="{{ asset('images/proveedores.svg') }}" alt="">
+                    </span>
+                    <span class="nav-text">Proveedores</span>
+                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
+                    </svg>
+                </a>
+
+                {{-- CATALOGO COMPLETO --}}
+                <a
+                    href="{{ route('admin.materiales.index') }}"
+                    title="Catalogo completo"
+                    data-label="Catalogo completo"
+                    class="sidebar-link menu-catalogo {{ request()->routeIs('admin.materiales.*') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <img src="{{ asset('images/catalogo.svg') }}" alt="">
+                    </span>
+                    <span class="nav-text">Catalogo completo</span>
+                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
+                    </svg>
+                </a>
+
+                {{-- SALIDAS ADMIN --}}
+                <a
+                    href="{{ route('admin.salidas.index') }}"
+                    title="Historial de salidas"
+                    data-label="Historial salidas"
+                    class="sidebar-link menu-salidas-admin {{ request()->routeIs('admin.salidas.*') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <img src="{{ asset('images/historial-salidas.svg') }}" alt="">
+                    </span>
+                    <span class="nav-text">Historial salidas</span>
+                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
+                    </svg>
+                </a>
+
+                {{-- AUDITORIA --}}
+                <a
+                    href="{{ route('admin.auditoria.index') }}"
+                    title="Auditoria"
+                    data-label="Auditoria"
+                    class="sidebar-link menu-auditoria {{ request()->routeIs('admin.auditoria.*') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <img src="{{ asset('images/auditoria.svg') }}" alt="">
+                    </span>
+                    <span class="nav-text">Auditoria</span>
+                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
+                    </svg>
+                </a>
+
+                {{-- RESPALDOS --}}
+                <a
+                    href="{{ route('admin.backups.index') }}"
+                    title="Respaldos"
+                    data-label="Respaldos"
+                    class="sidebar-link menu-respaldos {{ request()->routeIs('admin.backups.*') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <img src="{{ asset('images/respaldos.svg') }}" alt="">
+                    </span>
+                    <span class="nav-text">Respaldos</span>
+                    <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
                     </svg>
                 </a>
             @endif

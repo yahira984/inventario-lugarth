@@ -8,6 +8,7 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\DatabaseBackupController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EtiquetaController;
+use App\Http\Controllers\EquipmentPackageController;
 use App\Http\Controllers\IdentificadorVisualController;
 use App\Http\Controllers\MaterialCategoryController;
 use App\Http\Controllers\MaterialController;
@@ -54,6 +55,23 @@ Route::middleware('auth')->group(function () {
         ->name('materiales.visual.create');
     Route::post('materiales/identificador-visual/buscar', [IdentificadorVisualController::class, 'search'])
         ->name('materiales.visual.search');
+
+    Route::get('equipos', [EquipmentPackageController::class, 'index'])
+        ->name('equipos.index');
+    Route::post('equipos', [EquipmentPackageController::class, 'store'])
+        ->name('equipos.store');
+    Route::post('equipos/importar-desde-materiales', [EquipmentPackageController::class, 'importFromMaterials'])
+        ->name('equipos.importar-materiales');
+    Route::get('equipos/{equipo}', [EquipmentPackageController::class, 'show'])
+        ->name('equipos.show');
+    Route::post('equipos/{equipo}/piezas', [EquipmentPackageController::class, 'addItem'])
+        ->name('equipos.items.store');
+    Route::patch('equipos/{equipo}/piezas/{item}', [EquipmentPackageController::class, 'updateItem'])
+        ->name('equipos.items.update');
+    Route::delete('equipos/{equipo}/piezas/{item}', [EquipmentPackageController::class, 'deleteItem'])
+        ->name('equipos.items.destroy');
+    Route::post('equipos/{equipo}/retirar', [EquipmentPackageController::class, 'withdraw'])
+        ->name('equipos.withdraw');
 
     Route::get('usuarios/permisos', [UserRoleController::class, 'index'])
         ->name('usuarios.roles.index');

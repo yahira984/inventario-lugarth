@@ -20,9 +20,11 @@ class SalidaMaterialController extends Controller
         $buscar = trim((string) $request->query('buscar', ''));
 
         $materiales = Material::query()
+            ->where('es_plantilla_equipo', false)
             ->when($buscar !== '', function ($query) use ($buscar) {
                 $query->where(function ($q) use ($buscar) {
                     $q->where('descripcion', 'LIKE', '%' . $buscar . '%')
+                        ->orWhere('apodo', 'LIKE', '%' . $buscar . '%')
                         ->orWhere('numero_parte', 'LIKE', '%' . $buscar . '%')
                         ->orWhere('codigo_barras', 'LIKE', '%' . $buscar . '%')
                         ->orWhere('marca', 'LIKE', '%' . $buscar . '%')
@@ -82,7 +84,9 @@ class SalidaMaterialController extends Controller
         if ($materialId) {
             $material = Material::find($materialId);
         } else {
-            $materialesPorCodigo = Material::where('codigo_barras', $codigoBarras)->get();
+            $materialesPorCodigo = Material::where('codigo_barras', $codigoBarras)
+                ->where('es_plantilla_equipo', false)
+                ->get();
 
             if ($materialesPorCodigo->count() > 1) {
                 throw ValidationException::withMessages([

@@ -20,6 +20,7 @@ class DashboardController extends Controller
         $consumoMensual = MaterialMovimiento::query()
             ->select('material_id', DB::raw('SUM(cantidad) as total'))
             ->with('material:id,descripcion')
+            ->whereHas('material', fn ($query) => $query->where('es_plantilla_equipo', false))
             ->where('tipo', 'salida')
             ->where('created_at', '>=', $inicioMes)
             ->groupBy('material_id')
@@ -28,12 +29,14 @@ class DashboardController extends Controller
             ->get();
 
         $valorPorCategoria = Material::query()
+            ->where('es_plantilla_equipo', false)
             ->select('categoria', DB::raw('SUM(stock * costo_unitario) as total'))
             ->groupBy('categoria')
             ->orderByDesc('total')
             ->get();
 
         $stockCritico = Material::query()
+            ->where('es_plantilla_equipo', false)
             ->where('stock_minimo', '>', 0)
             ->whereColumn('stock', '<=', 'stock_minimo')
             ->orderBy('stock')
@@ -52,10 +55,11 @@ class DashboardController extends Controller
             'consumoData' => $consumoMensual->pluck('total')->map(fn ($total) => (int) $total)->values(),
             'valorLabels' => $valorPorCategoria->pluck('categoria')->map(fn ($categoria) => $categoria ?: 'Sin categoría')->values(),
             'valorData' => $valorPorCategoria->pluck('total')->map(fn ($total) => round((float) $total, 2))->values(),
-            'totalMateriales' => Material::count(),
-            'stockTotal' => Material::sum('stock'),
-            'valorInventario' => Material::query()->sum(DB::raw('stock * costo_unitario')),
+            'totalMateriales' => Material::where('es_plantilla_equipo', false)->count(),
+            'stockTotal' => Material::where('es_plantilla_equipo', false)->sum('stock'),
+            'valorInventario' => Material::query()->where('es_plantilla_equipo', false)->sum(DB::raw('stock * costo_unitario')),
             'stockCriticoTotal' => Material::query()
+                ->where('es_plantilla_equipo', false)
                 ->where('stock_minimo', '>', 0)
                 ->whereColumn('stock', '<=', 'stock_minimo')
                 ->count(),
