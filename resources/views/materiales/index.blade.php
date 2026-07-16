@@ -274,10 +274,161 @@
             border-radius: 12px;
             border: 2px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            transition: transform 0.3s;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
         }
 
         tbody tr:hover .img-material { transform: scale(1.1) rotate(2deg); border-color: var(--cyan-glow); }
+
+        .photo-zoom-btn {
+            appearance: none;
+            border: 0;
+            background: transparent;
+            padding: 0;
+            cursor: zoom-in;
+            border-radius: 14px;
+            position: relative;
+            display: inline-flex;
+        }
+
+        .photo-zoom-btn::after {
+            content: "Ver";
+            position: absolute;
+            right: -8px;
+            bottom: -8px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 900;
+            opacity: 0;
+            transform: translateY(4px) scale(.92);
+            transition: opacity .22s ease, transform .22s ease;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, .35);
+        }
+
+        .photo-zoom-btn:hover .img-material,
+        .photo-zoom-btn:focus-visible .img-material {
+            transform: scale(1.08);
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, .18), 0 12px 30px rgba(14, 165, 233, .32);
+        }
+
+        .photo-zoom-btn:hover::after,
+        .photo-zoom-btn:focus-visible::after {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .image-viewer {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+            background: radial-gradient(circle at 50% 20%, rgba(56, 189, 248, .18), transparent 34%), rgba(2, 6, 23, .82);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            opacity: 0;
+            transition: opacity .24s ease;
+        }
+
+        .image-viewer.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        .image-viewer-panel {
+            width: min(920px, 94vw);
+            max-height: 92vh;
+            padding: 16px;
+            border-radius: 24px;
+            background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(239,246,255,.92));
+            border: 1px solid rgba(191, 219, 254, .95);
+            box-shadow: 0 28px 80px rgba(2, 6, 23, .55);
+            transform: translateY(18px) scale(.96);
+            transition: transform .28s cubic-bezier(.16, 1, .3, 1);
+        }
+
+        .image-viewer.open .image-viewer-panel {
+            transform: translateY(0) scale(1);
+        }
+
+        .image-viewer-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 4px 4px 14px;
+        }
+
+        .image-viewer-title {
+            min-width: 0;
+        }
+
+        .image-viewer-title strong {
+            display: block;
+            color: #08233f;
+            font-size: clamp(18px, 3vw, 26px);
+            font-weight: 950;
+            line-height: 1.1;
+            overflow-wrap: anywhere;
+        }
+
+        .image-viewer-title span {
+            display: block;
+            margin-top: 4px;
+            color: #52708f;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .image-viewer-close {
+            width: 44px;
+            height: 44px;
+            border: 0;
+            border-radius: 14px;
+            cursor: pointer;
+            background: #0f172a;
+            color: #fff;
+            font-size: 24px;
+            line-height: 1;
+            font-weight: 900;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, .28);
+            transition: transform .2s ease, background .2s ease;
+        }
+
+        .image-viewer-close:hover {
+            transform: translateY(-2px) scale(1.04);
+            background: #1d4ed8;
+        }
+
+        .image-viewer-frame {
+            border-radius: 20px;
+            background: linear-gradient(45deg, rgba(14, 165, 233, .12), rgba(37, 99, 235, .05)), #fff;
+            padding: 12px;
+            min-height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .image-viewer-frame img {
+            max-width: 100%;
+            max-height: min(72vh, 720px);
+            object-fit: contain;
+            border-radius: 16px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, .2);
+            animation: imagePop .34s cubic-bezier(.16, 1, .3, 1);
+        }
+
+        @keyframes imagePop {
+            from { opacity: 0; transform: scale(.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
 
         .no-photo {
             width: 72px;
@@ -670,7 +821,14 @@
                     <tr class="{{ $material->requiereReposicion() ? 'stock-critical' : '' }}">
                         <td>
                             @if($material->fotografia)
-                                <img src="{{ asset('storage/' . $material->fotografia) }}" class="img-material" alt="Foto">
+                                <button
+                                    type="button"
+                                    class="photo-zoom-btn"
+                                    onclick="abrirVisorImagen(@js(asset('storage/' . $material->fotografia)), @js($material->descripcion), @js($material->apodo ?: $material->numero_parte ?: 'Sin apodo'))"
+                                    aria-label="Ver foto de {{ $material->descripcion }}"
+                                >
+                                    <img src="{{ asset('storage/' . $material->fotografia) }}" class="img-material" alt="Foto de {{ $material->descripcion }}">
+                                </button>
                             @else
                                 <div class="no-photo">Sin foto</div>
                             @endif
@@ -851,6 +1009,21 @@
     @method('DELETE')
 </form>
 
+<div id="imageViewer" class="image-viewer" role="dialog" aria-modal="true" aria-labelledby="imageViewerTitle">
+    <div class="image-viewer-panel">
+        <div class="image-viewer-top">
+            <div class="image-viewer-title">
+                <strong id="imageViewerTitle">Foto del material</strong>
+                <span id="imageViewerSubtitle"></span>
+            </div>
+            <button type="button" class="image-viewer-close" onclick="cerrarVisorImagen()" aria-label="Cerrar imagen">&times;</button>
+        </div>
+        <div class="image-viewer-frame">
+            <img id="imageViewerPhoto" src="" alt="Foto ampliada">
+        </div>
+    </div>
+</div>
+
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
     const buscarInput = document.getElementById('buscarInput');
@@ -866,6 +1039,30 @@
     let scannerBufferInicio = 0;
     let scannerUltimaTecla = 0;
     let scannerResetTimer = null;
+    const imageViewer = document.getElementById('imageViewer');
+    const imageViewerPhoto = document.getElementById('imageViewerPhoto');
+    const imageViewerTitle = document.getElementById('imageViewerTitle');
+    const imageViewerSubtitle = document.getElementById('imageViewerSubtitle');
+
+    function abrirVisorImagen(src, titulo, subtitulo) {
+        imageViewerPhoto.src = src;
+        imageViewerPhoto.alt = `Foto de ${titulo}`;
+        imageViewerTitle.textContent = titulo || 'Foto del material';
+        imageViewerSubtitle.textContent = subtitulo ? `Apodo / codigo: ${subtitulo}` : '';
+        imageViewer.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarVisorImagen() {
+        imageViewer.classList.remove('open');
+        document.body.style.overflow = '';
+
+        setTimeout(() => {
+            if (!imageViewer.classList.contains('open')) {
+                imageViewerPhoto.src = '';
+            }
+        }, 220);
+    }
 
     function buscarCodigoEscaneado(codigo) {
         const codigoLimpio = codigo.trim();
@@ -1025,6 +1222,11 @@
     });
 
     document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && imageViewer.classList.contains('open')) {
+            cerrarVisorImagen();
+            return;
+        }
+
         if (
             event.ctrlKey
             || event.altKey
@@ -1099,6 +1301,10 @@ function ejecutarEliminar() {
 
     barcodeModal.addEventListener('click', function (e) {
         if (e.target === this) cerrarModalCodigo();
+    });
+
+    imageViewer.addEventListener('click', function (e) {
+        if (e.target === this) cerrarVisorImagen();
     });
 </script>
 
