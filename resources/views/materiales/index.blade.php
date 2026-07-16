@@ -658,6 +658,7 @@
                     <th>Categoria</th>
                     <th>No. Parte / Código</th>
                     <th>Descripción</th>
+                    <th>Apodo</th>
                     <th>Marca</th>
                     <th>Proveedor</th>
                     <th>Stock</th>
@@ -687,6 +688,13 @@
                             {{ $material->descripcion }}
                             @if($material->apodo)
                                 <div style="margin-top:4px; color:#075985; font-size:12px; font-weight:900;">Apodo: {{ $material->apodo }}</div>
+                            @endif
+                        </td>
+                        <td>
+                            @if($material->apodo)
+                                <span class="badge badge-category">{{ $material->apodo }}</span>
+                            @else
+                                <span class="code-muted">Sin apodo</span>
                             @endif
                         </td>
                         <td>{{ $material->marca ?? 'N/A' }}</td>
@@ -772,7 +780,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="empty-row">
+                        <td colspan="9" class="empty-row">
                             No se encontraron materiales.
                         </td>
                     </tr>
