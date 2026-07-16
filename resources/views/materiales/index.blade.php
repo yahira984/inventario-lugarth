@@ -600,15 +600,15 @@
         </div>
 
         <div class="header-actions">
-            <a href="{{ route('dashboard') }}" class="btn-report btn-dashboard">Dashboard</a>
-            <a href="{{ route('reportes.inventario.csv') }}" class="btn-report btn-excel">Excel</a>
-            <a href="{{ route('reportes.inventario.pdf') }}" class="btn-report btn-pdf">PDF</a>
+            <a href="{{ route('dashboard') }}" class="btn-report btn-dashboard" style="background: #1774f5 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">Dashboard</a>
+            <a href="{{ route('reportes.inventario.csv') }}" class="btn-report btn-excel" style="background: #16a34a !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">Excel</a>
+            <a href="{{ route('reportes.inventario.pdf') }}" class="btn-report btn-pdf" style="background: #b91c1c !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">PDF</a>
             @if(auth()->user()?->puedeMoverStock())
-                <a href="{{ route('materiales.salidas.create') }}" class="btn-xml">Registrar Salida</a>
-                <a href="{{ route('materiales.create') }}" class="btn-alta">+ Registrar Entrada</a>
+                <a href="{{ route('materiales.salidas.create') }}" class="btn-xml" style="background: #e22020 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">Registrar Salida</a>
+                <a href="{{ route('materiales.create') }}" class="btn-alta" style="background: #13dd56 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">+ Registrar Entrada</a>
             @endif
             @if(auth()->user()?->puedeAdministrarCatalogo())
-                <a href="{{ route('materiales.xml.create') }}" class="btn-xml">Importar XML</a>
+                <a href="{{ route('materiales.xml.create') }}" class="btn-xml" style="background: #7c3aed !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">Importar XML</a>
             @endif
         </div>
     </div>
@@ -619,7 +619,7 @@
                 <input type="hidden" name="sin_codigo" value="1">
             @endif
 
-            <button type="button" class="btn-scan" onclick="abrirEscaner()">Escanear</button>
+            <button type="button" class="btn-scan" onclick="abrirEscaner()" style="background: #e6be0d !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 0 20px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important;">Escanear</button>
 
             <input type="text" name="buscar" id="buscarInput" placeholder="No. parte, código o descripción" value="{{ request('buscar') }}" autocomplete="off" autofocus>
 
@@ -630,10 +630,10 @@
                 @endforeach
             </select>
 
-            <button type="submit" class="btn-filter">Buscar</button>
+            <button type="submit" class="btn-filter" style="background: #1e293b !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 0 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important;">Buscar</button>
 
             @if(request('filtrar_categoria') || request('buscar'))
-                <a href="{{ route('materiales.index') }}" class="btn-clear">Limpiar</a>
+                <a href="{{ route('materiales.index') }}" class="btn-clear" style="background: transparent !important; color: #64748b !important; border: 2px solid #64748b !important; box-shadow: none !important; padding: 0 16px !important; border-radius: 12px !important; font-weight: 700 !important; text-decoration: none !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">Limpiar</a>
             @endif
         </form>
     </div>

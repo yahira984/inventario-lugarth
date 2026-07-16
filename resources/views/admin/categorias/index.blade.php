@@ -19,10 +19,14 @@
         label { display: block; margin-bottom: 6px; color: #334155; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; }
         input, textarea { width: 100%; min-height: 42px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font-family: inherit; color: #102033; background: #fff; }
         textarea { min-height: 82px; resize: vertical; }
-        .btn { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #1d4ed8; background: #2563eb; color: #fff; padding: 0 13px; text-decoration: none; font-weight: 900; cursor: pointer; }
-        .btn:hover { background: #1d4ed8; transform: translateY(-1px); }
-        .btn-soft { background: #fff; color: #1d4ed8; border-color: #bfdbfe; }
-        .btn-danger { background: #dc2626; border-color: #b91c1c; }
+        
+        /* --- COLORES FORZADOS --- */
+        .btn { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; padding: 0 13px; text-decoration: none; font-weight: 900; cursor: pointer; transition: all 0.2s; border: none !important; background: linear-gradient(135deg, #8b5cf6, #5b21b6) !important; color: #fff !important; }
+        .btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+        .btn-soft { background: rgba(139, 92, 246, 0.15) !important; color: #8b5cf6 !important; border: 1px solid rgba(139, 92, 246, 0.3) !important; }
+        .btn-soft:hover { background: rgba(139, 92, 246, 0.25) !important; color: #5b21b6 !important; border-color: #5b21b6 !important; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #b91c1c) !important; border: none !important; color: #fff !important; }
+        
         .alert-success, .alert-danger { border-radius: 12px; padding: 13px 15px; margin-bottom: 16px; font-weight: 800; }
         .alert-success { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
         .alert-danger { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
@@ -33,8 +37,13 @@
         tr:last-child td { border-bottom: 0; }
         .edit-form { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto auto; gap: 10px; align-items: center; }
         .toggle { display: inline-flex; align-items: center; gap: 7px; font-weight: 800; color: #334155; white-space: nowrap; }
-        .toggle input { width: 16px; min-height: 16px; accent-color: #2563eb; }
-        .pill { display: inline-flex; padding: 6px 10px; border-radius: 999px; background: #edf5ff; color: #0b3a82; border: 1px solid #b9d7f8; font-size: 12px; font-weight: 900; }
+        
+        /* Acento púrpura en checkboxes */
+        .toggle input { width: 16px; min-height: 16px; accent-color: #8b5cf6 !important; }
+        
+        /* Píldora de "X materiales" con colores púrpura */
+        .pill { display: inline-flex; padding: 6px 10px; border-radius: 999px; background: rgba(139, 92, 246, 0.1) !important; color: #5b21b6 !important; border: 1px solid rgba(139, 92, 246, 0.3) !important; font-size: 12px; font-weight: 900; }
+        
         .links { margin-top: 16px; }
         @media (max-width: 980px) { .app-content { padding-top: 76px; } .header { display: block; } .grid { grid-template-columns: 1fr; } .edit-form { grid-template-columns: 1fr; } .btn { width: 100%; } }
     </style>
