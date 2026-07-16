@@ -144,9 +144,10 @@
         
         /* Estilizar el botón interno del input file */
         input[type="file"]::file-selector-button {
-            background: rgba(14, 15, 104, 0.1);
-            border: 1px solid rgba(15, 16, 87, 0.4);
-            color: #090f61;
+            /* COLOR MODIFICADO: Verde azulado para el boton elegir archivo */
+            background: rgba(20, 184, 166, 0.1) !important;
+            border: 1px solid rgba(20, 184, 166, 0.4) !important;
+            color: #0f766e !important;
             padding: 8px 16px;
             border-radius: 6px;
             margin-right: 16px;
@@ -155,7 +156,7 @@
             transition: all 0.2s;
         }
         input[type="file"]::file-selector-button:hover {
-            background: var(--cyan-glow);
+            background: var(--green-glow) !important; 
             color: #000;
         }
 
@@ -168,9 +169,10 @@
         }
 
         .btn-submit {
-            background: linear-gradient(135deg, #1c0974 0%, #1c0d61 100%);
-            color: #ffff;
-            border: none;
+            /* COLOR MODIFICADO: Púrpura */
+            background: linear-gradient(135deg, #8b5cf6, #5b21b6) !important;
+            color: #ffff !important;
+            border: none !important;
             border-radius: 12px;
             padding: 16px 32px;
             font-weight: 800;
@@ -179,14 +181,14 @@
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(39, 16, 104, 0.4);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4) !important;
             flex: 1;
             text-align: center;
         }
 
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(23, 12, 116, 0.6);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6) !important;
             filter: brightness(1.1);
         }
 
@@ -194,9 +196,10 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background-color: transparent;
-            color: var(--muted);
-            border: 2px solid rgba(17, 27, 163, 0.1);
+            background-color: transparent !important;
+            /* COLOR MODIFICADO: Púrpura suave */
+            color: #8b5cf6 !important;
+            border: 2px solid rgba(139, 92, 246, 0.3) !important;
             border-radius: 12px;
             padding: 14px 24px;
             font-weight: 700;
@@ -206,8 +209,9 @@
         }
 
         .btn-cancel:hover {
-            border-color: #2220be;
-            color: #08075a;
+            border-color: #5b21b6 !important;
+            color: #5b21b6 !important;
+            background: rgba(139, 92, 246, 0.1) !important;
         }
 
         .help-text {

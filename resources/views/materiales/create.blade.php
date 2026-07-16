@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar entrada - Inventario Lugarth</title>
+    
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2875/2875878.png" type="image/png">
+    
     <style>
         body { margin: 0; min-height: 100vh; font-family: "Segoe UI", Tahoma, sans-serif; background: #f6f8fb; color: #102033; }
         .app-shell { display: flex; min-height: 100vh; }
@@ -66,9 +69,9 @@
                 </div>
                 <div class="header-actions">
                     @if(auth()->user()?->puedeAdministrarCatalogo())
-                        <a href="{{ route('admin.categorias.index') }}" class="btn btn-soft">Categorias</a>
+                        <a href="{{ route('admin.categorias.index') }}" class="btn" style="background: #7c3aed !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Categorias</a>
                     @endif
-                    <a href="{{ route('materiales.index') }}" class="btn btn-soft">Volver al inventario</a>
+                    <a href="{{ route('materiales.index') }}" class="btn" style="background: #202e42 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Volver al inventario</a>
                 </div>
             </header>
 
@@ -98,7 +101,7 @@
                                     <label for="codigo_barras">Codigo de barras / SKU</label>
                                     <div class="input-row">
                                         <input type="text" name="codigo_barras" id="codigo_barras" value="{{ old('codigo_barras') }}" placeholder="Escanea con pistolita USB o escribe el codigo" autocomplete="off" autofocus>
-                                        <button type="button" onclick="abrirEscaner()">Escanear</button>
+                                        <button type="button" class="btn" onclick="abrirEscaner()" style="background: #e4c309 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Escanear</button>
                                     </div>
                                     <div class="help">Si el codigo ya existe, el sistema llenara los datos y al guardar sumara la cantidad al stock.</div>
                                 </div>
@@ -215,7 +218,7 @@
 
                                 <div class="upload-box">
                                     <label for="evidencia_foto">Evidencia de recepcion</label>
-                                    <button type="button" class="btn" onclick="abrirCamaraWeb()">Tomar foto</button>
+                                    <button type="button" class="btn" onclick="abrirCamaraWeb()" style="background: #dfee0a !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Tomar foto</button>
                                     <div class="help">Tambien puedes subir nota, remision, caja o etiqueta del proveedor.</div>
                                     <input type="file" name="evidencia_foto" id="evidencia_foto" accept="image/*" onchange="mostrarVistaPreviaArchivo(this, 'previewEvidencia')" style="margin-top: 10px;">
                                     <img id="previewEvidencia" class="preview" alt="Vista previa de evidencia">
@@ -236,8 +239,8 @@
                         </section>
 
                         <div class="actions">
-                            <button type="submit">Guardar entrada</button>
-                            <a href="{{ route('materiales.index') }}" class="btn btn-soft">Cancelar</a>
+                            <button type="submit" class="btn" style="background: #16a34a !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Guardar entrada</button>
+                            <a href="{{ route('materiales.index') }}" class="btn" style="background: #b60e1c !important; color: #e7ccce !important; border: 2px solid #cbd5e1 !important; box-shadow: none !important;">Cancelar</a>
                         </div>
                     </aside>
                 </div>
@@ -250,7 +253,7 @@
     <div class="modal-content">
         <h3>Escanear codigo de barras</h3>
         <div id="reader"></div>
-        <button type="button" class="btn btn-danger" style="width:100%; margin-top:16px;" onclick="cerrarEscaner()">Cancelar</button>
+        <button type="button" class="btn" style="width:100%; margin-top:16px; background: #b91c1c !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;" onclick="cerrarEscaner()">Cancelar</button>
     </div>
 </div>
 
@@ -259,8 +262,8 @@
         <h3>Capturar evidencia</h3>
         <video id="videoElement" autoplay playsinline></video>
         <canvas id="canvasElement" style="display:none;"></canvas>
-        <button type="button" class="btn" style="width:100%; margin-top:14px;" onclick="tomarFotoWeb()">Capturar imagen</button>
-        <button type="button" class="btn btn-soft" style="width:100%; margin-top:10px;" onclick="cerrarCamaraWeb()">Cancelar</button>
+        <button type="button" class="btn" style="width:100%; margin-top:14px; background: #16a34a !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;" onclick="tomarFotoWeb()">Capturar imagen</button>
+        <button type="button" class="btn" style="width:100%; margin-top:10px; background: #b91c1c !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;" onclick="cerrarCamaraWeb()">Cancelar</button>
     </div>
 </div>
 

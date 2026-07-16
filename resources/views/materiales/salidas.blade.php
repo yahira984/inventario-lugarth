@@ -154,10 +154,13 @@
         }
 
         .btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
-        .btn-primary { background: linear-gradient(135deg, #ef4444, #b91c1c); }
-        .btn-blue { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
-        .btn-green { background: linear-gradient(135deg, #10b981, #059669); }
-        .btn-soft { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.14); }
+        
+        /* --- NUEVOS COLORES DE BOTONES --- */
+        .btn-primary { background: linear-gradient(135deg, #cdc8d8, #5b21b6); } /* Púrpura */
+        .btn-blue { background: linear-gradient(135deg, #f59e0b, #d97706); } /* Ámbar/Naranja */
+        .btn-green { background: linear-gradient(135deg, #14b8a6, #0f766e); } /* Verde azulado (Teal) */
+        .btn-soft { background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); color: #ddd6fe; } /* Suave púrpura */
+        
         .header-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
 
         .selected-card {
@@ -355,7 +358,7 @@
 
         .modal-content {
             background: #0f172a;
-            border: 1px solid rgba(6, 182, 212, 0.32);
+            border: 1px solid rgba(139, 92, 246, 0.32);
             padding: 26px;
             border-radius: 18px;
             width: min(460px, 100%);
@@ -372,14 +375,14 @@
             min-height: 250px;
             border-radius: 12px;
             overflow: hidden;
-            border: 2px dashed rgba(6, 182, 212, 0.5);
+            border: 2px dashed rgba(139, 92, 246, 0.5);
         }
 
         #reader button,
         #reader a {
-            background: rgba(6, 182, 212, 0.14) !important;
-            border: 1px solid rgba(6, 182, 212, 0.45) !important;
-            color: #bae6fd !important;
+            background: rgba(139, 92, 246, 0.14) !important;
+            border: 1px solid rgba(139, 92, 246, 0.45) !important;
+            color: #ddd6fe !important;
             border-radius: 8px !important;
             padding: 9px 12px !important;
             font-family: inherit !important;
