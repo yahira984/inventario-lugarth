@@ -8,6 +8,7 @@ use App\Models\MaterialMovimiento;
 use App\Support\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -38,6 +39,8 @@ class AdminEntradaPendienteController extends Controller
             return back()->withErrors(['entrada' => 'Esta entrada ya fue revisada.']);
         }
 
+        $esMaterialNuevo = (bool) $entrada->es_material_nuevo;
+
         DB::transaction(function () use ($entrada, $request): void {
             $entradaBloqueada = MaterialEntradaPendiente::query()
                 ->whereKey($entrada->id)
@@ -50,10 +53,58 @@ class AdminEntradaPendienteController extends Controller
                 ]);
             }
 
-            $material = Material::query()
-                ->whereKey($entradaBloqueada->material_id)
-                ->lockForUpdate()
-                ->firstOrFail();
+            if ($entradaBloqueada->es_material_nuevo) {
+                $datosMaterial = $entradaBloqueada->datos_material ?? [];
+                $descripcion = trim((string) data_get($datosMaterial, 'descripcion', ''));
+                $codigo = trim((string) ($entradaBloqueada->codigo_barras ?? ''));
+
+                if ($descripcion === '') {
+                    throw ValidationException::withMessages([
+                        'entrada' => 'La solicitud no contiene el nombre del material. Rechazala y pide al almacenista capturarlo nuevamente.',
+                    ]);
+                }
+
+                $material = $codigo !== ''
+                    ? Material::query()
+                        ->where('codigo_barras', $codigo)
+                        ->where('es_plantilla_equipo', false)
+                        ->lockForUpdate()
+                        ->first()
+                    : null;
+
+                if (! $material) {
+                    $material = Material::create(array_merge(
+                        Arr::only($datosMaterial, [
+                            'categoria',
+                            'almacen',
+                            'codigo_barras',
+                            'numero_parte',
+                            'clave_sat',
+                            'clave_unidad',
+                            'unidad',
+                            'descripcion',
+                            'apodo',
+                            'marca',
+                            'proveedor',
+                            'proveedor_rfc',
+                            'stock_minimo',
+                            'stock_maximo',
+                            'costo_unitario',
+                            'moneda',
+                        ]),
+                        [
+                            'stock' => 0,
+                            'es_plantilla_equipo' => false,
+                            'fotografia' => $entradaBloqueada->fotografia,
+                        ]
+                    ));
+                }
+            } else {
+                $material = Material::query()
+                    ->whereKey($entradaBloqueada->material_id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+            }
 
             $anterior = $material->stock;
             $nuevo = $anterior + $entradaBloqueada->cantidad;
@@ -83,6 +134,7 @@ class AdminEntradaPendienteController extends Controller
             ]);
 
             $entradaBloqueada->update([
+                'material_id' => $material->id,
                 'estado' => 'aprobada',
                 'approved_by' => $request->user()?->id,
                 'approved_at' => now(),
@@ -90,13 +142,20 @@ class AdminEntradaPendienteController extends Controller
             ]);
         });
 
+        $entrada->refresh();
+
         AuditLogger::registrar('Entradas', 'Entrada aprobada', "Aprobo entrada de {$entrada->cantidad} piezas.", [
             'entrada_pendiente_id' => $entrada->id,
             'material_id' => $entrada->material_id,
             'cantidad' => $entrada->cantidad,
         ], $request);
 
-        return back()->with('success', 'Entrada aprobada. El stock ya fue actualizado.');
+        return back()->with(
+            'success',
+            $esMaterialNuevo
+                ? 'Material creado y entrada aprobada. La pieza ya aparece en inventario con su stock actualizado.'
+                : 'Entrada aprobada. El stock ya fue actualizado.'
+        );
     }
 
     public function reject(Request $request, MaterialEntradaPendiente $entrada): RedirectResponse

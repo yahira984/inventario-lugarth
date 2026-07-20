@@ -10,6 +10,8 @@ class MaterialEntradaPendiente extends Model
 
     protected $fillable = [
         'material_id',
+        'es_material_nuevo',
+        'datos_material',
         'user_id',
         'approved_by',
         'rejected_by',
@@ -19,6 +21,7 @@ class MaterialEntradaPendiente extends Model
         'referencia',
         'motivo',
         'evidencia_foto',
+        'fotografia',
         'proveedor',
         'costo_unitario',
         'approved_at',
@@ -28,6 +31,8 @@ class MaterialEntradaPendiente extends Model
 
     protected $casts = [
         'cantidad' => 'integer',
+        'es_material_nuevo' => 'boolean',
+        'datos_material' => 'array',
         'costo_unitario' => 'decimal:2',
         'approved_at' => 'datetime',
         'rejected_at' => 'datetime',

@@ -43,11 +43,7 @@ class FacturaXmlController extends Controller
             ]);
         }
 
-        if ($this->facturaYaImportada($factura['uuid'])) {
-            throw ValidationException::withMessages([
-                'xml_file' => "La factura {$factura['uuid']} ya fue importada. El stock no se modificó.",
-            ]);
-        }
+        $facturaYaImportada = $this->facturaYaImportada($factura['uuid']);
 
         foreach ($factura['conceptos'] as $indice => $concepto) {
             $material = Material::where(
@@ -72,6 +68,7 @@ class FacturaXmlController extends Controller
             'payload' => $payload,
             'payloadSignature' => hash_hmac('sha256', $payload, (string) config('app.key')),
             'categorias' => $this->categoriasDisponibles(),
+            'facturaYaImportada' => $facturaYaImportada,
         ]);
     }
 

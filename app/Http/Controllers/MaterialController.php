@@ -10,6 +10,7 @@ use App\Support\AuditLogger;
 use App\Support\ImageStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -173,13 +174,83 @@ class MaterialController extends Controller
             }
         }
 
-        if (! $this->usuarioPuedeAdministrarCatalogo($request)) {
-            throw ValidationException::withMessages([
-                'codigo_barras' => 'Este codigo no existe. Pide a un administrador registrar el material nuevo.',
-            ]);
-        }
-
         $datos = $this->validarMaterial($request);
+
+        if (! $this->usuarioPuedeAdministrarCatalogo($request)) {
+            $request->validate([
+                'evidencia_foto' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:8192'],
+            ], [
+                'evidencia_foto.required' => 'Sube una foto de evidencia para que el administrador pueda revisar el material nuevo y su entrada.',
+                'evidencia_foto.image' => 'La evidencia debe ser una imagen valida.',
+            ]);
+
+            $cantidad = (int) ($datos['stock'] ?? 0);
+
+            if ($cantidad <= 0) {
+                throw ValidationException::withMessages([
+                    'stock' => 'Escribe cuantas piezas nuevas recibiste. La cantidad debe ser mayor a cero.',
+                ]);
+            }
+
+            if ($codigo !== '' && MaterialEntradaPendiente::query()
+                ->where('estado', 'pendiente')
+                ->where('es_material_nuevo', true)
+                ->where('codigo_barras', $codigo)
+                ->exists()) {
+                throw ValidationException::withMessages([
+                    'codigo_barras' => 'Ya existe una solicitud pendiente para crear una pieza con este codigo. El administrador debe revisarla primero.',
+                ]);
+            }
+
+            $datosMaterial = Arr::only($datos, [
+                'categoria',
+                'almacen',
+                'codigo_barras',
+                'numero_parte',
+                'clave_sat',
+                'clave_unidad',
+                'unidad',
+                'descripcion',
+                'apodo',
+                'marca',
+                'proveedor',
+                'proveedor_rfc',
+                'stock_minimo',
+                'stock_maximo',
+                'costo_unitario',
+                'moneda',
+            ]);
+
+            $entrada = MaterialEntradaPendiente::create([
+                'material_id' => null,
+                'es_material_nuevo' => true,
+                'datos_material' => $datosMaterial,
+                'user_id' => $request->user()?->id,
+                'cantidad' => $cantidad,
+                'estado' => 'pendiente',
+                'codigo_barras' => $datosMaterial['codigo_barras'] ?? null,
+                'referencia' => 'Alta de material nuevo',
+                'motivo' => 'Pendiente de aprobacion',
+                'evidencia_foto' => ImageStorage::storeOptimized($request->file('evidencia_foto'), 'entradas-pendientes', 1600, 72),
+                'fotografia' => $request->hasFile('fotografia')
+                    ? ImageStorage::storeOptimized($request->file('fotografia'), 'entradas-pendientes/materiales', 1600, 72)
+                    : null,
+                'proveedor' => $datosMaterial['proveedor'] ?? null,
+                'costo_unitario' => $datosMaterial['costo_unitario'] ?? 0,
+            ]);
+
+            AuditLogger::registrar('Entradas', 'Alta pendiente', "Solicito crear {$datosMaterial['descripcion']} y agregar {$cantidad} piezas.", [
+                'entrada_pendiente_id' => $entrada->id,
+                'codigo_barras' => $entrada->codigo_barras,
+                'cantidad' => $cantidad,
+            ], $request);
+
+            $this->notificarAdministradoresEntrada($entrada);
+
+            return redirect()
+                ->route('materiales.index')
+                ->with('success', 'Solicitud enviada al administrador. La pieza se creara y el stock se sumara solamente cuando sea aprobada.');
+        }
 
         if ($request->hasFile('fotografia')) {
             $datos['fotografia'] = ImageStorage::storeOptimized($request->file('fotografia'), 'materiales', 1600, 72);
@@ -466,7 +537,8 @@ class MaterialController extends Controller
         $url = route('admin.entradas.index');
         $html = '<h2>Nueva entrada pendiente de aprobacion</h2>'
             . '<p><strong>Usuario:</strong> '.e($entrada->user?->name ?? 'Usuario no disponible').'</p>'
-            . '<p><strong>Material:</strong> '.e($entrada->material?->descripcion ?? 'Material eliminado').'</p>'
+            . '<p><strong>Tipo:</strong> '.($entrada->es_material_nuevo ? 'Alta de material nuevo' : 'Entrada de material existente').'</p>'
+            . '<p><strong>Material:</strong> '.e($entrada->material?->descripcion ?? data_get($entrada->datos_material, 'descripcion', 'Material no disponible')).'</p>'
             . '<p><strong>Cantidad:</strong> '.number_format($entrada->cantidad).' pzas</p>'
             . '<p><a href="'.e($url).'">Abrir entradas pendientes</a></p>';
 

@@ -39,6 +39,7 @@ class FacturaXmlImportTest extends TestCase
 
         $preview->assertOk()
             ->assertViewIs('materiales.preview_xml')
+            ->assertViewHas('facturaYaImportada', false)
             ->assertSee('COMERCIALIZADORA DE MOTOCICLETAS DE CALIDAD')
             ->assertSee('B9AA6783-CAF4-4B17-94E3-1BAC718160F8')
             ->assertSee('$22,412.93');
@@ -119,9 +120,15 @@ class FacturaXmlImportTest extends TestCase
             'factura_uuid' => 'B9AA6783-CAF4-4B17-94E3-1BAC718160F8',
         ]);
 
-        $this->actingAs($admin)->post(route('materiales.xml.preview'), [
+        $preview = $this->actingAs($admin)->post(route('materiales.xml.preview'), [
             'xml_file' => UploadedFile::fake()->createWithContent('factura.xml', $this->cfdi()),
-        ])->assertSessionHasErrors('xml_file');
+        ]);
+
+        $preview->assertOk()
+            ->assertViewIs('materiales.preview_xml')
+            ->assertViewHas('facturaYaImportada', true)
+            ->assertSee('Esta factura ya fue importada anteriormente')
+            ->assertDontSee('Confirmar importación');
 
         $this->assertSame(1, $material->fresh()->stock);
         $this->assertDatabaseCount('factura_xml_importaciones', 0);

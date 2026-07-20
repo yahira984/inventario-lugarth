@@ -103,7 +103,7 @@
                                         <input type="text" name="codigo_barras" id="codigo_barras" value="{{ old('codigo_barras') }}" placeholder="Escanea con pistolita USB o escribe el codigo" autocomplete="off" autofocus>
                     <button type="button" class="btn btn-amber" onclick="abrirEscaner()" style="background: #d97706 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Escanear</button>
                                     </div>
-                                    <div class="help">Si el codigo ya existe, el sistema llenara los datos. Si eres almacenista, la entrada quedara pendiente hasta que un administrador la apruebe.</div>
+                                    <div class="help">Si el codigo ya existe, el sistema llenara los datos. Si es nuevo, completa el nombre, la cantidad y la evidencia para solicitar su alta al administrador.</div>
                                 </div>
 
                                 <div class="field">
@@ -222,10 +222,10 @@
                                 </div>
 
                                 <div class="upload-box">
-                                    <label for="evidencia_foto">Evidencia de recepcion</label>
+                                    <label for="evidencia_foto">Evidencia de recepcion {{ auth()->user()?->puedeAdministrarCatalogo() ? '' : '*' }}</label>
                     <button type="button" class="btn btn-amber" onclick="abrirCamaraWeb()" style="background: #d97706 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Tomar foto</button>
-                                    <div class="help">Tambien puedes subir nota, remision, caja o etiqueta del proveedor. Para almacenistas esta evidencia es obligatoria en entradas con codigo existente.</div>
-                                    <input type="file" name="evidencia_foto" id="evidencia_foto" accept="image/*" onchange="mostrarVistaPreviaArchivo(this, 'previewEvidencia')" style="margin-top: 10px;">
+                                    <div class="help">Puedes subir nota, remision, caja o etiqueta del proveedor. Para almacenistas es obligatoria tanto en materiales existentes como nuevos.</div>
+                                    <input type="file" name="evidencia_foto" id="evidencia_foto" accept="image/*" @required(! auth()->user()?->puedeAdministrarCatalogo()) onchange="mostrarVistaPreviaArchivo(this, 'previewEvidencia')" style="margin-top: 10px;">
                                     <img id="previewEvidencia" class="preview" alt="Vista previa de evidencia">
                                 </div>
                             </div>
@@ -237,7 +237,7 @@
                                 <span>Guia rapida</span>
                             </div>
                             <div class="side-note">
-                                <div class="note"><strong>Producto nuevo</strong>Solo la descripcion es obligatoria; lo demas se puede completar despues.</div>
+                                <div class="note"><strong>Producto nuevo</strong>Captura el nombre y la cantidad. El almacenista adjunta evidencia y el administrador aprueba antes de crearlo o sumar stock.</div>
                                 <div class="note"><strong>Codigo existente</strong>Escanea el codigo y escribe la cantidad. Si eres almacenista, el admin aprueba antes de sumar stock.</div>
                                 <div class="note"><strong>Sin codigo fisico</strong>Despues puedes generar QR interno desde inventario.</div>
                             </div>
@@ -322,6 +322,8 @@
             .then((response) => response.json())
             .then((data) => {
                 if (!data.encontrado) {
+                    document.getElementById('descripcion').focus();
+                    alert('Codigo nuevo. Completa el nombre, la cantidad recibida y la evidencia. La solicitud se enviara al administrador para su aprobacion.');
                     return;
                 }
 

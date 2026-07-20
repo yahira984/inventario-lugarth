@@ -103,6 +103,17 @@
             box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.12);
         }
 
+        .xml-ready-badge.duplicate {
+            color: #991b1b;
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .xml-ready-badge.duplicate::before {
+            background: #dc2626;
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+        }
+
         .xml-meta-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -346,9 +357,15 @@
             <header class="xml-preview-header">
                 <div>
                     <h1 class="xml-title">Vista previa de factura XML</h1>
-                    <p class="xml-subtitle">Confirma los datos fiscales y selecciona la categoría de cada producto antes de sumar las existencias.</p>
+                    <p class="xml-subtitle">
+                        {{ $facturaYaImportada
+                            ? 'Consulta nuevamente los datos fiscales y productos de esta factura.'
+                            : 'Confirma los datos fiscales y selecciona la categoría de cada producto antes de sumar las existencias.' }}
+                    </p>
                 </div>
-                <span class="xml-ready-badge">XML leído correctamente</span>
+                <span class="xml-ready-badge {{ $facturaYaImportada ? 'duplicate' : '' }}">
+                    {{ $facturaYaImportada ? 'Factura ya registrada' : 'XML leído correctamente' }}
+                </span>
             </header>
 
             <section class="xml-meta-grid" aria-label="Resumen de la factura">
@@ -398,7 +415,11 @@
                 </div>
             </section>
 
-            @if($errors->any())
+            @if($facturaYaImportada)
+                <div class="xml-error" role="alert">
+                    Esta factura ya fue importada anteriormente. Puedes revisar toda su información, pero no volver a importarla; el stock no se modificará.
+                </div>
+            @elseif($errors->any())
                 <div class="xml-error" role="alert">{{ $errors->first() }}</div>
             @else
                 <div class="xml-notice">
@@ -413,7 +434,7 @@
 
                 <div class="xml-table-heading">
                     <h2>Productos de la factura</h2>
-                    <p>Desmarca cualquier renglón que no quieras agregar y confirma su categoría.</p>
+                    <p>{{ $facturaYaImportada ? 'Vista de consulta. Estos productos ya fueron procesados.' : 'Desmarca cualquier renglón que no quieras agregar y confirma su categoría.' }}</p>
                 </div>
 
                 <div class="xml-table-wrap">
@@ -436,9 +457,11 @@
                         <tbody>
                             @foreach($factura['conceptos'] as $index => $concepto)
                                 <tr>
-                                    <td><input type="checkbox" name="items[{{ $index }}][importar]" value="1" checked aria-label="Importar {{ $concepto['descripcion'] }}"></td>
+                                    <td><input type="checkbox" name="items[{{ $index }}][importar]" value="1" checked {{ $facturaYaImportada ? 'disabled' : '' }} aria-label="Importar {{ $concepto['descripcion'] }}"></td>
                                     <td>
-                                        @if($concepto['material_existente'])
+                                        @if($facturaYaImportada)
+                                            <span class="xml-status existing">Ya procesado</span>
+                                        @elseif($concepto['material_existente'])
                                             <span class="xml-status existing">Sumar stock</span>
                                         @else
                                             <span class="xml-status new">Crear nuevo</span>
@@ -453,7 +476,7 @@
                                     <td>${{ number_format((float) ($concepto['impuestos_trasladados'] ?? 0), 2) }}</td>
                                     <td>${{ number_format((float) ($concepto['importe'] ?? 0), 2) }}</td>
                                     <td>
-                                        <select name="items[{{ $index }}][categoria]" required aria-label="Categoría de {{ $concepto['descripcion'] }}">
+                                        <select name="items[{{ $index }}][categoria]" required {{ $facturaYaImportada ? 'disabled' : '' }} aria-label="Categoría de {{ $concepto['descripcion'] }}">
                                             @foreach($categorias as $categoria)
                                                 <option value="{{ $categoria }}" {{ $categoria === 'IMPORTADO XML' ? 'selected' : '' }}>{{ $categoria }}</option>
                                             @endforeach
@@ -468,7 +491,9 @@
                 <div class="xml-actions">
                     <a href="{{ route('materiales.index') }}" class="xml-action cancel">Cancelar</a>
                     <a href="{{ route('materiales.xml.create') }}" class="xml-action secondary">Elegir otro XML</a>
-                    <button type="submit" class="xml-action confirm">Confirmar importación</button>
+                    @unless($facturaYaImportada)
+                        <button type="submit" class="xml-action confirm">Confirmar importación</button>
+                    @endunless
                 </div>
             </form>
         </div>

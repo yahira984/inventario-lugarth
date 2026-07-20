@@ -12,11 +12,6 @@ class ImageStorage
         $folder = trim($folder, '/');
         $name = now()->format('Ymd_His') . '_' . bin2hex(random_bytes(5)) . '.jpg';
         $relativePath = "{$folder}/{$name}";
-        $absoluteFolder = storage_path("app/public/{$folder}");
-
-        if (! is_dir($absoluteFolder)) {
-            mkdir($absoluteFolder, 0777, true);
-        }
 
         $sourcePath = $file->getRealPath();
         $info = @getimagesize($sourcePath);
@@ -49,9 +44,19 @@ class ImageStorage
         imagefilledrectangle($canvas, 0, 0, $newWidth, $newHeight, $white);
         imagecopyresampled($canvas, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
-        imagejpeg($canvas, storage_path("app/public/{$relativePath}"), $quality);
+        ob_start();
+        $encoded = imagejpeg($canvas, null, $quality);
+        $contents = ob_get_clean();
         imagedestroy($canvas);
         imagedestroy($source);
+
+        if (! $encoded || ! is_string($contents) || $contents === '') {
+            $file->storeAs($folder, $name, 'public');
+
+            return $relativePath;
+        }
+
+        Storage::disk('public')->put($relativePath, $contents);
 
         return $relativePath;
     }
