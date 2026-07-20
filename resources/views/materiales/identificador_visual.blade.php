@@ -83,6 +83,7 @@
         .upload-icon::before { content: "Camara"; font-size: 28px; font-weight: 900; }
         .upload-title { font-weight: 800; font-size: 18px; margin: 10px 0; display: block; }
         .upload-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 14px; }
+        
         .upload-action {
             display: inline-flex;
             min-height: 42px;
@@ -94,46 +95,39 @@
             background: linear-gradient(135deg, #0ea5e9, #2563eb);
             font-size: 13px;
             font-weight: 900;
+            transition: transform 0.2s, filter 0.2s;
         }
+        .upload-action:hover { filter: brightness(1.2); transform: translateY(-2px); }
         .upload-action.secondary { background: linear-gradient(135deg, #16a34a, #15803d); }
+        
         .loading-note { color: var(--cyan-glow); font-weight: bold; display: none; margin-top: 10px; }
         .loading .loading-note { display: block; }
 
         /* --- PANEL LATERAL --- */
         .side-panel { display: flex; flex-direction: column; gap: 20px; }
-        /* --- ESTILO DE LOS BOXES CON BRILLO FUTURISTA --- */
-.status-box {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(56, 189, 248, 0.3); /* Borde con tinte azul */
-    border-radius: 16px;
-    padding: 20px;
-    position: relative;
-    transition: all 0.4s ease;
-    /* Efecto de brillo sutil en el fondo */
-    box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.05);
-}
+        .status-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+            transition: all 0.4s ease;
+            box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.05);
+        }
+        .status-box:hover {
+            border-color: var(--cyan-glow);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2), inset 0 0 20px rgba(6, 182, 212, 0.1);
+        }
+        .status-box strong { 
+            color: var(--cyan-glow); 
+            font-size: 12px; 
+            text-transform: uppercase; 
+            display: block; 
+            margin-bottom: 8px; 
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5); 
+        }
+        .status-box span { font-size: 14px; color: #fff; display: block; line-height: 1.4; }
 
-/* Efecto de resplandor al "activarse" */
-.status-box:hover {
-    border-color: var(--cyan-glow);
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.2), inset 0 0 20px rgba(6, 182, 212, 0.1);
-}
-
-.status-box strong { 
-    color: var(--cyan-glow); 
-    font-size: 12px; 
-    text-transform: uppercase; 
-    display: block; 
-    margin-bottom: 8px; 
-    text-shadow: 0 0 10px rgba(6, 182, 212, 0.5); /* Las letras brillan */
-}
-
-.status-box span { 
-    font-size: 14px; 
-    color: #fff; 
-    display: block;
-    line-height: 1.4;
-}
         /* Chips */
         .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
         .chip { background: rgba(33, 15, 110, 0.1); color: #100950; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; border: 1px solid rgba(56, 189, 248, 0.2); }
@@ -157,20 +151,9 @@
         .result-title { font-weight: 800; font-size: 14px; margin-bottom: 8px; }
         .result-meta { font-size: 11px; color: var(--muted); display: grid; gap: 2px; }
         .category-badge {
-            display: inline-flex;
-            width: fit-content;
-            max-width: 100%;
-            border-radius: 8px;
-            padding: 5px 8px;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #0ea5e9, #2563eb);
-            color: #ffffff;
-            border: 1px solid rgba(37, 99, 235, 0.55);
-            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
-            font-size: 10px;
-            font-weight: 900;
-            line-height: 1.15;
-            text-transform: uppercase;
+            display: inline-flex; width: fit-content; max-width: 100%; border-radius: 8px; padding: 5px 8px; margin-bottom: 8px;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb); color: #ffffff; border: 1px solid rgba(37, 99, 235, 0.55);
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18); font-size: 10px; font-weight: 900; line-height: 1.15; text-transform: uppercase;
         }
         
         .score-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
@@ -178,14 +161,19 @@
         .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; padding: 4px 12px; border-radius: 6px; font-size: 11px; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); }
         .btn-secondary:hover { background: var(--blue-glow); }
         .empty-result, .muted {
-            color: var(--muted);
-            border: 1px solid rgba(56, 189, 248, 0.22);
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 13px;
-            font-weight: 700;
+            color: var(--muted); border: 1px solid rgba(56, 189, 248, 0.22); background: rgba(15, 23, 42, 0.5);
+            border-radius: 12px; padding: 16px; font-size: 13px; font-weight: 700;
         }
+
+        /* --- MODAL CAMARA FUTURISTA --- */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; }
+        .modal-content { background: var(--surface); border: 1px solid var(--cyan-glow); border-radius: 20px; padding: 30px; width: 90%; max-width: 500px; box-shadow: 0 0 40px rgba(6, 182, 212, 0.2); text-align: center; }
+        .modal-title { color: var(--ink); margin-top: 0; margin-bottom: 20px; font-size: 22px; font-weight: 900; }
+        #videoElement { width: 100%; max-height: 350px; border-radius: 12px; background: #000; border: 2px solid var(--line); margin-bottom: 20px; object-fit: cover; }
+        .btn-capture { background: linear-gradient(135deg, #10b981, #047857); color: #fff; border: none; padding: 14px 20px; font-size: 16px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 12px; transition: filter 0.3s; }
+        .btn-capture:hover { filter: brightness(1.2); }
+        .btn-close { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; transition: all 0.3s; }
+        .btn-close:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
         @media (max-width: 768px) {
             .scanner-body { grid-template-columns: 1fr; }
@@ -213,6 +201,7 @@
                 <form action="{{ route('materiales.visual.search') }}" method="POST" enctype="multipart/form-data" id="visualForm">
                     @csrf
                     <div class="scanner-body">
+                        <!-- El input sigue envuelto en el label para mantener el click nativo -->
                         <label class="drop-area" id="dropArea">
                             @if($preview)
                                 <img src="{{ $preview }}" class="main-preview" alt="Foto analizada">
@@ -221,11 +210,15 @@
                                     <span class="upload-icon">📷</span>
                                     <span class="upload-title">Tomar foto o subir imagen</span>
                                     <span class="upload-subtitle">JPG, PNG o WEBP</span>
+                                    
                                     <span class="upload-actions">
-                                        <span class="upload-action">Tomar foto</span>
-                                        <span class="upload-action secondary">Subir imagen</span>
+                                        <!-- Botón para la PC/Tablet. El onclick y preventDefault evitan que se abra el buscador de Windows -->
+                                        <span class="upload-action" onclick="abrirCamaraWeb(event)">📸 Cámara PC/Tablet</span>
+                                        <!-- Este botón se deja nativo para el celular o explorar archivos -->
+                                        <span class="upload-action secondary">Subir imagen / Celular</span>
                                     </span>
-                                    <span class="loading-note">Analizando imagen...</span>
+                                    
+                                    <span class="upload-actions loading-note">⚡ Analizando estructura visual...</span>
                                 </span>
                             @endif
                             <input type="file" name="fotografia" id="fotografia" class="file-input" accept="image/*" capture="environment">
@@ -284,16 +277,82 @@
     </main>
 </div>
 
+<!-- === MODAL DE LA CÁMARA WEB === -->
+<div id="camaraModal" class="modal">
+    <div class="modal-content">
+        <h3 class="modal-title">Escáner de Componentes</h3>
+        <video id="videoElement" autoplay playsinline></video>
+        <canvas id="canvasElement" style="display: none;"></canvas>
+        <button type="button" class="btn-capture" onclick="tomarFotoWeb()">⚡ Analizar Captura</button>
+        <button type="button" class="btn-close" onclick="cerrarCamaraWeb()">Cancelar Escaneo</button>
+    </div>
+</div>
+
 <script>
     const input = document.getElementById('fotografia');
     const form = document.getElementById('visualForm');
     const dropArea = document.getElementById('dropArea');
+    
+    // Auto-Submit original para celular / carga de archivos
     input.addEventListener('change', () => {
         if (input.files.length) {
             dropArea.classList.add('loading');
             form.submit();
         }
     });
+
+    // --- LÓGICA DE LA CÁMARA WEB (PC/Tablet) ---
+    let streamVideo = null;
+
+    function abrirCamaraWeb(e) {
+        // Evita que el clic abra el buscador de archivos del sistema operativo
+        e.preventDefault(); 
+        
+        const video = document.getElementById('videoElement');
+        document.getElementById('camaraModal').style.display = 'flex';
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(function(stream) {
+                streamVideo = stream;
+                video.srcObject = stream;
+            })
+            .catch(function(err) {
+                alert("No se pudo acceder a la cámara. Verifica los permisos de tu navegador en Windows.");
+                cerrarCamaraWeb();
+            });
+    }
+
+    function cerrarCamaraWeb() {
+        document.getElementById('camaraModal').style.display = 'none';
+        if (streamVideo) {
+            streamVideo.getTracks().forEach(track => track.stop());
+        }
+    }
+
+    function tomarFotoWeb() {
+        const video = document.getElementById('videoElement');
+        const canvas = document.getElementById('canvasElement');
+        const context = canvas.getContext('2d');
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(function(blob) {
+            const file = new File([blob], "busqueda_visual_" + Date.now() + ".jpg", { type: "image/jpeg" });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            
+            // Metemos el archivo generado por la cámara web al input oculto
+            input.files = dataTransfer.files;
+
+            cerrarCamaraWeb();
+            
+            // Disparamos la animación y el formulario tal cual como lo tenías
+            dropArea.classList.add('loading');
+            form.submit();
+        }, 'image/jpeg', 0.9);
+    }
 </script>
 
 </body>
