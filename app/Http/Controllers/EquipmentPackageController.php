@@ -24,6 +24,7 @@ class EquipmentPackageController extends Controller
         $buscar = trim((string) $request->query('buscar', ''));
 
         $equipos = EquipmentPackage::query()
+            ->with(['items.material:id,descripcion,stock'])
             ->withCount('items')
             ->when($buscar !== '', function ($query) use ($buscar): void {
                 $query->where(function ($q) use ($buscar): void {
@@ -84,6 +85,27 @@ class EquipmentPackageController extends Controller
         return view('equipos.show', [
             'equipo' => $equipo,
             'materiales' => $materiales,
+            'piezasSinVincular' => $equipo->items
+                ->whereNull('material_id')
+                ->pluck('descripcion')
+                ->values(),
+            'requisitosVenta' => $equipo->items
+                ->whereNotNull('material_id')
+                ->groupBy('material_id')
+                ->map(function ($items): array {
+                    $material = $items->first()->material;
+
+                    return [
+                        'id' => $material?->id,
+                        'descripcion' => $material?->descripcion ?? $items->first()->descripcion,
+                        'stock' => (int) ($material?->stock ?? 0),
+                        'cantidad_por_equipo' => (float) $items->sum('cantidad_por_paquete'),
+                        'fotografia_url' => $material?->fotografia
+                            ? asset('storage/' . $material->fotografia)
+                            : null,
+                    ];
+                })
+                ->values(),
             'materialesEquipo' => $materiales->keyBy('id')->map(function (Material $material): array {
                 return [
                     'descripcion' => $material->descripcion,
@@ -91,6 +113,7 @@ class EquipmentPackageController extends Controller
                     'apodo' => $material->apodo,
                     'marca' => $material->marca,
                     'unidad' => $material->unidad ?: 'pza',
+                    'fotografia_url' => $material->fotografia ? asset('storage/' . $material->fotografia) : null,
                 ];
             }),
         ]);
@@ -186,7 +209,7 @@ class EquipmentPackageController extends Controller
             'tipo.in' => 'Selecciona un tipo de movimiento valido.',
         ]);
 
-        $equipo->load('items.material');
+        $equipo->load('items');
 
         if ($equipo->items->isEmpty()) {
             throw ValidationException::withMessages([
@@ -197,8 +220,14 @@ class EquipmentPackageController extends Controller
         $sinVincular = $equipo->items->filter(fn (EquipmentPackageItem $item) => ! $item->material_id);
 
         if ($sinVincular->isNotEmpty()) {
+            $nombres = $sinVincular
+                ->pluck('descripcion')
+                ->filter()
+                ->map(fn (string $descripcion) => "\"{$descripcion}\"")
+                ->implode(', ');
+
             throw ValidationException::withMessages([
-                'cantidad_paquetes' => 'Antes de retirar este equipo, vincula todas sus piezas con el inventario real.',
+                'cantidad_paquetes' => "No se puede retirar el equipo. Vincula primero estas piezas con el inventario real: {$nombres}.",
             ]);
         }
 
@@ -206,19 +235,46 @@ class EquipmentPackageController extends Controller
         $tipoTexto = $datos['tipo'] === 'venta' ? 'Venta' : 'Retiro interno';
 
         DB::transaction(function () use ($equipo, $cantidadPaquetes, $datos, $request, $tipoTexto): void {
-            foreach ($equipo->items as $item) {
-                $necesario = (int) ceil(((float) $item->cantidad_por_paquete) * $cantidadPaquetes);
-                $material = Material::query()
-                    ->whereKey($item->material_id)
-                    ->lockForUpdate()
-                    ->firstOrFail();
+            $cantidadesPorMaterial = $equipo->items
+                ->groupBy('material_id')
+                ->map(fn ($items): int => (int) ceil(
+                    ((float) $items->sum('cantidad_por_paquete')) * $cantidadPaquetes
+                ));
 
-                if ($material->stock < $necesario) {
-                    throw ValidationException::withMessages([
-                        'cantidad_paquetes' => "Stock insuficiente para {$material->descripcion}. Disponible: {$material->stock}, requerido: {$necesario}.",
-                    ]);
-                }
+            $materiales = Material::query()
+                ->whereIn('id', $cantidadesPorMaterial->keys())
+                ->orderBy('id')
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('id');
 
+            $faltantes = $cantidadesPorMaterial
+                ->map(function (int $necesario, int|string $materialId) use ($materiales): ?string {
+                    $material = $materiales->get((int) $materialId);
+
+                    if (! $material) {
+                        return "Pieza vinculada #{$materialId}: ya no existe en el inventario";
+                    }
+
+                    if ((int) $material->stock >= $necesario) {
+                        return null;
+                    }
+
+                    $faltan = $necesario - (int) $material->stock;
+
+                    return "{$material->descripcion} (disponible: {$material->stock}, requerido: {$necesario}, faltan: {$faltan})";
+                })
+                ->filter()
+                ->values();
+
+            if ($faltantes->isNotEmpty()) {
+                throw ValidationException::withMessages([
+                    'cantidad_paquetes' => 'No se puede completar la venta o retiro. Stock insuficiente en: ' . $faltantes->implode('; ') . '.',
+                ]);
+            }
+
+            foreach ($cantidadesPorMaterial as $materialId => $necesario) {
+                $material = $materiales->get((int) $materialId);
                 $stockAnterior = $material->stock;
                 $stockNuevo = $stockAnterior - $necesario;
                 $material->update(['stock' => $stockNuevo]);

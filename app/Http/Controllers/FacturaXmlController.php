@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FacturaXmlImportacion;
 use App\Models\Material;
 use App\Models\MaterialCategory;
 use App\Models\MaterialMovimiento;
@@ -36,11 +37,25 @@ class FacturaXmlController extends Controller
         $xmlString = file_get_contents($request->file('xml_file')->getRealPath());
         $factura = $this->leerCfdi($xmlString);
 
+        if ($factura['uuid'] === '') {
+            throw ValidationException::withMessages([
+                'xml_file' => 'La factura no contiene UUID del timbre fiscal del SAT. No se puede importar porque no sería posible detectar duplicados.',
+            ]);
+        }
+
+        if ($this->facturaYaImportada($factura['uuid'])) {
+            throw ValidationException::withMessages([
+                'xml_file' => "La factura {$factura['uuid']} ya fue importada. El stock no se modificó.",
+            ]);
+        }
+
         foreach ($factura['conceptos'] as $indice => $concepto) {
             $material = Material::where(
                 'numero_parte',
                 $concepto['numero_parte']
-            )->first();
+            )
+                ->where('es_plantilla_equipo', false)
+                ->first();
 
             $factura['conceptos'][$indice]['material_existente'] = $material
                 ? [
@@ -50,9 +65,12 @@ class FacturaXmlController extends Controller
                 : null;
         }
 
+        $payload = base64_encode(json_encode($factura, JSON_UNESCAPED_UNICODE));
+
         return view('materiales.preview_xml', [
             'factura' => $factura,
-            'payload' => base64_encode(json_encode($factura, JSON_UNESCAPED_UNICODE)),
+            'payload' => $payload,
+            'payloadSignature' => hash_hmac('sha256', $payload, (string) config('app.key')),
             'categorias' => $this->categoriasDisponibles(),
         ]);
     }
@@ -63,6 +81,7 @@ class FacturaXmlController extends Controller
 
         $datos = $request->validate([
             'payload' => ['required', 'string'],
+            'payload_signature' => ['required', 'string', 'size:64'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.categoria' => ['required', 'string', 'max:255'],
             'items.*.importar' => ['nullable', 'boolean'],
@@ -73,12 +92,41 @@ class FacturaXmlController extends Controller
             'items.*.categoria.required' => 'Selecciona categoría para cada producto que vas a importar.',
         ]);
 
+        $firmaEsperada = hash_hmac('sha256', $datos['payload'], (string) config('app.key'));
+
+        if (! hash_equals($firmaEsperada, $datos['payload_signature'])) {
+            throw ValidationException::withMessages([
+                'payload' => 'Los datos de la vista previa fueron alterados o expiraron. Sube el XML nuevamente.',
+            ]);
+        }
+
         $factura = json_decode(base64_decode($datos['payload']), true);
 
         if (! is_array($factura) || empty($factura['conceptos'])) {
             return redirect()
                 ->route('materiales.xml.create')
                 ->with('error', 'No se pudo recuperar la vista previa del XML. Sube el archivo otra vez.');
+        }
+
+        if (empty($factura['uuid'])) {
+            throw ValidationException::withMessages([
+                'payload' => 'El XML no contiene UUID fiscal y no puede importarse.',
+            ]);
+        }
+
+        if ($this->facturaYaImportada($factura['uuid'])) {
+            throw ValidationException::withMessages([
+                'payload' => 'Esta factura ya fue importada anteriormente. El stock no se modificó.',
+            ]);
+        }
+
+        $seleccionados = collect($datos['items'])
+            ->filter(fn (array $item) => ! empty($item['importar']));
+
+        if ($seleccionados->isEmpty()) {
+            throw ValidationException::withMessages([
+                'items' => 'Selecciona al menos un concepto para importar.',
+            ]);
         }
 
         $resumen = [
@@ -88,6 +136,31 @@ class FacturaXmlController extends Controller
         ];
 
         DB::transaction(function () use ($factura, $datos, &$resumen) {
+            FacturaXmlImportacion::create([
+                'uuid' => $factura['uuid'],
+                'version' => $factura['version'] ?: null,
+                'serie' => $factura['serie'] ?: null,
+                'folio' => $factura['folio'] ?: null,
+                'fecha' => $factura['fecha'] ?: null,
+                'moneda' => $factura['moneda'] ?: null,
+                'tipo_cambio' => $factura['tipo_cambio'] ?: null,
+                'subtotal' => $factura['subtotal'] ?? 0,
+                'descuento' => $factura['descuento'] ?? 0,
+                'impuestos_trasladados' => $factura['impuestos_trasladados'] ?? 0,
+                'impuestos_retenidos' => $factura['impuestos_retenidos'] ?? 0,
+                'total' => $factura['total'] ?? 0,
+                'tipo_comprobante' => $factura['tipo_comprobante'] ?: null,
+                'metodo_pago' => $factura['metodo_pago'] ?: null,
+                'forma_pago' => $factura['forma_pago'] ?: null,
+                'emisor_rfc' => $factura['emisor']['rfc'] ?: null,
+                'emisor_nombre' => $factura['emisor']['nombre'] ?: null,
+                'receptor_rfc' => $factura['receptor']['rfc'] ?: null,
+                'receptor_nombre' => $factura['receptor']['nombre'] ?: null,
+                'conceptos_count' => count($factura['conceptos']),
+                'datos' => $factura,
+                'user_id' => auth()->id(),
+            ]);
+
             foreach ($factura['conceptos'] as $indice => $concepto) {
                 if (! isset($datos['items'][$indice]['importar'])) {
                     $resumen['omitidos']++;
@@ -96,14 +169,25 @@ class FacturaXmlController extends Controller
 
                 $numeroParte = trim((string) ($concepto['numero_parte'] ?? ''));
                 $descripcion = trim((string) ($concepto['descripcion'] ?? ''));
-                $cantidad = max(0, (int) round((float) ($concepto['cantidad'] ?? 0)));
+                $cantidadOriginal = max(0, (float) ($concepto['cantidad'] ?? 0));
+                $cantidad = (int) round($cantidadOriginal);
+
+                if (abs($cantidadOriginal - $cantidad) > 0.0001) {
+                    throw ValidationException::withMessages([
+                        "items.{$indice}.importar" => "El concepto {$descripcion} tiene cantidad decimal ({$cantidadOriginal}). El inventario maneja piezas enteras; corrige la unidad antes de importarlo.",
+                    ]);
+                }
 
                 if ($numeroParte === '' || $descripcion === '' || $cantidad <= 0) {
                     $resumen['omitidos']++;
                     continue;
                 }
 
-                $material = Material::where('numero_parte', $numeroParte)->first();
+                $material = Material::query()
+                    ->where('numero_parte', $numeroParte)
+                    ->where('es_plantilla_equipo', false)
+                    ->lockForUpdate()
+                    ->first();
 
                 if ($material) {
                     $stockAnterior = $material->stock;
@@ -132,6 +216,8 @@ class FacturaXmlController extends Controller
                         'codigo_barras' => $material->codigo_barras,
                         'referencia' => 'XML ' . (($factura['uuid'] ?? '') ?: ($factura['folio'] ?? '')),
                         'motivo' => 'Entrada importada desde XML',
+                        'proveedor' => $factura['emisor']['nombre'] ?? null,
+                        'costo_unitario' => (float) ($concepto['valor_unitario'] ?? 0),
                     ]);
 
                     $resumen['actualizados']++;
@@ -146,6 +232,7 @@ class FacturaXmlController extends Controller
                     'clave_unidad' => $concepto['clave_unidad'] ?? null,
                     'unidad' => $concepto['unidad'] ?? null,
                     'descripcion' => $descripcion,
+                    'es_plantilla_equipo' => false,
                     'marca' => $factura['addenda']['marca'] ?? null,
                     'proveedor' => $factura['emisor']['nombre'] ?? null,
                     'proveedor_rfc' => $factura['emisor']['rfc'] ?? null,
@@ -170,9 +257,17 @@ class FacturaXmlController extends Controller
                     'codigo_barras' => null,
                     'referencia' => 'XML ' . (($factura['uuid'] ?? '') ?: ($factura['folio'] ?? '')),
                     'motivo' => 'Alta importada desde XML',
+                    'proveedor' => $factura['emisor']['nombre'] ?? null,
+                    'costo_unitario' => (float) ($concepto['valor_unitario'] ?? 0),
                 ]);
 
                 $resumen['creados']++;
+            }
+
+            if (($resumen['creados'] + $resumen['actualizados']) === 0) {
+                throw ValidationException::withMessages([
+                    'items' => 'Ningún concepto pudo importarse. Verifica número de parte, descripción, cantidad y selección.',
+                ]);
             }
         });
 
@@ -196,7 +291,7 @@ class FacturaXmlController extends Controller
         libxml_use_internal_errors(true);
 
         try {
-            $xml = new SimpleXMLElement($xmlString);
+            $xml = new SimpleXMLElement($xmlString, LIBXML_NONET | LIBXML_NOCDATA);
         } catch (\Throwable $exception) {
             throw ValidationException::withMessages([
                 'xml_file' => 'No se pudo leer el XML. Verifica que sea un CFDI válido descargado del SAT.',
@@ -210,6 +305,12 @@ class FacturaXmlController extends Controller
         $xml->registerXPathNamespace('cfdi', $cfdiNamespace);
         $xml->registerXPathNamespace('tfd', $tfdNamespace);
 
+        if ($xml->getName() !== 'Comprobante') {
+            throw ValidationException::withMessages([
+                'xml_file' => 'El archivo XML no tiene como raíz un Comprobante CFDI.',
+            ]);
+        }
+
         $conceptosXml = $xml->xpath('//cfdi:Concepto') ?: [];
 
         if (count($conceptosXml) === 0) {
@@ -221,10 +322,14 @@ class FacturaXmlController extends Controller
         $emisor = $xml->xpath('//cfdi:Emisor')[0] ?? null;
         $receptor = $xml->xpath('//cfdi:Receptor')[0] ?? null;
         $timbre = $xml->xpath('//tfd:TimbreFiscalDigital')[0] ?? null;
+        $impuestosFactura = $xml->xpath('/cfdi:Comprobante/cfdi:Impuestos')[0] ?? null;
 
         $conceptos = [];
 
         foreach ($conceptosXml as $concepto) {
+            $traslados = $concepto->xpath('./*[local-name()="Impuestos"]/*[local-name()="Traslados"]/*[local-name()="Traslado"]') ?: [];
+            $retenciones = $concepto->xpath('./*[local-name()="Impuestos"]/*[local-name()="Retenciones"]/*[local-name()="Retencion"]') ?: [];
+
             $conceptos[] = [
                 'clave_prod_serv' => (string) ($concepto['ClaveProdServ'] ?? ''),
                 'clave_unidad' => (string) ($concepto['ClaveUnidad'] ?? ''),
@@ -234,6 +339,17 @@ class FacturaXmlController extends Controller
                 'unidad' => (string) ($concepto['Unidad'] ?? $concepto['ClaveUnidad'] ?? ''),
                 'valor_unitario' => (float) ($concepto['ValorUnitario'] ?? 0),
                 'importe' => (float) ($concepto['Importe'] ?? 0),
+                'descuento' => (float) ($concepto['Descuento'] ?? 0),
+                'objeto_impuesto' => (string) ($concepto['ObjetoImp'] ?? ''),
+                'impuestos_trasladados' => collect($traslados)->sum(fn (SimpleXMLElement $impuesto) => (float) ($impuesto['Importe'] ?? 0)),
+                'impuestos_retenidos' => collect($retenciones)->sum(fn (SimpleXMLElement $impuesto) => (float) ($impuesto['Importe'] ?? 0)),
+                'traslados' => collect($traslados)->map(fn (SimpleXMLElement $impuesto): array => [
+                    'impuesto' => (string) ($impuesto['Impuesto'] ?? ''),
+                    'tipo_factor' => (string) ($impuesto['TipoFactor'] ?? ''),
+                    'tasa_cuota' => (string) ($impuesto['TasaOCuota'] ?? ''),
+                    'base' => (float) ($impuesto['Base'] ?? 0),
+                    'importe' => (float) ($impuesto['Importe'] ?? 0),
+                ])->values()->all(),
             ];
         }
 
@@ -243,16 +359,28 @@ class FacturaXmlController extends Controller
             'folio' => (string) ($xml['Folio'] ?? ''),
             'fecha' => (string) ($xml['Fecha'] ?? ''),
             'moneda' => (string) ($xml['Moneda'] ?? ''),
+            'tipo_cambio' => (float) ($xml['TipoCambio'] ?? 0),
             'subtotal' => (float) ($xml['SubTotal'] ?? 0),
+            'descuento' => (float) ($xml['Descuento'] ?? 0),
+            'impuestos_trasladados' => $impuestosFactura ? (float) ($impuestosFactura['TotalImpuestosTrasladados'] ?? 0) : 0,
+            'impuestos_retenidos' => $impuestosFactura ? (float) ($impuestosFactura['TotalImpuestosRetenidos'] ?? 0) : 0,
             'total' => (float) ($xml['Total'] ?? 0),
-            'uuid' => $timbre ? (string) ($timbre['UUID'] ?? '') : '',
+            'tipo_comprobante' => (string) ($xml['TipoDeComprobante'] ?? ''),
+            'metodo_pago' => (string) ($xml['MetodoPago'] ?? ''),
+            'forma_pago' => (string) ($xml['FormaPago'] ?? ''),
+            'lugar_expedicion' => (string) ($xml['LugarExpedicion'] ?? ''),
+            'exportacion' => (string) ($xml['Exportacion'] ?? ''),
+            'uuid' => $timbre ? strtoupper(trim((string) ($timbre['UUID'] ?? ''))) : '',
             'emisor' => [
                 'rfc' => $emisor ? (string) ($emisor['Rfc'] ?? '') : '',
                 'nombre' => $emisor ? (string) ($emisor['Nombre'] ?? '') : '',
+                'regimen_fiscal' => $emisor ? (string) ($emisor['RegimenFiscal'] ?? '') : '',
             ],
             'receptor' => [
                 'rfc' => $receptor ? (string) ($receptor['Rfc'] ?? '') : '',
                 'nombre' => $receptor ? (string) ($receptor['Nombre'] ?? '') : '',
+                'uso_cfdi' => $receptor ? (string) ($receptor['UsoCFDI'] ?? '') : '',
+                'regimen_fiscal' => $receptor ? (string) ($receptor['RegimenFiscalReceptor'] ?? '') : '',
             ],
             'addenda' => $this->leerAddenda($xml),
             'conceptos' => $conceptos,
@@ -270,6 +398,13 @@ class FacturaXmlController extends Controller
             ->filter()
             ->unique(fn ($categoria) => strtoupper($categoria))
             ->values();
+    }
+
+    private function facturaYaImportada(string $uuid): bool
+    {
+        return FacturaXmlImportacion::where('uuid', $uuid)->exists()
+            || Material::where('factura_uuid', $uuid)->exists()
+            || MaterialMovimiento::where('referencia', 'XML '.$uuid)->exists();
     }
 
     private function leerAddenda(SimpleXMLElement $xml): array

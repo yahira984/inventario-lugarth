@@ -3,371 +3,476 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
     <title>Vista previa XML - Inventario</title>
 
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2875/2875878.png" type="image/png">
-    
     <style>
-        /* --- ESTILOS ULTRA-FUTURISTAS MASTER (Vista Previa XML) --- */
         :root {
-            --bg: #030712; 
-            --surface: rgba(15, 23, 42, 0.7); 
-            --ink: #ffffff; 
-            --muted: #94a3b8; 
-            --cyan-glow: #06b6d4;
-            --blue-glow: #3b82f6;
-            --emerald-glow: #10b981;
-            --amber-glow: #f59e0b;
-            --line: rgba(56, 189, 248, 0.2);
-            --shadow-glass: 0 10px 40px rgba(0, 0, 0, 0.6); 
+            --xml-ink: #10233f;
+            --xml-muted: #5b7088;
+            --xml-blue: #1261c9;
+            --xml-blue-dark: #0b3a82;
+            --xml-blue-soft: #edf5ff;
+            --xml-line: #d7e4f2;
+            --xml-surface: #ffffff;
+            --xml-surface-soft: #f7faff;
+            --xml-green: #15803d;
+            --xml-amber: #b45309;
+            --xml-red: #b91c1c;
         }
 
         * { box-sizing: border-box; }
 
-        body {
+        body.xml-preview-page {
             margin: 0;
             min-height: 100vh;
-            background: radial-gradient(circle at top left, #0a192f 0%, #030712 100%);
-            color: var(--ink);
+            color: var(--xml-ink);
+            background: #f3f7fc;
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .app-shell { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
-        .app-content { flex: 1; padding: 40px 20px; overflow-y: auto; display: flex; justify-content: center; }
-
-        /* --- CONTENEDOR PRINCIPAL --- */
-        .container {
-            width: 100%;
-            max-width: 1180px;
-            background: var(--surface);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            box-shadow: var(--shadow-glass);
-            padding: 40px;
+        .xml-preview-page .app-shell {
+            display: flex;
+            min-height: 100vh;
         }
 
-        .header { margin-bottom: 30px; border-bottom: 1px solid var(--line); padding-bottom: 24px; }
+        .xml-preview-page .app-content {
+            min-width: 0;
+            flex: 1;
+            overflow-x: hidden;
+            padding: 28px 18px 42px;
+        }
 
-        h1 {
+        .xml-preview-page .xml-preview-container {
+            width: min(1320px, 100%);
+            margin: 0 auto;
+            padding: 30px;
+            color: var(--xml-ink);
+            background: var(--xml-surface);
+            border: 1px solid var(--xml-line);
+            border-radius: 18px;
+            box-shadow: 0 18px 45px rgba(15, 35, 63, 0.09);
+        }
+
+        .xml-preview-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid var(--xml-line);
+        }
+
+        .xml-preview-page .xml-title {
             margin: 0;
-            background: linear-gradient(to right, #00f2fe, #4facfe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 32px;
+            color: var(--xml-ink);
+            font-size: clamp(27px, 4vw, 38px);
+            font-weight: 950;
+            line-height: 1.12;
+        }
+
+        .xml-subtitle {
+            max-width: 720px;
+            margin: 8px 0 0;
+            color: var(--xml-muted);
+            font-size: 14px;
+            font-weight: 650;
+            line-height: 1.55;
+        }
+
+        .xml-ready-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            padding: 9px 12px;
+            color: #166534;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+            font-size: 12px;
             font-weight: 900;
-            letter-spacing: 1px;
-            text-shadow: 0 0 20px rgba(0, 242, 254, 0.2); 
         }
 
-        /* --- METADATOS DE FACTURA --- */
-        .meta {
+        .xml-ready-badge::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #16a34a;
+            box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.12);
+        }
+
+        .xml-meta-grid {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 16px;
-            margin-top: 24px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 22px;
         }
 
-        .meta-item {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            border-radius: 12px;
-            padding: 16px;
-            transition: all 0.3s;
-            box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.05);
+        .xml-meta-item {
+            min-width: 0;
+            padding: 15px 16px;
+            color: var(--xml-ink);
+            background: var(--xml-surface-soft);
+            border: 1px solid var(--xml-line);
+            border-radius: 8px;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
         }
 
-        .meta-item:hover {
-            border-color: var(--cyan-glow);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2), inset 0 0 15px rgba(6, 182, 212, 0.1);
+        .xml-meta-item:hover {
             transform: translateY(-2px);
+            border-color: #8ec5ff;
+            box-shadow: 0 10px 22px rgba(18, 97, 201, 0.10);
         }
 
-        .meta-item span {
+        .xml-meta-item.wide { grid-column: span 2; }
+
+        .xml-meta-label {
             display: block;
-            color: var(--cyan-glow);
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
             margin-bottom: 6px;
-            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+            color: var(--xml-blue-dark);
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
         }
 
-        /* --- ALERTA --- */
-        .notice {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));
-            border-left: 4px solid var(--amber-glow);
-            color: #fcd34d;
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 24px;
-            font-weight: 600;
-            line-height: 1.5;
-            box-shadow: inset 0 0 20px rgba(245, 158, 11, 0.05);
+        .xml-meta-value {
+            display: block;
+            color: var(--xml-ink);
+            font-size: 14px;
+            font-weight: 750;
+            line-height: 1.45;
+            overflow-wrap: anywhere;
         }
 
-        /* --- TABLA FUTURISTA --- */
-        .table-wrap { overflow-x: auto; padding-bottom: 10px; }
-        
-        table {
+        .xml-meta-item.total {
+            color: #ffffff;
+            background: var(--xml-blue-dark);
+            border-color: var(--xml-blue-dark);
+        }
+
+        .xml-meta-item.total .xml-meta-label { color: #bfdbfe; }
+        .xml-meta-item.total .xml-meta-value { color: #ffffff; font-size: 19px; font-weight: 950; }
+
+        .xml-notice,
+        .xml-error {
+            margin: 20px 0;
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.55;
+        }
+
+        .xml-notice {
+            color: #854d0e;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .xml-error {
+            color: #991b1b;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-left: 4px solid #dc2626;
+        }
+
+        .xml-table-heading {
+            margin: 24px 0 12px;
+        }
+
+        .xml-table-heading h2 {
+            margin: 0;
+            color: var(--xml-ink);
+            font-size: 19px;
+            font-weight: 900;
+        }
+
+        .xml-table-heading p {
+            margin: 5px 0 0;
+            color: var(--xml-muted);
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        .xml-table-wrap {
             width: 100%;
-            min-width: 980px;
-            border-collapse: separate;
-            border-spacing: 0 8px;
+            overflow-x: auto;
+            background: #ffffff;
+            border: 1px solid var(--xml-line);
+            border-radius: 10px;
         }
 
-        th, td {
-            padding: 16px 14px;
+        .xml-preview-page .xml-preview-table {
+            width: 100%;
+            min-width: 1150px;
+            margin: 0;
+            background: #ffffff;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .xml-preview-table th,
+        .xml-preview-table td {
+            padding: 13px 12px;
             text-align: left;
             vertical-align: middle;
-            border: none;
+            border: 0;
+            border-bottom: 1px solid #e7eef7;
         }
 
-        th {
-            color: var(--muted);
+        .xml-preview-table th {
+            color: #335171;
+            background: #edf5ff;
             font-size: 11px;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            padding-bottom: 8px;
+            white-space: nowrap;
         }
 
-        tbody tr {
-            background: rgba(30, 41, 59, 0.6);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+        .xml-preview-table td {
+            color: #203750;
+            background: #ffffff;
+            font-size: 13px;
+            line-height: 1.4;
         }
 
-        td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-left: 2px solid transparent; }
-        td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+        .xml-preview-table tbody tr:last-child td { border-bottom: 0; }
+        .xml-preview-table tbody tr:hover td { background: #f7fbff; }
 
-        tbody tr:hover {
-            transform: translateY(-2px);
-            background: rgba(30, 41, 59, 0.9);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-        }
-        
-        tbody tr:hover td:first-child {
-            border-left: 2px solid var(--cyan-glow);
-            box-shadow: inset 5px 0 15px rgba(6, 182, 212, 0.1);
+        .xml-preview-table strong {
+            color: #10233f;
+            font-size: 13px;
         }
 
-        input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--cyan-glow);
+        .xml-preview-table input[type="checkbox"] {
+            width: 19px;
+            height: 19px;
+            accent-color: var(--xml-blue);
             cursor: pointer;
         }
 
-        select {
-            min-width: 200px;
-            padding: 10px 12px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .xml-preview-table select {
+            width: 210px;
+            min-height: 40px;
+            padding: 8px 10px;
+            color: var(--xml-ink);
+            background: #ffffff;
+            border: 1px solid #b9cde2;
             border-radius: 8px;
-            color: #ffffff;
+            font: inherit;
             font-size: 13px;
             outline: none;
-            transition: all 0.3s;
         }
 
-        select:focus {
-            border-color: var(--cyan-glow);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
-            background: rgba(0, 0, 0, 0.6);
+        .xml-preview-table select:focus {
+            background: #ffffff;
+            border-color: var(--xml-blue);
+            box-shadow: 0 0 0 3px rgba(18, 97, 201, 0.13);
         }
 
-        select option { background-color: #0f172a; color: #ffffff; }
-
-        /* --- BADGES (Etiquetas) --- */
-        .badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 999px;
+        .xml-status {
+            display: inline-flex;
+            align-items: center;
+            min-height: 28px;
+            padding: 5px 9px;
+            border-radius: 7px;
             font-size: 11px;
-            font-weight: 800;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
-        .badge.existing {
-            background: rgba(16, 185, 129, 0.15);
-            color: #6ee7b7;
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
-        }
+        .xml-status.existing { color: #166534; background: #dcfce7; border: 1px solid #86efac; }
+        .xml-status.new { color: #075985; background: #e0f2fe; border: 1px solid #7dd3fc; }
 
-        .badge.new {
-            background: rgba(56, 189, 248, 0.15);
-            color: #7dd3fc;
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
-        }
-
-        td strong { color: #ffffff; font-size: 14px; letter-spacing: 0.5px; }
-
-        /* --- BOTONES DE ACCIÓN --- */
-        .actions {
+        .xml-actions {
             display: flex;
-            gap: 16px;
-            margin-top: 32px;
+            align-items: center;
+            justify-content: flex-end;
             flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
         }
 
-        .btn-primary, .btn-secondary {
-            border: none;
-            border-radius: 12px;
-            padding: 14px 24px;
-            font-weight: 800;
-            text-decoration: none;
+        .xml-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 0 18px;
+            border: 1px solid transparent;
+            border-radius: 8px;
             font-family: inherit;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
             font-size: 13px;
-            transition: all 0.3s;
+            font-weight: 900;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+        .xml-action:hover { transform: translateY(-2px); }
+        .xml-action.confirm { color: #ffffff; background: var(--xml-green); border-color: #166534; box-shadow: 0 8px 18px rgba(21, 128, 61, 0.20); }
+        .xml-action.confirm:hover { background: #166534; }
+        .xml-action.secondary { color: var(--xml-blue-dark); background: var(--xml-blue-soft); border-color: #b9d7f8; }
+        .xml-action.secondary:hover { background: #dbeafe; }
+        .xml-action.cancel { color: #475569; background: #ffffff; border-color: #cbd5e1; }
+        .xml-action.cancel:hover { color: var(--xml-red); background: #fef2f2; border-color: #fecaca; }
+
+        @media (max-width: 980px) {
+            .xml-meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
 
-        .btn-secondary {
-            background: transparent;
-            color: var(--muted);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-        .btn-secondary:hover {
-            border-color: #fff;
-            color: #fff;
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 4px;}
-        ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.5); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.8); }
-
-        @media (max-width: 760px) {
-            .meta { grid-template-columns: 1fr; gap: 12px; }
-            .actions { flex-direction: column; }
-            .btn-primary, .btn-secondary { width: 100%; text-align: center; }
+        @media (max-width: 640px) {
+            .xml-preview-page .app-content { padding: 72px 8px 18px; }
+            .xml-preview-page .xml-preview-container { padding: 18px 12px; border-radius: 12px; }
+            .xml-preview-header { display: block; }
+            .xml-ready-badge { margin-top: 14px; }
+            .xml-meta-grid { grid-template-columns: 1fr; }
+            .xml-meta-item.wide { grid-column: span 1; }
+            .xml-actions { flex-direction: column; }
+            .xml-action { width: 100%; }
         }
     </style>
 </head>
-<body>
-
+<body class="xml-preview-page">
 <div class="app-shell">
     @include('materiales.partials.sidebar')
 
     <main class="app-content">
-        <div class="container">
-            <div class="header">
-                <h1>Vista previa de factura XML</h1>
-
-                <div class="meta">
-                    <div class="meta-item">
-                        <span>Factura</span>
-                        {{ $factura['serie'] }} {{ $factura['folio'] }}
-                    </div>
-                    <div class="meta-item">
-                        <span>UUID SAT</span>
-                        {{ $factura['uuid'] ?: 'Sin timbre detectado' }}
-                    </div>
-                    <div class="meta-item">
-                        <span>Proveedor</span>
-                        {{ $factura['emisor']['nombre'] ?: 'N/A' }}
-                    </div>
-                    <div class="meta-item">
-                        <span>Fecha</span>
-                        {{ $factura['fecha'] ?: 'N/A' }}
-                    </div>
-                    <div class="meta-item">
-                        <span>Total</span>
-                        {{ $factura['moneda'] }} ${{ number_format($factura['total'], 2) }}
-                    </div>
-                    <div class="meta-item">
-                        <span>Conceptos</span>
-                        {{ count($factura['conceptos']) }}
-                    </div>
+        <div class="container xml-preview-container">
+            <header class="xml-preview-header">
+                <div>
+                    <h1 class="xml-title">Vista previa de factura XML</h1>
+                    <p class="xml-subtitle">Confirma los datos fiscales y selecciona la categoría de cada producto antes de sumar las existencias.</p>
                 </div>
-            </div>
+                <span class="xml-ready-badge">XML leído correctamente</span>
+            </header>
 
-            <div class="content">
-                <div class="notice">
-                    Revisa antes de importar. Si el No. de Parte ya existe, se suma stock. Si no existe, se crea material nuevo sin código de barras[cite: 6].
+            <section class="xml-meta-grid" aria-label="Resumen de la factura">
+                <div class="xml-meta-item">
+                    <span class="xml-meta-label">Factura</span>
+                    <span class="xml-meta-value">{{ trim($factura['serie'].' '.$factura['folio']) ?: 'Sin folio' }}</span>
+                </div>
+                <div class="xml-meta-item wide">
+                    <span class="xml-meta-label">Proveedor</span>
+                    <span class="xml-meta-value">{{ $factura['emisor']['nombre'] ?: 'No especificado' }}</span>
+                </div>
+                <div class="xml-meta-item total">
+                    <span class="xml-meta-label">Total de la factura</span>
+                    <span class="xml-meta-value">${{ number_format((float) $factura['total'], 2) }} {{ $factura['moneda'] }}</span>
+                </div>
+                <div class="xml-meta-item wide">
+                    <span class="xml-meta-label">UUID SAT</span>
+                    <span class="xml-meta-value">{{ $factura['uuid'] ?: 'Sin timbre detectado' }}</span>
+                </div>
+                <div class="xml-meta-item">
+                    <span class="xml-meta-label">RFC del proveedor</span>
+                    <span class="xml-meta-value">{{ $factura['emisor']['rfc'] ?: 'No especificado' }}</span>
+                </div>
+                <div class="xml-meta-item">
+                    <span class="xml-meta-label">Fecha</span>
+                    <span class="xml-meta-value">{{ $factura['fecha'] ?: 'No especificada' }}</span>
+                </div>
+                <div class="xml-meta-item">
+                    <span class="xml-meta-label">Subtotal</span>
+                    <span class="xml-meta-value">${{ number_format((float) $factura['subtotal'], 2) }} {{ $factura['moneda'] }}</span>
+                </div>
+                <div class="xml-meta-item">
+                    <span class="xml-meta-label">Descuento</span>
+                    <span class="xml-meta-value">${{ number_format((float) ($factura['descuento'] ?? 0), 2) }} {{ $factura['moneda'] }}</span>
+                </div>
+                <div class="xml-meta-item">
+                    <span class="xml-meta-label">Impuestos trasladados</span>
+                    <span class="xml-meta-value">${{ number_format((float) ($factura['impuestos_trasladados'] ?? 0), 2) }} {{ $factura['moneda'] }}</span>
+                </div>
+                <div class="xml-meta-item">
+                    <span class="xml-meta-label">Forma y método de pago</span>
+                    <span class="xml-meta-value">Forma {{ $factura['forma_pago'] ?: 'N/A' }} · Método {{ $factura['metodo_pago'] ?: 'N/A' }}</span>
+                </div>
+                <div class="xml-meta-item">
+                    <span class="xml-meta-label">Productos detectados</span>
+                    <span class="xml-meta-value">{{ count($factura['conceptos']) }} conceptos</span>
+                </div>
+            </section>
+
+            @if($errors->any())
+                <div class="xml-error" role="alert">{{ $errors->first() }}</div>
+            @else
+                <div class="xml-notice">
+                    Si el número de parte ya existe en el inventario real, el sistema sumará el stock. Si no existe, creará un material nuevo sin código de barras. La misma factura no puede importarse dos veces.
+                </div>
+            @endif
+
+            <form action="{{ route('materiales.xml.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="payload" value="{{ $payload }}">
+                <input type="hidden" name="payload_signature" value="{{ $payloadSignature }}">
+
+                <div class="xml-table-heading">
+                    <h2>Productos de la factura</h2>
+                    <p>Desmarca cualquier renglón que no quieras agregar y confirma su categoría.</p>
                 </div>
 
-                <form action="{{ route('materiales.xml.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="payload" value="{{ $payload }}">
-
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
+                <div class="xml-table-wrap">
+                    <table class="xml-preview-table">
+                        <thead>
+                            <tr>
+                                <th>Importar</th>
+                                <th>Acción</th>
+                                <th>Cantidad</th>
+                                <th>No. parte</th>
+                                <th>Descripción</th>
+                                <th>Clave SAT</th>
+                                <th>Unidad</th>
+                                <th>Precio unitario</th>
+                                <th>Impuestos</th>
+                                <th>Importe</th>
+                                <th>Categoría</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($factura['conceptos'] as $index => $concepto)
                                 <tr>
-                                    <th>Importar</th>
-                                    <th>Estado</th>
-                                    <th>Cantidad</th>
-                                    <th>No. Parte</th>
-                                    <th>Descripción</th>
-                                    <th>Clave SAT</th>
-                                    <th>Unidad</th>
-                                    <th>Precio unitario</th>
-                                    <th>Importe</th>
-                                    <th>Categoría</th>
+                                    <td><input type="checkbox" name="items[{{ $index }}][importar]" value="1" checked aria-label="Importar {{ $concepto['descripcion'] }}"></td>
+                                    <td>
+                                        @if($concepto['material_existente'])
+                                            <span class="xml-status existing">Sumar stock</span>
+                                        @else
+                                            <span class="xml-status new">Crear nuevo</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ rtrim(rtrim(number_format($concepto['cantidad'], 4), '0'), '.') }}</td>
+                                    <td><strong>{{ $concepto['numero_parte'] ?: 'N/A' }}</strong></td>
+                                    <td>{{ $concepto['descripcion'] }}</td>
+                                    <td>{{ $concepto['clave_prod_serv'] ?: 'N/A' }}</td>
+                                    <td>{{ $concepto['unidad'] ?: 'N/A' }}</td>
+                                    <td>${{ number_format((float) ($concepto['valor_unitario'] ?? 0), 2) }}</td>
+                                    <td>${{ number_format((float) ($concepto['impuestos_trasladados'] ?? 0), 2) }}</td>
+                                    <td>${{ number_format((float) ($concepto['importe'] ?? 0), 2) }}</td>
+                                    <td>
+                                        <select name="items[{{ $index }}][categoria]" required aria-label="Categoría de {{ $concepto['descripcion'] }}">
+                                            @foreach($categorias as $categoria)
+                                                <option value="{{ $categoria }}" {{ $categoria === 'IMPORTADO XML' ? 'selected' : '' }}>{{ $categoria }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($factura['conceptos'] as $index => $concepto)
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" name="items[{{ $index }}][importar]" value="1" checked>
-                                        </td>
-                                        <td>
-                                            @if($concepto['material_existente'])
-                                                <span class="badge existing">Sumar stock</span>
-                                            @else
-                                                <span class="badge new">Crear nuevo</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ rtrim(rtrim(number_format($concepto['cantidad'], 4), '0'), '.') }}</td>
-                                        <td><strong>{{ $concepto['numero_parte'] ?: 'N/A' }}</strong></td>
-                                        <td>{{ $concepto['descripcion'] }}</td>
-                                        <td>{{ $concepto['clave_prod_serv'] ?: 'N/A' }}</td>
-                                        <td>{{ $concepto['unidad'] ?: 'N/A' }}</td>
-                                        <td>${{ number_format((float) ($concepto['valor_unitario'] ?? 0), 2) }}</td>
-                                        <td>${{ number_format((float) ($concepto['importe'] ?? 0), 2) }}</td>
-                                        <td>
-                                            <select name="items[{{ $index }}][categoria]" required>
-                                                @foreach($categorias as $categoria)
-                                                    <option value="{{ $categoria }}" {{ $categoria === 'IMPORTADO XML' ? 'selected' : '' }}>{{ $categoria }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-                    <div class="actions">
-                        <button type="submit" class="btn-primary">Confirmar importación</button>
-                        <a href="{{ route('materiales.xml.create') }}" class="btn-secondary">Subir otro XML</a>
-                        <a href="{{ route('materiales.index') }}" class="btn-secondary">Cancelar</a>
-                    </div>
-                </form>
-            </div>
+                <div class="xml-actions">
+                    <a href="{{ route('materiales.index') }}" class="xml-action cancel">Cancelar</a>
+                    <a href="{{ route('materiales.xml.create') }}" class="xml-action secondary">Elegir otro XML</a>
+                    <button type="submit" class="xml-action confirm">Confirmar importación</button>
+                </div>
+            </form>
         </div>
     </main>
 </div>
-
 </body>
 </html>

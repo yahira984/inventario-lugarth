@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\FacturaXmlController;
+use App\Http\Controllers\AdminEntradaPendienteController;
 use App\Http\Controllers\AdminMaterialController;
 use App\Http\Controllers\AdminProveedorController;
 use App\Http\Controllers\AdminSalidaController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\DatabaseBackupController;
+use App\Http\Controllers\DevolucionMermaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EtiquetaController;
 use App\Http\Controllers\EquipmentPackageController;
@@ -84,8 +86,16 @@ Route::middleware('auth')->group(function () {
         ->name('admin.proveedores.show');
     Route::get('admin/materiales-completo', [AdminMaterialController::class, 'index'])
         ->name('admin.materiales.index');
+    Route::get('admin/materiales-completo/{material}/historial', [AdminMaterialController::class, 'historial'])
+        ->name('admin.materiales.historial');
     Route::get('admin/salidas', [AdminSalidaController::class, 'index'])
         ->name('admin.salidas.index');
+    Route::get('admin/entradas-pendientes', [AdminEntradaPendienteController::class, 'index'])
+        ->name('admin.entradas.index');
+    Route::patch('admin/entradas-pendientes/{entrada}/aprobar', [AdminEntradaPendienteController::class, 'approve'])
+        ->name('admin.entradas.approve');
+    Route::patch('admin/entradas-pendientes/{entrada}/rechazar', [AdminEntradaPendienteController::class, 'reject'])
+        ->name('admin.entradas.reject');
     Route::get('admin/auditoria', [AuditLogController::class, 'index'])
         ->name('admin.auditoria.index');
     Route::delete('admin/auditoria/{auditLog}', [AuditLogController::class, 'destroy'])
@@ -107,6 +117,10 @@ Route::middleware('auth')->group(function () {
         ->name('materiales.salidas.create');
     Route::post('materiales/salidas', [SalidaMaterialController::class, 'store'])
         ->name('materiales.salidas.store');
+    Route::get('materiales/devoluciones', [DevolucionMermaController::class, 'create'])
+        ->name('materiales.devoluciones.create');
+    Route::post('materiales/devoluciones', [DevolucionMermaController::class, 'store'])
+        ->name('materiales.devoluciones.store');
 
     Route::resource('materiales', MaterialController::class)
         ->except(['show'])

@@ -17,7 +17,7 @@
         .btn { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #1d4ed8; background: #2563eb; color: #fff; padding: 0 14px; text-decoration: none; font-weight: 800; cursor: pointer; }
         .btn:hover { background: #1d4ed8; transform: translateY(-1px); }
         .table-wrap { overflow-x: auto; }
-        table { width: 100%; min-width: 1540px; border-collapse: collapse; }
+        table { width: 100%; min-width: 1640px; border-collapse: collapse; }
         th { background: #f8fafc; color: #475569; font-size: 11px; text-transform: uppercase; text-align: left; padding: 12px; border-bottom: 1px solid #dbe5f0; }
         td { padding: 12px; border-bottom: 1px solid #edf2f7; vertical-align: top; }
         .material-photo { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; border: 1px solid #dbe5f0; background: #f8fafc; box-shadow: 0 8px 18px rgba(15,23,42,.08); }
@@ -38,7 +38,7 @@
                 </div>
                 <form class="search" method="GET">
                     <input type="text" name="buscar" value="{{ $buscar }}" placeholder="Buscar producto, proveedor, SAT, almacen">
-                    <button class="btn" type="submit">Buscar</button>
+            <button class="btn btn-blue" type="submit">Buscar</button>
                 </form>
             </div>
 
@@ -46,7 +46,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Foto</th><th>Descripcion</th><th>No. parte</th><th>Codigo barras</th><th>Almacen</th><th>Categoria</th><th>Marca</th><th>Proveedor</th><th>RFC</th><th>Clave SAT</th><th>Unidad</th><th>Stock</th><th>Min</th><th>Max</th><th>Precio</th><th>Factura</th><th>XML</th>
+                            <th>Foto</th><th>Descripcion</th><th>No. parte</th><th>Codigo barras</th><th>Almacen</th><th>Categoria</th><th>Marca</th><th>Proveedor</th><th>RFC</th><th>Clave SAT</th><th>Unidad</th><th>Stock</th><th>Min</th><th>Max</th><th>Precio</th><th>Factura</th><th>XML</th><th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -75,6 +75,7 @@
                                 <td>${{ number_format((float) $material->costo_unitario, 2) }} {{ $material->moneda ?? 'MXN' }}</td>
                                 <td>{{ $material->factura_folio ?? $material->factura_uuid ?? 'N/A' }}</td>
                                 <td>{{ $material->xml_importado_at?->format('d/m/Y H:i') ?? 'Manual' }}</td>
+                    <td><a class="btn btn-purple" href="{{ route('admin.materiales.historial', $material) }}">Historial</a></td>
                             </tr>
                         @endforeach
                     </tbody>

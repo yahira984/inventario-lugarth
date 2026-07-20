@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Material;
+use App\Models\MaterialEntradaPendiente;
 use App\Models\MaterialMovimiento;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -44,9 +45,33 @@ class DashboardController extends Controller
             ->get();
 
         $salidasMes = MaterialMovimiento::query()
+            ->whereHas('material', fn ($query) => $query->where('es_plantilla_equipo', false))
             ->where('tipo', 'salida')
             ->where('created_at', '>=', $inicioMes)
             ->sum('cantidad');
+
+        $topProveedoresCompras = MaterialMovimiento::query()
+            ->join('materials', 'materials.id', '=', 'material_movimientos.material_id')
+            ->where('materials.es_plantilla_equipo', false)
+            ->where('material_movimientos.tipo', 'entrada')
+            ->whereRaw("COALESCE(NULLIF(material_movimientos.proveedor, ''), NULLIF(materials.proveedor, '')) IS NOT NULL")
+            ->selectRaw("COALESCE(NULLIF(material_movimientos.proveedor, ''), materials.proveedor) as proveedor")
+            ->selectRaw('SUM(material_movimientos.cantidad * COALESCE(material_movimientos.costo_unitario, materials.costo_unitario, 0)) as total')
+            ->selectRaw('SUM(material_movimientos.cantidad) as piezas')
+            ->groupByRaw("COALESCE(NULLIF(material_movimientos.proveedor, ''), materials.proveedor)")
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
+        $proveedoresCatalogo = Material::query()
+            ->whereNotNull('proveedor')
+            ->where('proveedor', '<>', '')
+            ->select('proveedor', DB::raw('COUNT(*) as productos'))
+            ->groupBy('proveedor')
+            ->orderByDesc('productos')
+            ->orderBy('proveedor')
+            ->limit(5)
+            ->get();
 
         return view('dashboard', [
             'consumoLabels' => $consumoMensual
@@ -65,6 +90,11 @@ class DashboardController extends Controller
                 ->count(),
             'stockCritico' => $stockCritico,
             'salidasMes' => $salidasMes,
+            'entradasPendientes' => MaterialEntradaPendiente::query()
+                ->where('estado', 'pendiente')
+                ->count(),
+            'topProveedoresCompras' => $topProveedoresCompras,
+            'proveedoresCatalogo' => $proveedoresCatalogo,
         ]);
     }
 }

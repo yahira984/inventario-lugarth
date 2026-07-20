@@ -19,11 +19,14 @@ class MaterialCategoryController extends Controller
 
         $usoPorCategoria = Material::query()
             ->select('categoria', DB::raw('COUNT(*) as total'))
+            ->where('es_plantilla_equipo', false)
             ->whereNotNull('categoria')
+            ->where('categoria', 'not like', 'EQUIPO%')
             ->groupBy('categoria')
             ->pluck('total', 'categoria');
 
         $categorias = MaterialCategory::query()
+            ->where('nombre', 'not like', 'EQUIPO%')
             ->orderByDesc('activa')
             ->orderBy('nombre')
             ->paginate(25)

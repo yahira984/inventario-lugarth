@@ -167,6 +167,11 @@
         .code-status.error { display: block; background: rgba(239, 68, 68, 0.15); color: #f87171; border-left: 3px solid #ef4444; }
         .field-help { margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.4; }
         .error { margin-top: 7px; color: #fca5a5; font-size: 12px; font-weight: 800; }
+        .current-photo-card { width: fit-content; max-width: 100%; display: flex; align-items: center; gap: 14px; margin-bottom: 15px; padding: 12px; color: #10233f; background: #f8fbff; border: 1px solid #cfe0f2; border-radius: 10px; }
+        .current-photo-card img { width: 90px; height: 90px; flex-shrink: 0; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 8px 18px rgba(15, 60, 105, 0.12); }
+        .current-photo-copy { display: flex; flex-direction: column; }
+        .current-photo-copy strong { color: #0b3a82; font-size: 12px; font-weight: 900; text-transform: uppercase; }
+        .current-photo-copy span { margin-top: 4px; color: #64748b; font-size: 12px; }
         .modal { display: none; position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.84); backdrop-filter: blur(8px); align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
         .modal-content { background: #0f172a; border: 1px solid rgba(6, 182, 212, 0.32); padding: 26px; border-radius: 18px; width: min(460px, 100%); box-shadow: var(--shadow-glass); }
         .modal-content h3 { text-align: center; margin: 0 0 14px; }
@@ -323,11 +328,11 @@
     <label>Fotografía</label>
     
     @if($material->fotografia)
-        <div style="margin-bottom: 15px; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; display: flex; align-items: center; gap: 15px; width: max-content;">
-            <img src="{{ asset('storage/' . $material->fotografia) }}" alt="Foto actual" style="width: 90px; height: 90px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);">
-            <div style="display: flex; flex-direction: column;">
-                <span style="color: #38bdf8; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Imagen actual</span>
-                <span style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Sube una nueva para reemplazarla</span>
+        <div class="current-photo-card">
+            <img src="{{ asset('storage/' . $material->fotografia) }}" alt="Foto actual">
+            <div class="current-photo-copy">
+                <strong>Imagen actual</strong>
+                <span>Sube una nueva para reemplazarla</span>
             </div>
         </div>
     @endif

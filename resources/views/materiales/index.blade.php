@@ -485,6 +485,31 @@
             border: 1px solid rgba(249, 115, 22, 0.42);
         }
 
+        .stock-state {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 7px;
+            padding: 5px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .stock-state::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .stock-state.ok { color: #16a34a; background: #dcfce7; }
+        .stock-state.warn { color: #b45309; background: #fef3c7; }
+        .stock-state.stop { color: #b91c1c; background: #fee2e2; }
+
         tr.stock-critical {
             background: linear-gradient(90deg, rgba(127, 29, 29, 0.34), rgba(15, 23, 42, 0.72));
         }
@@ -618,10 +643,10 @@
         .barcode-form input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 4px rgba(56, 189, 248, .16); }
         .barcode-help { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; text-align: left; }
         .barcode-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-save-code { min-height: 44px; border: 0; border-radius: 12px; background: #2563eb; color: #fff; font-weight: 900; cursor: pointer; }
-        .btn-save-code:hover { background: #1d4ed8; transform: translateY(-1px); }
-        .btn-camera-code { min-height: 44px; border: 1px solid rgba(56, 189, 248, .42); border-radius: 12px; background: rgba(56, 189, 248, .1); color: #bae6fd; font-weight: 900; cursor: pointer; }
-        .btn-camera-code:hover { background: rgba(56, 189, 248, .22); color: #fff; transform: translateY(-1px); }
+        .btn-save-code { min-height: 44px; border: 1px solid #15803d; border-radius: 12px; background: linear-gradient(135deg,#22c55e,#15803d); color: #fff; font-weight: 900; cursor: pointer; }
+        .btn-save-code:hover { background: linear-gradient(135deg,#16a34a,#166534); transform: translateY(-1px); }
+        .btn-camera-code { min-height: 44px; border: 1px solid #b45309; border-radius: 12px; background: linear-gradient(135deg,#f59e0b,#b45309); color: #fff; font-weight: 900; cursor: pointer; }
+        .btn-camera-code:hover { background: linear-gradient(135deg,#d97706,#92400e); color: #fff; transform: translateY(-1px); }
         .btn-confirm-cancel { flex: 1; padding: 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .btn-confirm-cancel:hover { background: rgba(255,255,255,0.1); }
         .btn-confirm-delete { flex: 1; padding: 14px; border-radius: 10px; border: none; background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; font-weight: 800; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
@@ -755,7 +780,7 @@
             <a href="{{ route('reportes.inventario.csv') }}" class="btn-report btn-excel" style="background: #16a34a !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">Excel</a>
             <a href="{{ route('reportes.inventario.pdf') }}" class="btn-report btn-pdf" style="background: #b91c1c !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">PDF</a>
             @if(auth()->user()?->puedeMoverStock())
-                <a href="{{ route('materiales.salidas.create') }}" class="btn-xml" style="background: #e22020 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">Registrar Salida</a>
+                <a href="{{ route('materiales.salidas.create') }}" class="btn-red" style="background: #dc2626 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">Registrar Salida</a>
                 <a href="{{ route('materiales.create') }}" class="btn-alta" style="background: #13dd56 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">+ Registrar Entrada</a>
             @endif
             @if(auth()->user()?->puedeAdministrarCatalogo())
@@ -770,7 +795,7 @@
                 <input type="hidden" name="sin_codigo" value="1">
             @endif
 
-            <button type="button" class="btn-scan" onclick="abrirEscaner()" style="background: #e6be0d !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 0 20px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important;">Escanear</button>
+                <button type="button" class="btn-scan" onclick="abrirEscaner()" style="background: #d97706 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 0 20px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important;">Escanear</button>
 
             <input type="text" name="buscar" id="buscarInput" placeholder="No. parte, codigo, descripcion o apodo" value="{{ request('buscar') }}" autocomplete="off" autofocus>
 
@@ -858,9 +883,17 @@
                         <td>{{ $material->marca ?? 'N/A' }}</td>
                         <td>{{ $material->proveedor ?? 'N/A' }}</td>
                         <td>
+                            @php
+                                $estadoStock = $material->stock <= 0
+                                    ? ['stop', 'Rojo: agotado']
+                                    : ($material->requiereReposicion()
+                                        ? ['warn', 'Amarillo: reorden']
+                                        : ['ok', 'Verde: suficiente']);
+                            @endphp
                             <span class="badge {{ $material->requiereReposicion() ? 'badge-warning' : ($material->stock > 0 ? 'badge-success' : 'badge-danger') }}">
                                 {{ $material->stock }} pzas
                             </span>
+                            <span class="stock-state {{ $estadoStock[0] }}">{{ $estadoStock[1] }}</span>
                             <span class="stock-meta">
                                 Min: {{ $material->stock_minimo ?? 0 }} pzas
                                 @if(($material->costo_unitario ?? 0) > 0)

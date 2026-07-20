@@ -1347,8 +1347,7 @@
     .muted,
     .field-help,
     .stock-meta,
-    .code-muted,
-    .card span {
+    .code-muted {
         color: var(--ui-muted);
     }
 
@@ -1441,10 +1440,7 @@
         border: 1px solid #fed7aa;
     }
 
-    /*
-     * Botones generales azules.
-     * No se aplica al botón rojo del sidebar.
-     */
+    /* Base comun. Los colores semanticos se definen debajo. */
     .btn,
     .btn-alta,
     .btn-xml,
@@ -1455,15 +1451,7 @@
     .btn-save,
     .btn-primary,
     .btn-blue,
-    .btn-green,
-    .btn-soft,
-    .btn-edit,
-    .btn-code,
-    .btn-label,
-    .btn-delete,
-    .btn-clear,
-    button[type="submit"]:not(.sidebar-logout),
-    .close-btn {
+    button[type="submit"]:not([class]) {
         min-height: 42px;
 
         color: #ffffff;
@@ -1500,15 +1488,7 @@
     .btn-save:hover,
     .btn-primary:hover,
     .btn-blue:hover,
-    .btn-green:hover,
-    .btn-soft:hover,
-    .btn-edit:hover,
-    .btn-code:hover,
-    .btn-label:hover,
-    .btn-delete:hover,
-    .btn-clear:hover,
-    button[type="submit"]:not(.sidebar-logout):hover,
-    .close-btn:hover {
+    button[type="submit"]:not([class]):hover {
         background:
             linear-gradient(
                 135deg,
@@ -1522,6 +1502,62 @@
             0 12px 26px rgba(11, 58, 130, 0.25);
 
         transform: translateY(-2px);
+    }
+
+    .btn-green,
+    .btn-alta,
+    .btn-submit,
+    .btn-save {
+        background: linear-gradient(135deg, #22c55e, #15803d) !important;
+        border-color: #15803d !important;
+        color: #ffffff !important;
+    }
+
+    .btn-green:hover,
+    .btn-alta:hover,
+    .btn-submit:hover,
+    .btn-save:hover {
+        background: linear-gradient(135deg, #16a34a, #166534) !important;
+        border-color: #166534 !important;
+    }
+
+    .btn-red,
+    .btn-danger,
+    .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
+        border-color: #b91c1c !important;
+        color: #ffffff !important;
+    }
+
+    .btn-red:hover,
+    .btn-danger:hover,
+    .btn-delete:hover {
+        background: linear-gradient(135deg, #dc2626, #991b1b) !important;
+        border-color: #991b1b !important;
+    }
+
+    .btn-amber,
+    .btn-scan,
+    .btn-code,
+    .btn-label,
+    .btn-barcode {
+        background: linear-gradient(135deg, #f59e0b, #b45309) !important;
+        border-color: #b45309 !important;
+        color: #ffffff !important;
+    }
+
+    .btn-purple,
+    .btn-xml {
+        background: linear-gradient(135deg, #8b5cf6, #6d28d9) !important;
+        border-color: #6d28d9 !important;
+        color: #ffffff !important;
+    }
+
+    .close-btn {
+        background: #ffffff !important;
+        color: #334155 !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
     }
 
     .btn-clear,
@@ -1561,6 +1597,205 @@
     #reader {
         background: #ffffff;
         border-color: #b9d7f8;
+    }
+
+    /* Contraste comun para vistas antiguas que aun conservan estilos oscuros. */
+    label {
+        color: #244b73;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: #64748b;
+        opacity: 1;
+    }
+
+    input[type="file"] {
+        color: var(--ui-ink) !important;
+        background: #ffffff !important;
+        border-color: #b9cde2 !important;
+        box-shadow: none !important;
+    }
+
+    input[type="file"]:hover,
+    input[type="file"]:focus {
+        background: #f7fbff !important;
+        border-color: var(--ui-blue) !important;
+    }
+
+    select option {
+        color: var(--ui-ink);
+        background: #ffffff;
+    }
+
+    input:disabled,
+    select:disabled,
+    textarea:disabled,
+    input[readonly],
+    textarea[readonly] {
+        color: #334155 !important;
+        background: #eef3f8 !important;
+        border-color: #c7d5e4 !important;
+        opacity: 1 !important;
+        cursor: not-allowed;
+    }
+
+    .meta-item,
+    .status-box,
+    .result-card,
+    .info-card,
+    .summary-card {
+        color: var(--ui-ink);
+        background: #ffffff;
+        border: 1px solid var(--ui-line);
+        box-shadow: 0 10px 24px rgba(15, 60, 105, 0.08);
+        text-shadow: none;
+    }
+
+    .meta-item span,
+    .status-box strong {
+        color: var(--ui-blue-dark);
+        text-shadow: none;
+    }
+
+    .status-box span,
+    .result-title,
+    .result-card strong,
+    .modal-content p,
+    .modal-confirm-content p {
+        color: var(--ui-ink);
+    }
+
+    .result-meta,
+    .help-text,
+    .upload-subtitle {
+        color: var(--ui-muted);
+    }
+
+    .upload-state,
+    .upload-title {
+        color: var(--ui-ink);
+    }
+
+    .muted {
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+    }
+
+    .empty-result {
+        color: var(--ui-muted);
+        background: #f8fafc;
+        border: 1px solid var(--ui-line);
+    }
+
+    .notice,
+    .alert-info {
+        color: #854d0e;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-left: 4px solid #f59e0b;
+        box-shadow: none;
+        text-shadow: none;
+    }
+
+    .badge.existing {
+        color: #166534;
+        background: #dcfce7;
+        border-color: #86efac;
+        box-shadow: none;
+    }
+
+    .badge.new {
+        color: #075985;
+        background: #e0f2fe;
+        border-color: #7dd3fc;
+        box-shadow: none;
+    }
+
+    .btn-secondary,
+    .btn-back,
+    .btn-cancel,
+    .btn-close {
+        color: var(--ui-blue-dark) !important;
+        background: #ffffff !important;
+        border: 1px solid #b9d7f8 !important;
+        box-shadow: none !important;
+    }
+
+    .btn-secondary:hover,
+    .btn-back:hover,
+    .btn-cancel:hover,
+    .btn-close:hover {
+        color: #062b67 !important;
+        background: var(--ui-blue-soft) !important;
+        border-color: var(--ui-blue) !important;
+    }
+
+    .chart-stat.good strong {
+        color: #047857 !important;
+    }
+
+    .chart-stat.danger strong {
+        color: #b91c1c !important;
+    }
+
+    .panel-tag {
+        color: #075985 !important;
+        background: #e0f2fe !important;
+        border-color: #7dd3fc !important;
+    }
+
+    .critical-item strong,
+    .modal-content h3,
+    .modal-confirm-content h3,
+    .modal-confirm-content p strong {
+        color: var(--ui-ink) !important;
+    }
+
+    .critical-counter,
+    .badge-red {
+        color: #b91c1c !important;
+        background: #fef2f2 !important;
+        border-color: #fecaca !important;
+    }
+
+    .empty-state {
+        color: #047857 !important;
+        background: #ecfdf5 !important;
+        border-color: #a7f3d0 !important;
+    }
+
+    .barcode-form input {
+        color: var(--ui-ink) !important;
+        background: #ffffff !important;
+        border-color: #b9cde2 !important;
+    }
+
+    .btn-confirm-cancel {
+        color: #475569 !important;
+        background: #ffffff !important;
+        border-color: #cbd5e1 !important;
+    }
+
+    .status.info {
+        color: #075985 !important;
+        background: #e0f2fe !important;
+        border-color: #7dd3fc !important;
+    }
+
+    .status.success,
+    .code-status.success {
+        color: #166534 !important;
+        background: #dcfce7 !important;
+        border-color: #86efac !important;
+    }
+
+    .status.error,
+    .code-status.error {
+        color: #b91c1c !important;
+        background: #fef2f2 !important;
+        border-color: #fecaca !important;
     }
 
     /*
@@ -1632,6 +1867,12 @@
         --menu-rgb: 220, 38, 38;
     }
 
+    .sidebar-link.menu-devoluciones {
+        --menu-color: #16a34a;
+        --menu-dark: #166534;
+        --menu-rgb: 22, 163, 74;
+    }
+
     .sidebar-link.menu-equipos {
         --menu-color: #9333ea;
         --menu-dark: #581c87;
@@ -1648,6 +1889,38 @@
         --menu-color: #7c3aed;
         --menu-dark: #4c1d95;
         --menu-rgb: 124, 58, 237;
+    }
+
+    .sidebar-link.menu-entradas-admin {
+        --menu-color: #f59e0b;
+        --menu-dark: #92400e;
+        --menu-rgb: 245, 158, 11;
+    }
+
+    .nav-badge {
+        margin-left: auto;
+        min-width: 24px;
+        height: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 7px;
+        border-radius: 999px;
+        background: #ef4444;
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 950;
+        box-shadow: 0 8px 18px rgba(239, 68, 68, 0.32);
+    }
+
+    .app-shell.sidebar-collapsed .nav-badge {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        font-size: 9px;
     }
 
     .sidebar-link.menu-visual {
@@ -1958,6 +2231,30 @@
                     </svg>
                 </a>
 
+                {{-- DEVOLUCIONES Y MERMAS --}}
+                <a
+                    href="{{ route('materiales.devoluciones.create') }}"
+                    title="Devoluciones y mermas"
+                    data-label="Devoluciones"
+                    class="sidebar-link menu-devoluciones {{ request()->routeIs('materiales.devoluciones.*') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <img src="{{ asset('images/devoluciones.svg') }}" alt="">
+                    </span>
+
+                    <span class="nav-text">Devoluciones</span>
+
+                    <svg
+                        class="nav-arrow"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
+                    </svg>
+                </a>
+
                 {{-- EQUIPOS / PAQUETES --}}
                 <a
                     href="{{ route('equipos.index') }}"
@@ -1988,6 +2285,7 @@
             @endif
 
             @if(auth()->user()?->puedeAdministrarCatalogo())
+                @php($entradasPendientesCount = \App\Models\MaterialEntradaPendiente::where('estado', 'pendiente')->count())
 
                 {{-- IMPORTAR XML --}}
                 <a
@@ -2015,6 +2313,38 @@
                             d="m9 18 6-6-6-6"
                         />
                     </svg>
+                </a>
+
+                {{-- APROBAR ENTRADAS --}}
+                <a
+                    href="{{ route('admin.entradas.index') }}"
+                    title="Aprobar entradas"
+                    data-label="Aprobar entradas"
+                    class="sidebar-link menu-entradas-admin {{ request()->routeIs('admin.entradas.*') ? 'active' : '' }}"
+                >
+                    <span class="nav-mark" aria-hidden="true">
+                        <img src="{{ asset('images/entrada.png') }}" alt="">
+                    </span>
+
+                    <span class="nav-text">Aprobar entradas</span>
+
+                    @if($entradasPendientesCount > 0)
+                        <span class="nav-badge">{{ $entradasPendientesCount }}</span>
+                    @else
+                        <svg
+                            class="nav-arrow"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="m9 18 6-6-6-6"
+                            />
+                        </svg>
+                    @endif
                 </a>
 
                 {{-- USUARIOS --}}

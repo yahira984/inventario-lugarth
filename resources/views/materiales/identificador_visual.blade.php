@@ -192,7 +192,7 @@
             </div>
 
             @if($errors->any())
-                <div class="alert-danger" style="background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <div class="alert-danger" style="padding: 15px; border-radius: 10px; margin-bottom: 20px;">
                     {{ $errors->first() }}
                 </div>
             @endif
@@ -334,8 +334,10 @@
         const canvas = document.getElementById('canvasElement');
         const context = canvas.getContext('2d');
 
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+        const maxWidth = 1600;
+        const scale = video.videoWidth > maxWidth ? maxWidth / video.videoWidth : 1;
+        canvas.width = Math.max(1, Math.round(video.videoWidth * scale));
+        canvas.height = Math.max(1, Math.round(video.videoHeight * scale));
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         canvas.toBlob(function(blob) {
@@ -351,7 +353,7 @@
             // Disparamos la animación y el formulario tal cual como lo tenías
             dropArea.classList.add('loading');
             form.submit();
-        }, 'image/jpeg', 0.9);
+        }, 'image/jpeg', 0.72);
     }
 </script>
 

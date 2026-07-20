@@ -34,6 +34,8 @@
         .row-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
         .title { font-weight: 950; font-size: 17px; }
         .pill { display:inline-flex; padding:5px 9px; border-radius:999px; background:#dcfce7; color:#166534; font-size:12px; font-weight:900; margin-top:7px; }
+        .pill.warning { background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; }
+        .pill.danger { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
         .alert { padding: 14px 16px; border-radius: 12px; margin-bottom: 16px; font-weight: 800; }
         .alert-ok { background:#dcfce7; color:#166534; border:1px solid #86efac; }
         .alert-bad { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
@@ -92,15 +94,30 @@
 
                     <div class="list">
                         @forelse($equipos as $equipo)
+                            @php($disponibilidad = $equipo->evaluarDisponibilidad())
                             <article class="row">
                                 <div>
                                     <div class="title">{{ $equipo->nombre }}</div>
                                     <div class="muted">{{ $equipo->codigo ?: 'Sin codigo' }}</div>
-                                    <span class="pill">{{ $equipo->items_count }} piezas por paquete</span>
+                                    @if($disponibilidad['sin_piezas'])
+                                        <span class="pill danger">Sin piezas configuradas</span>
+                                    @elseif($disponibilidad['sin_vincular']->isNotEmpty())
+                                        <span class="pill warning">{{ $disponibilidad['sin_vincular']->count() }} piezas sin vincular</span>
+                                    @elseif($disponibilidad['faltantes']->isNotEmpty())
+                                        <span class="pill danger">Stock incompleto: faltan {{ $disponibilidad['faltantes']->count() }} materiales</span>
+                                    @else
+                                        <span class="pill">Listo para vender · {{ $equipo->items_count }} renglones</span>
+                                    @endif
                                 </div>
                                 <div class="row-actions">
                                     <a class="btn btn-soft" href="{{ route('equipos.show', $equipo) }}">Abrir</a>
-                                    <a class="btn btn-red" href="{{ route('equipos.show', $equipo) }}#vender-equipo">Vender</a>
+                                    @if($disponibilidad['listo'])
+                                        <a class="btn btn-red" href="{{ route('equipos.show', $equipo) }}#vender-equipo">Vender</a>
+                                    @elseif($disponibilidad['faltantes']->isNotEmpty())
+                                        <a class="btn btn-amber" href="{{ route('equipos.show', $equipo) }}#vender-equipo">Revisar stock</a>
+                                    @else
+                                        <a class="btn btn-amber" href="{{ route('equipos.show', $equipo) }}">Completar piezas</a>
+                                    @endif
                                 </div>
                             </article>
                         @empty

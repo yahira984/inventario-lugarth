@@ -23,7 +23,7 @@
                 <td><strong>{{ $log->descripcion }}</strong></td>
                 <td>{{ $log->ruta ?? 'N/A' }}</td>
                 <td>{{ $log->ip ?? 'N/A' }}</td>
-                <td><form method="POST" action="{{ route('admin.auditoria.destroy', $log) }}">@csrf @method('DELETE')<button class="btn" type="submit">Borrar</button></form></td>
+                <td><form method="POST" action="{{ route('admin.auditoria.destroy', $log) }}">@csrf @method('DELETE')<button class="btn btn-danger" type="submit">Borrar</button></form></td>
             </tr>
         @endforeach
     </tbody></table></div>

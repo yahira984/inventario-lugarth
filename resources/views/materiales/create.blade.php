@@ -101,9 +101,9 @@
                                     <label for="codigo_barras">Codigo de barras / SKU</label>
                                     <div class="input-row">
                                         <input type="text" name="codigo_barras" id="codigo_barras" value="{{ old('codigo_barras') }}" placeholder="Escanea con pistolita USB o escribe el codigo" autocomplete="off" autofocus>
-                                        <button type="button" class="btn" onclick="abrirEscaner()" style="background: #e4c309 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Escanear</button>
+                    <button type="button" class="btn btn-amber" onclick="abrirEscaner()" style="background: #d97706 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Escanear</button>
                                     </div>
-                                    <div class="help">Si el codigo ya existe, el sistema llenara los datos y al guardar sumara la cantidad al stock.</div>
+                                    <div class="help">Si el codigo ya existe, el sistema llenara los datos. Si eres almacenista, la entrada quedara pendiente hasta que un administrador la apruebe.</div>
                                 </div>
 
                                 <div class="field">
@@ -223,8 +223,8 @@
 
                                 <div class="upload-box">
                                     <label for="evidencia_foto">Evidencia de recepcion</label>
-                                    <button type="button" class="btn" onclick="abrirCamaraWeb()" style="background: #dfee0a !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Tomar foto</button>
-                                    <div class="help">Tambien puedes subir nota, remision, caja o etiqueta del proveedor.</div>
+                    <button type="button" class="btn btn-amber" onclick="abrirCamaraWeb()" style="background: #d97706 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Tomar foto</button>
+                                    <div class="help">Tambien puedes subir nota, remision, caja o etiqueta del proveedor. Para almacenistas esta evidencia es obligatoria en entradas con codigo existente.</div>
                                     <input type="file" name="evidencia_foto" id="evidencia_foto" accept="image/*" onchange="mostrarVistaPreviaArchivo(this, 'previewEvidencia')" style="margin-top: 10px;">
                                     <img id="previewEvidencia" class="preview" alt="Vista previa de evidencia">
                                 </div>
@@ -238,14 +238,14 @@
                             </div>
                             <div class="side-note">
                                 <div class="note"><strong>Producto nuevo</strong>Solo la descripcion es obligatoria; lo demas se puede completar despues.</div>
-                                <div class="note"><strong>Codigo existente</strong>Escanea el codigo, escribe la cantidad y guarda para sumar stock.</div>
+                                <div class="note"><strong>Codigo existente</strong>Escanea el codigo y escribe la cantidad. Si eres almacenista, el admin aprueba antes de sumar stock.</div>
                                 <div class="note"><strong>Sin codigo fisico</strong>Despues puedes generar QR interno desde inventario.</div>
                             </div>
                         </section>
 
                         <div class="actions">
                             <button type="submit" class="btn" style="background: #16a34a !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Guardar entrada</button>
-                            <a href="{{ route('materiales.index') }}" class="btn" style="background: #b60e1c !important; color: #e7ccce !important; border: 2px solid #cbd5e1 !important; box-shadow: none !important;">Cancelar</a>
+                <a href="{{ route('materiales.index') }}" class="btn btn-red" style="background: #b91c1c !important; color: #ffffff !important; border: 1px solid #991b1b !important; box-shadow: none !important;">Cancelar</a>
                         </div>
                     </aside>
                 </div>
@@ -405,8 +405,10 @@
         const canvas = document.getElementById('canvasElement');
         const context = canvas.getContext('2d');
 
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+        const maxWidth = 1600;
+        const scale = video.videoWidth > maxWidth ? maxWidth / video.videoWidth : 1;
+        canvas.width = Math.max(1, Math.round(video.videoWidth * scale));
+        canvas.height = Math.max(1, Math.round(video.videoHeight * scale));
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         canvas.toBlob((blob) => {
@@ -418,7 +420,7 @@
             input.files = dataTransfer.files;
             mostrarVistaPreviaArchivo(input, 'previewEvidencia');
             cerrarCamaraWeb();
-        }, 'image/jpeg', 0.9);
+        }, 'image/jpeg', 0.72);
     }
 </script>
 </body>
