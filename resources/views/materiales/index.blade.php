@@ -219,7 +219,7 @@
 
         table {
             width: 100%;
-            min-width: 900px;
+            min-width: 1080px;
             border-collapse: separate;
             border-spacing: 0 16px; /* Separación mágica entre filas */
             background: transparent; 
@@ -716,7 +716,7 @@
             }
 
             table {
-                min-width: 820px;
+                min-width: 1040px;
             }
 
             .action-buttons {
@@ -832,11 +832,14 @@
                 <tr>
                     <th>Foto</th>
                     <th>Categoria</th>
+                    <th>Almacen</th>
                     <th>No. Parte / Código</th>
                     <th>Descripción</th>
                     <th>Apodo</th>
                     <th>Marca</th>
-                    <th>Proveedor</th>
+                    @if(auth()->user()?->puedeAdministrarCatalogo())
+                        <th>Proveedor</th>
+                    @endif
                     <th>Stock</th>
                     <th>Acciones</th>
                 </tr>
@@ -858,7 +861,11 @@
                                 <div class="no-photo">Sin foto</div>
                             @endif
                         </td>
-                        <td><span class="badge badge-category">{{ $material->categoria }}</span></td>
+                        <td><span class="badge badge-category">{{ $material->categoria ?: 'Sin categoria' }}</span></td>
+                        <td>
+                            <strong>{{ $material->almacen ?: 'Sin asignar' }}</strong>
+                            <span class="code-muted">Ubicacion de la pieza</span>
+                        </td>
                         <td>
                             <strong>{{ $material->numero_parte ?? 'N/A' }}</strong>
                             @if($material->codigo_barras)
@@ -880,8 +887,10 @@
                                 <span class="code-muted">Sin apodo</span>
                             @endif
                         </td>
-                        <td>{{ $material->marca ?? 'N/A' }}</td>
-                        <td>{{ $material->proveedor ?? 'N/A' }}</td>
+                        <td>{{ $material->marca ?: 'Sin marca' }}</td>
+                        @if(auth()->user()?->puedeAdministrarCatalogo())
+                            <td>{{ $material->proveedor ?: 'Sin proveedor' }}</td>
+                        @endif
                         <td>
                             @php
                                 $estadoStock = $material->stock <= 0
@@ -971,7 +980,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="empty-row">
+                        <td colspan="{{ auth()->user()?->puedeAdministrarCatalogo() ? 10 : 9 }}" class="empty-row">
                             No se encontraron materiales.
                         </td>
                     </tr>

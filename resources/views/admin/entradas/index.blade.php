@@ -22,13 +22,17 @@
         .alert-ok { background:#dcfce7; color:#166534; border:1px solid #86efac; }
         .alert-bad { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
         .table-wrap { overflow-x:auto; border:1px solid #dbe5f0; border-radius:14px; }
-        table { width:100%; min-width:1050px; border-collapse:collapse; }
+        table { width:100%; min-width:1180px; border-collapse:collapse; }
         th { background:#f2f7fd; color:#335171; font-size:11px; text-transform:uppercase; letter-spacing:.08em; text-align:left; padding:12px; }
         td { padding:12px; border-top:1px solid #edf2f7; vertical-align:top; }
         strong { color:#08233f; }
         .photo { width:72px; height:72px; object-fit:cover; border-radius:12px; border:1px solid #cfe0f2; cursor:zoom-in; box-shadow:0 8px 20px rgba(15,60,105,.12); transition:transform .2s; }
         .photo:hover { transform:scale(1.05); }
+        .photo-stack { display:flex; gap:10px; min-width:164px; }
+        .photo-item { display:grid; gap:5px; justify-items:start; }
+        .photo-label { color:#58718a; font-size:10px; font-weight:900; text-transform:uppercase; }
         .pill { display:inline-flex; padding:5px 9px; border-radius:999px; font-size:12px; font-weight:900; background:#fef3c7; color:#b45309; }
+        .pill.new { margin-bottom:7px; background:#dbeafe; color:#075985; }
         .pill.aprobada { background:#dcfce7; color:#166534; }
         .pill.rechazada { background:#fee2e2; color:#b91c1c; }
         textarea { width:100%; min-height:58px; border:1px solid #bfd2e6; border-radius:10px; padding:9px; font:inherit; color:#08233f; background:#fff; resize:vertical; }
@@ -82,20 +86,45 @@
                     </thead>
                     <tbody>
                         @forelse($entradas as $entrada)
+                            @php
+                                $datosMaterial = $entrada->datos_material ?? [];
+                                $descripcion = $entrada->material?->descripcion ?: data_get($datosMaterial, 'descripcion', 'Material no disponible');
+                                $apodo = $entrada->material?->apodo ?: data_get($datosMaterial, 'apodo');
+                                $numeroParte = $entrada->material?->numero_parte ?: data_get($datosMaterial, 'numero_parte', 'N/A');
+                                $categoria = $entrada->material?->categoria ?: data_get($datosMaterial, 'categoria', 'Sin categoria');
+                                $almacen = $entrada->material?->almacen ?: data_get($datosMaterial, 'almacen', 'Sin asignar');
+                                $marca = $entrada->material?->marca ?: data_get($datosMaterial, 'marca', 'Sin marca');
+                                $proveedor = $entrada->proveedor ?: ($entrada->material?->proveedor ?: data_get($datosMaterial, 'proveedor', 'Sin capturar'));
+                            @endphp
                             <tr>
                                 <td>
-                                    @if($entrada->evidencia_foto)
-                                        <img class="photo" src="{{ asset('storage/'.$entrada->evidencia_foto) }}" alt="Evidencia" onclick="abrirImagen(this.src)">
-                                    @else
-                                        <span class="muted">Sin evidencia</span>
-                                    @endif
+                                    <div class="photo-stack">
+                                        <div class="photo-item">
+                                            <span class="photo-label">Evidencia</span>
+                                            @if($entrada->evidencia_foto)
+                                                <img class="photo" src="{{ asset('storage/'.$entrada->evidencia_foto) }}" alt="Evidencia de recepcion" onclick="abrirImagen(this.src)">
+                                            @else
+                                                <span class="muted">Sin foto</span>
+                                            @endif
+                                        </div>
+                                        @if($entrada->fotografia)
+                                            <div class="photo-item">
+                                                <span class="photo-label">Producto</span>
+                                                <img class="photo" src="{{ asset('storage/'.$entrada->fotografia) }}" alt="Foto del producto" onclick="abrirImagen(this.src)">
+                                            </div>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td>
-                                    <strong>{{ $entrada->material?->descripcion ?? 'Material eliminado' }}</strong>
-                                    <div class="muted">{{ $entrada->material?->apodo ? 'Apodo: '.$entrada->material->apodo.' - ' : '' }}{{ $entrada->material?->numero_parte ?: 'N/A' }}</div>
-                                    <div class="muted">Categoria: {{ $entrada->material?->categoria ?: 'Sin categoria' }}</div>
-                                    <div class="muted">Stock actual: {{ $entrada->material?->stock ?? 0 }} pzas</div>
-                                    <div class="muted">Proveedor: {{ $entrada->proveedor ?: ($entrada->material?->proveedor ?: 'Sin capturar') }}</div>
+                                    @if($entrada->es_material_nuevo)<span class="pill new">Alta de material nuevo</span><br>@endif
+                                    <strong>{{ $descripcion }}</strong>
+                                    <div class="muted">{{ $apodo ? 'Apodo: '.$apodo.' - ' : '' }}{{ $numeroParte }}</div>
+                                    <div class="muted">Codigo: {{ $entrada->codigo_barras ?: 'Sin codigo' }}</div>
+                                    <div class="muted">Categoria: {{ $categoria }}</div>
+                                    <div class="muted">Almacen: {{ $almacen }}</div>
+                                    <div class="muted">Marca: {{ $marca }}</div>
+                                    <div class="muted">Stock actual: {{ $entrada->material?->stock ?? 0 }} pzas{{ $entrada->es_material_nuevo && ! $entrada->material_id ? ' (aun no creado)' : '' }}</div>
+                                    <div class="muted">Proveedor: {{ $proveedor }}</div>
                                     <div class="muted">
                                         Compra: ${{ number_format((float) ($entrada->costo_unitario ?? 0), 2) }} × {{ $entrada->cantidad }}
                                         = ${{ number_format((float) ($entrada->costo_unitario ?? 0) * $entrada->cantidad, 2) }} MXN
@@ -116,7 +145,9 @@
                                                 @csrf
                                                 @method('PATCH')
                                                 <textarea name="comentario_admin" placeholder="Comentario opcional"></textarea>
-                                                <button class="btn btn-green" type="submit">Aprobar y sumar stock</button>
+                                                <button class="btn btn-green" type="submit">
+                                                    {{ $entrada->es_material_nuevo ? 'Aprobar, crear y sumar stock' : 'Aprobar y sumar stock' }}
+                                                </button>
                                             </form>
                                             <form method="POST" action="{{ route('admin.entradas.reject', $entrada) }}">
                                                 @csrf
