@@ -2053,7 +2053,7 @@
                     class="sidebar-link menu-categorias {{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}"
                 >
                     <span class="nav-mark" aria-hidden="true">
-                        <img src="{{ asset('images/categorias.svg') }}" alt="">
+                        <img src="{{ asset('images/categoria.png') }}" alt="">
                     </span>
                     <span class="nav-text">Categorias</span>
                     <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -2069,7 +2069,7 @@
                     class="sidebar-link menu-proveedores {{ request()->routeIs('admin.proveedores.*') ? 'active' : '' }}"
                 >
                     <span class="nav-mark" aria-hidden="true">
-                        <img src="{{ asset('images/proveedores.svg') }}" alt="">
+                        <img src="{{ asset('images/provedor.png') }}" alt="">
                     </span>
                     <span class="nav-text">Proveedores</span>
                     <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -2085,7 +2085,7 @@
                     class="sidebar-link menu-catalogo {{ request()->routeIs('admin.materiales.*') ? 'active' : '' }}"
                 >
                     <span class="nav-mark" aria-hidden="true">
-                        <img src="{{ asset('images/catalogo.svg') }}" alt="">
+                        <img src="{{ asset('images/catalogo.png') }}" alt="">
                     </span>
                     <span class="nav-text">Catalogo completo</span>
                     <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -2101,7 +2101,7 @@
                     class="sidebar-link menu-salidas-admin {{ request()->routeIs('admin.salidas.*') ? 'active' : '' }}"
                 >
                     <span class="nav-mark" aria-hidden="true">
-                        <img src="{{ asset('images/historial-salidas.svg') }}" alt="">
+                        <img src="{{ asset('images/historial1.png') }}" alt="">
                     </span>
                     <span class="nav-text">Historial salidas</span>
                     <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -2117,7 +2117,7 @@
                     class="sidebar-link menu-auditoria {{ request()->routeIs('admin.auditoria.*') ? 'active' : '' }}"
                 >
                     <span class="nav-mark" aria-hidden="true">
-                        <img src="{{ asset('images/auditoria.svg') }}" alt="">
+                        <img src="{{ asset('images/auditoria.jpg') }}" alt="">
                     </span>
                     <span class="nav-text">Auditoria</span>
                     <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -2133,7 +2133,7 @@
                     class="sidebar-link menu-respaldos {{ request()->routeIs('admin.backups.*') ? 'active' : '' }}"
                 >
                     <span class="nav-mark" aria-hidden="true">
-                        <img src="{{ asset('images/respaldos.svg') }}" alt="">
+                        <img src="{{ asset('images/respaldo.jpg') }}" alt="">
                     </span>
                     <span class="nav-text">Respaldos</span>
                     <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
