@@ -15,7 +15,7 @@
         <div class="box">
             <h2>Crear respaldo</h2>
             <p class="muted">Descarga un archivo .sql con todas las tablas y datos actuales.</p>
-            <form method="POST" action="{{ route('admin.backups.store') }}">@csrf <button class="btn" type="submit">Crear y descargar respaldo</button></form>
+            <form method="POST" action="{{ route('admin.backups.store') }}">@csrf <button class="btn btn-green" type="submit">Crear y descargar respaldo</button></form>
         </div>
         <div class="box">
             <h2>Restaurar respaldo</h2>
@@ -23,7 +23,7 @@
             <form method="POST" action="{{ route('admin.backups.restore') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="backup_sql" accept=".sql,.txt" required>
-                <button class="btn" type="submit" onclick="return confirm('¿Restaurar esta base de datos?')">Restaurar SQL</button>
+                <button class="btn btn-red" type="submit" onclick="return confirm('¿Restaurar esta base de datos?')">Restaurar SQL</button>
             </form>
         </div>
     </section>

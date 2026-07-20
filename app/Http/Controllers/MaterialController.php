@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Material;
 use App\Models\MaterialCategory;
+use App\Models\MaterialEntradaPendiente;
 use App\Models\MaterialMovimiento;
 use App\Support\AuditLogger;
+use App\Support\ImageStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -78,6 +81,8 @@ class MaterialController extends Controller
 
             if ($material) {
                 $cantidad = max(0, (int) $request->input('stock', 0));
+                $proveedorEntrada = trim((string) $request->input('proveedor', '')) ?: $material->proveedor;
+                $costoEntrada = max(0, (float) $request->input('costo_unitario', $material->costo_unitario ?? 0));
 
                 if ($cantidad <= 0) {
                     throw ValidationException::withMessages([
@@ -85,11 +90,61 @@ class MaterialController extends Controller
                     ]);
                 }
 
-                DB::transaction(function () use ($material, $cantidad, $request) {
+                if (! $this->usuarioPuedeAdministrarCatalogo($request)) {
+                    $request->validate([
+                        'evidencia_foto' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:8192'],
+                    ], [
+                        'evidencia_foto.required' => 'Sube una foto de evidencia para que el administrador pueda aprobar la entrada.',
+                        'evidencia_foto.image' => 'La evidencia debe ser una imagen.',
+                    ]);
+
+                    $entrada = MaterialEntradaPendiente::create([
+                        'material_id' => $material->id,
+                        'user_id' => $request->user()?->id,
+                        'cantidad' => $cantidad,
+                        'estado' => 'pendiente',
+                        'codigo_barras' => $material->codigo_barras,
+                        'referencia' => 'Entrada por codigo existente',
+                        'motivo' => 'Pendiente de aprobacion',
+                        'evidencia_foto' => ImageStorage::storeOptimized($request->file('evidencia_foto'), 'entradas-pendientes', 1600, 72),
+                        'proveedor' => $proveedorEntrada,
+                        'costo_unitario' => $costoEntrada,
+                    ]);
+
+                    AuditLogger::registrar('Entradas', 'Entrada pendiente', "Solicito entrada de {$cantidad} piezas de {$material->descripcion}.", [
+                        'material_id' => $material->id,
+                        'entrada_pendiente_id' => $entrada->id,
+                        'cantidad' => $cantidad,
+                    ], $request);
+
+                    $this->notificarAdministradoresEntrada($entrada);
+
+                    return redirect()
+                        ->route('materiales.index')
+                        ->with('success', 'Entrada enviada al administrador. El stock se sumara cuando sea aprobada.');
+                }
+
+                if ($request->hasFile('evidencia_foto')) {
+                    $request->validate([
+                        'evidencia_foto' => ['image', 'mimes:jpeg,png,jpg,webp', 'max:8192'],
+                    ], [
+                        'evidencia_foto.image' => 'La evidencia debe ser una imagen.',
+                    ]);
+                }
+
+                $evidencia = $request->hasFile('evidencia_foto')
+                    ? ImageStorage::storeOptimized($request->file('evidencia_foto'), 'evidencias-entrada', 1600, 72)
+                    : null;
+
+                DB::transaction(function () use ($material, $cantidad, $request, $evidencia, $proveedorEntrada, $costoEntrada) {
                     $bloqueado = Material::whereKey($material->id)->lockForUpdate()->firstOrFail();
                     $anterior = $bloqueado->stock;
                     $nuevo = $anterior + $cantidad;
-                    $bloqueado->update(['stock' => $nuevo]);
+                    $bloqueado->update([
+                        'stock' => $nuevo,
+                        'proveedor' => $proveedorEntrada ?: $bloqueado->proveedor,
+                        'costo_unitario' => $costoEntrada > 0 ? $costoEntrada : $bloqueado->costo_unitario,
+                    ]);
 
                     MaterialMovimiento::create([
                         'material_id' => $bloqueado->id,
@@ -101,6 +156,9 @@ class MaterialController extends Controller
                         'codigo_barras' => $bloqueado->codigo_barras,
                         'referencia' => 'Entrada por codigo existente',
                         'motivo' => 'Registro de entrada',
+                        'evidencia_foto' => $evidencia,
+                        'proveedor' => $proveedorEntrada,
+                        'costo_unitario' => $costoEntrada,
                     ]);
                 });
 
@@ -124,11 +182,11 @@ class MaterialController extends Controller
         $datos = $this->validarMaterial($request);
 
         if ($request->hasFile('fotografia')) {
-            $datos['fotografia'] = $this->comprimirYGuardar($request->file('fotografia'), 'materiales');
+            $datos['fotografia'] = ImageStorage::storeOptimized($request->file('fotografia'), 'materiales', 1600, 72);
         }
 
         if ($request->hasFile('evidencia_foto')) {
-            $datos['evidencia_foto'] = $this->comprimirYGuardar($request->file('evidencia_foto'), 'evidencias');
+            $datos['evidencia_foto'] = ImageStorage::storeOptimized($request->file('evidencia_foto'), 'evidencias', 1600, 72);
         }
 
         $material = Material::create($datos);
@@ -144,6 +202,9 @@ class MaterialController extends Controller
                 'codigo_barras' => $material->codigo_barras,
                 'referencia' => 'Alta de material',
                 'motivo' => 'Registro inicial',
+                'evidencia_foto' => $material->evidencia_foto,
+                'proveedor' => $material->proveedor,
+                'costo_unitario' => $material->costo_unitario,
             ]);
         }
 
@@ -176,7 +237,7 @@ class MaterialController extends Controller
                 Storage::disk('public')->delete($material->fotografia);
             }
 
-            $datos['fotografia'] = $this->comprimirYGuardar($request->file('fotografia'), 'materiales');
+            $datos['fotografia'] = ImageStorage::storeOptimized($request->file('fotografia'), 'materiales', 1600, 72);
         }
 
         if ($request->hasFile('evidencia_foto')) {
@@ -184,7 +245,7 @@ class MaterialController extends Controller
                 Storage::disk('public')->delete($material->evidencia_foto);
             }
 
-            $datos['evidencia_foto'] = $this->comprimirYGuardar($request->file('evidencia_foto'), 'evidencias');
+            $datos['evidencia_foto'] = ImageStorage::storeOptimized($request->file('evidencia_foto'), 'evidencias', 1600, 72);
         }
 
         $material->update($datos);
@@ -389,30 +450,32 @@ class MaterialController extends Controller
         return (bool) $usuario?->puedeAdministrarCatalogo();
     }
 
-    private function comprimirYGuardar($imagen, string $carpetaDestino): string
+    private function notificarAdministradoresEntrada(MaterialEntradaPendiente $entrada): void
     {
-        $nombreImagen = time() . '_' . uniqid() . '.' . $imagen->getClientOriginalExtension();
-        $rutaAbsoluta = storage_path('app/public/' . $carpetaDestino);
+        $entrada->load(['material', 'user']);
+        $admins = \App\Models\User::query()
+            ->where('role', 'administrador')
+            ->whereNotNull('approved_at')
+            ->pluck('email')
+            ->filter();
 
-        if (! file_exists($rutaAbsoluta)) {
-            mkdir($rutaAbsoluta, 0777, true);
+        if ($admins->isEmpty()) {
+            return;
         }
 
-        $rutaFinal = $rutaAbsoluta . '/' . $nombreImagen;
-        $info = getimagesize($imagen->getRealPath());
+        $url = route('admin.entradas.index');
+        $html = '<h2>Nueva entrada pendiente de aprobacion</h2>'
+            . '<p><strong>Usuario:</strong> '.e($entrada->user?->name ?? 'Usuario no disponible').'</p>'
+            . '<p><strong>Material:</strong> '.e($entrada->material?->descripcion ?? 'Material eliminado').'</p>'
+            . '<p><strong>Cantidad:</strong> '.number_format($entrada->cantidad).' pzas</p>'
+            . '<p><a href="'.e($url).'">Abrir entradas pendientes</a></p>';
 
-        if (($info['mime'] ?? '') === 'image/jpeg' || ($info['mime'] ?? '') === 'image/jpg') {
-            $img = imagecreatefromjpeg($imagen->getRealPath());
-            imagejpeg($img, $rutaFinal, 70);
-            imagedestroy($img);
-        } elseif (($info['mime'] ?? '') === 'image/png') {
-            $img = imagecreatefrompng($imagen->getRealPath());
-            imagepng($img, $rutaFinal, 6);
-            imagedestroy($img);
-        } else {
-            $imagen->storeAs($carpetaDestino, $nombreImagen, 'public');
+        try {
+            Mail::html($html, function ($message) use ($admins): void {
+                $message->to($admins->all())->subject('Nueva entrada pendiente de aprobacion');
+            });
+        } catch (\Throwable $exception) {
+            report($exception);
         }
-
-        return $carpetaDestino . '/' . $nombreImagen;
     }
 }

@@ -8,7 +8,7 @@
     </style>
 </head>
 <body><div class="app-shell">@include('materiales.partials.sidebar')<main class="app-content"><div class="container">
-    <a class="btn" href="{{ route('admin.proveedores.index') }}">Volver</a>
+    <a class="btn btn-soft" href="{{ route('admin.proveedores.index') }}">Volver</a>
     <h1>{{ $proveedor }}</h1>
     <div class="muted">Productos comprados a este proveedor.</div>
     <div class="table-wrap"><table><thead><tr><th>Descripcion</th><th>No. parte</th><th>Almacen</th><th>Stock</th><th>Precio</th><th>Clave SAT</th><th>Factura</th></tr></thead><tbody>

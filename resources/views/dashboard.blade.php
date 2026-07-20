@@ -65,6 +65,11 @@
         }
         .btn svg { width: 17px; height: 17px; }
         .btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+        .money-hero { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:18px; align-items:center; margin-bottom:20px; padding:24px; border-radius:20px; background:linear-gradient(135deg,#0f5fb8,#0ea5e9); color:#fff; box-shadow:0 20px 42px rgba(14,165,233,.25); }
+        .money-hero span { display:block; font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; opacity:.9; }
+        .money-hero strong { display:block; margin-top:6px; font-size:clamp(30px,5vw,54px); font-weight:950; line-height:1; overflow-wrap:anywhere; }
+        .money-hero p { margin:8px 0 0; font-size:14px; font-weight:700; opacity:.92; }
+        .money-hero-badge { padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.24); font-weight:900; text-align:center; }
         .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
         .card {
             position: relative; min-width: 0; overflow: hidden; padding: 19px;
@@ -85,6 +90,8 @@
         .card-icon svg { width: 21px; height: 21px; }
         .card-value { position: relative; z-index: 2; display: block; font-size: clamp(23px, 3vw, 31px); font-weight: 950; line-height: 1.1; letter-spacing: -0.6px; word-break: break-word; }
         .card-footer { position: relative; z-index: 2; display: flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--muted); font-size: 12px; font-weight: 650; }
+        .card-link { color: inherit; text-decoration: none; }
+        .card-link.amber .card-footer { color: #b45309; }
         .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--card-color); box-shadow: 0 0 8px var(--card-color); }
         .charts-main { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(330px, 0.8fr); gap: 18px; margin-bottom: 18px; }
         .charts-secondary { display: grid; grid-template-columns: minmax(330px, 0.8fr) minmax(0, 1.2fr); gap: 18px; margin-bottom: 18px; }
@@ -97,9 +104,16 @@
         .chart-shell { position: relative; height: 390px; min-height: 390px; }
         .chart-shell.medium { height: 330px; min-height: 330px; }
         .chart-shell.health { height: 295px; min-height: 295px; }
+        .provider-ranking { display:grid; gap:10px; }
+        .provider-row { display:grid; grid-template-columns:42px minmax(0,1fr) auto; align-items:center; gap:12px; padding:13px 14px; background:#ffffff; border:1px solid #cfe0f2; border-radius:14px; box-shadow:0 10px 24px rgba(15,60,105,.08); transition:transform .2s, border-color .2s, box-shadow .2s; }
+        .provider-row:hover { transform:translateY(-2px); border-color:#38bdf8; box-shadow:0 14px 30px rgba(15,60,105,.14); }
+        .provider-rank { width:42px; height:42px; display:inline-flex; align-items:center; justify-content:center; border-radius:12px; background:#e0f2fe; color:#075985; font-weight:950; }
+        .provider-name { display:block; color:#10233f; font-size:14px; font-weight:950; line-height:1.3; overflow-wrap:anywhere; }
+        .provider-meta { margin-top:3px; color:#64748b; font-size:12px; font-weight:750; }
+        .provider-money { color:#047857; font-size:15px; font-weight:950; text-align:right; white-space:nowrap; }
         .chart-footer-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 13px; }
-        .chart-stat { padding: 12px; background: rgba(2, 6, 23, 0.33); border: 1px solid rgba(148, 163, 184, 0.10); border-radius: 11px; }
-        .chart-stat span { display: block; margin-bottom: 5px; color: var(--muted); font-size: 10px; font-weight: 850; text-transform: uppercase; letter-spacing: 0.6px; }
+        .chart-stat { padding: 12px; background: #ffffff; border: 1px solid #cfe0f2; border-radius: 11px; box-shadow: 0 10px 24px rgba(15, 60, 105, .08); }
+        .chart-stat span { display: block; margin-bottom: 5px; color: #475569; font-size: 10px; font-weight: 850; text-transform: uppercase; letter-spacing: 0.6px; }
         .chart-stat strong { font-size: 18px; font-weight: 900; }
         .chart-stat.good strong { color: #6ee7b7; }
         .chart-stat.danger strong { color: #fca5a5; }
@@ -120,7 +134,7 @@
         .empty-state strong { font-size: 14px; }
         .empty-state span { margin-top: 4px; color: var(--muted); font-size: 12px; }
         @media (max-width: 1120px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .charts-main, .charts-secondary { grid-template-columns: 1fr; } .chart-shell { height: 350px; min-height: 350px; } }
-        @media (max-width: 760px) { .app-content { padding: 20px 12px; } .container { padding: 20px 15px; border-radius: 18px; } .header { display: block; } .header-title-area { align-items: flex-start; } .actions { justify-content: flex-start; margin-top: 18px; } .btn { flex: 1; min-width: 145px; } .cards { grid-template-columns: 1fr; } .chart-shell, .chart-shell.medium, .chart-shell.health { height: 310px; min-height: 310px; } .panel { padding: 15px; } .panel-header { display: block; } .panel-tag { display: inline-flex; margin-top: 9px; } .critical-header { align-items: flex-start; } .critical-item { grid-template-columns: 1fr; } .badge-red { width: 100%; } }
+        @media (max-width: 760px) { .app-content { padding: 20px 12px; } .container { padding: 20px 15px; border-radius: 18px; } .header { display: block; } .header-title-area { align-items: flex-start; } .actions { justify-content: flex-start; margin-top: 18px; } .btn { flex: 1; min-width: 145px; } .money-hero { grid-template-columns:1fr; } .cards { grid-template-columns: 1fr; } .chart-shell, .chart-shell.medium, .chart-shell.health { height: 310px; min-height: 310px; } .panel { padding: 15px; } .panel-header { display: block; } .panel-tag { display: inline-flex; margin-top: 9px; } .provider-row { grid-template-columns:36px minmax(0,1fr); } .provider-money { grid-column:2; text-align:left; } .critical-header { align-items: flex-start; } .critical-item { grid-template-columns: 1fr; } .badge-red { width: 100%; } }
         @media (max-width: 440px) { .header-icon { width: 48px; height: 48px; } .actions { flex-direction: column; } .btn { width: 100%; } .chart-footer-info { grid-template-columns: 1fr; } }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.23); }
@@ -159,7 +173,7 @@
                     </a>
 
                     <!-- BOTÓN SALIDAS (GRIS FORZADO) -->
-                    <a href="{{ route('reportes.salidas.csv') }}" class="btn" style="background: #f32f38 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">
+                    <a href="{{ route('reportes.salidas.csv') }}" class="btn" style="background: #15803d !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3-3H9.75m9 0-3-3m3 3-3 3" />
                         </svg>
@@ -175,6 +189,52 @@
                     </a>
                 </div>
             </header>
+
+            <section class="money-hero">
+                <div>
+                    <span>Valor total del inventario</span>
+                    <strong>${{ number_format($valorInventario, 2) }} MXN</strong>
+                    <p>Calculado con stock actual por costo unitario de cada material real.</p>
+                </div>
+                <div class="money-hero-badge">{{ number_format($totalMateriales) }} materiales</div>
+            </section>
+
+            <section class="panel" style="margin-bottom:18px;">
+                <div class="panel-header">
+                    <div class="panel-title-area">
+                        <h2>Top 5 proveedores por compras</h2>
+                        <p class="panel-description">Clasificación por el dinero acumulado en entradas de almacén.</p>
+                    </div>
+                    <span class="panel-tag">Compras en MXN</span>
+                </div>
+                <div class="provider-ranking">
+                    @forelse($topProveedoresCompras as $proveedor)
+                        <div class="provider-row">
+                            <span class="provider-rank">#{{ $loop->iteration }}</span>
+                            <div>
+                                <span class="provider-name">{{ $proveedor->proveedor }}</span>
+                                <div class="provider-meta">{{ number_format((int) $proveedor->piezas) }} piezas compradas</div>
+                            </div>
+                            <div class="provider-money">${{ number_format((float) $proveedor->total, 2) }} MXN</div>
+                        </div>
+                    @empty
+                        <div class="empty-state" style="min-height:100px;margin-bottom:10px;">
+                            <strong>Aún no hay compras con proveedor e importe capturados</strong>
+                            <span>El ranking en dinero se llenará automáticamente al registrar entradas con proveedor y costo unitario.</span>
+                        </div>
+                        @foreach($proveedoresCatalogo as $proveedor)
+                            <div class="provider-row">
+                                <span class="provider-rank">#{{ $loop->iteration }}</span>
+                                <div>
+                                    <span class="provider-name">{{ $proveedor->proveedor }}</span>
+                                    <div class="provider-meta">{{ number_format((int) $proveedor->productos) }} referencias históricas</div>
+                                </div>
+                                <div class="provider-money" style="color:#b45309;">Sin importe capturado</div>
+                            </div>
+                        @endforeach
+                    @endforelse
+                </div>
+            </section>
 
             <!-- TARJETAS DE INDICADORES -->
             <section class="cards">
@@ -198,16 +258,16 @@
                     <strong class="card-value">{{ number_format($stockTotal) }}</strong>
                     <div class="card-footer"><span class="status-dot"></span> Existencias acumuladas</div>
                 </article>
-                <article class="card amber">
+                <a class="card card-link amber" href="{{ route('admin.entradas.index') }}">
                     <div class="card-top">
-                        <p class="card-title">Valor del inventario</p>
+                        <p class="card-title">Entradas por aprobar</p>
                         <div class="card-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m3-9.75c-.75-1.5-1.125-3-1.125s-3 .75-3 2.25 1.5 2.25 3 2.25 3 .75 3 2.25-1.5 2.25-3 2.25-2.25-.375-3-1.125M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                         </div>
                     </div>
-                    <strong class="card-value">${{ number_format($valorInventario, 2) }}</strong>
-                    <div class="card-footer"><span class="status-dot"></span> Valor económico estimado</div>
-                </article>
+                    <strong class="card-value">{{ number_format($entradasPendientes) }}</strong>
+                    <div class="card-footer"><span class="status-dot"></span> Revisar solicitudes pendientes</div>
+                </a>
                 <article class="card purple">
                     <div class="card-top">
                         <p class="card-title">Salidas del mes</p>
@@ -386,7 +446,7 @@
             plugins: {
                 legend: { position: 'bottom', labels: { color: '#334155', boxWidth: 11, boxHeight: 11, padding: 14, usePointStyle: true, pointStyle: 'circle', font: { size: 10, weight: '700' }, generateLabels(chart) { const datos = chart.data; if (!datos.labels.length || !datos.datasets.length) { return []; } return datos.labels.map((label, indice) => { const meta = chart.getDatasetMeta(0); const estilo = meta.controller.getStyle(indice); return { text: acortar(label, 25), fillStyle: estilo.backgroundColor, strokeStyle: estilo.borderColor, lineWidth: estilo.borderWidth, hidden: !chart.getDataVisibility(indice), index: indice, pointStyle: 'circle' }; }); } } },
                 tooltip: { callbacks: { label(context) { const valor = Number(context.raw || 0); const porcentaje = totalValorCategorias > 0 ? (valor / totalValorCategorias * 100).toFixed(1) : '0.0'; return ` ${context.label}: ${formatoMoneda(valor)} (${porcentaje}%)`; } } },
-                textoCentral: { mostrar: true, textoPrincipal: valorData.length ? formatoMoneda(totalValorCategorias) : '$0.00', textoSecundario: 'VALOR TOTAL', tamanoPrincipal: 19, tamanoSecundario: 10, colorPrincipal: '#102033', colorSecundario: '#94a3b8' }
+                textoCentral: { mostrar: true, textoPrincipal: `${valorLabels.length}`, textoSecundario: valorLabels.length === 1 ? 'CATEGORIA' : 'CATEGORIAS', tamanoPrincipal: 24, tamanoSecundario: 10, colorPrincipal: '#102033', colorSecundario: '#94a3b8' }
             }
         }
     });
@@ -409,4 +469,3 @@
 </script>
 </body>
 </html>
-

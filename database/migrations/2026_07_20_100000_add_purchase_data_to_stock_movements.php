@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('material_movimientos', function (Blueprint $table): void {
+            $table->string('proveedor')->nullable()->after('evidencia_foto');
+            $table->decimal('costo_unitario', 12, 2)->nullable()->after('proveedor');
+        });
+
+        Schema::table('material_entradas_pendientes', function (Blueprint $table): void {
+            $table->string('proveedor')->nullable()->after('evidencia_foto');
+            $table->decimal('costo_unitario', 12, 2)->nullable()->after('proveedor');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('material_entradas_pendientes', function (Blueprint $table): void {
+            $table->dropColumn(['proveedor', 'costo_unitario']);
+        });
+
+        Schema::table('material_movimientos', function (Blueprint $table): void {
+            $table->dropColumn(['proveedor', 'costo_unitario']);
+        });
+    }
+};

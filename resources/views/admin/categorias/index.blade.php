@@ -87,7 +87,7 @@
                             <label for="descripcion">Descripcion corta</label>
                             <textarea name="descripcion" id="descripcion" placeholder="Uso interno para el almacen">{{ old('descripcion') }}</textarea>
                         </div>
-                        <button type="submit" class="btn">Crear categoria</button>
+                <button type="submit" class="btn btn-green">Crear categoria</button>
                     </form>
                 </section>
 
@@ -120,7 +120,7 @@
                                                     <input type="checkbox" name="activa" value="1" {{ $categoria->activa ? 'checked' : '' }}>
                                                     Activa
                                                 </label>
-                                                <button type="submit" class="btn">Guardar</button>
+                                        <button type="submit" class="btn btn-green">Guardar</button>
                                             </form>
 
                                             @if(($usoPorCategoria[$categoria->nombre] ?? 0) === 0)

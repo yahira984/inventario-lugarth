@@ -29,8 +29,8 @@
             <div class="meta">{{ $material->numero_parte ?? 'Sin no. parte' }} · {{ $material->marca ?? 'Sin marca' }}</div>
         </div>
         <div class="actions">
-            <button class="btn" onclick="window.print()">Imprimir etiqueta</button>
-            <a class="btn" href="{{ route('materiales.index') }}">Volver</a>
+    <button class="btn btn-green" onclick="window.print()">Imprimir etiqueta</button>
+    <a class="btn btn-soft" href="{{ route('materiales.index') }}">Volver</a>
         </div>
     </div>
 </div>

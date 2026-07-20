@@ -276,7 +276,7 @@
 
         <div class="form-actions">
             <!-- Botón unificado a la paleta -->
-            <button type="submit" class="btn-submit">Leer XML</button>
+            <button type="submit" class="btn-submit btn-xml">Leer XML</button>
             <a href="{{ route('materiales.index') }}" class="btn-cancel">Volver al inventario</a>
         </div>
     </form>

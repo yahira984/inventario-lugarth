@@ -64,6 +64,7 @@ class ReporteController extends Controller
 
             MaterialMovimiento::query()
                 ->with(['material', 'user'])
+                ->whereHas('material', fn ($query) => $query->where('es_plantilla_equipo', false))
                 ->where('tipo', 'salida')
                 ->latest()
                 ->chunk(200, function ($salidas) use ($out) {
@@ -101,6 +102,7 @@ class ReporteController extends Controller
         return view('reportes.salidas_pdf', [
             'salidas' => MaterialMovimiento::query()
                 ->with(['material', 'user'])
+                ->whereHas('material', fn ($query) => $query->where('es_plantilla_equipo', false))
                 ->where('tipo', 'salida')
                 ->latest()
                 ->limit(500)

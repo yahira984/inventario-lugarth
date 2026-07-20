@@ -21,7 +21,9 @@
         .btn-blue { background:linear-gradient(135deg,#0ea5e9,#2563eb); }
         .btn-red { background:linear-gradient(135deg,#ef4444,#b91c1c); }
         .btn-green { background:linear-gradient(135deg,#16a34a,#15803d); }
+        .btn-amber { background:linear-gradient(135deg,#f59e0b,#b45309); }
         .btn-soft { background:#e8f2ff; color:#075985; border:1px solid #a8d3ff; }
+        .btn:disabled { cursor:not-allowed; opacity:.48; filter:grayscale(.2); transform:none !important; box-shadow:none !important; }
         label { display:block; color:#075985; font-size:12px; font-weight:900; text-transform:uppercase; margin-bottom:7px; }
         input,select,textarea { width:100%; min-height:42px; border:1px solid #bfd2e6; border-radius:10px; padding:10px 12px; font:inherit; color:#08233f; background:#fff; }
         textarea { min-height:78px; resize:vertical; }
@@ -47,6 +49,18 @@
         .piece-photo-empty { display:flex; align-items:center; justify-content:center; color:#58718a; font-size:11px; font-weight:900; text-transform:uppercase; border-style:dashed; }
         .auto-filled { background:#f1f8ff; color:#34506b; }
         .form-hint { margin:-4px 0 12px; color:#58718a; font-size:12px; font-weight:800; line-height:1.4; }
+        .selected-preview { display:none; grid-template-columns:74px minmax(0,1fr); gap:12px; align-items:center; margin:0 0 14px; padding:12px; border:1px solid #b9dcff; border-radius:14px; background:#f1f8ff; }
+        .selected-preview.active { display:grid; }
+        .selected-preview img, .selected-preview .preview-empty { width:74px; height:74px; object-fit:cover; border-radius:12px; border:1px solid #cfe0f2; background:#fff; }
+        .selected-preview .preview-empty { display:flex; align-items:center; justify-content:center; color:#58718a; font-size:11px; font-weight:900; text-transform:uppercase; border-style:dashed; }
+        .selected-preview strong { display:block; color:#08233f; font-weight:950; line-height:1.15; }
+        .selected-preview span { display:block; margin-top:4px; color:#58718a; font-size:12px; font-weight:800; }
+        .stock-check { margin:14px 0; padding:14px; border-radius:12px; border:1px solid; }
+        .stock-check strong { display:block; margin-bottom:5px; }
+        .stock-check ul { margin:8px 0 0; padding-left:20px; }
+        .stock-check li { margin:5px 0; font-size:13px; font-weight:750; line-height:1.4; }
+        .stock-check.ok { background:#ecfdf5; border-color:#86efac; color:#166534; }
+        .stock-check.bad { background:#fef2f2; border-color:#fecaca; color:#991b1b; }
         @media (max-width: 980px) { .hero,.grid { display:block; } .form-grid { grid-template-columns:1fr; } .btn { width:100%; } table,thead,tbody,tr,td,th { display:block; } th { display:none; } td { border:1px solid #d8e8f7; border-radius:0; } td:first-child { border-radius:12px 12px 0 0; } td:last-child { border-radius:0 0 12px 12px; } }
     </style>
 </head>
@@ -150,6 +164,13 @@
                                 </select>
                             </div>
                             <p class="form-hint">Si seleccionas una pieza real, descripcion, no. parte, apodo, marca y unidad se llenan automaticamente. Solo ajusta la cantidad que usa este equipo y las notas si hacen falta.</p>
+                            <div class="selected-preview" id="piezaPreview">
+                                <div class="preview-empty" id="piezaPreviewFoto">Sin foto</div>
+                                <div>
+                                    <strong id="piezaPreviewTitulo">Pieza seleccionada</strong>
+                                    <span id="piezaPreviewMeta"></span>
+                                </div>
+                            </div>
                             <div class="field"><label>Descripcion</label><input name="descripcion" id="piezaDescripcion" placeholder="Ej. Cuello 20 soldable"></div>
                             <div class="form-grid">
                                 <div class="field"><label>No. parte</label><input name="numero_parte" id="piezaNumeroParte"></div>
@@ -166,19 +187,20 @@
                     <section class="card" id="vender-equipo">
                         <h2>Vender equipo</h2>
                         <p class="muted">Registra la venta y descuenta automaticamente el stock de todas las piezas vinculadas al inventario real.</p>
-                        <form method="POST" action="{{ route('equipos.withdraw', $equipo) }}">
+                        <form method="POST" action="{{ route('equipos.withdraw', $equipo) }}" id="ventaEquipoForm">
                             @csrf
                             <div class="field">
                                 <label>Tipo de movimiento</label>
-                                <select name="tipo" required>
+                                <select name="tipo" id="tipoMovimientoEquipo" required>
                                     <option value="venta" selected>Venta de equipo</option>
                                     <option value="retiro">Retiro interno</option>
                                 </select>
                             </div>
-                            <div class="field"><label>Cantidad de equipos</label><input type="number" min="1" name="cantidad_paquetes" value="1" required></div>
+                            <div class="field"><label>Cantidad de equipos</label><input type="number" min="1" name="cantidad_paquetes" id="cantidadEquipos" value="1" required></div>
                             <div class="field"><label>Referencia</label><input name="referencia" placeholder="Pedido, factura, OT o cliente"></div>
                             <div class="field"><label>Notas</label><textarea name="notas" placeholder="Quien lo solicito, cliente o detalle util"></textarea></div>
-                            <button class="btn btn-red" type="submit">Vender equipo y descontar stock</button>
+                            <div class="stock-check" id="estadoStockEquipo" aria-live="polite"></div>
+                            <button class="btn btn-red" id="venderEquipoButton" type="submit">Vender equipo y descontar stock</button>
                         </form>
                     </section>
 
@@ -203,6 +225,8 @@
 </div>
 <script>
     const materialesEquipo = @json($materialesEquipo);
+    const requisitosVenta = @json($requisitosVenta);
+    const piezasSinVincular = @json($piezasSinVincular);
 
     const materialRealSelect = document.getElementById('materialRealSelect');
     const camposAuto = [
@@ -212,6 +236,55 @@
         document.getElementById('piezaMarca'),
         document.getElementById('piezaUnidad'),
     ];
+    const cantidadEquipos = document.getElementById('cantidadEquipos');
+    const tipoMovimientoEquipo = document.getElementById('tipoMovimientoEquipo');
+    const estadoStockEquipo = document.getElementById('estadoStockEquipo');
+    const venderEquipoButton = document.getElementById('venderEquipoButton');
+
+    function escapeHtml(valor) {
+        const nodo = document.createElement('div');
+        nodo.textContent = String(valor ?? '');
+        return nodo.innerHTML;
+    }
+
+    function revisarStockEquipo() {
+        const cantidad = Math.max(1, Number.parseInt(cantidadEquipos?.value || '1', 10));
+        const faltantes = requisitosVenta
+            .map((pieza) => {
+                const requerido = Math.ceil(Number(pieza.cantidad_por_equipo || 0) * cantidad);
+                const disponible = Number(pieza.stock || 0);
+
+                return { ...pieza, requerido, disponible, faltan: Math.max(requerido - disponible, 0) };
+            })
+            .filter((pieza) => pieza.faltan > 0);
+
+        if (piezasSinVincular.length > 0) {
+            estadoStockEquipo.className = 'stock-check bad';
+            estadoStockEquipo.innerHTML = `<strong>No se puede retirar este equipo.</strong><span>Vincula primero las piezas pendientes:</span><ul>${piezasSinVincular.map((pieza) => `<li>${escapeHtml(pieza)}</li>`).join('')}</ul>`;
+            venderEquipoButton.disabled = true;
+            return;
+        }
+
+        if (faltantes.length > 0) {
+            estadoStockEquipo.className = 'stock-check bad';
+            estadoStockEquipo.innerHTML = `<strong>Stock insuficiente para ${cantidad} equipo(s).</strong><ul>${faltantes.map((pieza) => `<li>${escapeHtml(pieza.descripcion)}: hay ${pieza.disponible}, se requieren ${pieza.requerido} y faltan ${pieza.faltan}.</li>`).join('')}</ul>`;
+            venderEquipoButton.disabled = true;
+            return;
+        }
+
+        estadoStockEquipo.className = 'stock-check ok';
+        estadoStockEquipo.innerHTML = `<strong>Stock completo.</strong><span>Hay piezas suficientes para ${cantidad} equipo(s). El descuento se realizara al confirmar.</span>`;
+        venderEquipoButton.disabled = requisitosVenta.length === 0;
+    }
+
+    function actualizarTipoMovimiento() {
+        const esVenta = tipoMovimientoEquipo?.value === 'venta';
+        venderEquipoButton.textContent = esVenta
+            ? 'Vender equipo y descontar stock'
+            : 'Registrar retiro y descontar stock';
+        venderEquipoButton.classList.toggle('btn-red', esVenta);
+        venderEquipoButton.classList.toggle('btn-amber', !esVenta);
+    }
 
     function aplicarEstadoAutomatico(activo) {
         camposAuto.forEach((campo) => {
@@ -228,6 +301,7 @@
                 campo.readOnly = false;
                 campo.classList.remove('auto-filled');
             });
+            document.getElementById('piezaPreview').classList.remove('active');
             return;
         }
 
@@ -236,11 +310,23 @@
         document.getElementById('piezaApodo').value = material.apodo || '';
         document.getElementById('piezaMarca').value = material.marca || '';
         document.getElementById('piezaUnidad').value = material.unidad || 'pza';
+        document.getElementById('piezaPreview').classList.add('active');
+        document.getElementById('piezaPreviewTitulo').textContent = material.descripcion || 'Pieza seleccionada';
+        document.getElementById('piezaPreviewMeta').textContent = `${material.apodo ? 'Apodo: ' + material.apodo + ' - ' : ''}No. parte: ${material.numero_parte || 'N/A'} - Marca: ${material.marca || 'N/A'}`;
+
+        const previewFoto = document.getElementById('piezaPreviewFoto');
+        previewFoto.outerHTML = material.fotografia_url
+            ? `<img id="piezaPreviewFoto" src="${material.fotografia_url}" alt="Foto de ${material.descripcion || 'pieza'}">`
+            : '<div class="preview-empty" id="piezaPreviewFoto">Sin foto</div>';
         aplicarEstadoAutomatico(true);
     }
 
     materialRealSelect?.addEventListener('change', llenarDatosDeMaterial);
+    cantidadEquipos?.addEventListener('input', revisarStockEquipo);
+    tipoMovimientoEquipo?.addEventListener('change', actualizarTipoMovimiento);
     llenarDatosDeMaterial();
+    revisarStockEquipo();
+    actualizarTipoMovimiento();
 </script>
 </body>
 </html>

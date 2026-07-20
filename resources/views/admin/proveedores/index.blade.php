@@ -18,7 +18,7 @@
                 <td>{{ number_format($proveedor->productos) }}</td>
                 <td>{{ number_format($proveedor->piezas) }}</td>
                 <td>${{ number_format((float) $proveedor->valor, 2) }}</td>
-                <td><a class="btn" href="{{ route('admin.proveedores.show', urlencode($proveedor->proveedor_nombre)) }}">Ver productos</a></td>
+                <td><a class="btn btn-blue" href="{{ route('admin.proveedores.show', urlencode($proveedor->proveedor_nombre)) }}">Ver productos</a></td>
             </tr>
         @endforeach
     </tbody></table></div>

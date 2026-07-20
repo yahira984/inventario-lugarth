@@ -14,6 +14,7 @@ class AdminProveedorController extends Controller
         abort_unless(auth()->user()?->puedeAdministrarCatalogo(), 403);
 
         $proveedores = Material::query()
+            ->where('es_plantilla_equipo', false)
             ->select(
                 DB::raw('COALESCE(NULLIF(proveedor, ""), "Sin proveedor") as proveedor_nombre'),
                 DB::raw('MAX(proveedor_rfc) as proveedor_rfc'),
@@ -34,6 +35,7 @@ class AdminProveedorController extends Controller
 
         $nombre = urldecode($proveedor);
         $materiales = Material::query()
+            ->where('es_plantilla_equipo', false)
             ->where(function ($query) use ($nombre) {
                 if ($nombre === 'Sin proveedor') {
                     $query->whereNull('proveedor')->orWhere('proveedor', '');

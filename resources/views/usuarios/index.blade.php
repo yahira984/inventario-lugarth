@@ -141,7 +141,7 @@
                                             <input type="checkbox" name="approved" value="1" {{ $usuario->aprobado() ? 'checked' : '' }}>
                                             Aprobar correo
                                         </label>
-                                        <button type="submit">Guardar permisos</button>
+                                <button type="submit" class="btn-green">Guardar permisos</button>
                                     </form>
                                 </td>
                             </tr>

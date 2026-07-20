@@ -18,7 +18,7 @@
     </style>
 </head>
 <body>
-<div class="actions"><button class="btn" onclick="window.print()">Imprimir / Guardar como PDF</button></div>
+<div class="actions"><button class="btn btn-red" onclick="window.print()">Imprimir / Guardar como PDF</button></div>
 <div class="header">
     <div class="brand">
         <img src="{{ asset('images/logo.png') }}" class="logo" alt="Lugarth">

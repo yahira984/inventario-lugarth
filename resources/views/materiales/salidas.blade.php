@@ -110,13 +110,19 @@
             width: 100%;
             min-height: 46px;
             padding: 12px 14px;
-            background: rgba(0, 0, 0, 0.36);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: #ffffff;
+            border: 1px solid #bfd2e6;
             border-radius: 10px;
-            color: #fff;
+            color: #08233f;
             font-family: inherit;
             font-size: 14px;
             outline: none;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #64748b;
+            opacity: 1;
         }
 
         textarea { min-height: 88px; resize: vertical; }
@@ -156,10 +162,11 @@
         .btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
         
         /* --- NUEVOS COLORES DE BOTONES --- */
-        .btn-primary { background: linear-gradient(135deg, #cdc8d8, #5b21b6); } /* Púrpura */
-        .btn-blue { background: linear-gradient(135deg, #f59e0b, #d97706); } /* Ámbar/Naranja */
-        .btn-green { background: linear-gradient(135deg, #14b8a6, #0f766e); } /* Verde azulado (Teal) */
-        .btn-soft { background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); color: #ddd6fe; } /* Suave púrpura */
+        .btn-primary,.btn-blue { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
+        .btn-green { background: linear-gradient(135deg, #22c55e, #15803d); }
+        .btn-red { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+        .btn-amber { background: linear-gradient(135deg, #f59e0b, #b45309); }
+        .btn-soft { background: #ffffff; border: 1px solid #bfdbfe; color: #075985; }
         
         .header-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
 
@@ -167,8 +174,8 @@
             display: none;
             gap: 12px;
             align-items: center;
-            border: 1px solid rgba(16, 185, 129, 0.38);
-            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #86efac;
+            background: #ecfdf5;
             border-radius: 14px;
             padding: 13px;
             margin-bottom: 16px;
@@ -183,8 +190,8 @@
             height: 62px;
             object-fit: cover;
             border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid #cfe0f2;
+            background: #ffffff;
         }
 
         .no-photo {
@@ -203,14 +210,20 @@
 
         .selected-name,
         .manual-title {
+            color: #08233f;
             font-weight: 900;
             line-height: 1.25;
         }
 
         .muted {
-            color: var(--muted);
+            color: #58718a;
             font-size: 12px;
             font-weight: 700;
+        }
+
+        .manual-card .muted,
+        .selected-card .muted {
+            color: #475569;
         }
 
         .category-badge,
@@ -286,8 +299,8 @@
         }
 
         .manual-card {
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(15, 23, 42, 0.72);
+            border: 1px solid #cfe0f2;
+            background: #ffffff;
             border-radius: 14px;
             padding: 12px;
             display: grid;
@@ -428,7 +441,7 @@
 
                 <div class="header-actions">
                     <a href="{{ route('reportes.salidas.csv') }}" class="btn btn-green">Excel</a>
-                    <a href="{{ route('reportes.salidas.pdf') }}" class="btn btn-blue">PDF</a>
+                    <a href="{{ route('reportes.salidas.pdf') }}" class="btn btn-red">PDF</a>
                     <a href="{{ route('materiales.index') }}" class="btn btn-soft">Volver al inventario</a>
                 </div>
             </div>
@@ -460,7 +473,7 @@
                             <label for="codigo_barras">Código de barras</label>
                             <div class="input-row">
                                 <input type="text" name="codigo_barras" id="codigo_barras" value="{{ old('codigo_barras') }}" placeholder="Escanea o escribe el código" autocomplete="off" autofocus>
-                                <button type="button" class="btn btn-blue" onclick="abrirEscaner()">Cámara</button>
+                            <button type="button" class="btn btn-amber" onclick="abrirEscaner()">Cámara</button>
                             </div>
                             <div class="field-help">También funciona con pistola USB: apunta al código y dispara.</div>
                             <div id="codigo_status" class="status"></div>
@@ -495,7 +508,7 @@
                             @error('motivo') <div class="field-error">{{ $message }}</div> @enderror
                         </div>
 
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <button type="submit" class="btn btn-red" style="width: 100%;">
                             Registrar salida y descontar stock
                         </button>
                     </form>
@@ -599,7 +612,7 @@
     <div class="modal-content">
         <h3>Escanear código</h3>
         <div id="reader"></div>
-        <button type="button" class="btn btn-primary" style="width: 100%; margin-top: 16px;" onclick="cerrarEscaner()">Cancelar</button>
+            <button type="button" class="btn btn-red" style="width: 100%; margin-top: 16px;" onclick="cerrarEscaner()">Cancelar</button>
     </div>
 </div>
 
