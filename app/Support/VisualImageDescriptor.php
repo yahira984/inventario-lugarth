@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class VisualImageDescriptor
 {
-    private const VERSION = 1;
+    private const VERSION = 3;
 
     /** @var array<string, array<string, mixed>> */
     private array $runtimeCache = [];
@@ -69,6 +69,7 @@ class VisualImageDescriptor
             'brightness' => null,
             'color' => null,
             'forma' => null,
+            'regions' => [],
         ];
 
         if (! function_exists('imagecreatefromstring')) {
@@ -136,9 +137,15 @@ class VisualImageDescriptor
             }
         }
 
+        $regions = $this->extractRegions($sample, $width, $height);
         imagedestroy($sample);
 
         if ($foregroundPixels === 0) {
+            if ($regions !== []) {
+                $descriptor['calidad'] = 'ok';
+                $descriptor['regions'] = $regions;
+            }
+
             return $descriptor;
         }
 
@@ -166,7 +173,260 @@ class VisualImageDescriptor
                 $averageSaturation
             ),
             'forma' => $this->classifyShape($objectRatio),
+            'regions' => $regions,
         ]);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function extractRegions($image, int $width, int $height): array
+    {
+        $totalPixels = $width * $height;
+        $buckets = [];
+        $rgb = [];
+
+        for ($y = 0; $y < $height; $y++) {
+            for ($x = 0; $x < $width; $x++) {
+                $index = ($y * $width) + $x;
+                [$red, $green, $blue] = $this->rgbAt($image, $x, $y);
+                $rgb[$index] = [$red, $green, $blue];
+                $max = max($red, $green, $blue);
+                $min = min($red, $green, $blue);
+                $saturation = $max - $min;
+                $brightness = ($red + $green + $blue) / 3;
+
+                if ($saturation >= 35 && $brightness >= 24 && $brightness <= 245) {
+                    $hue = $this->rgbHue($red, $green, $blue);
+                    $buckets[$index] = 'c'.((int) floor(($hue + 15) / 30) % 12);
+                } else {
+                    $buckets[$index] = 'g'.min(5, (int) floor($brightness / 43));
+                }
+            }
+        }
+
+        $visited = [];
+        $regions = [];
+        $minimumPixels = max(18, (int) round($totalPixels * 0.0075));
+
+        for ($start = 0; $start < $totalPixels; $start++) {
+            if (isset($visited[$start])) {
+                continue;
+            }
+
+            $bucket = $buckets[$start];
+            $queue = [$start];
+            $visited[$start] = true;
+            $cursor = 0;
+            $moments = array_fill_keys(['m00', 'm10', 'm01', 'm20', 'm02', 'm11', 'm30', 'm03', 'm12', 'm21'], 0.0);
+            $redTotal = 0;
+            $greenTotal = 0;
+            $blueTotal = 0;
+            $minX = $width;
+            $minY = $height;
+            $maxX = 0;
+            $maxY = 0;
+            $touches = [false, false, false, false];
+
+            while (isset($queue[$cursor])) {
+                $index = $queue[$cursor++];
+                $x = $index % $width;
+                $y = intdiv($index, $width);
+                [$red, $green, $blue] = $rgb[$index];
+
+                $moments['m00']++;
+                $moments['m10'] += $x;
+                $moments['m01'] += $y;
+                $moments['m20'] += $x ** 2;
+                $moments['m02'] += $y ** 2;
+                $moments['m11'] += $x * $y;
+                $moments['m30'] += $x ** 3;
+                $moments['m03'] += $y ** 3;
+                $moments['m12'] += $x * ($y ** 2);
+                $moments['m21'] += ($x ** 2) * $y;
+                $redTotal += $red;
+                $greenTotal += $green;
+                $blueTotal += $blue;
+                $minX = min($minX, $x);
+                $minY = min($minY, $y);
+                $maxX = max($maxX, $x);
+                $maxY = max($maxY, $y);
+                $touches[0] = $touches[0] || $x === 0;
+                $touches[1] = $touches[1] || $x === ($width - 1);
+                $touches[2] = $touches[2] || $y === 0;
+                $touches[3] = $touches[3] || $y === ($height - 1);
+
+                $neighbors = [
+                    $x > 0 ? $index - 1 : null,
+                    $x < ($width - 1) ? $index + 1 : null,
+                    $y > 0 ? $index - $width : null,
+                    $y < ($height - 1) ? $index + $width : null,
+                ];
+
+                foreach ($neighbors as $neighbor) {
+                    if ($neighbor === null || isset($visited[$neighbor]) || $buckets[$neighbor] !== $bucket) {
+                        continue;
+                    }
+
+                    $visited[$neighbor] = true;
+                    $queue[] = $neighbor;
+                }
+            }
+
+            $pixels = (int) $moments['m00'];
+            $boxWidth = $maxX - $minX + 1;
+            $boxHeight = $maxY - $minY + 1;
+            $touchCount = count(array_filter($touches));
+
+            if ($pixels < $minimumPixels
+                || $boxWidth < 5
+                || $boxHeight < 5
+                || $pixels > ($totalPixels * 0.72)
+                || ($touchCount >= 3 && $pixels > ($totalPixels * 0.18))) {
+                continue;
+            }
+
+            $averageRed = $redTotal / $pixels;
+            $averageGreen = $greenTotal / $pixels;
+            $averageBlue = $blueTotal / $pixels;
+            $maxColor = max($averageRed, $averageGreen, $averageBlue);
+            $minColor = min($averageRed, $averageGreen, $averageBlue);
+
+            $regions[] = [
+                'pixels_ratio' => round($pixels / $totalPixels, 5),
+                'aspect_ratio' => round(max($boxWidth / $boxHeight, $boxHeight / $boxWidth), 4),
+                'fill_ratio' => round($pixels / max(1, $boxWidth * $boxHeight), 4),
+                'hue' => round($this->rgbHue($averageRed, $averageGreen, $averageBlue), 2),
+                'saturation' => round($maxColor - $minColor, 2),
+                'brightness' => round(($averageRed + $averageGreen + $averageBlue) / 3, 2),
+                'hu' => $this->huMoments($moments),
+                'radial' => $this->radialSignature(
+                    $queue,
+                    $width,
+                    $moments['m10'] / max(1, $pixels),
+                    $moments['m01'] / max(1, $pixels)
+                ),
+            ];
+        }
+
+        usort($regions, fn (array $first, array $second) => $second['pixels_ratio'] <=> $first['pixels_ratio']);
+
+        return array_slice($regions, 0, 10);
+    }
+
+    /**
+     * Builds a rotation-independent contour profile. The comparison tries every
+     * circular offset, so the photographed piece may be tilted in any direction.
+     *
+     * @param  array<int, int>  $pixels
+     * @return array<int, float>
+     */
+    private function radialSignature(array $pixels, int $width, float $centerX, float $centerY): array
+    {
+        $binCount = 36;
+        $radii = array_fill(0, $binCount, 0.0);
+
+        foreach ($pixels as $index) {
+            $x = $index % $width;
+            $y = intdiv($index, $width);
+            $deltaX = $x - $centerX;
+            $deltaY = $y - $centerY;
+            $radius = hypot($deltaX, $deltaY);
+
+            if ($radius < 0.5) {
+                continue;
+            }
+
+            $angle = atan2($deltaY, $deltaX) + M_PI;
+            $bin = min($binCount - 1, (int) floor(($angle / (2 * M_PI)) * $binCount));
+            $radii[$bin] = max($radii[$bin], $radius);
+        }
+
+        $maximum = max($radii);
+        if ($maximum <= 0) {
+            return [];
+        }
+
+        $normalized = array_map(fn (float $radius) => $radius / $maximum, $radii);
+        $smoothed = [];
+
+        for ($index = 0; $index < $binCount; $index++) {
+            $previous = $normalized[($index - 1 + $binCount) % $binCount];
+            $current = $normalized[$index];
+            $next = $normalized[($index + 1) % $binCount];
+            $smoothed[] = round(($previous + (2 * $current) + $next) / 4, 4);
+        }
+
+        return $smoothed;
+    }
+
+    /**
+     * @param  array<string, float>  $moments
+     * @return array<int, float>
+     */
+    private function huMoments(array $moments): array
+    {
+        $mass = max(1.0, $moments['m00']);
+        $centerX = $moments['m10'] / $mass;
+        $centerY = $moments['m01'] / $mass;
+        $mu20 = $moments['m20'] - (2 * $centerX * $moments['m10']) + (($centerX ** 2) * $mass);
+        $mu02 = $moments['m02'] - (2 * $centerY * $moments['m01']) + (($centerY ** 2) * $mass);
+        $mu11 = $moments['m11'] - ($centerX * $moments['m01']) - ($centerY * $moments['m10']) + ($centerX * $centerY * $mass);
+        $mu30 = $moments['m30'] - (3 * $centerX * $moments['m20']) + (3 * ($centerX ** 2) * $moments['m10']) - (($centerX ** 3) * $mass);
+        $mu03 = $moments['m03'] - (3 * $centerY * $moments['m02']) + (3 * ($centerY ** 2) * $moments['m01']) - (($centerY ** 3) * $mass);
+        $mu12 = $moments['m12'] - (2 * $centerY * $moments['m11']) + (($centerY ** 2) * $moments['m10']) - ($centerX * $moments['m02']) + (2 * $centerX * $centerY * $moments['m01']) - ($centerX * ($centerY ** 2) * $mass);
+        $mu21 = $moments['m21'] - (2 * $centerX * $moments['m11']) + (($centerX ** 2) * $moments['m01']) - ($centerY * $moments['m20']) + (2 * $centerX * $centerY * $moments['m10']) - ($centerY * ($centerX ** 2) * $mass);
+
+        $normalize = fn (float $value, int $order) => $value / ($mass ** (1 + ($order / 2)));
+        $n20 = $normalize($mu20, 2);
+        $n02 = $normalize($mu02, 2);
+        $n11 = $normalize($mu11, 2);
+        $n30 = $normalize($mu30, 3);
+        $n03 = $normalize($mu03, 3);
+        $n12 = $normalize($mu12, 3);
+        $n21 = $normalize($mu21, 3);
+
+        $first = $n20 + $n02;
+        $second = (($n20 - $n02) ** 2) + (4 * ($n11 ** 2));
+        $third = (($n30 - (3 * $n12)) ** 2) + (((3 * $n21) - $n03) ** 2);
+        $fourth = (($n30 + $n12) ** 2) + (($n21 + $n03) ** 2);
+        $fifth = ($n30 - (3 * $n12)) * ($n30 + $n12) * ((($n30 + $n12) ** 2) - (3 * (($n21 + $n03) ** 2)))
+            + (((3 * $n21) - $n03) * ($n21 + $n03) * ((3 * (($n30 + $n12) ** 2)) - (($n21 + $n03) ** 2)));
+        $sixth = ($n20 - $n02) * ((($n30 + $n12) ** 2) - (($n21 + $n03) ** 2))
+            + (4 * $n11 * ($n30 + $n12) * ($n21 + $n03));
+        $seventh = ((3 * $n21) - $n03) * ($n30 + $n12) * ((($n30 + $n12) ** 2) - (3 * (($n21 + $n03) ** 2)))
+            - (($n30 - (3 * $n12)) * ($n21 + $n03) * ((3 * (($n30 + $n12) ** 2)) - (($n21 + $n03) ** 2)));
+
+        return array_map(function (float $value): float {
+            if (abs($value) < 1.0E-30) {
+                return 0.0;
+            }
+
+            $sign = $value < 0 ? -1.0 : 1.0;
+
+            return round(-$sign * log10(abs($value)), 6);
+        }, [$first, $second, $third, $fourth, $fifth, $sixth, $seventh]);
+    }
+
+    private function rgbHue(float $red, float $green, float $blue): float
+    {
+        $max = max($red, $green, $blue);
+        $min = min($red, $green, $blue);
+        $delta = $max - $min;
+
+        if ($delta < 0.0001) {
+            return 0.0;
+        }
+
+        if ($max === $red) {
+            $hue = 60 * fmod((($green - $blue) / $delta), 6);
+        } elseif ($max === $green) {
+            $hue = 60 * ((($blue - $red) / $delta) + 2);
+        } else {
+            $hue = 60 * ((($red - $green) / $delta) + 4);
+        }
+
+        return $hue < 0 ? $hue + 360 : $hue;
     }
 
     private function signature(string $relativePath, string $absolutePath): string
