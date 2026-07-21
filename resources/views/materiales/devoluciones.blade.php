@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Devoluciones y mermas - Inventario</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2875/2875878.png" type="image/png">
     <style>
         * { box-sizing: border-box; }
         body { margin:0; min-height:100vh; font-family:"Segoe UI", Tahoma, sans-serif; background:#eef5fb; color:#08233f; }

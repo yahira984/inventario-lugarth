@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Reporte de Inventario</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2875/2875878.png" type="image/png">
     <style>
         body { font-family: Arial, sans-serif; color: #111827; }
         .actions { margin-bottom: 16px; }
