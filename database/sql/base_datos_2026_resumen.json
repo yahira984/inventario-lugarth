@@ -1,0 +1,28 @@
+{
+  "source": "D:\\LUGARTH\\INVENTARIOS ALMACÉN\\BASE DE DATOS 2026.xlsx",
+  "source_sha256": "2b6048b8a03aa7d72d1766a7c910ac903279bde38f3e4f15808ca75688e01eef",
+  "generated_at": "2026-07-21T10:42:02",
+  "raw_product_rows": 961,
+  "consolidated_products": 873,
+  "duplicate_rows_consolidated": 88,
+  "products_with_known_stock": 247,
+  "products_without_known_stock": 626,
+  "known_stock_total": 16306,
+  "products_with_photo": 782,
+  "unique_optimized_images": 422,
+  "possible_duplicates_not_merged": 2103,
+  "skipped_sheets_or_rows": [],
+  "warehouses": {
+    "Almacén 2": 136,
+    "Almacén General": 141,
+    "Almacén General - Conexiones": 184,
+    "Almacén General - Disponible": 18,
+    "Almacén General - Láminas": 28,
+    "Almacén General - Plafones": 19,
+    "Almacén General - Tubería": 228,
+    "Almacén Pintura": 167,
+    "Almacén Suspensiones": 15,
+    "Cilindros Linde": 8,
+    "Suspensión mecánica": 17
+  }
+}

@@ -1,0 +1,874 @@
+﻿numero_parte,descripcion,marca,categoria,almacen,stock,stock_conocido,fotografia,renglones_consolidados,fuentes_excel,observaciones
+ANG-019,"ANGULO 1/4"" * 2"" *20 GR50",SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/7fa122aacb10e8c68374.jpg,1,INV.LAMINAS!19,Stock no informado en el Excel; se importará en 0
+CAN-017,"CANAL U 6"" A 12.20 MTS",SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/106d8188af3882e3e468.jpg,1,INV.LAMINAS!17,Stock no informado en el Excel; se importará en 0
+HSS-011,"HSS 6"" * 4"" * 3/8 *40 A-500GR-B",SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/054150e088f2ffedb1b2.jpg,1,INV.LAMINAS!11,Stock no informado en el Excel; se importará en 0
+HSS-030,"HSS 8"" * 4 "" * 500 DE 12.20MTS",ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/6ab44b2e656ed218001d.jpg,1,INV.LAMINAS!30,Stock no informado en el Excel; se importará en 0
+IPR-026,"IPR 21"" * 8 1/4""",SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/200a3a3893861b45dc05.jpg,1,INV.LAMINAS!26,Stock no informado en el Excel; se importará en 0
+LAM-024,LAMINA ANTIDERRAPANTE C -12 3*10,SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/5af4dac6b2abf259e295.jpg,1,INV.LAMINAS!24,Stock no informado en el Excel; se importará en 0
+LAM-029,LAMINA INOXIDABLE T-304 A-2B LAS-F 3*10,SOMMER,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/1badb2fa2866e23da1f5.jpg,1,INV.LAMINAS!29,Stock no informado en el Excel; se importará en 0
+LAM-028,LAMINA INOXIDABLE T-304 A-2B LAS-F 4*8,SOMMER,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/1badb2fa2866e23da1f5.jpg,1,INV.LAMINAS!28,Stock no informado en el Excel; se importará en 0
+LAM-027,LAMINA INOXIDABLE T-304 A-2B LAS-F O4*10,SOMMER,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/1badb2fa2866e23da1f5.jpg,1,INV.LAMINAS!27,Stock no informado en el Excel; se importará en 0
+LAM-009,LAMINA NEGRA CALIBRE 14 4 *10,SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/5826e2f2612875499989.jpg,1,INV.LAMINAS!9,Stock no informado en el Excel; se importará en 0
+LAM-014,LAMINA NEGRA RC C-10 4*10,SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/5826e2f2612875499989.jpg,1,INV.LAMINAS!14,Stock no informado en el Excel; se importará en 0
+LAM-022,LAMINA NEGRA RC C-12 3 *10,SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/a6f57a273dc81261be15.jpg,1,INV.LAMINAS!22,Stock no informado en el Excel; se importará en 0
+LAM-023,LAMINA NEGRA RC C-12 4*10,SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/5826e2f2612875499989.jpg,1,INV.LAMINAS!23,Stock no informado en el Excel; se importará en 0
+LAM-021,LAMINA NEGRA RC C-14 4*8,SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/ae6d4476957d6cee4c43.jpg,1,INV.LAMINAS!21,Stock no informado en el Excel; se importará en 0
+LAM-013,LAMINA NEGRA RF C-20 4*10,SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/5826e2f2612875499989.jpg,1,INV.LAMINAS!13,Stock no informado en el Excel; se importará en 0
+P.T-012,"P.T.R 2"" * 2"" * 1/4"" X 20 A-500 GR-B",SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/dc8407d4af24c5ea4cc2.jpg,1,INV.LAMINAS!12,Stock no informado en el Excel; se importará en 0
+PLA-016,PLACA 1/2 4*10 A-36,SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/b05434b4281e5e0de498.jpg,1,INV.LAMINAS!16,Stock no informado en el Excel; se importará en 0
+PLA-025,PLACA 1/4 4*8 A-36,SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/5e6b5f51ae2a891c56f5.jpg,1,INV.LAMINAS!25,Stock no informado en el Excel; se importará en 0
+PLA-010,"PLACA 3 /16"" 4*10 A-3 6",SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/f78289974bfbd7e33d16.jpg,2,INV.LAMINAS!10; INV.LAMINAS!15,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+SOL-020,"SOLERA 1/2"" * 2""",SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/67af5da2a75a7a71d04c.jpg,1,INV.LAMINAS!20,Stock no informado en el Excel; se importará en 0
+TUB-018,"TUBO NEGRO MECANICO CED. 40 1""",SERVIACERO / FORTACERO/ ACEROS VS,ACEROS,Almacén General - Láminas,0,No,materiales/base-2026/2f7c9db8c0dff55526f8.jpg,1,INV.LAMINAS!18,Stock no informado en el Excel; se importará en 0
+AIRE-ABR-190,ABRAZADERA STD TUBERIA 3/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/f1c464faf581d93941ca.jpg,1,INV.GENERAL CONEXION!198,Stock no informado en el Excel; se importará en 0
+AIRE-BAR-033,BARRIL TUERCA CONICA 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/de2b10df8a139e01f4c5.jpg,1,INV.GENERAL CONEXION!41,Stock no informado en el Excel; se importará en 0
+AIRE-BAR-036,BARRIL TUERCA CONICA 5/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/6481f24f431f77c68f5b.jpg,1,INV.GENERAL CONEXION!44,Stock no informado en el Excel; se importará en 0
+AIRE-BAR-034,BARRIL TUERCA CONICA3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/72e8369e1d50ec48da4c.jpg,1,INV.GENERAL CONEXION!42,Stock no informado en el Excel; se importará en 0
+AIRE-BAR-043,BARRIL TUERCA HEXAGONAL 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/f8512965f22517045a42.jpg,1,INV.GENERAL CONEXION!51,Stock no informado en el Excel; se importará en 0
+AIRE-BAR-041,BARRIL TUERCA HEXAGONAL 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/f4aee81e526f3e981f7b.jpg,1,INV.GENERAL CONEXION!49,Stock no informado en el Excel; se importará en 0
+AIRE-BAR-042,BARRIL TUERCA HEXAGONAL 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/f8512965f22517045a42.jpg,1,INV.GENERAL CONEXION!50,Stock no informado en el Excel; se importará en 0
+AIRE-BAR-044,BARRIL TUERCA HEXAGONAL 5/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/f8512965f22517045a42.jpg,1,INV.GENERAL CONEXION!52,Stock no informado en el Excel; se importará en 0
+AIRE-BAR-035,BARRILTUERCA CONICA 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/d9f74825beb1fec4950d.jpg,1,INV.GENERAL CONEXION!43,Stock no informado en el Excel; se importará en 0
+AIRE-COD-178,CODO 45° MACHO JIC x MACHO NPTF 1 1/16 * 3/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/27677cbeb4506beeb1ef.jpg,1,INV.GENERAL CONEXION!186,Stock no informado en el Excel; se importará en 0
+AIRE-COD-180,"CODO 45° MACHO JIC x MACHO NPTF 1 5/16 * 1""",MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/27677cbeb4506beeb1ef.jpg,1,INV.GENERAL CONEXION!188,Stock no informado en el Excel; se importará en 0
+AIRE-COD-179,CODO 45° MACHO JIC x MACHO NPTF 1 5/16 * 3/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/27677cbeb4506beeb1ef.jpg,1,INV.GENERAL CONEXION!187,Stock no informado en el Excel; se importará en 0
+AIRE-COD-161,"CODO 90° MACHO JIC x MACHO NPTF 1 5/16 * 1""",MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/5fa814f64af2f3482a85.jpg,2,INV.GENERAL CONEXION!169; INV.GENERAL CONEXION!191,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+AIRE-COD-184,CODO 90° MACHO JIC x MACHO NPTF 1 5/8* 1 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/5fa814f64af2f3482a85.jpg,1,INV.GENERAL CONEXION!192,Stock no informado en el Excel; se importará en 0
+AIRE-COD-181,CODO 90° MACHO JIC x MACHO NPTF 3/4 * 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/5fa814f64af2f3482a85.jpg,1,INV.GENERAL CONEXION!189,Stock no informado en el Excel; se importará en 0
+AIRE-COD-182,CODO 90° MACHO JIC x MACHO NPTF 3/4 * 3/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/5fa814f64af2f3482a85.jpg,1,INV.GENERAL CONEXION!190,Stock no informado en el Excel; se importará en 0
+AIRE-COD-144,CODO 90° MACHO NPT x HEMBRA NPT 1 1/4 x 1 1/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/8bd53042b46ba25f68ec.jpg,1,INV.GENERAL CONEXION!152,Stock no informado en el Excel; se importará en 0
+AIRE-COD-141,CODO 90° MACHO NPT x HEMBRA NPT 1/2 * 1/2,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/8bd53042b46ba25f68ec.jpg,1,INV.GENERAL CONEXION!149,Stock no informado en el Excel; se importará en 0
+AIRE-COD-143,"CODO 90° MACHO NPT x HEMBRA NPT 1""x1""",MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/66b9e7bcdd6465b99071.jpg,1,INV.GENERAL CONEXION!151,Stock no informado en el Excel; se importará en 0
+AIRE-COD-142,CODO 90° MACHO NPT x HEMBRA NPT 3/4 * 3/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/fb33ffe0d52a3ffd9275.jpg,1,INV.GENERAL CONEXION!150,Stock no informado en el Excel; se importará en 0
+AIRE-COD-151,"CODO 90° MACHO NPTx TUERCA HEMBRA GIRATORIA NPSM 1 1/4"" x 1 1/4""",MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/f692e3ae271d60132103.jpg,1,INV.GENERAL CONEXION!159,Stock no informado en el Excel; se importará en 0
+AIRE-COD-149,"CODO 90° MACHO NPTx TUERCA HEMBRA GIRATORIA NPSM 1"" x 1""",MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/88662b178acc7d572cee.jpg,1,INV.GENERAL CONEXION!157,Stock no informado en el Excel; se importará en 0
+AIRE-COD-150,"CODO 90° MACHO NPTx TUERCA HEMBRA GIRATORIA NPSM 1"" x 1 1/4",MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/2a86909de694875bb06c.jpg,1,INV.GENERAL CONEXION!158,Stock no informado en el Excel; se importará en 0
+AIRE-COD-148,"CODO 90° MACHO NPTx TUERCA HEMBRA GIRATORIA NPSM 1"" x 3/4",MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/435767c5fa804c6e0c15.jpg,1,INV.GENERAL CONEXION!156,Stock no informado en el Excel; se importará en 0
+AIRE-COD-069,CODO 90° MACHO-HEMBRA 1/4 * 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/15b35f364f485ae3aaae.jpg,1,INV.GENERAL CONEXION!77,Stock no informado en el Excel; se importará en 0
+AIRE-COD-070,CODO 90° MACHO-HEMBRA 3/8 * 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/7fe8850dd39e615d8a64.jpg,1,INV.GENERAL CONEXION!78,Stock no informado en el Excel; se importará en 0
+AIRE-COD-105,CODO 90°MACHO JIC * HEMBRA GIRATORIA JIC 1 5/16-12 * 1 5/16-12,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/31a8663b3355e4d601c4.jpg,1,INV.GENERAL CONEXION!113,Stock no informado en el Excel; se importará en 0
+AIRE-COD-104,CODO 90°MACHO JIC * HEMBRA GIRATORIA JIC 3/4 * 3/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/d5cfb9ad5665ad39be58.jpg,1,INV.GENERAL CONEXION!112,Stock no informado en el Excel; se importará en 0
+AIRE-COD-064,CODO HEMBRA 90° 1/2 * 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/e4e0678324c8f56efc83.jpg,1,INV.GENERAL CONEXION!72,Stock no informado en el Excel; se importará en 0
+AIRE-COD-061,CODO HEMBRA 90° 1/8 * 1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/e4e0678324c8f56efc83.jpg,1,INV.GENERAL CONEXION!69,Stock no informado en el Excel; se importará en 0
+AIRE-COD-063,CODO HEMBRA 90° 3/8*3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/e4e0678324c8f56efc83.jpg,1,INV.GENERAL CONEXION!71,Stock no informado en el Excel; se importará en 0
+AIRE-COD-062,CODO HEMBRA 90°1/4 * 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/e4e0678324c8f56efc83.jpg,1,INV.GENERAL CONEXION!70,Stock no informado en el Excel; se importará en 0
+AIRE-COD-082,CODO MACHO 45° 3/8 * 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/3297f88b0af1bccc7c50.jpg,1,INV.GENERAL CONEXION!90,Stock no informado en el Excel; se importará en 0
+AIRE-COD-083,CODO MACHO 45° 3/8 * 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/a91f1d970c2e4873ef0c.jpg,1,INV.GENERAL CONEXION!91,Stock no informado en el Excel; se importará en 0
+AIRE-COD-085,CODO MACHO 45°1/2 * 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/6f9aebc261f3a8922141.jpg,1,INV.GENERAL CONEXION!93,Stock no informado en el Excel; se importará en 0
+AIRE-COD-084,CODO MACHO 45°1/2 * 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/a91f1d970c2e4873ef0c.jpg,1,INV.GENERAL CONEXION!92,Stock no informado en el Excel; se importará en 0
+AIRE-COD-025,CODO MACHO 90° 1/2 * 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/a95a5c578a7cc4ed10bd.jpg,1,INV.GENERAL CONEXION!33,Stock no informado en el Excel; se importará en 0
+AIRE-COD-024,CODO MACHO 90° 1/2* 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/138ae870c83ba578b454.jpg,1,INV.GENERAL CONEXION!32,Stock no informado en el Excel; se importará en 0
+AIRE-COD-026,CODO MACHO 90° 1/2 * 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/a9770848fad6aa731a0d.jpg,1,INV.GENERAL CONEXION!34,Stock no informado en el Excel; se importará en 0
+AIRE-COD-019,CODO MACHO 90° 1/4 * 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0f0bf13c67b98c3b3e0f.jpg,1,INV.GENERAL CONEXION!27,Stock no informado en el Excel; se importará en 0
+AIRE-COD-018,CODO MACHO 90 ° 1/4 *1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/138ae870c83ba578b454.jpg,1,INV.GENERAL CONEXION!26,Stock no informado en el Excel; se importará en 0
+AIRE-COD-022,CODO MACHO 90° 3/8*1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/a95a5c578a7cc4ed10bd.jpg,1,INV.GENERAL CONEXION!30,Stock no informado en el Excel; se importará en 0
+AIRE-COD-021,CODO MACHO 90° 3/8* 1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/138ae870c83ba578b454.jpg,1,INV.GENERAL CONEXION!29,Stock no informado en el Excel; se importará en 0
+AIRE-COD-023,CODO MACHO 90° 3/8 * 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0be8153a7af4b8c20945.jpg,1,INV.GENERAL CONEXION!31,Stock no informado en el Excel; se importará en 0
+AIRE-COD-020,CODO MACHO 90°1/4 * 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/70c672795c799f04ee50.jpg,1,INV.GENERAL CONEXION!28,Stock no informado en el Excel; se importará en 0
+AIRE- CO-153,CODO MACHO CARA PLANA x O-RING BOSS 1 7 /16 x1-5/16,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b7ec87788cb526499b84.jpg,1,INV.GENERAL CONEXION!161,Stock no informado en el Excel; se importará en 0
+AIRE- CO-152,CODO MACHO CARA PLANA x O-RING BOSS 1 * 7/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b7ec87788cb526499b84.jpg,1,INV.GENERAL CONEXION!160,Stock no informado en el Excel; se importará en 0
+AIRE-COD-169,CODO UNION 90° MACHO JIC x MACHO 3/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/ad3fcd1d7fef8997fe05.jpg,1,INV.GENERAL CONEXION!177,Stock no informado en el Excel; se importará en 0
+AIRE-COD-170,CODO UNION 90° MACHO JIC x MACHO 3/4* 1 5/16,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/ad3fcd1d7fef8997fe05.jpg,1,INV.GENERAL CONEXION!178,Stock no informado en el Excel; se importará en 0
+AIRE-CON-091,CONECTOR HEMBRA 1/4 * 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,,1,INV.GENERAL CONEXION!99,Stock no informado en el Excel; se importará en 0
+AIRE-CON-090,CONECTOR HEMBRA 1/4 * 1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,,2,INV.GENERAL CONEXION!97; INV.GENERAL CONEXION!98,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+AIRE-CON-092,CONECTOR HEMBRA 3/8 * 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,,1,INV.GENERAL CONEXION!100,Stock no informado en el Excel; se importará en 0
+AIRE-CON-009,CONECTOR MACHO 1/2 *1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0d164b484f83eacd6987.jpg,1,INV.GENERAL CONEXION!17,Stock no informado en el Excel; se importará en 0
+AIRE-CON-007,CONECTOR MACHO 1/2 * 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0d164b484f83eacd6987.jpg,1,INV.GENERAL CONEXION!15,Stock no informado en el Excel; se importará en 0
+AIRE-CON-008,CONECTOR MACHO 1/2 * 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0d164b484f83eacd6987.jpg,1,INV.GENERAL CONEXION!16,Stock no informado en el Excel; se importará en 0
+,CONECTOR MACHO 1/4 * 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0d164b484f83eacd6987.jpg,1,INV.GENERAL CONEXION!10,Stock no informado en el Excel; se importará en 0
+,CONECTOR MACHO 1/4 * 1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/bbd4e2306ffe0b70d233.jpg,1,INV.GENERAL CONEXION!9,Stock no informado en el Excel; se importará en 0
+AIRE-CON-003,CONECTOR MACHO 1/4 * 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0d164b484f83eacd6987.jpg,1,INV.GENERAL CONEXION!11,Stock no informado en el Excel; se importará en 0
+AIRE-CON-005,CONECTOR MACHO 3/8 * 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0d164b484f83eacd6987.jpg,1,INV.GENERAL CONEXION!13,Stock no informado en el Excel; se importará en 0
+AIRE-CON-004,CONECTOR MACHO 3/8 * 1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0d164b484f83eacd6987.jpg,1,INV.GENERAL CONEXION!12,Stock no informado en el Excel; se importará en 0
+AIRE-CON-006,CONECTOR MACHO 3/8*3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0d164b484f83eacd6987.jpg,1,INV.GENERAL CONEXION!14,Stock no informado en el Excel; se importará en 0
+AIRE-COP-171,"COPLE HIDRAULICO DE 1""",MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/d4e8ee2dbbc50f8af55a.jpg,1,INV.GENERAL CONEXION!179,Stock no informado en el Excel; se importará en 0
+AIRE-COP-060,COPLE MAMPARA 1/4 * 1 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/2dfb579c7a92decb8cee.jpg,1,INV.GENERAL CONEXION!68,Stock no informado en el Excel; se importará en 0
+AIRE-COP-172,"COPLE RAPIDO DE 1""",MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b1a944d92d24ada6f264.jpg,1,INV.GENERAL CONEXION!180,Stock no informado en el Excel; se importará en 0
+AIRE-CRU-068,CRUZ 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/60fc1c33eb374514abbe.jpg,1,INV.GENERAL CONEXION!76,Stock no informado en el Excel; se importará en 0
+AIRE-CRU-066,CRUZ 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/60fc1c33eb374514abbe.jpg,1,INV.GENERAL CONEXION!74,Stock no informado en el Excel; se importará en 0
+AIRE-CRU-065,CRUZ 1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/d9084f682ddda56ad437.jpg,1,INV.GENERAL CONEXION!73,Stock no informado en el Excel; se importará en 0
+AIRE-CRU-067,CRUZ 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/60fc1c33eb374514abbe.jpg,1,INV.GENERAL CONEXION!75,Stock no informado en el Excel; se importará en 0
+AIRE-GRI-045,GRIFO DE DRENADO DE 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/804c7dc00a37871e6b8e.jpg,1,INV.GENERAL CONEXION!53,Stock no informado en el Excel; se importará en 0
+AIRE-INS-039,INSERTO 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/020be9c6b5ebe7f6320a.jpg,1,INV.GENERAL CONEXION!47,Stock no informado en el Excel; se importará en 0
+AIRE-INS-037,INSERTO 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/645fdfbe2979e4bf04d8.jpg,1,INV.GENERAL CONEXION!45,Stock no informado en el Excel; se importará en 0
+AIRE-INS-038,INSERTO 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/020be9c6b5ebe7f6320a.jpg,1,INV.GENERAL CONEXION!46,Stock no informado en el Excel; se importará en 0
+AIRE-INS-040,INSERTO 5/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/645fdfbe2979e4bf04d8.jpg,1,INV.GENERAL CONEXION!48,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-177,MACHO JIC x HEMBRA NPTF 3/4*3/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,,1,INV.GENERAL CONEXION!185,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-158,"MACHO JIC x MACHO NPTF 1 5/16 x 1""",MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/a215b26c5de7f5e64982.jpg,2,INV.GENERAL CONEXION!166; INV.GENERAL CONEXION!168,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+AIRE-MAC-113,MACHO JIC * MACHO NPTF 1 5/8-12 * 1 1/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/f454d8da1018d2084626.jpg,1,INV.GENERAL CONEXION!121,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-110,MACHO JIC * MACHO NPTF 3/4 * 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/f454d8da1018d2084626.jpg,4,INV.GENERAL CONEXION!118; INV.GENERAL CONEXION!119; INV.GENERAL CONEXION!165; INV.GENERAL CONEXION!167,Stock no informado en el Excel; se importará en 0; Se consolidaron 4 renglones fuente
+AIRE-MAC-112,MACHO JIC * MACHO NPTF 3/4 * 3/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/310f11da3223e10bb46e.jpg,1,INV.GENERAL CONEXION!120,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-175,MACHO JIC x MACHO ORING 1 1/16 * 1 1/16,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/ca5c68887c2764fd0674.jpg,1,INV.GENERAL CONEXION!183,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-176,MACHO JIC x MACHO ORING 1 5/8 * 1 5/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/ca5c68887c2764fd0674.jpg,1,INV.GENERAL CONEXION!184,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-173,MACHO JIC x MACHO ORING 1/2 * 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/ca5c68887c2764fd0674.jpg,1,INV.GENERAL CONEXION!181,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-174,MACHO JIC x MACHO ORING 3/4 * 3/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/ca5c68887c2764fd0674.jpg,1,INV.GENERAL CONEXION!182,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-122,"MACHO O RING BOSS x HEMBRA NPT 1 5/16-12 1"" 1 1/2",MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/2ff3dee047a1f064742f.jpg,1,INV.GENERAL CONEXION!130,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-121,MACHO O RING BOSS x HEMBRA NPT 1 5/16-12 3/4-14,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/35e9a00fc2ee86d762e3.jpg,1,INV.GENERAL CONEXION!129,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-120,MACHO O RING BOSS x HEMBRA NPT 3/4-16 * 1/2-14,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/2ff3dee047a1f064742f.jpg,1,INV.GENERAL CONEXION!128,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-119,"MACHO O RINGS BOSS xMACHO NPT 1 5/16-12 * 1""-11 1/2",MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/74ccc888ae4eac9b314b.jpg,1,INV.GENERAL CONEXION!127,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-115,"MACHO SAE X MACHO BSPP 1 5/16-12* 1""-11",MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/6018dfded947627ba08f.jpg,1,INV.GENERAL CONEXION!123,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-114,MACHO SAE X MACHO BSPP3/4 * 1/2,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/6018dfded947627ba08f.jpg,1,INV.GENERAL CONEXION!122,Stock no informado en el Excel; se importará en 0
+AIRE-MAC-156,MACHO SAE x MACHO METRICO 3/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b03836017b1d93bfcf05.jpg,1,INV.GENERAL CONEXION!164,Stock no informado en el Excel; se importará en 0
+AIRE-NIP-088,NIPLE ADAPTADOR ROTACHAMBER,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/82e24b26bde7c4e8ab7b.jpg,1,INV.GENERAL CONEXION!96,Stock no informado en el Excel; se importará en 0
+AIRE-NIP-054,NIPLE HEXAGONAL 1/2 * 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/5aadf2aa85ba8c72b522.jpg,1,INV.GENERAL CONEXION!62,Stock no informado en el Excel; se importará en 0
+AIRE-NIP-052,NIPLE HEXAGONAL 1/4 * 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/a3b7f36b3eccaf135d2f.jpg,1,INV.GENERAL CONEXION!60,Stock no informado en el Excel; se importará en 0
+AIRE-NIP-051,NIPLE HEXAGONAL 1/8 * 1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/a3b7f36b3eccaf135d2f.jpg,1,INV.GENERAL CONEXION!59,Stock no informado en el Excel; se importará en 0
+AIRE-NIP-055,NIPLE HEXAGONAL 3/4 * 3/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/2f886cd3a22c9be8ba46.jpg,1,INV.GENERAL CONEXION!63,Stock no informado en el Excel; se importará en 0
+AIRE-NIP-053,NIPLE HEXAGONAL 3/8 * 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/c93ab0641cf49e0c4fbc.jpg,1,INV.GENERAL CONEXION!61,Stock no informado en el Excel; se importará en 0
+AIRE -NIP-188,NIPLE LARGO 1/2 * 3 1/2,MAURCA UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/7ccd2bca1ad9fb0041f8.jpg,1,INV.GENERAL CONEXION!196,Stock no informado en el Excel; se importará en 0
+AIRE-NIP-187,NIPLE UNION MACHO NPT x MACHO NPT 1 1/4* 11/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/40d6ca5678db461be3d6.jpg,1,INV.GENERAL CONEXION!195,Stock no informado en el Excel; se importará en 0
+AIRE-NIP-185,NIPLE UNION MACHO NPT x MACHO NPT 1/2 * 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/f88e451dec8c7448db37.jpg,1,INV.GENERAL CONEXION!193,Stock no informado en el Excel; se importará en 0
+AIRE-NIP-186,NIPLE UNION MACHO NPT x MACHO NPT 3/4 * 3/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/40d6ca5678db461be3d6.jpg,1,INV.GENERAL CONEXION!194,Stock no informado en el Excel; se importará en 0
+AIRE -PUS-189,PUSH CONECTOR UNION 12MM,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/98596fc1dd79348e1e0b.jpg,1,INV.GENERAL CONEXION!197,Stock no informado en el Excel; se importará en 0
+AIRE-RED-076,REDUCCION BUSHING 1/2 *1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/fcb3e886352d976672c3.jpg,1,INV.GENERAL CONEXION!84,Stock no informado en el Excel; se importará en 0
+AIRE-RED-075,REDUCCION BUSHING 1/2*1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/fcb3e886352d976672c3.jpg,1,INV.GENERAL CONEXION!83,Stock no informado en el Excel; se importará en 0
+AIRE-RED-077,REDUCCION BUSHING 1/2 * 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/fcb3e886352d976672c3.jpg,1,INV.GENERAL CONEXION!85,Stock no informado en el Excel; se importará en 0
+AIRE-RED-073,REDUCCION BUSHING 1/4 * 1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/d3a6198ccd6a3f4144d1.jpg,1,INV.GENERAL CONEXION!81,Stock no informado en el Excel; se importará en 0
+AIRE-RED-072,REDUCCION BUSHING 3/4*1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/d3a6198ccd6a3f4144d1.jpg,1,INV.GENERAL CONEXION!80,Stock no informado en el Excel; se importará en 0
+AIRE-RED-071,REDUCCION BUSHING 3/8 * 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/d3a6198ccd6a3f4144d1.jpg,1,INV.GENERAL CONEXION!79,Stock no informado en el Excel; se importará en 0
+AIRE-RED-074,REDUCCION BUSHING 3/8 * 1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/d3a6198ccd6a3f4144d1.jpg,1,INV.GENERAL CONEXION!82,Stock no informado en el Excel; se importará en 0
+AIRE-RED-131,"REDUCCION BUSHING MACHO NPT * HEMBRA NPT 1""",MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/6d79a6060273c59532c2.jpg,1,INV.GENERAL CONEXION!139,Stock no informado en el Excel; se importará en 0
+AIRE-RED-138,REDUCCION BUSHING MACHO NPT * HEMBRA NPT 1 1/2* 1 1/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b9af20f84db55e77ad8d.jpg,1,INV.GENERAL CONEXION!146,Stock no informado en el Excel; se importará en 0
+AIRE-RED-135,REDUCCION BUSHING MACHO NPT * HEMBRA NPT 1 1/2*1/2,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b9af20f84db55e77ad8d.jpg,1,INV.GENERAL CONEXION!143,Stock no informado en el Excel; se importará en 0
+AIRE-RED-136,REDUCCION BUSHING MACHO NPT * HEMBRA NPT 1 1/2*3/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/6d79a6060273c59532c2.jpg,1,INV.GENERAL CONEXION!144,Stock no informado en el Excel; se importará en 0
+AIRE-RED-133,REDUCCION BUSHING MACHO NPT * HEMBRA NPT 1 1/4* 1/2,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b9af20f84db55e77ad8d.jpg,1,INV.GENERAL CONEXION!141,Stock no informado en el Excel; se importará en 0
+AIRE-RED-134,REDUCCION BUSHING MACHO NPT * HEMBRA NPT 1 1/4*3/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b9af20f84db55e77ad8d.jpg,1,INV.GENERAL CONEXION!142,Stock no informado en el Excel; se importará en 0
+AIRE-RED-132,REDUCCION BUSHING MACHO NPT * HEMBRA NPT 1 1/4*3/8,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/6d79a6060273c59532c2.jpg,1,INV.GENERAL CONEXION!140,Stock no informado en el Excel; se importará en 0
+AIRE-RED-137,REDUCCION BUSHING MACHO NPT * HEMBRA NPT 11/2 *1,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b9af20f84db55e77ad8d.jpg,1,INV.GENERAL CONEXION!145,Stock no informado en el Excel; se importará en 0
+AIRE-RED-140,REDUCCION BUSHING MACHO NPT * HEMBRA NPT 2 1/2 * 1 1/2,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/06b2a7c563c7dddd5f5c.jpg,1,INV.GENERAL CONEXION!148,Stock no informado en el Excel; se importará en 0
+AIRE-RED-139,"REDUCCION BUSHING MACHO NPT * HEMBRA NPT 21/2 * 1""",MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b9af20f84db55e77ad8d.jpg,1,INV.GENERAL CONEXION!147,Stock no informado en el Excel; se importará en 0
+AIRE-RED-130,REDUCCION BUSHING MACHO NPT * HEMBRA NPT 3/4 * 1/2,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b9af20f84db55e77ad8d.jpg,1,INV.GENERAL CONEXION!138,Stock no informado en el Excel; se importará en 0
+AIRE-RED-129,REDUCCION BUSHING MACHO NPT * HEMBRA NPT 3/4*3/8,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b9af20f84db55e77ad8d.jpg,1,INV.GENERAL CONEXION!137,Stock no informado en el Excel; se importará en 0
+AIRE-RED-125,REDUCCION BUSHING MACHO NPT * HEMBRA NPT 3/8*1/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b9af20f84db55e77ad8d.jpg,1,INV.GENERAL CONEXION!133,Stock no informado en el Excel; se importará en 0
+AIRE-RED-124,REDUCCION BUSHING MACHO NPT * HEMBRA NPT 3/8*1/8,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b9af20f84db55e77ad8d.jpg,1,INV.GENERAL CONEXION!132,Stock no informado en el Excel; se importará en 0
+AIRE-RED-126,REDUCCION BUSHING MACHO NPT * HEMBRA NPT1/2 *1/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/6d79a6060273c59532c2.jpg,1,INV.GENERAL CONEXION!134,Stock no informado en el Excel; se importará en 0
+AIRE-RED-127,REDUCCION BUSHING MACHO NPT * HEMBRA NPT1/2* 3/8,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b9af20f84db55e77ad8d.jpg,1,INV.GENERAL CONEXION!135,Stock no informado en el Excel; se importará en 0
+AIRE-RED-123,REDUCCION BUSHING MACHO NPT * HEMBRA NPT1/4*1/8,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b9af20f84db55e77ad8d.jpg,1,INV.GENERAL CONEXION!131,Stock no informado en el Excel; se importará en 0
+AIRE-RED-128,REDUCCION BUSHING MACHO NPT * HEMBRA NPT3/4 1/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/b9af20f84db55e77ad8d.jpg,1,INV.GENERAL CONEXION!136,Stock no informado en el Excel; se importará en 0
+AIRE-TAP-155,"TAPON CARA PLANA 1""",MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/3f877288fc103d725d36.jpg,1,INV.GENERAL CONEXION!163,Stock no informado en el Excel; se importará en 0
+AIRE-TAP-154,TAPON CARA PLANA 11/16,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/3f877288fc103d725d36.jpg,1,INV.GENERAL CONEXION!162,Stock no informado en el Excel; se importará en 0
+AIRE-TAP-163,"TAPON MACHO 1""",MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/9a49f89d37cdd35b6d0d.jpg,1,INV.GENERAL CONEXION!171,Stock no informado en el Excel; se importará en 0
+AIRE-TAP-164,TAPON MACHO 1 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/9a49f89d37cdd35b6d0d.jpg,1,INV.GENERAL CONEXION!172,Stock no informado en el Excel; se importará en 0
+AIRE-TAP-049,TAPON MACHO 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/ad6a32496c641e74d70c.jpg,1,INV.GENERAL CONEXION!57,Stock no informado en el Excel; se importará en 0
+AIRE-TAP-047,TAPON MACHO 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/ad6a32496c641e74d70c.jpg,1,INV.GENERAL CONEXION!55,Stock no informado en el Excel; se importará en 0
+AIRE-TAP-046,TAPON MACHO 1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/ad6a32496c641e74d70c.jpg,1,INV.GENERAL CONEXION!54,Stock no informado en el Excel; se importará en 0
+AIRE-TAP-165,"TAPON MACHO 2""",MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/032d8e287c0aea878537.jpg,1,INV.GENERAL CONEXION!173,Stock no informado en el Excel; se importará en 0
+AIRE-TAP-050,TAPON MACHO 3/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/ad6a32496c641e74d70c.jpg,1,INV.GENERAL CONEXION!58,Stock no informado en el Excel; se importará en 0
+AIRE-TAP-048,TAPON MACHO 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/ad6a32496c641e74d70c.jpg,1,INV.GENERAL CONEXION!56,Stock no informado en el Excel; se importará en 0
+AIRE-TAP-162,TAPONMACHO NPT 3/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/032d8e287c0aea878537.jpg,1,INV.GENERAL CONEXION!170,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-101,"TEE CENTRO MACHO NPT * MACHO JIC 1 5/16-12 *1""-11 1/2",MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/9ac4f874cb9650008bf5.jpg,1,INV.GENERAL CONEXION!109,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-100,TEE CENTRO MACHO NPT * MACHO JIC 3/4 * 1/2,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,,1,INV.GENERAL CONEXION!108,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-059,TEE HEMBRA UNION 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/7e88911618c440dd8619.jpg,1,INV.GENERAL CONEXION!67,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-057,TEE HEMBRA UNION 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/7e88911618c440dd8619.jpg,1,INV.GENERAL CONEXION!65,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-056,TEE HEMBRA UNION 1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/7e88911618c440dd8619.jpg,1,INV.GENERAL CONEXION!64,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-058,TEE HEMBRA UNION 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/7e88911618c440dd8619.jpg,1,INV.GENERAL CONEXION!66,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-109,TEE LATERAL HEMBRA GIRATORIA JIC * MACHO JIC 1 5/16-12 * 1 5/16-12,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,,1,INV.GENERAL CONEXION!117,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-106,TEE LATERAL HEMBRA GIRATORIA JIC * MACHO JIC 3/4-16*3/4-16,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,,1,INV.GENERAL CONEXION!114,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-147,TEE LATERAL MACHO NPT x HEMBRA NPT 1 1/4 * 1 1/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/408200ce7cf2d0b59085.jpg,1,INV.GENERAL CONEXION!155,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-145,TEE LATERAL MACHO NPT x HEMBRA NPT 1/2 * 1/2,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/408200ce7cf2d0b59085.jpg,1,INV.GENERAL CONEXION!153,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-146,TEE LATERAL MACHO NPT x HEMBRA NPT 3/4 * 3/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/408200ce7cf2d0b59085.jpg,1,INV.GENERAL CONEXION!154,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-028,TEE MACHO AL CENTRO 1/4*1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/3b9cbc2297c273777907.jpg,1,INV.GENERAL CONEXION!36,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-027,TEE MACHO AL CENTRO 1/4*1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/3b9cbc2297c273777907.jpg,1,INV.GENERAL CONEXION!35,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-029,TEE MACHO AL CENTRO 3/8*1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/2e8d8343d0d705f96897.jpg,1,INV.GENERAL CONEXION!37,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-030,TEE MACHO AL CENTRO 3/8 * 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/3b9cbc2297c273777907.jpg,1,INV.GENERAL CONEXION!38,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-031,TEE MACHO AL CENTRO DE 1/2 *1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/3b9cbc2297c273777907.jpg,1,INV.GENERAL CONEXION!39,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-032,TEE MACHO AL CENTRO DE 1/2 * 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/3b9cbc2297c273777907.jpg,1,INV.GENERAL CONEXION!40,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-013,TEE MACHO LATERAL 1/4 * 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/a2d8c65d46b6d8a8c83b.jpg,1,INV.GENERAL CONEXION!21,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-010,TEE MACHO LATERAL 1/4 * 1/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0d164b484f83eacd6987.jpg,1,INV.GENERAL CONEXION!18,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-011,TEE MACHO LATERAL 3/8 * 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/8239783323622ce94c21.jpg,1,INV.GENERAL CONEXION!19,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-016,TEE UNION DE 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/38e012fe39b5d3cd5c87.jpg,1,INV.GENERAL CONEXION!24,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-014,TEE UNION DE 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/38e012fe39b5d3cd5c87.jpg,1,INV.GENERAL CONEXION!22,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-015,TEE UNION DE 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/38e012fe39b5d3cd5c87.jpg,1,INV.GENERAL CONEXION!23,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-017,TEE UNION DE 5/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0d3a1a2b786a170c39ba.jpg,1,INV.GENERAL CONEXION!25,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-118,TEE UNION HEMBRA NPT x HEMBRA NPT 1 11 1/2* 1-11 1/2,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/f0afaf90d73a76ad043b.jpg,1,INV.GENERAL CONEXION!126,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-116,TEE UNION HEMBRA NPT x HEMBRA NPT 1/2 * 1/2,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/f0afaf90d73a76ad043b.jpg,1,INV.GENERAL CONEXION!124,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-117,TEE UNION HEMBRA NPT x HEMBRA NPT 3/4 * 3/4,MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/f0afaf90d73a76ad043b.jpg,1,INV.GENERAL CONEXION!125,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-103,"TEE UNION MACHO JIC 1 5/16"" -12",MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/8af89e17508afca2662e.jpg,1,INV.GENERAL CONEXION!111,Stock no informado en el Excel; se importará en 0
+AIRE-TEE-102,"TEE UNION MACHO JIC 3/4""",MAURCA/ UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/8af89e17508afca2662e.jpg,1,INV.GENERAL CONEXION!110,Stock no informado en el Excel; se importará en 0
+AIRE-TUE-086,TUERCA GIRATORIA HEMBRA,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/71f2ca47298d69be8ef2.jpg,1,INV.GENERAL CONEXION!94,Stock no informado en el Excel; se importará en 0
+AIRE-TUE-087,TUERCA MACHO FIJA,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/4265f72554a9d8cd432a.jpg,1,INV.GENERAL CONEXION!95,Stock no informado en el Excel; se importará en 0
+AIRE-UNI-080,UNION 1/2,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0a18ab1f359750ee38bd.jpg,1,INV.GENERAL CONEXION!88,Stock no informado en el Excel; se importará en 0
+AIRE-UNI-078,UNION 1/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0a18ab1f359750ee38bd.jpg,1,INV.GENERAL CONEXION!86,Stock no informado en el Excel; se importará en 0
+AIRE-UNI-079,UNION 3/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0a18ab1f359750ee38bd.jpg,1,INV.GENERAL CONEXION!87,Stock no informado en el Excel; se importará en 0
+AIRE-UNI-081,UNION 5/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/0a18ab1f359750ee38bd.jpg,1,INV.GENERAL CONEXION!89,Stock no informado en el Excel; se importará en 0
+AIRE-UNI-168,UNION MACHO JIC x MACHO JIC 1 5/8*1 5/8,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/5af52bd41fab10513d8a.jpg,1,INV.GENERAL CONEXION!176,Stock no informado en el Excel; se importará en 0
+AIRE-UNI-166,UNION MACHO JIC x MACHO JIC 3/4* 3/4,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/898d62efdf5b66344b98.jpg,1,INV.GENERAL CONEXION!174,Stock no informado en el Excel; se importará en 0
+AIRE-UNI-167,UNION MACHO JIC x MACHO JIC1 5/16* 1 5/16,MAURCA / UNIXEL,AIRE,Almacén General - Conexiones,0,No,materiales/base-2026/5af52bd41fab10513d8a.jpg,1,INV.GENERAL CONEXION!175,Stock no informado en el Excel; se importará en 0
+,GANCHO DE ARRASTRE WALLACE,WALLACE FORCE COMPANY,ARRASTRE,Almacén Pintura,9,Sí,materiales/base-2026/e39b3157d354d16f3406.jpg,1,INV. ALMACEN PINTURA!76,
+,TORTUGA,,ARRASTRE,Almacén Pintura,7,Sí,materiales/base-2026/aad65acff0f7f008a1bb.jpg,1,INV. ALMACEN PINTURA!77,
+LIQ-050,LIQUIDO PARA FRENOS,BARDAHL,AUTOMOVIL,Almacén 2,4,Sí,materiales/base-2026/dd60e19899ae190738dd.jpg,2,INV.ALMACEN 2!50; INV.ALMACEN 2 (2)!50,Se consolidaron 2 renglones fuente
+CATALIZADOR -PIN-028,CATALIZADOR RAC -01,PINTURA,CATALIZADOR,Almacén Pintura,0,No,,1,INV. ALMACEN PINTURA RACSA Y NE!28,Stock no informado en el Excel; se importará en 0
+CATALIZADOR -RAC-025,CATALIZADOR RACSA POXY RP6,RACSA,CATALIZADOR,Almacén Pintura,0,No,,1,INV. ALMACEN PINTURA RACSA Y NE!25,Stock no informado en el Excel; se importará en 0
+MAS-037,"MASKING DE 1""",3M,CINTA ADESIVA,Almacén 2,66,Sí,materiales/base-2026/c89d566098d13403cd3a.jpg,1,INV.HORNO PINTURA!37,
+,BISAGRA DOLLY,,COMPONENTE DOLLY,Almacén Pintura,16,Sí,materiales/base-2026/cc42ccf5e03ddaa362d2.jpg,1,INV. ALMACEN PINTURA!43,
+,CADENA DOLLY,,COMPONENTE DOLLY,Almacén Pintura,17,Sí,materiales/base-2026/f7196554313a2129a36f.jpg,1,INV. ALMACEN PINTURA!70,
+,DONA DOLLY,,COMPONENTE DOLLY,Almacén Pintura,9,Sí,materiales/base-2026/796c4ee2a427c7cf2cd2.jpg,1,INV. ALMACEN PINTURA!44,
+,GATA NARANJA,,COMPONENTE DOLLY,Almacén Pintura,5,Sí,materiales/base-2026/19c77e1a00917c374950.jpg,1,INV. ALMACEN PINTURA!72,
+,LIGADOR CADENA ROJO,,COMPONENTE DOLLY,Almacén Pintura,29,Sí,materiales/base-2026/ffb93f0a6b5a2f0a8ac9.jpg,1,INV. ALMACEN PINTURA!71,
+,TORRES DOLLY,,COMPONENTE DOLLY,Almacén Pintura,24,Sí,materiales/base-2026/54cb5cabaa1c69cb4baf.jpg,1,INV. ALMACEN PINTURA!46,
+,VALVULA DE ALIVIO 2´´,BTI,COMPONENTE TOLVA,Almacén Pintura,28,Sí,materiales/base-2026/c8ac1b2053ce72aedac3.jpg,1,INV. ALMACEN PINTURA!36,
+,VALVULA DE ALIVIO 3´´,BTI,COMPONENTE TOLVA,Almacén Pintura,16,Sí,materiales/base-2026/fa487b7e80f537a54fc3.jpg,1,INV. ALMACEN PINTURA!37,
+,VALVULA DE ALIVIO,GIRARD,COMPONENTE UPV,Almacén Pintura,8,Sí,materiales/base-2026/9470f79c66974519f3d6.jpg,1,INV. ALMACEN PINTURA!41,
+D-400,"ACOPLADOR DE ALUMINIO DIXON DE 4""",DIXON,CONEXION,Almacén 2,20,Sí,materiales/base-2026/98091b6964d98c5147af.jpg,2,INV.ALMACEN 2!36; INV.ALMACEN 2 (2)!36,Se consolidaron 2 renglones fuente
+E-200,"CONEXION PARA MANGUERA DE 2""",DIXON,CONEXION,Almacén 2,6,Sí,materiales/base-2026/48c05f5c5610b9231b3a.jpg,2,INV.ALMACEN 2!42; INV.ALMACEN 2 (2)!42,Se consolidaron 2 renglones fuente
+C-200(316),"CONEXION PARA MANGUERA DE 2"" INOX",DIXON,CONEXION,Almacén 2,1,Sí,materiales/base-2026/a71903e12ed2ec1dcec2.jpg,2,INV.ALMACEN 2!40; INV.ALMACEN 2 (2)!40,Se consolidaron 2 renglones fuente
+C-300,"CONEXION PARA MANGUERA DE 3""",DIXON,CONEXION,Almacén 2,2,Sí,materiales/base-2026/c89d566098d13403cd3a.jpg,4,INV.ALMACEN 2!39; INV.ALMACEN 2!41; INV.ALMACEN 2 (2)!39; INV.ALMACEN 2 (2)!41,"Almacén 2: stocks observados 2, 3; se tomó 2; Se consolidaron 4 renglones fuente"
+E-400,"CONEXION PARA MANGUERA DE 4 """,DIXON,CONEXION,Almacén 2,25,Sí,materiales/base-2026/c89d566098d13403cd3a.jpg,4,INV.ALMACEN 2!37; INV.ALMACEN 2!38; INV.ALMACEN 2 (2)!37; INV.ALMACEN 2 (2)!38,"Almacén 2: stocks observados 10, 25; se tomó 25; Se consolidaron 4 renglones fuente"
+A-150,"CONEXION RAPIDA HEMBRA DIXON DE 11\2 """,DIXON,CONEXION,Almacén 2,5,Sí,materiales/base-2026/0912ac0467c0408a4100.jpg,2,INV.ALMACEN 2!25; INV.ALMACEN 2 (2)!25,Se consolidaron 2 renglones fuente
+A-200,"CONEXION RAPIDA HEMBRA DIXON DE 200""",DIXON,CONEXION,Almacén 2,13,Sí,materiales/base-2026/8e12c971e18133e12af1.jpg,2,INV.ALMACEN 2!26; INV.ALMACEN 2 (2)!26,Se consolidaron 2 renglones fuente
+A-300,"CONEXION RAPIDA HEMBRA DIXON DE 3""",DIXON,CONEXION,Almacén 2,13,Sí,materiales/base-2026/9838380f97a79fa11cd2.jpg,2,INV.ALMACEN 2!27; INV.ALMACEN 2 (2)!27,Se consolidaron 2 renglones fuente
+A-400,"CONEXION RAPIDA HEMBRA DIXON DE 4""",DIXON,CONEXION,Almacén 2,20,Sí,materiales/base-2026/feb714a943c694815d9a.jpg,2,INV.ALMACEN 2!28; INV.ALMACEN 2 (2)!28,Se consolidaron 2 renglones fuente
+F-150,"CONEXION RAPIDA MACHO DE 1 1\2""",DIXON,CONEXION,Almacén 2,12,Sí,materiales/base-2026/1f348b254a2508ad29c1.jpg,2,INV.ALMACEN 2!20; INV.ALMACEN 2 (2)!20,Se consolidaron 2 renglones fuente
+F-200,"CONEXION RAPIDA MACHO DE 2""",DIXON,CONEXION,Almacén 2,14,Sí,materiales/base-2026/ba24274c09de6d21d4ff.jpg,4,INV.ALMACEN 2!21; INV.ALMACEN 2!22; INV.ALMACEN 2 (2)!21; INV.ALMACEN 2 (2)!22,"Almacén 2: stocks observados 4, 14; se tomó 14; Se consolidaron 4 renglones fuente"
+F-300,"CONEXION RAPIDA MACHO DE 3""",DIXON,CONEXION,Almacén 2,1,Sí,materiales/base-2026/ba24274c09de6d21d4ff.jpg,2,INV.ALMACEN 2!23; INV.ALMACEN 2 (2)!23,Se consolidaron 2 renglones fuente
+F-400,"CONEXION RAPIDA MACHO DE 4""",DIXON,CONEXION,Almacén 2,1,Sí,materiales/base-2026/ba24274c09de6d21d4ff.jpg,2,INV.ALMACEN 2!24; INV.ALMACEN 2 (2)!24,Se consolidaron 2 renglones fuente
+DC-150,TAPON ALUMINIO DIXON 11\2,DIXON,CONEXION,Almacén 2,19,Sí,materiales/base-2026/fb76f97164ebf28575ca.jpg,2,INV.ALMACEN 2!29; INV.ALMACEN 2 (2)!29,Se consolidaron 2 renglones fuente
+DC-200,"TAPON ALUMINIO DIXON 2""",DIXON,CONEXION,Almacén 2,38,Sí,materiales/base-2026/49155b4a1debb8d9fa28.jpg,2,INV.ALMACEN 2!30; INV.ALMACEN 2 (2)!30,Se consolidaron 2 renglones fuente
+DC-300,"TAPON ALUMINIO DIXON 3""",DIXON,CONEXION,Almacén 2,41,Sí,materiales/base-2026/1bd95c264dad1a834db8.jpg,2,INV.ALMACEN 2!31; INV.ALMACEN 2 (2)!31,Se consolidaron 2 renglones fuente
+DC-400,"TAPON ALUMINIO DIXON 4""",DIXON,CONEXION,Almacén 2,12,Sí,materiales/base-2026/9d2d0c7cd0b84562d0a1.jpg,2,INV.ALMACEN 2!32; INV.ALMACEN 2 (2)!32,"Almacén 2: stocks observados 12, 21; se tomó 12; Se consolidaron 2 renglones fuente"
+DC-200,"TAPON INOXIDABLE 2""",DIXON,CONEXION,Almacén 2,2,Sí,materiales/base-2026/32d09cdbff0161ec7982.jpg,2,INV.ALMACEN 2!34; INV.ALMACEN 2 (2)!34,Se consolidaron 2 renglones fuente
+DC-300,"TAPON INOXIDABLE 3""",DIXON,CONEXION,Almacén 2,1,Sí,materiales/base-2026/32d09cdbff0161ec7982.jpg,2,INV.ALMACEN 2!35; INV.ALMACEN 2 (2)!35,Se consolidaron 2 renglones fuente
+DC-75 (316),TAPON INOXIDABLE 3\4,DIXON,CONEXION,Almacén 2,1,Sí,materiales/base-2026/32d09cdbff0161ec7982.jpg,2,INV.ALMACEN 2!33; INV.ALMACEN 2 (2)!33,Se consolidaron 2 renglones fuente
+,MANGUERA AZUL,MAURCA,CONEXIONES DE AIRE,Almacén Pintura,4,Sí,materiales/base-2026/ad0893e79da46d7a7254.jpg,1,INV. ALMACEN PINTURA!63,
+,MANGUERA ROJA,MAURCA,CONEXIONES DE AIRE,Almacén Pintura,5,Sí,materiales/base-2026/f0695b610792a8f86501.jpg,1,INV. ALMACEN PINTURA!64,
+,MANITA ACOPLE AZUL,POWER-COIL PRO,CONEXIONES DE AIRE,Almacén Pintura,350,Sí,materiales/base-2026/66b81def57177f16c02b.jpg,1,INV. ALMACEN PINTURA!49,
+,MANITA ACOPLE AZUL CON LLAVE,POWER-COIL PRO,CONEXIONES DE AIRE,Almacén Pintura,100,Sí,materiales/base-2026/c647a3ddf80bd864f190.jpg,1,INV. ALMACEN PINTURA!50,
+,MANITA ACOPLE ROJA,POWER-COIL PRO,CONEXIONES DE AIRE,Almacén Pintura,300,Sí,materiales/base-2026/957585e0bdcd76c869e7.jpg,1,INV. ALMACEN PINTURA!48,
+,MANITA ACOPLE ROJA CON LLAVE,POWER-COIL PRO,CONEXIONES DE AIRE,Almacén Pintura,100,Sí,materiales/base-2026/c647a3ddf80bd864f190.jpg,1,INV. ALMACEN PINTURA!51,
+DM-860H,DRIVER PARA MOTOR PANTOGRAFO,DRIVER,CORTE,Almacén 2,1,Sí,materiales/base-2026/fd00ad1c14f55d01a3ea.jpg,2,INV.ALMACEN 2!58; INV.ALMACEN 2 (2)!58,Se consolidaron 2 renglones fuente
+CAR-039,"CARDA CIRCULAR 2"" PARA LIMPIEZA DE METAL",AUSTROMEX,DISCOS,Almacén 2,0,No,,1,INV.HORNO PINTURA!39,Stock no informado en el Excel; se importará en 0
+COP-038,COPA ABRASIVA PARA DESBASTE,AUSTROMEX,DISCOS,Almacén 2,125,Sí,materiales/base-2026/b6086725f0dd63b000e4.jpg,1,INV.HORNO PINTURA!38,
+DIS-040,"DISCO CORTE METAL 14"" PLUS",AUSTROMEX,DISCOS,Almacén 2,0,No,,1,INV.HORNO PINTURA!40,Stock no informado en el Excel; se importará en 0
+DIS-029,"DISCO CORTE Y DESVASTE 7""",AUSTROMEX,DISCOS,Almacén 2,100,Sí,materiales/base-2026/269015fe4aa7e8603923.jpg,1,INV.HORNO PINTURA!29,
+DIS-030,DISCO DE CORTE PARA INOXIDABLE DE 41/2,AUSTROMEX,DISCOS,Almacén 2,25,Sí,materiales/base-2026/b973f679ee42ed164680.jpg,1,INV.HORNO PINTURA!30,
+DIS-031,"DISCO DE CORTE PARA METAL / INOXIDABLE DE 7""",AUSTROMEX,DISCOS,Almacén 2,50,Sí,,1,INV.HORNO PINTURA!31,
+DIS-033,DISCO DE LIJA GRANO 24,AUSTROMEX,DISCOS,Almacén 2,250,Sí,materiales/base-2026/07ea8d84fd1bc410a28e.jpg,1,INV.HORNO PINTURA!33,
+DIS-034,DISCO DE LIJA GRANO 36,AUSTROMEX,DISCOS,Almacén 2,275,Sí,materiales/base-2026/07ea8d84fd1bc410a28e.jpg,1,INV.HORNO PINTURA!34,
+DIS-035,DISCO DE LIJA GRANO 50,AUSTROMEX,DISCOS,Almacén 2,175,Sí,materiales/base-2026/07ea8d84fd1bc410a28e.jpg,1,INV.HORNO PINTURA!35,
+DIS-032,"DISCO PARA DESBASTE DE 7""",AUSTROMEX,DISCOS,Almacén 2,209,Sí,materiales/base-2026/9d4b0cf23eedc5392632.jpg,1,INV.HORNO PINTURA!32,
+DIS-028,"DISCO PARA ESMERIL 8""",AUSTROMEX,DISCOS,Almacén 2,7,Sí,materiales/base-2026/8114d20bc969721b5313.jpg,1,INV.HORNO PINTURA!28,
+ROD-036,RODILLO DE FIBRA GRUESA,AUSTROMEX,DISCOS,Almacén 2,20,Sí,materiales/base-2026/cdff0f88c7cb0c188428.jpg,1,INV.HORNO PINTURA!36,
+,KIT PARA EJE RETRACTIL,,EJE RETRACTIL,Almacén Pintura,16,Sí,materiales/base-2026/f03629030693c0d9393d.jpg,4,INV. ALMACEN PINTURA!96; INV. ALMACEN PINTURA!97; INV. ALMACEN PINTURA!98; INV. ALMACEN PINTURA!99,"Almacén Pintura: stocks observados 3, 16, 19, 21; se tomó 16; Se consolidaron 4 renglones fuente"
+,MATRACA,,EJE RETRACTIL,Almacén Pintura,42,Sí,materiales/base-2026/ab9aee7d5a0d4e256ace.jpg,1,INV. ALMACEN PINTURA!78,
+,CABLE C 16,ACOSA,ELECTRICIDAD,Almacén Pintura,6,Sí,materiales/base-2026/5742d7097a21c5ba318e.jpg,1,INV. ALMACEN PINTURA!34,
+,CABLE C 18,ACOSA,ELECTRICIDAD,Almacén Pintura,5,Sí,materiales/base-2026/5742d7097a21c5ba318e.jpg,1,INV. ALMACEN PINTURA!35,
+,CABLE LAQUEADO BOLSA,ACOSA,ELECTRICIDAD,Almacén Pintura,8,Sí,materiales/base-2026/a877b57f3d48b91ebe78.jpg,1,INV. ALMACEN PINTURA!42,
+,CABLE LAQUEADO CAJA,ACOSA,ELECTRICIDAD,Almacén Pintura,10,Sí,materiales/base-2026/5742d7097a21c5ba318e.jpg,1,INV. ALMACEN PINTURA!38,
+CAJ-011,CAJA CONDULET FC 1/2,ARGOS,ELECTRICIDAD,Almacén 2,15,Sí,materiales/base-2026/5d0cd6bb02c5d6192b5c.jpg,1,INV.HORNO PINTURA!11,
+CAJ-010,CAJA CONDULET FSC 1/2,ARGOS,ELECTRICIDAD,Almacén 2,30,Sí,materiales/base-2026/38a654c284ef31e239a1.jpg,1,INV.HORNO PINTURA!10,
+CAJ-012,CAJA CONDULET FSC 3/4,ARGOS,ELECTRICIDAD,Almacén 2,6,Sí,materiales/base-2026/38a654c284ef31e239a1.jpg,1,INV.HORNO PINTURA!12,
+CAJ-016,CAJA CONDULET LB 1,ARGOS,ELECTRICIDAD,Almacén 2,1,Sí,materiales/base-2026/8e0a731caac112f36307.jpg,1,INV.HORNO PINTURA!16,
+CAJ-014,CAJA CONDULET LB 1/2,ARGOS,ELECTRICIDAD,Almacén 2,5,Sí,materiales/base-2026/8e0a731caac112f36307.jpg,1,INV.HORNO PINTURA!14,
+CAJ-018,CAJA CONDULET LB TIPO T DE 1/2,ARGOS,ELECTRICIDAD,Almacén 2,10,Sí,materiales/base-2026/f45df4a3c79e9c634797.jpg,1,INV.HORNO PINTURA!18,
+CAJ-017,CAJA CONDULET LB TIPO T DE 3/4,ARGOS,ELECTRICIDAD,Almacén 2,10,Sí,materiales/base-2026/f45df4a3c79e9c634797.jpg,1,INV.HORNO PINTURA!17,
+CEN-013,CENTRO DE CARGA,SQUARED,ELECTRICIDAD,Almacén 2,9,Sí,materiales/base-2026/db184407170c4aa2464e.jpg,1,INV.HORNO PINTURA!13,
+CIN-009,CINCHO CORTO,,ELECTRICIDAD,Almacén 2,10300,Sí,materiales/base-2026/25a85d40ede69a41cfca.jpg,1,INV.HORNO PINTURA!9,
+CON-019,CONECTOR GLANDULA 1/2,ARGOS,ELECTRICIDAD,Almacén 2,100,Sí,materiales/base-2026/580110ffb5cb5841d187.jpg,1,INV.HORNO PINTURA!19,
+CON-020,CONECTOR GLANDULA 3/4,ARGOS,ELECTRICIDAD,Almacén 2,100,Sí,materiales/base-2026/c47a6841f600f34f8f92.jpg,1,INV.HORNO PINTURA!20,
+CON-023,CONTACTO DOBLE,ILUMINI,ELECTRICIDAD,Almacén 2,37,Sí,materiales/base-2026/4c0b452da23c17ab6187.jpg,1,INV.HORNO PINTURA!23,
+GAB-027,GABINETE ARGOS 250*200*150,ARGOS,ELECTRICIDAD,Almacén 2,6,Sí,materiales/base-2026/c84f90d794e71af6e653.jpg,1,INV.HORNO PINTURA!27,
+AEM-64,GABINETE METALICO 600X400X250,ARGOS,ELECTRICIDAD,Almacén 2,1,Sí,materiales/base-2026/b3541d0c8fd7f699f048.jpg,2,INV.ALMACEN 2!19; INV.ALMACEN 2 (2)!19,Se consolidaron 2 renglones fuente
+EDB-34040,INTERRUPTOR AUTOMATICO,SQUARDED,ELECTRICIDAD,Almacén 2,2,Sí,materiales/base-2026/b5e62058bd05ff3579ee.jpg,2,INV.ALMACEN 2!10; INV.ALMACEN 2 (2)!10,Se consolidaron 2 renglones fuente
+LUM-024,LUMINARIO LED 100W,LUMINICRAF,ELECTRICIDAD,Almacén 2,12,Sí,materiales/base-2026/93ffff833e351da626cf.jpg,1,INV.HORNO PINTURA!24,
+LUM-025,LUMINARIO LED 200W,MEGALUZ,ELECTRICIDAD,Almacén 2,6,Sí,materiales/base-2026/3c91a8fd892580afd7b3.jpg,1,INV.HORNO PINTURA!25,
+LUM-026,LUMINARIO LED200W,FLOOD LIGTH,ELECTRICIDAD,Almacén 2,27,Sí,materiales/base-2026/3c91a8fd892580afd7b3.jpg,1,INV.HORNO PINTURA!26,
+PLA-021,PLACA PARA INTERPERIE DOBLE CONTACTO,ARGOS,ELECTRICIDAD,Almacén 2,62,Sí,materiales/base-2026/7fd61ef4b976f459a65e.jpg,1,INV.HORNO PINTURA!21,
+TAP-022,TAPA DOBLE PARA CONTACTO,ARGOS,ELECTRICIDAD,Almacén 2,7,Sí,materiales/base-2026/b1db1fffd048e52853f5.jpg,1,INV.HORNO PINTURA!22,
+CIL-003,CILINDRO DE ARGON COMPRIMIDO,PRAXAIR,GASES,Cilindros Linde,10,Sí,materiales/base-2026/1965a79c810f2bb35c6a.jpg,1,INV.CILINDROS LINDE!11,
+CIL-002,CILINDRO DE BIOXIDO DE CARBONO,PRAXAIR,GASES,Cilindros Linde,40,Sí,materiales/base-2026/d32773dc8904527e75db.jpg,1,INV.CILINDROS LINDE!10,
+CIL-007,CILINDRO DE MEZCLA STARGOLD C-10,PRAXAIR,GASES,Cilindros Linde,2,Sí,materiales/base-2026/260e4b7884b2bf6bd123.jpg,1,INV.CILINDROS LINDE!15,
+CIL-008,CILINDRO DE MEZCLA STARGOLD C-25,PRAXAIR,GASES,Cilindros Linde,1,Sí,materiales/base-2026/61a80b5c85c849c5fdce.jpg,1,INV.CILINDROS LINDE!16,
+CIL-006,CILINDRO DE MEZCLA STARGOLD O2,PRAXAIR,GASES,Cilindros Linde,17,Sí,materiales/base-2026/7076c6fe527b765e1fef.jpg,1,INV.CILINDROS LINDE!14,
+CIL-005,CILINDRO DE NITROGENO 4.8,PRAXAIR,GASES,Cilindros Linde,4,Sí,materiales/base-2026/f6c61fbca3e79676344f.jpg,1,INV.CILINDROS LINDE!13,
+CIL-004,CILINDRO DE NITROGENO INDUSTRIAL N2,PRAXAIR,GASES,Cilindros Linde,5,Sí,materiales/base-2026/b7604666b46f918b6380.jpg,1,INV.CILINDROS LINDE!12,
+CIL-001,CILINDRO DE OXIGENO,PRAXAIR,GASES,Cilindros Linde,21,Sí,materiales/base-2026/bbd4e2306ffe0b70d233.jpg,1,INV.CILINDROS LINDE!9,
+CER-015,CERROJO CR-25 CAJA SECA,DELTA,HERRAJE,Almacén 2,100,Sí,materiales/base-2026/eced76124a0921db4d55.jpg,2,INV.ALMACEN 2!15; INV.ALMACEN 2 (2)!15,Se consolidaron 2 renglones fuente
+GAL-048,GALVANIZANTE DE ZINC CLARO MATIZADOEN AEROSOL,WURTH,LIQUIDOS,Almacén 2,12,Sí,materiales/base-2026/0c3670663bf9120e1e12.jpg,2,INV.ALMACEN 2!48; INV.ALMACEN 2 (2)!48,Se consolidaron 2 renglones fuente
+,API USADA SIN PALANCA Y MIRILLA,,LLENADO POR EL FONDO,Almacén Pintura,12,Sí,materiales/base-2026/f9b356148e629f86eac6.jpg,1,INV. ALMACEN PINTURA!26,
+,BANDEROLA SIN ASTA,,LLENADO POR EL FONDO,Almacén Pintura,5,Sí,materiales/base-2026/9dd96566553b52f420c9.jpg,1,INV. ALMACEN PINTURA!14,
+,BANDEROLAS,,LLENADO POR EL FONDO,Almacén Pintura,107,Sí,materiales/base-2026/82a389f015d902b4bd92.jpg,1,INV. ALMACEN PINTURA!128,
+,BASE PORTA ROMBO ALUMINIO,NACIONAL,LLENADO POR EL FONDO,Almacén Pintura,50,Sí,materiales/base-2026/907948021d25ae31d0b5.jpg,1,INV. ALMACEN PINTURA!124,
+,BRIDA 4´´TTMA EN ACERO AL CARBON CON CUELLO SOLDABLE,BETTS,LLENADO POR EL FONDO,Almacén Pintura,34,Sí,materiales/base-2026/02b88377a794fceb003b.jpg,1,INV. ALMACEN PINTURA!122,
+,BRIDA INOX 3/4 X 25MM,,LLENADO POR EL FONDO,Almacén Pintura,34,Sí,materiales/base-2026/02b88377a794fceb003b.jpg,1,INV. ALMACEN PINTURA!47,
+,CUELLO DE 20´´ SOLDABLE ACERO AL CARBON,BETTS,LLENADO POR EL FONDO,Almacén Pintura,1,Sí,materiales/base-2026/b4c979d29c4266409cbc.jpg,1,INV. ALMACEN PINTURA!109,
+,CUELLO PARA DOMO ACERO INOXIDABLE,,LLENADO POR EL FONDO,Almacén Pintura,16,Sí,materiales/base-2026/a777d41735316093d88a.jpg,1,INV. ALMACEN PINTURA!101,
+,DUAL SOCKET USA,SCULLY,LLENADO POR EL FONDO,Almacén Pintura,5,Sí,materiales/base-2026/e54fe28296a1a0e10ff0.jpg,1,INV. ALMACEN PINTURA!11,
+,EMPAQUE ENCHAQUETADO PARA BRIDA TTMMA 4´´,PELICAN,LLENADO POR EL FONDO,Almacén Pintura,24,Sí,materiales/base-2026/b5df12d0a38f44a5cbcc.jpg,1,INV. ALMACEN PINTURA!123,
+EMPAQU-118,"EMPAQUE ENCHAQUETADO PARA RESUMIDMERO (CAJETE) TIMA 4""",DIXON,LLENADO POR EL FONDO,Suspensión mecánica,0,No,materiales/base-2026/7b755f613891e93fea0b.jpg,1,INV.SUSPENSION MECANICA!18,Stock no informado en el Excel; se importará en 0
+,EMPAQUE PARA CUELLO DE 20´´ SOLDABLE ACERO AL CARBON,,LLENADO POR EL FONDO,Almacén Pintura,2,Sí,materiales/base-2026/674d35f9d5d1be65e928.jpg,1,INV. ALMACEN PINTURA!110,
+,ESCOTILLA 20´´ PAF 450 GALVANIZADA,BETTS,LLENADO POR EL FONDO,Almacén Pintura,1,Sí,materiales/base-2026/3cb3a17c379c86ccdc94.jpg,1,INV. ALMACEN PINTURA!111,
+,ESCOTILLA USADA,,LLENADO POR EL FONDO,Almacén Pintura,21,Sí,materiales/base-2026/3cb3a17c379c86ccdc94.jpg,1,INV. ALMACEN PINTURA!100,
+,ETIQUETAS DE ADVERTENCIA,,LLENADO POR EL FONDO,Almacén Pintura,375,Sí,materiales/base-2026/04bf697799d2f49f83ab.jpg,1,INV. ALMACEN PINTURA!15,
+FOCO V-124,FOCO VERDE INDICADOR,DIXON,LLENADO POR EL FONDO,Suspensión mecánica,0,No,materiales/base-2026/8735d54910591ee146d3.jpg,1,INV.SUSPENSION MECANICA!24,Stock no informado en el Excel; se importará en 0
+,MANGUERA NEGRA,apa,LLENADO POR EL FONDO,Almacén Pintura,1,Sí,materiales/base-2026/a35ba5cb9dad10dfc187.jpg,1,INV. ALMACEN PINTURA!66,
+MANOME-123,MANOMETRO 0-200,INFRA,LLENADO POR EL FONDO,Almacén Pintura; Suspensión mecánica,1,Sí,materiales/base-2026/5eafcb0a629e335c1407.jpg,2,INV. ALMACEN PINTURA!108; INV.SUSPENSION MECANICA!23,Se consolidaron 2 renglones fuente
+,MONITOR SCULLY,pñ,LLENADO POR EL FONDO,Almacén Pintura,5,Sí,materiales/base-2026/3064f25316f96701a8b1.jpg,1,INV. ALMACEN PINTURA!10,
+PARO D-121,PARO DE EMERGENCIA - VALVULA BOTON HONGO ENCLAVADO,GUSS& ROCH,LLENADO POR EL FONDO,Suspensión mecánica,0,No,materiales/base-2026/42eddd077d5ecf4b6209.jpg,1,INV.SUSPENSION MECANICA!21,Stock no informado en el Excel; se importará en 0
+,RESUMIDERO 4´´ (CAJETE) ACERO AL CARBON,BETTS,LLENADO POR EL FONDO,Almacén Pintura,1,Sí,materiales/base-2026/647b315d6bc2f75007de.jpg,1,INV. ALMACEN PINTURA!112,
+,RESUMIDERO ACERO INOXIDABLE,,LLENADO POR EL FONDO,Almacén Pintura,8,Sí,materiales/base-2026/1fd497f1cf1d635b9f8f.jpg,1,INV. ALMACEN PINTURA!32,
+,ROLLO DE MANGUERA CON RECUBRIMIENTO EXTERIOR DE HULE,,LLENADO POR EL FONDO,Almacén Pintura,2,Sí,materiales/base-2026/5f3f2bad57572d4017bc.jpg,1,INV. ALMACEN PINTURA!65,
+,SENSOR OPTICO DIXON/FLO TECH 12´´,DIXON,LLENADO POR EL FONDO,Almacén Pintura,12,Sí,materiales/base-2026/bd01aec5d1365231eb85.jpg,1,INV. ALMACEN PINTURA!115,
+,SOCKET ÒPTICO DIXON/FLO TECH,DIXON,LLENADO POR EL FONDO,Almacén Pintura,9,Sí,materiales/base-2026/be7642d262585a18ef64.jpg,1,INV. ALMACEN PINTURA!121,
+,SOCKET USADO,,LLENADO POR EL FONDO,Almacén Pintura,2,Sí,materiales/base-2026/e54fe28296a1a0e10ff0.jpg,1,INV. ALMACEN PINTURA!27,
+,TAPA RECUPERADORA,,LLENADO POR EL FONDO,Almacén Pintura,20,Sí,materiales/base-2026/aa2c0bfba94988644fcd.jpg,1,INV. ALMACEN PINTURA!33,
+,TAPON GUARDA POLVO ALUMINIO PULIDO DIXON/BAYCO,DIXON,LLENADO POR EL FONDO,Almacén Pintura,13,Sí,materiales/base-2026/dd381fe7c22356b3779a.jpg,1,INV. ALMACEN PINTURA!118,
+TORNIL-117,TORNILLO BOLA VERIFICADOR DE ATERRIZAJE DIXON,DIXON,LLENADO POR EL FONDO,Suspensión mecánica,0,No,materiales/base-2026/1b1419a579f57dacbdc1.jpg,1,INV.SUSPENSION MECANICA!17,Stock no informado en el Excel; se importará en 0
+,TROMPA DE COCHINO 4´´,,LLENADO POR EL FONDO,Almacén Pintura,9,Sí,materiales/base-2026/5716754429265c7d2453.jpg,1,INV. ALMACEN PINTURA!29,
+,TROMPA DE COCHINO COPLE DE CARGA 4 A 3,,LLENADO POR EL FONDO,Almacén Pintura,4,Sí,materiales/base-2026/6c0ac22ebe342ae8b5f2.jpg,1,INV. ALMACEN PINTURA!17,
+,VALULA CODO DE EMERGENCIA MECANICA ACERO INOXIDABLE 4´´,,LLENADO POR EL FONDO,Almacén Pintura,11,Sí,materiales/base-2026/9bd6b30b6c23b6363760.jpg,1,INV. ALMACEN PINTURA!39,
+,VALVULA API NUEVA,DIXON,LLENADO POR EL FONDO,Almacén Pintura,11,Sí,materiales/base-2026/ce6bb178753d7db89c0a.jpg,1,INV. ALMACEN PINTURA!13,
+,VALVULA API USADA,CIVACON,LLENADO POR EL FONDO,Almacén Pintura,5,Sí,materiales/base-2026/b8118bf1a00119c70439.jpg,1,INV. ALMACEN PINTURA!12,
+,VALVULA CODO MECANICA,,LLENADO POR EL FONDO,Almacén Pintura,10,Sí,materiales/base-2026/24ba35ceadef650cb9c1.jpg,1,INV. ALMACEN PINTURA!24,
+,VALVULA DE CODO USADA,,LLENADO POR EL FONDO,Almacén Pintura,1,Sí,materiales/base-2026/66834e0d3da8970f333a.jpg,1,INV. ALMACEN PINTURA!28,
+,VALVULA DE EMERGENCIA NEUMATICA,CIVACON,LLENADO POR EL FONDO,Almacén Pintura,1,Sí,materiales/base-2026/7cd53e38342b9f17b6a4.jpg,1,INV. ALMACEN PINTURA!23,
+,VALVULA DE SEGURIDAD 4´´ NEUMATICA ALUMINIO,BETTS,LLENADO POR EL FONDO,Almacén Pintura,4,Sí,materiales/base-2026/4548234f7151491fabf2.jpg,1,INV. ALMACEN PINTURA!113,
+VALVUL-120,VALVULA DE TRES VIAS PILOTADA,FESTO,LLENADO POR EL FONDO,Suspensión mecánica,0,No,materiales/base-2026/0e7c1d7d992ad071229d.jpg,1,INV.SUSPENSION MECANICA!20,Stock no informado en el Excel; se importará en 0
+,VALVULA DE VENTEO,DIXON,LLENADO POR EL FONDO,Almacén Pintura,2,Sí,materiales/base-2026/954bf4ee238241b3defc.jpg,1,INV. ALMACEN PINTURA!114,
+,VALVULA DE VENTEO EW,,LLENADO POR EL FONDO,Almacén Pintura,2,Sí,materiales/base-2026/be60b23775a19a75dc2f.jpg,1,INV. ALMACEN PINTURA!31,
+,VALVULA DE VETEO,,LLENADO POR EL FONDO,Almacén Pintura,2,Sí,materiales/base-2026/4a11fc2551e531733fe8.jpg,1,INV. ALMACEN PINTURA!30,
+,VALVULA GLOBO,CIVACON,LLENADO POR EL FONDO,Almacén Pintura,2,Sí,materiales/base-2026/92bca20d3d1eb1d3ff8b.jpg,1,INV. ALMACEN PINTURA!25,
+,VALVULA INTERLOCK DIXON/BAYCO,DIXON,LLENADO POR EL FONDO,Almacén Pintura,18,Sí,materiales/base-2026/1c657a048378510194b1.jpg,1,INV. ALMACEN PINTURA!119,
+,VALVULA MECANICA USA,AIRTAC,LLENADO POR EL FONDO,Almacén Pintura,5,Sí,materiales/base-2026/bbd4e2306ffe0b70d233.jpg,1,INV. ALMACEN PINTURA!9,
+VALVUL-122,VALVULA PILOTAJE - BOTON ESPECIAL PUERTO DE PILOTAJE A 1/4,GUSS& ROCH,LLENADO POR EL FONDO,Suspensión mecánica,0,No,materiales/base-2026/7300c79fcb62383c91c1.jpg,1,INV.SUSPENSION MECANICA!22,Stock no informado en el Excel; se importará en 0
+,VALVULA RECUPERADORA DE VAPOR 4´´ DIXON/BAYCO,DIXON,LLENADO POR EL FONDO,Almacén Pintura,14,Sí,materiales/base-2026/fbbdb6352c0e7ee7c45d.jpg,1,INV. ALMACEN PINTURA!120,
+,VALVULA RECUPERADORA DE VAPORES,,LLENADO POR EL FONDO,Almacén Pintura,3,Sí,materiales/base-2026/2f75661f5ab661438614.jpg,1,INV. ALMACEN PINTURA!16,
+VALVUL-119,VALVULA SELECTORA DE CIRCUITO,FESTO,LLENADO POR EL FONDO,Suspensión mecánica,0,No,materiales/base-2026/81a90215dcdcb1601cc8.jpg,1,INV.SUSPENSION MECANICA!19,Stock no informado en el Excel; se importará en 0
+,VAVULA DE CODO DE EMERGENCIA MECANICA 3´´ ACERO INOXIDABLE,,LLENADO POR EL FONDO,Almacén Pintura,6,Sí,materiales/base-2026/faf037d95487d75d7011.jpg,1,INV. ALMACEN PINTURA!40,
+PLAFON-014,PLAFON EFECTO ESTROBO AMBAR,COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,materiales/base-2026/d757a7ecbd549ad93925.jpg,1,INV.PLAFONES!14,Stock no informado en el Excel; se importará en 0
+PLAFON-024,PLAFON EFECTO ESTROBO AMBAR VOLT 24,COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,,1,INV.PLAFONES!24,Stock no informado en el Excel; se importará en 0
+PLAFON-009,PLAFON LATERAL DOMO 4 LEDS KW ROJO TECNO,COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,materiales/base-2026/da80dd37517c03ded8af.jpg,2,INV.PLAFONES!9; INV.PLAFONES!10,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+PLAFON-019,PLAFON LATERAL DOMO 4 LEDS KW ROJO TECNO VOLT 24,COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,,2,INV.PLAFONES!19; INV.PLAFONES!20,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+PLAFON-018,"PLAFON RED REMACHABLE 3 LED DE 2"" AMBAR",COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,materiales/base-2026/6b7c9103bbe61d5eec20.jpg,1,INV.PLAFONES!18,Stock no informado en el Excel; se importará en 0
+PLAFON-026,"PLAFON RED REMACHABLE 3 LED DE 2"" AMBAR VOLT 24",COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,,1,INV.PLAFONES!26,Stock no informado en el Excel; se importará en 0
+PLAFON-017,"PLAFON RED REMACHABLE 3 LED DE 2"" ROJO",COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,materiales/base-2026/2bbfd9c9966a864ffa28.jpg,1,INV.PLAFONES!17,Stock no informado en el Excel; se importará en 0
+PLAFON-025,"PLAFON RED REMACHABLE 3 LED DE 2"" ROJO VOLT 24",COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,,1,INV.PLAFONES!25,Stock no informado en el Excel; se importará en 0
+PLAFON-012,"PLAFON REDONDO 10 LEED DE 4"" VOLT 12 AMBAR",COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,materiales/base-2026/ba543b7ee3c3b2f1bd67.jpg,1,INV.PLAFONES!12,Stock no informado en el Excel; se importará en 0
+PLAFON-022,"PLAFON REDONDO 10 LEED DE 4"" VOLT 12 AMBAR VOLT 24",COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,,1,INV.PLAFONES!22,Stock no informado en el Excel; se importará en 0
+PLAFON-013,"PLAFON REDONDO 10 LEED DE 4"" VOLT 12 CRISTAL",COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,materiales/base-2026/2855129c15ce433944da.jpg,1,INV.PLAFONES!13,Stock no informado en el Excel; se importará en 0
+PLAFON-023,"PLAFON REDONDO 10 LEED DE 4"" VOLT 12 CRISTAL VOLT 24",COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,,1,INV.PLAFONES!23,Stock no informado en el Excel; se importará en 0
+PLAFON-011,"PLAFON REDONDO 10 LEED DE 4"" VOLT 12ROJO",COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,materiales/base-2026/c1d947fecce425ccc794.jpg,1,INV.PLAFONES!11,Stock no informado en el Excel; se importará en 0
+PLAFON-021,"PLAFON REDONDO 10 LEED DE 4"" VOLT 12ROJO VOLT 24",COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,,1,INV.PLAFONES!21,Stock no informado en el Excel; se importará en 0
+REFLEJ-015,"REFLEJANTE SIN CROMO PLAFON DE 3"" PARA REMACHAR AMBAR",COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,materiales/base-2026/efadd2a15602a6741cd7.jpg,1,INV.PLAFONES!15,Stock no informado en el Excel; se importará en 0
+REFLEJ-016,"REFLEJANTE SIN CROMO PLAFON DE 3"" PARA REMACHAR ROJO",COMERCIALIZADORA RODRIGUEZ,LUCES,Almacén General - Plafones,0,No,materiales/base-2026/95aec9ccdc6967a86386.jpg,1,INV.PLAFONES!16,Stock no informado en el Excel; se importará en 0
+238626,MOTOR 1 1\2 HP VENTILADOR,MILLER,MOTORES,Almacén 2,2,Sí,materiales/base-2026/e460bbae794d47788a42.jpg,2,INV.ALMACEN 2!11; INV.ALMACEN 2 (2)!11,Se consolidaron 2 renglones fuente
+KPC-45,PASTA TERMINAL,KLINGSPOR,PASTAS,Almacén 2,5,Sí,materiales/base-2026/609e795f6384c962b885.jpg,2,INV.ALMACEN 2!13; INV.ALMACEN 2 (2)!13,Se consolidaron 2 renglones fuente
+KPCU,POLISH EN PASTA,KLINGSPOR,PASTAS,Almacén 2,16,Sí,materiales/base-2026/f80e206c1eb4aa8fe0c1.jpg,2,INV.ALMACEN 2!12; INV.ALMACEN 2 (2)!12,Se consolidaron 2 renglones fuente
+,ACELERADOR 1LT,NERVION,PINTURA,Almacén Pintura,4,Sí,materiales/base-2026/7411349fdeab970e0848.jpg,1,INVENTARIO PINTURA!1,
+PINTURA-RAC-022,ALUMINIO,RACSA,PINTURA,Almacén Pintura,5,Sí,materiales/base-2026/cbb18eff746059d516c1.jpg,1,INV. ALMACEN PINTURA RACSA Y NE!22,
+,ALUMINIO 29,SHERWIN-WILLIAMS,PINTURA,Almacén Pintura,2,Sí,materiales/base-2026/2681acb4b95514241e7d.jpg,1,INVENTARIO PINTURA!26,
+,ALUMINIO BRILLANTE,RACSA,PINTURA,Almacén Pintura,5,Sí,materiales/base-2026/91da3db78a22881f3952.jpg,1,INVENTARIO PINTURA!18,
+PINTURA-RAC-021,AMARILLO CESPED,RACSA,PINTURA,Almacén Pintura,1,Sí,materiales/base-2026/cbb18eff746059d516c1.jpg,1,INV. ALMACEN PINTURA RACSA Y NE!21,
+,AMARILLO GRUA,RACSA,PINTURA,Almacén Pintura,3,Sí,materiales/base-2026/91da3db78a22881f3952.jpg,1,INVENTARIO PINTURA!17,
+PINTURA-RAC-023,AMARILLO GRUAS,RACSA,PINTURA,Almacén Pintura,3,Sí,materiales/base-2026/cbb18eff746059d516c1.jpg,1,INV. ALMACEN PINTURA RACSA Y NE!23,
+,AMARILLO PANTONE,NERVION,PINTURA,Almacén Pintura,1,Sí,materiales/base-2026/8c104848d0033ac8ea58.jpg,1,INVENTARIO PINTURA!8,
+,AZUL BRILLANTE,RACSA,PINTURA,Almacén Pintura,5,Sí,materiales/base-2026/cbb18eff746059d516c1.jpg,1,INVENTARIO PINTURA!14,
+PINTURA-NER-020,AZUL LUGARTH,NERVION,PINTURA,Almacén Pintura,5,Sí,materiales/base-2026/8e606fcb8e631c9c234b.jpg,1,INV. ALMACEN PINTURA RACSA Y NE!20,
+PINTURA-RAC-012,AZUL LUGARTH,RACSA,PINTURA,Almacén Pintura,5,Sí,materiales/base-2026/cbb18eff746059d516c1.jpg,2,INV. ALMACEN PINTURA RACSA Y NE!12; INVENTARIO PINTURA!15,"Almacén Pintura: stocks observados 5, 6; se tomó 5; Se consolidaron 2 renglones fuente"
+PINTURA-NER-024,BLANCO LUGARTH,NERVION,PINTURA,Almacén Pintura,12,Sí,materiales/base-2026/86d2198cfbb10cd0a81f.jpg,1,INV. ALMACEN PINTURA RACSA Y NE!24,
+PINTURA-RAC-016,BLANCO LUGARTH,RACSA,PINTURA,Almacén Pintura,5,Sí,materiales/base-2026/cbb18eff746059d516c1.jpg,1,INV. ALMACEN PINTURA RACSA Y NE!16,
+,BLANCO LUGATH,RACSA,PINTURA,Almacén Pintura,5,Sí,materiales/base-2026/91da3db78a22881f3952.jpg,1,INVENTARIO PINTURA!22,
+,BPO PASTA,,PINTURA,Almacén Pintura,20,Sí,materiales/base-2026/b83522ae43d4405dcdeb.jpg,1,INVENTARIO PINTURA!6,
+,CATALIZADOR,RACSA,PINTURA,Almacén Pintura,27,Sí,materiales/base-2026/9813a856cee0293defd8.jpg,1,INVENTARIO PINTURA!5,
+,CATALIZADOR RP-6,RACSA,PINTURA,Almacén Pintura,4,Sí,materiales/base-2026/34a4bf3f57159cc9d19a.jpg,1,INVENTARIO PINTURA!7,
+,CESPED,RACSA,PINTURA,Almacén Pintura,1,Sí,materiales/base-2026/91da3db78a22881f3952.jpg,1,INVENTARIO PINTURA!19,
+PINTURA-RAC-015,GRIS PEMEX,RACSA,PINTURA,Almacén Pintura,5,Sí,materiales/base-2026/cbb18eff746059d516c1.jpg,2,INV. ALMACEN PINTURA RACSA Y NE!15; INVENTARIO PINTURA!21,Se consolidaron 2 renglones fuente
+KK-4060-MFF-N,KIT DE REPARACION DE PINTURA,DEVASA,PINTURA,Suspensión mecánica,0,No,,1,INV.SUSPENSION MECANICA!25,Stock no informado en el Excel; se importará en 0
+PINTURA-NER-014,NEGRO,NERVION,PINTURA,Almacén Pintura,1,Sí,materiales/base-2026/cbb18eff746059d516c1.jpg,1,INV. ALMACEN PINTURA RACSA Y NE!14,
+PINTURA-RAC-013,NEGRO,RACSA,PINTURA,Almacén Pintura,1,Sí,materiales/base-2026/cbb18eff746059d516c1.jpg,2,INV. ALMACEN PINTURA RACSA Y NE!13; INVENTARIO PINTURA!20,"Almacén Pintura: stocks observados 1, 3; se tomó 1; Se consolidaron 2 renglones fuente"
+,NOVO PLASTE,AXALTA,PINTURA,Almacén Pintura,4,Sí,materiales/base-2026/72aba303d9d17248592f.jpg,1,INVENTARIO PINTURA!11,
+,NOVOLITE PLUS,AXALTA,PINTURA,Almacén Pintura,20,Sí,materiales/base-2026/8a03ea2aafe2e1847cef.jpg,1,INVENTARIO PINTURA!12,
+,PAPEL PARA EMPAPELAR,,PINTURA,Almacén Pintura,9,Sí,materiales/base-2026/1e9d19a931d298d32a27.jpg,1,INV. ALMACEN PINTURA!55,
+,PINTURA ALUMINIO,SHERWIN-WILLIAMS,PINTURA,Almacén Pintura,2,Sí,materiales/base-2026/6d2c8749f758ee2b9c88.jpg,1,INV. ALMACEN PINTURA RACSA Y NE!10,
+,PINTURA VINILICA AZUL,RACSA,PINTURA,Almacén Pintura,30,Sí,materiales/base-2026/bbd4e2306ffe0b70d233.jpg,1,INV. ALMACEN PINTURA RACSA Y NE!9,
+,PRIMARIO RP6,RACSA,PINTURA,Almacén Pintura,3,Sí,materiales/base-2026/197607140c7f5b0f8615.jpg,1,INVENTARIO PINTURA!13,
+PINTURA-RAC-011,PRIMER GRIS,RACSA,PINTURA,Almacén Pintura,3,Sí,materiales/base-2026/197607140c7f5b0f8615.jpg,1,INV. ALMACEN PINTURA RACSA Y NE!11,
+,REACTOR 75-T,NERVION,PINTURA,Almacén Pintura,24,Sí,materiales/base-2026/e30a42b7de2b760e9e30.jpg,1,INVENTARIO PINTURA!2,
+,REDUCTOR ACRILICO,SHERWIN-WILLIAMS,PINTURA,Almacén Pintura,1,Sí,materiales/base-2026/7b9823d6d0c8f6d8654e.jpg,1,INVENTARIO PINTURA!4,
+,ROJO,RACSA,PINTURA,Almacén Pintura,3,Sí,materiales/base-2026/b7ee298cc96867b51646.jpg,1,INVENTARIO PINTURA!23,
+PINTURA-RAC-018,ROJO BRILLANTE,RACSA,PINTURA,Almacén Pintura,1,Sí,materiales/base-2026/cbb18eff746059d516c1.jpg,2,INV. ALMACEN PINTURA RACSA Y NE!18; INV. ALMACEN PINTURA RACSA Y NE!19,"Almacén Pintura: stocks observados 1, 2; se tomó 1; Se consolidaron 2 renglones fuente"
+,SOLVENTE NERVION S-121,NERVION,PINTURA,Almacén Pintura,7,Sí,materiales/base-2026/ba6c7c71e9f670af06b4.jpg,1,INVENTARIO PINTURA!9,
+,TAMBOS THINER,,PINTURA,Almacén Pintura,3,Sí,materiales/base-2026/36f097268eeadf435c40.jpg,1,INVENTARIO PINTURA!10,
+,TRANSPARENTE SHERWIN,SHERWIN-WILLIAMS,PINTURA,Almacén Pintura,1,Sí,materiales/base-2026/da5ce5b6794102654c77.jpg,1,INVENTARIO PINTURA!3,
+PINTURA-RAC-017,VERDE MORALES,RACSA,PINTURA,Almacén Pintura,1,Sí,materiales/base-2026/cbb18eff746059d516c1.jpg,2,INV. ALMACEN PINTURA RACSA Y NE!17; INVENTARIO PINTURA!25,Se consolidaron 2 renglones fuente
+,VINILICA AZUL,RACSA,PINTURA,Almacén Pintura,31,Sí,materiales/base-2026/b7ee298cc96867b51646.jpg,1,INVENTARIO PINTURA!24,
+PRIMER-RAC-027,PRIMARIO RACSA BLANCO,RACSA,PRIMER,Almacén Pintura,0,No,,1,INV. ALMACEN PINTURA RACSA Y NE!27,Stock no informado en el Excel; se importará en 0
+PM-633911-TURB-1208-MK23,INDICADORES DE NIVEL MAGNETEL,MAGNETEL,REGULADOR DE NIVEL,Almacén 2,5,Sí,materiales/base-2026/70d95568cd25bae40b0b.jpg,2,INV.ALMACEN 2!18; INV.ALMACEN 2 (2)!18,Se consolidaron 2 renglones fuente
+211-25E25,VALVULA DE SEGURIDAD VAYREMEX DE 25MM,*,REGULADOR DE NIVEL,Almacén 2,2,Sí,materiales/base-2026/382e98bc8797ef691c9f.jpg,2,INV.ALMACEN 2!16; INV.ALMACEN 2 (2)!16,Se consolidaron 2 renglones fuente
+632-51H51,VALVULA DE SEGURIDAD VAYREMEX DE 51MM,VAYREMEX,REGULADOR DE NIVEL,Almacén 2,2,Sí,materiales/base-2026/39248833efc6bdbc7b67.jpg,2,INV.ALMACEN 2!17; INV.ALMACEN 2 (2)!17,Se consolidaron 2 renglones fuente
+CAP-045,CAPUCHA CARNAZA NARANJA,GENERICA,SEGURIDAD,Almacén 2,45,Sí,materiales/base-2026/01f8e949cfde0fa83bbd.jpg,2,INV.ALMACEN 2!45; INV.ALMACEN 2 (2)!45,Se consolidaron 2 renglones fuente
+CAP-046,CAPUCHA MEZCLILLA,GENERICA,SEGURIDAD,Almacén 2,2,Sí,materiales/base-2026/e99b8be62b93f90e1f9b.jpg,2,INV.ALMACEN 2!46; INV.ALMACEN 2 (2)!46,Se consolidaron 2 renglones fuente
+FO-22,EXTINGIDOR PORTABLE,FIRE,SEGURIDAD,Almacén 2,11,Sí,materiales/base-2026/a8721b4fbca5c01a290f.jpg,2,INV.ALMACEN 2!49; INV.ALMACEN 2 (2)!49,Se consolidaron 2 renglones fuente
+MAN-047,MANDIL DE CARNAZA LARGO,GENERICA,SEGURIDAD,Almacén 2,20,Sí,materiales/base-2026/544c117d98ac9cb076ba.jpg,2,INV.ALMACEN 2!47; INV.ALMACEN 2 (2)!47,Se consolidaron 2 renglones fuente
+POL-044,POLAINAS DE CARNAZA AMARILLAS,GENERICA,SEGURIDAD,Almacén 2,20,Sí,materiales/base-2026/092ef16d1015998f93c7.jpg,2,INV.ALMACEN 2!44; INV.ALMACEN 2 (2)!44,Se consolidaron 2 renglones fuente
+POL-043,POLAINAS DE CARNAZA NARANJAS,GENERICA,SEGURIDAD,Almacén 2,20,Sí,materiales/base-2026/9df67c613ad0cb2e2956.jpg,2,INV.ALMACEN 2!43; INV.ALMACEN 2 (2)!43,Se consolidaron 2 renglones fuente
+ACE-018,ACEITE PARA DIFERENCIALES EP 85W140 API GL-5,COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,48,Sí,materiales/base-2026/f171763aa61d018a28bf.jpg,1,INV. ALMACEN SUSPENSIONES!18,
+,ACTUADOR TOMA DE FUERZA,,SIN CATEGORÍA,Almacén Pintura,5,Sí,materiales/base-2026/a98f70873909bdf00b1f.jpg,1,INV. ALMACEN PINTURA!74,
+,ACTUADORES,,SIN CATEGORÍA,Almacén Pintura,6,Sí,materiales/base-2026/2dd87ede4f2a4b6e63f8.jpg,1,INV. ALMACEN PINTURA!83,
+AJU-016,"AJUSTADOR AUTOMATICO, 28 DIENTES",COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,0,No,materiales/base-2026/51d600344aa646424676.jpg,1,INV. ALMACEN SUSPENSIONES!16,Stock no informado en el Excel; se importará en 0
+AMO-011,AMORTIGUADOR HENDRICKSON PARA HT300,COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,50,Sí,materiales/base-2026/c98d8718992165866bc6.jpg,1,INV. ALMACEN SUSPENSIONES!11,
+,BALERO EN BOLSA,,SIN CATEGORÍA,Almacén Pintura,7,Sí,materiales/base-2026/27d3d1a38a69a38be97b.jpg,1,INV. ALMACEN PINTURA!58,
+,BALERO STEMCO,STEMCO,SIN CATEGORÍA,Almacén Pintura,5,Sí,materiales/base-2026/a018b16bdbf1038d6736.jpg,1,INV. ALMACEN PINTURA!60,
+,BALERO TIMKEN,TIMKEN,SIN CATEGORÍA,Almacén Pintura,6,Sí,materiales/base-2026/4e892e1ba92d385971d9.jpg,1,INV. ALMACEN PINTURA!59,
+,BALEROS SKF,SKF,SIN CATEGORÍA,Almacén Pintura,6,Sí,materiales/base-2026/2de015853e2934a5faf2.jpg,1,INV. ALMACEN PINTURA!67,
+,BOLSAS Y HAMBURGUESAS USADAS,,SIN CATEGORÍA,Almacén Pintura,9,Sí,materiales/base-2026/a2e07864b27429672328.jpg,1,INV. ALMACEN PINTURA!90,
+-BRO-192,BROCA 49/64 ZANCO DE 1/2,DIMAHC,SIN CATEGORÍA,Almacén General - Conexiones,0,No,,1,INV.GENERAL CONEXION!200,Stock no informado en el Excel; se importará en 0
+BROCA -522,"BROCA ZANCO DE 1/2 DE 1 1/2""",WESTON,SIN CATEGORÍA,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!22,Stock no informado en el Excel; se importará en 0
+BUJ-009,BUJE TRIFUNCIONAL TORNILLO 7\8,COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,50,Sí,materiales/base-2026/bbd4e2306ffe0b70d233.jpg,1,INV. ALMACEN SUSPENSIONES!9,
+,BUJES AZULES CON GOMA CONICA,,SIN CATEGORÍA,Almacén Pintura,18,Sí,materiales/base-2026/ecb0432da066121323d1.jpg,1,INV. ALMACEN PINTURA!18,
+CAJ-015,CAJA CONDULET LB 3/4,ARGOS,SIN CATEGORÍA,Almacén 2,8,Sí,materiales/base-2026/8e0a731caac112f36307.jpg,1,INV.HORNO PINTURA!15,
+CAM-010,CAMARA DE AIRE HT300,COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,50,Sí,materiales/base-2026/6cc6bb3fd7ec82e60d2c.jpg,1,INV. ALMACEN SUSPENSIONES!10,
+CAM-017,CAMARA TIPO 3030 SELLADA CON VASTAGO DE 9INN SIN HORQUILLAS,COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,18,Sí,materiales/base-2026/ee4f7de60350259d73c5.jpg,1,INV. ALMACEN SUSPENSIONES!17,
+,CAPUCHON,,SIN CATEGORÍA,Almacén 2,0,No,materiales/base-2026/b5e62058bd05ff3579ee.jpg,1,INV.ALMACEN 2 (3)!10,Stock no informado en el Excel; se importará en 0
+,CLAVIJA 50 AMPERS,,SIN CATEGORÍA,Almacén 2,0,No,materiales/base-2026/56df0d9ab5c37ce1775d.jpg,1,INV.ALMACEN 2 (3)!9,Stock no informado en el Excel; se importará en 0
+-DAD-191,"DADO TARRAJA 2"" NF 1 -14TMX",DIMAHC,SIN CATEGORÍA,Almacén General - Conexiones,0,No,,1,INV.GENERAL CONEXION!199,Stock no informado en el Excel; se importará en 0
+EJE-021,"EJE DE ACEITE BIRLO LARGO CON PSI, SIN MATRACA CHAMBER TAPA",COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,0,No,,1,INV. ALMACEN SUSPENSIONES!21,Stock no informado en el Excel; se importará en 0
+ELECTR-524,ELECTRODO 1/8 7018,BOHLER,SIN CATEGORÍA,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!24,Stock no informado en el Excel; se importará en 0
+ELECTR-523,ELECTRODO 5/32 7018,BOHLER,SIN CATEGORÍA,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!23,Stock no informado en el Excel; se importará en 0
+,EMPAQUE PARA SENSOR OPTICO DIXON/FLO TECH 12´´,DIXON,SIN CATEGORÍA,Almacén Pintura,1,Sí,materiales/base-2026/bd01aec5d1365231eb85.jpg,1,INV. ALMACEN PINTURA!116,
+,FILTRO GUSS Y RACH,,SIN CATEGORÍA,Almacén Pintura,5,Sí,materiales/base-2026/8f5d66bf954ea9b95d14.jpg,1,INV. ALMACEN PINTURA!84,
+,FILTRO Y,,SIN CATEGORÍA,Almacén Pintura,10,Sí,materiales/base-2026/990ebf630d889d2370af.jpg,1,INV. ALMACEN PINTURA!93,
+,GANCHO DE 10 BARRENOS MARCA HOLLAND CON CAMARA PARA ARGOLLA,TR ZONE,SIN CATEGORÍA,Almacén Pintura,0,No,,1,INV. ALMACEN PINTURA!126,Stock no informado en el Excel; se importará en 0
+,GANCHO DRAWBAR,BUYERS,SIN CATEGORÍA,Almacén Pintura,5,Sí,materiales/base-2026/15084265478ff982dce0.jpg,1,INV. ALMACEN PINTURA!54,
+,GANCHO SUELTO,,SIN CATEGORÍA,Almacén Pintura,7,Sí,materiales/base-2026/9f3c2cc0c7cabde4c77d.jpg,1,INV. ALMACEN PINTURA!89,
+,GLANDULAS 1/2,,SIN CATEGORÍA,Almacén Pintura,2,Sí,materiales/base-2026/f87dca1142d564dffb08.jpg,1,INV. ALMACEN PINTURA!103,
+HOR-022,HORQUILLA DE 5/8 * 1/2,COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,0,No,,1,INV. ALMACEN SUSPENSIONES!22,Stock no informado en el Excel; se importará en 0
+,IMPRESORAS,EPSON,SIN CATEGORÍA,Almacén Pintura,5,Sí,materiales/base-2026/6542365c50a2664de162.jpg,1,INV. ALMACEN PINTURA!82,
+INDICA-518,INDICADOR DE NIVEL,ENSA,SIN CATEGORÍA,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!18,Stock no informado en el Excel; se importará en 0
+,INDICADOR OPTICO VERDE,SMC,SIN CATEGORÍA,Almacén Pintura,1,Sí,materiales/base-2026/c59a818cf228772b7e81.jpg,1,INV. ALMACEN PINTURA!104,
+IPR-032,"IPR12"" * 61/2",SERVIACERO / FORTACERO/ ACEROS VS,SIN CATEGORÍA,Almacén General - Láminas,0,No,materiales/base-2026/200a3a3893861b45dc05.jpg,1,INV.LAMINAS!32,Stock no informado en el Excel; se importará en 0
+KIT-014,KIT DE ABRAZADERA PARA HT300 TIPO HENDRICKSON,COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,100,Sí,materiales/base-2026/ae44cdc96080ddb2a7b2.jpg,1,INV. ALMACEN SUSPENSIONES!14,
+,KIT HIDRAULICO P/TRANSMISION RTLO-18918B,UTP,SIN CATEGORÍA,Almacén Pintura,0,No,,1,INV. ALMACEN PINTURA!125,Stock no informado en el Excel; se importará en 0
+LAM-031,LAMINA NEGRA RC CALIBRE 10 4 * 10,SERVIACERO / FORTACERO/ ACEROS VS,SIN CATEGORÍA,Almacén General - Láminas,0,No,materiales/base-2026/5826e2f2612875499989.jpg,1,INV.LAMINAS!31,Stock no informado en el Excel; se importará en 0
+LIJA O-526,LIJA ORBITAL GRANO 40,KLINGSPOOR,SIN CATEGORÍA,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!26,Stock no informado en el Excel; se importará en 0
+LIJA O-525,LIJA ORBITAL GRANO 80,KLINGSPOOR,SIN CATEGORÍA,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!25,Stock no informado en el Excel; se importará en 0
+LLA-023,LLANTA CON RIN 24.5,DISTRIBUIDORA DE LLANTAS,SIN CATEGORÍA,Almacén Suspensiones,0,No,,1,INV. ALMACEN SUSPENSIONES!23,Stock no informado en el Excel; se importará en 0
+,LLAVE ARTILLERIA,TRUPER,SIN CATEGORÍA,Almacén Pintura,11,Sí,materiales/base-2026/aec9d58ad622fd6a706b.jpg,1,INV. ALMACEN PINTURA!57,
+-MAC-193,MACHUELO SEMICONICO 7/8-9,DIMAHC,SIN CATEGORÍA,Almacén General - Conexiones,0,No,,1,INV.GENERAL CONEXION!201,Stock no informado en el Excel; se importará en 0
+MACHUE-521,MACHUELO SEMICONICO 7/8-9,WESTON,SIN CATEGORÍA,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!21,Stock no informado en el Excel; se importará en 0
+,MANIFULL,,SIN CATEGORÍA,Almacén Pintura,1,Sí,materiales/base-2026/005e6a4a40cdb57a9156.jpg,1,INV. ALMACEN PINTURA!107,
+MANOVA-520,"MANOVACUMETRO 2 1/2"" 30*30 CON GLICERINA INF",ENSA,SIN CATEGORÍA,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!20,Stock no informado en el Excel; se importará en 0
+MANOVA-519,"MANOVACUMETRO 4"" 30*30 CON GLICERINA INF",ENSA,SIN CATEGORÍA,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!19,Stock no informado en el Excel; se importará en 0
+,MARIPOSAS,,SIN CATEGORÍA,Almacén Pintura,34,Sí,materiales/base-2026/38859b8496bc44e8cc42.jpg,1,INV. ALMACEN PINTURA!94,
+,METRO DE CABLE CODIFICADO 5 POLOS DIXON/FLO TECH,DIXON,SIN CATEGORÍA,Almacén Pintura,0,No,materiales/base-2026/ae00358651981ba52663.jpg,1,INV. ALMACEN PINTURA!117,Stock no informado en el Excel; se importará en 0
+MIRILL-514,"MIRILLA DE VIDRIO DE 5""CON BASE DE ACERO",ENSA,SIN CATEGORÍA,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!14,Stock no informado en el Excel; se importará en 0
+,"PERNO DE BALANCIN DE 2"" DE DIAMETRO x 30CM DE LONGUITUD",,SIN CATEGORÍA,Almacén General - Plafones,0,No,,1,INV.PLAFONES!30,Stock no informado en el Excel; se importará en 0
+,PERNO REY,WALLACE FORCE COMPANY,SIN CATEGORÍA,Almacén Pintura,5,Sí,materiales/base-2026/e018e09818a2844e48c2.jpg,1,INV. ALMACEN PINTURA!95,
+PLA-035,"PLACA 1/4"" 4*10 A36",SERVIACERO / FORTACERO/ ACEROS VS,SIN CATEGORÍA,Almacén General - Láminas,0,No,,1,INV.LAMINAS!35,Stock no informado en el Excel; se importará en 0
+PLA-033,PLACA 1/4 6*20,SERVIACERO / FORTACERO/ ACEROS VS,SIN CATEGORÍA,Almacén General - Láminas,0,No,materiales/base-2026/5e6b5f51ae2a891c56f5.jpg,1,INV.LAMINAS!33,Stock no informado en el Excel; se importará en 0
+PLA-034,"PLACA 3/16"" 4*8 A36",SERVIACERO / FORTACERO/ ACEROS VS,SIN CATEGORÍA,Almacén General - Láminas,0,No,,1,INV.LAMINAS!34,Stock no informado en el Excel; se importará en 0
+PLA-036,"PLACA 5/16"" 4*10A-36",SERVIACERO / FORTACERO/ ACEROS VS,SIN CATEGORÍA,Almacén General - Láminas,0,No,,1,INV.LAMINAS!36,Stock no informado en el Excel; se importará en 0
+,PLAYO,,SIN CATEGORÍA,Almacén Pintura,5,Sí,materiales/base-2026/9a5b7174498a29381a42.jpg,1,INV. ALMACEN PINTURA!56,
+QUI-015,QUINTA RUEDA ALTURA 7.7375 FONTAINE,COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,0,No,materiales/base-2026/2c03d37c846cc4bad97f.jpg,1,INV. ALMACEN SUSPENSIONES!15,Stock no informado en el Excel; se importará en 0
+,RETEN STEMCO,STEMCO,SIN CATEGORÍA,Almacén Pintura,12,Sí,materiales/base-2026/7a6e08219eabefbae3dd.jpg,1,INV. ALMACEN PINTURA!62,
+RON-012,RONDANA CONCENTRICA QUICK ALIGN,COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,50,Sí,materiales/base-2026/0ef14de419fe7f5671c0.jpg,1,INV. ALMACEN SUSPENSIONES!12,
+RON-019,RONDANA DE AJUSTE PARA GAVILAN 1 1/2 in-ESPESOR 0.04 in DIAMETRO INTERIOR 1.55in,COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,0,No,materiales/base-2026/f171763aa61d018a28bf.jpg,1,INV. ALMACEN SUSPENSIONES!19,Stock no informado en el Excel; se importará en 0
+RON-013,RONDANA EXCENTRICA,COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,50,Sí,materiales/base-2026/38229e1dfbc3410548bf.jpg,1,INV. ALMACEN SUSPENSIONES!13,
+,SELLO ACEITE,FEDERAL MOGUL,SIN CATEGORÍA,Almacén Pintura,6,Sí,materiales/base-2026/983853a1c8af13ea9108.jpg,1,INV. ALMACEN PINTURA!61,
+,SUSPENSION,SACHS,SIN CATEGORÍA,Almacén Pintura,2,Sí,materiales/base-2026/12c67b3384b353ddcd71.jpg,1,INV. ALMACEN PINTURA!91,
+TAP-020,TAPA STEMCO ALUMINIO CON MIRILLA P/ EJE FRUEHAUF DE ACEITE 6 BARR DE 5/16 CIRC 6 3/4 69195,COMERCIALIZADORA TR ZONE/ ATZNOR /PROMARE,SIN CATEGORÍA,Almacén Suspensiones,0,No,,1,INV. ALMACEN SUSPENSIONES!20,Stock no informado en el Excel; se importará en 0
+,TAPA TORNILLO EJE ROSCADA,,SIN CATEGORÍA,Almacén Pintura,6,Sí,materiales/base-2026/96763281d87896e2d632.jpg,1,INV. ALMACEN PINTURA!73,
+-TEE-012,TEE MACHO LATERAL 3/8 * 3/8,MAURCA / UNIXEL,SIN CATEGORÍA,Almacén General - Conexiones,0,No,materiales/base-2026/6b543cbb16e4c2894ce3.jpg,1,INV.GENERAL CONEXION!20,Stock no informado en el Excel; se importará en 0
+,TOPES,,SIN CATEGORÍA,Almacén Pintura,38,Sí,materiales/base-2026/1cc085a3b6e1ebb059a0.jpg,1,INV. ALMACEN PINTURA!92,
+,TORNILLO DE VERIFICACION DE TIERRA,DIXON,SIN CATEGORÍA,Almacén Pintura,0,No,materiales/base-2026/160784e81a674a92c470.jpg,1,INV. ALMACEN PINTURA!102,Stock no informado en el Excel; se importará en 0
+TUERC-174,TUERCA SEGURIDAD GALVANIZADA 3/8,LAMSSA,SIN CATEGORÍA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!174,Stock no informado en el Excel; se importará en 0
+,VALVULA 1´´ WORCESTER,,SIN CATEGORÍA,Almacén Pintura,10,Sí,materiales/base-2026/e93845c39ae0eb74241a.jpg,1,INV. ALMACEN PINTURA!79,
+,VALVULA CHECK 1´´,,SIN CATEGORÍA,Almacén Pintura,47,Sí,materiales/base-2026/1bf4a96c578b64d9dbbc.jpg,1,INV. ALMACEN PINTURA!87,
+,VALVULA CHECK 2´´,,SIN CATEGORÍA,Almacén Pintura,46,Sí,materiales/base-2026/1bf4a96c578b64d9dbbc.jpg,1,INV. ALMACEN PINTURA!88,
+,VALVULA DE 4 ENTRADAS,,SIN CATEGORÍA,Almacén Pintura,9,Sí,materiales/base-2026/cb6409765d71b815451c.jpg,1,INV. ALMACEN PINTURA!45,
+VALVUL-517,"VALVULA DE GUILLOTINA DE 4""BRONCE CHANDLER",ENSA,SIN CATEGORÍA,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!17,Stock no informado en el Excel; se importará en 0
+VALVUL-515,"VALVULA DE PRESION 2"" BRONCE",ENSA,SIN CATEGORÍA,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!15,Stock no informado en el Excel; se importará en 0
+,VALVULA DE TRES VIAS,FESTO,SIN CATEGORÍA,Almacén Pintura,0,No,materiales/base-2026/ff7d0c312452cd863d96.jpg,1,INV. ALMACEN PINTURA!105,Stock no informado en el Excel; se importará en 0
+VALVUL-516,"VALVULA DE VACIO 1 1/2"" CHANDLER",ENSA,SIN CATEGORÍA,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!16,Stock no informado en el Excel; se importará en 0
+,VALVULA SELECTORA,FESTO,SIN CATEGORÍA,Almacén Pintura,0,No,materiales/base-2026/9475da48c1dc9aa6ba0e.jpg,1,INV. ALMACEN PINTURA!106,Stock no informado en el Excel; se importará en 0
+,VALVULA WORCESTER 2´´,,SIN CATEGORÍA,Almacén Pintura,20,Sí,materiales/base-2026/e9d0356a644bfc3e7cfa.jpg,1,INV. ALMACEN PINTURA!75,
+,MANOMETRO 0-30,,SISTEMA AIRE,Almacén Pintura,8,Sí,materiales/base-2026/b29b66c168435dc68f52.jpg,1,INV. ALMACEN PINTURA!85,
+,MANOMETRO 0-60,,SISTEMA AIRE,Almacén Pintura,15,Sí,materiales/base-2026/02469714b5f204ade083.jpg,1,INV. ALMACEN PINTURA!86,
+,15200 SUELTAS,SAELCO,SISTEMA DE FRENOS,Almacén Pintura,6,Sí,materiales/base-2026/f8eec69c03c5c500119a.jpg,1,INV. ALMACEN PINTURA!81,
+,152000 CAJA,SAELCO,SISTEMA DE FRENOS,Almacén Pintura,28,Sí,materiales/base-2026/30477ab7d72a5be68c03.jpg,1,INV. ALMACEN PINTURA!80,
+,ABS PARA REMOLQUE,BENDIX,SISTEMA DE FRENOS,Almacén Pintura,11,Sí,materiales/base-2026/0eca0ee0f5ccfdc057ce.jpg,1,INV. ALMACEN PINTURA!21,
+,CABLE ABS,AWR-PRO,SISTEMA DE FRENOS,Almacén Pintura,19,Sí,materiales/base-2026/90461674897889ff8db0.jpg,1,INV. ALMACEN PINTURA!68,
+,HAMBURGUESA HD,ROCKWELL HD,SISTEMA DE FRENOS,Almacén Pintura,21,Sí,materiales/base-2026/77efa5df5e5d5ac6edb7.jpg,1,INV. ALMACEN PINTURA!53,
+,MANGUERA AZUL Y ROJA RESORTE,AWR-PRO,SISTEMA DE FRENOS,Almacén Pintura,15,Sí,materiales/base-2026/ba6fccf81f65f9f7fd18.jpg,1,INV. ALMACEN PINTURA!69,
+,NIVELADORA,HENDRICKSON,SISTEMA DE FRENOS,Almacén Pintura,134,Sí,materiales/base-2026/210954c76a68211f6900.jpg,1,INV. ALMACEN PINTURA!52,
+,SISTEMA ABS P/2 S/1M,AMPARTS,SISTEMA DE FRENOS,Almacén Pintura,124,Sí,materiales/base-2026/0eca0ee0f5ccfdc057ce.jpg,1,INV. ALMACEN PINTURA!22,
+146.0059.10,AISLANTE DE BOQUILLA PARA ALTA TEMPERATURA,BINZEL,SOLDADURA,Almacén 2,6,Sí,materiales/base-2026/9b9d1a2db1d576b05a35.jpg,2,INV.ALMACEN 2!51; INV.ALMACEN 2 (2)!51,Se consolidaron 2 renglones fuente
+Q-4015AE8-EMC,ANTORCHA BERNARD- MIG 400,BERNARD,SOLDADURA,Almacén 2,11,Sí,materiales/base-2026/56df0d9ab5c37ce1775d.jpg,2,INV.ALMACEN 2!9; INV.ALMACEN 2 (2)!9,Se consolidaron 2 renglones fuente
+962.1341,DIFUSOR DE GAS CERAMICO,BINZEL,SOLDADURA,Almacén 2,10,Sí,materiales/base-2026/21a3fe1f7e2a694c98af.jpg,2,INV.ALMACEN 2!53; INV.ALMACEN 2 (2)!53,Se consolidaron 2 renglones fuente
+COR RFM3M K,JUEGO DE MANGUERA CORTEC,CORTEC,SOLDADURA,Almacén 2,3,Sí,materiales/base-2026/bbbc0059bd4595e88cd4.jpg,2,INV.ALMACEN 2!56; INV.ALMACEN 2 (2)!56,Se consolidaron 2 renglones fuente
+105SYNC,PLASMA,HYPERTEM,SOLDADURA,Almacén 2,3,Sí,materiales/base-2026/b6480e47be75372ce21a.jpg,2,INV.ALMACEN 2!59; INV.ALMACEN 2 (2)!59,Se consolidaron 2 renglones fuente
+142.0151.10,PORTA BOQUILLA,BINZEL,SOLDADURA,Almacén 2,30,Sí,materiales/base-2026/a19f3993515e4201c013.jpg,2,INV.ALMACEN 2!52; INV.ALMACEN 2 (2)!52,Se consolidaron 2 renglones fuente
+140.0445.10,PUNTA DE CONTACTO DE ALTA TEMPERATURA,BINZEL,SOLDADURA,Almacén 2,9,Sí,materiales/base-2026/4dc3fa3636e510eb306e.jpg,2,INV.ALMACEN 2!54; INV.ALMACEN 2 (2)!54,Se consolidaron 2 renglones fuente
+4205100053,REGULADOR DE FLUJO DE GAS,FRONIUS,SOLDADURA,Almacén 2,5,Sí,materiales/base-2026/1341988e32897fe108b9.jpg,2,INV.ALMACEN 2!55; INV.ALMACEN 2 (2)!55,Se consolidaron 2 renglones fuente
+REG-014,REGULADOR DE FLUJO DE GAS,MASTER,SOLDADURA,Almacén 2,6,Sí,materiales/base-2026/14f2e647303733851c51.jpg,2,INV.ALMACEN 2!14; INV.ALMACEN 2 (2)!14,Se consolidaron 2 renglones fuente
+SH-122,REGULADOR INFRA SMITHS GAS COMBUSTIBLE,INFRA,SOLDADURA,Almacén 2,1,Sí,materiales/base-2026/8ca20926af4334b520f7.jpg,2,INV.ALMACEN 2!57; INV.ALMACEN 2 (2)!57,Se consolidaron 2 renglones fuente
+SOLVENTE -PIN-029,SOLVENTE C-100,PINTURA,SOLVENTE,Almacén Pintura,0,No,,1,INV. ALMACEN PINTURA RACSA Y NE!29,Stock no informado en el Excel; se importará en 0
+SOLVENTE -RAC-026,SOLVENTE C-106,RACSA,SOLVENTE,Almacén Pintura,5,Sí,materiales/base-2026/94a4c062e7e60d14c0e9.jpg,2,INV. ALMACEN PINTURA RACSA Y NE!26; INVENTARIO PINTURA!16,Se consolidaron 2 renglones fuente
+,RONDANA CENTRICA,GENERICA,SUSPENSION,Almacén Pintura,48,Sí,materiales/base-2026/c228872725b74e0ab9fd.jpg,1,INV. ALMACEN PINTURA!19,
+,RONDANA EXENTRICA,GENERICA,SUSPENSION,Almacén Pintura,54,Sí,materiales/base-2026/86f82aa2be2af64e510c.jpg,1,INV. ALMACEN PINTURA!20,
+ABRAZA-114,ABRAZADERA 7/8 TIPO U,PHM,SUSPENSION MECANICA,Suspensión mecánica,0,No,materiales/base-2026/ebbb1a7a4c512f24d98d.jpg,1,INV.SUSPENSION MECANICA!14,Stock no informado en el Excel; se importará en 0
+ARANDE-116,ARANDELA ESTRUCTURAL NEGRA 7/8,PHM,SUSPENSION MECANICA,Suspensión mecánica,0,No,materiales/base-2026/ad62996c36d2e4d6214f.jpg,1,INV.SUSPENSION MECANICA!16,Stock no informado en el Excel; se importará en 0
+BALANC-112,BALANCIN CONICO,PHM,SUSPENSION MECANICA,Suspensión mecánica,2,Sí,materiales/base-2026/2b998f1f693ccc5ad33b.jpg,1,INV.SUSPENSION MECANICA!12,
+MENSUL-111,MENSULA PARA EJE REDONDO,PHM,SUSPENSION MECANICA,Suspensión mecánica,4,Sí,materiales/base-2026/8c7000f7fb317208edcc.jpg,1,INV.SUSPENSION MECANICA!11,
+,SOBRE MUELLE U BOLT,PHM,SUSPENSION MECANICA,Suspensión mecánica,4,Sí,materiales/base-2026/bbd4e2306ffe0b70d233.jpg,1,INV.SUSPENSION MECANICA!9,
+TENSOR-110,TENSOR AJUSTABLE LARGO,PHM,SUSPENSION MECANICA,Suspensión mecánica,4,Sí,materiales/base-2026/a90eed3c9356792a8aa3.jpg,1,INV.SUSPENSION MECANICA!10,
+TENSOR-113,TENSOR LUGARTH FIJO,PHM,SUSPENSION MECANICA,Suspensión mecánica,0,No,materiales/base-2026/c7e59efa10ad4cbc8344.jpg,1,INV.SUSPENSION MECANICA!13,Stock no informado en el Excel; se importará en 0
+TUERCA-115,TUERCA 7/8,PHM,SUSPENSION MECANICA,Suspensión mecánica,0,No,materiales/base-2026/40ef5b441991fbfb7027.jpg,1,INV.SUSPENSION MECANICA!15,Stock no informado en el Excel; se importará en 0
+THINER-THI-030,THINER,THINER,THINER,Almacén Pintura,0,No,,1,INV. ALMACEN PINTURA RACSA Y NE!30,Stock no informado en el Excel; se importará en 0
+0-033,0,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/4e676f9e61fe0dd552cc.jpg,1,INV.ALMACEN GENERAL!33,Stock no informado en el Excel; se importará en 0
+ARAND-141,ARANDELA DE PRESION GALVANIZADA 1/4,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!141,Stock no informado en el Excel; se importará en 0
+ARAND-131,ARANDELA DE PRESION GALVANIZADA 3/8,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!131,Stock no informado en el Excel; se importará en 0
+ARAND-142,ARANDELA ESTRUCTURAL NEGRA 1/2,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!142,Stock no informado en el Excel; se importará en 0
+ARAND-143,ARANDELA ESTRUCTURAL NEGRA 5/8,LAMSA,TORNILLERIA,Almacén General,2,Sí,,1,INV.ALMACEN GENERAL!143,
+ARAND-144,ARANDELA ESTRUCTURAL NEGRA 9/16,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!144,Stock no informado en el Excel; se importará en 0
+ARAND-146,ARANDELA PLANA 1/4 GALVANIZADA,LAMSSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!146,Stock no informado en el Excel; se importará en 0
+ARAND-145,ARANDELA PLANA 9/16 NEGRA,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!145,Stock no informado en el Excel; se importará en 0
+ARAND-155,ARANDELA PLANA GALVANIZADA 5/32,LAMSSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!155,Stock no informado en el Excel; se importará en 0
+ARAND-147,ARANDELA PLANA NEGRA 1/2,LAMSSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!147,Stock no informado en el Excel; se importará en 0
+ARAND-156,ARANDELA PRESION GALVANIZADA 5/32,LAMSSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!156,Stock no informado en el Excel; se importará en 0
+CADEN-122,CADENA DE ESLABON GALVANIZADA DE 184,CLAVO NACIONALES,TORNILLERIA,Almacén General,0,No,materiales/base-2026/f3c171508845ad95d2fc.jpg,1,INV.ALMACEN GENERAL!122,Stock no informado en el Excel; se importará en 0
+CADEN-123,CADENA ESLABON GALVANIZADA 5/16,CLAVO NACIONALES,TORNILLERIA,Almacén General,0,No,materiales/base-2026/1b4823ab1cea3a977989.jpg,1,INV.ALMACEN GENERAL!123,Stock no informado en el Excel; se importará en 0
+REMAC-124,REMACHE POP ALUMINIO ALA ANCHA 3/16 * 13/16 * 5/8,CLAVO NACIONALES,TORNILLERIA,Almacén General,0,No,materiales/base-2026/628aee377aebb4b5adc9.jpg,1,INV.ALMACEN GENERAL!124,Stock no informado en el Excel; se importará en 0
+REMAC-125,REMACHE POP DE ALUMINIO 3/16 * 1/2,CLAVO NACIONALES,TORNILLERIA,Almacén General,0,No,materiales/base-2026/628aee377aebb4b5adc9.jpg,1,INV.ALMACEN GENERAL!125,Stock no informado en el Excel; se importará en 0
+REMAC-126,REMACHE POP DE ALUMINIO ALA ANCHA 3/16 * 1/2 * 5/8,CLAVO NACIONALES,TORNILLERIA,Almacén General,0,No,materiales/base-2026/628aee377aebb4b5adc9.jpg,1,INV.ALMACEN GENERAL!126,Stock no informado en el Excel; se importará en 0
+TORNI-086,TORNILLERIA 1*5 1/2 GRADO 5 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!86,Stock no informado en el Excel; se importará en 0
+TORNI-085,TORNILLERIA 1*5 GRADO 5 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!85,Stock no informado en el Excel; se importará en 0
+TORNI-087,TORNILLERIA 1*6 GRADO 5 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!87,Stock no informado en el Excel; se importará en 0
+TORNI-084,TORNILLERIA 7/8*2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!84,Stock no informado en el Excel; se importará en 0
+TORNI-083,TORNILLERIA 7/8*5 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!83,Stock no informado en el Excel; se importará en 0
+TORNI-047,TORNILLO 1/2*1 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/44feb33546efdf256816.jpg,1,INV.ALMACEN GENERAL!47,Stock no informado en el Excel; se importará en 0
+TORNI-046,TORNILLO 1/2*1 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7f995ab69a97d377085e.jpg,1,INV.ALMACEN GENERAL!46,Stock no informado en el Excel; se importará en 0
+TORNI-089,TORNILLO 1/2* 1/2 GRADO 8 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!89,Stock no informado en el Excel; se importará en 0
+TORNI-091,TORNILLO 1/2* 2 1/2 GRADO 8 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!91,Stock no informado en el Excel; se importará en 0
+TORNI-049,TORNILLO 1/2*2 1/2NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!49,Stock no informado en el Excel; se importará en 0
+TORNI-090,TORNILLO 1/2*2 GRADO 8 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!90,Stock no informado en el Excel; se importará en 0
+TORNI-048,TORNILLO 1/2*2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/3ddb83330470ef786f18.jpg,1,INV.ALMACEN GENERAL!48,Stock no informado en el Excel; se importará en 0
+TORNI-092,TORNILLO 1/2* 3 1/2 GRADO 8 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!92,Stock no informado en el Excel; se importará en 0
+TORNI-051,TORNILLO 1/2*3 1/2NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!51,Stock no informado en el Excel; se importará en 0
+TORNI-050,TORNILLO 1/2*3NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!50,Stock no informado en el Excel; se importará en 0
+TORNI-053,TORNILLO 1/2*4 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!53,Stock no informado en el Excel; se importará en 0
+TORNI-052,TORNILLO 1/2*4NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/db5a650a02a2c324cb4a.jpg,1,INV.ALMACEN GENERAL!52,Stock no informado en el Excel; se importará en 0
+TORNI-054,TORNILLO 1/2*5 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!54,Stock no informado en el Excel; se importará en 0
+TORNI-055,TORNILLO 1/2*6 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!55,Stock no informado en el Excel; se importará en 0
+TORNI-011,TORNILLO 1/4* 1 1/2 GALVANIZADO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/f4b352bc54582ecd5222.jpg,1,INV.ALMACEN GENERAL!11,Stock no informado en el Excel; se importará en 0
+TORNI-009,TORNILLO 1/4* 1/2 GALVANIZADO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/f4b352bc54582ecd5222.jpg,1,INV.ALMACEN GENERAL!9,Stock no informado en el Excel; se importará en 0
+TORNI-010,"TORNILLO 1/4* 1""GALVANIZADO GRADO 5",LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/f4b352bc54582ecd5222.jpg,1,INV.ALMACEN GENERAL!10,Stock no informado en el Excel; se importará en 0
+TORNI-013,TORNILLO 1/4* 2 1/2 GALVANIZADO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/804dda29cac7767e0319.jpg,1,INV.ALMACEN GENERAL!13,Stock no informado en el Excel; se importará en 0
+TORNI-012,TORNILLO 1/4* 2 GALVANIZADO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/4fd0119fba1713ed14a7.jpg,1,INV.ALMACEN GENERAL!12,Stock no informado en el Excel; se importará en 0
+TORNI-027,TORNILLO 1/8*1 CABEZA DE GOTA,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/3115d985e7b405825f2d.jpg,1,INV.ALMACEN GENERAL!27,Stock no informado en el Excel; se importará en 0
+TORNI-025,TORNILLO 3/16*1 1/2 CABEZA DE GOTA,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/79b75c76f317d23bff95.jpg,1,INV.ALMACEN GENERAL!25,Stock no informado en el Excel; se importará en 0
+TORNI-026,TORNILLO 3/16*3 CABEZA DE GOTA,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/79b75c76f317d23bff95.jpg,1,INV.ALMACEN GENERAL!26,Stock no informado en el Excel; se importará en 0
+TORNI-073,TORNILLO 3/4*1 1/2 GRADO 5 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/dc3e9eb76efc181f55a5.jpg,1,INV.ALMACEN GENERAL!73,Stock no informado en el Excel; se importará en 0
+TORNI-075,TORNILLO 3/4*2 1/2 GRADO 5 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/dc3e9eb76efc181f55a5.jpg,1,INV.ALMACEN GENERAL!75,Stock no informado en el Excel; se importará en 0
+TORNI-074,TORNILLO 3/4*2 GRADO 5 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/dc3e9eb76efc181f55a5.jpg,1,INV.ALMACEN GENERAL!74,Stock no informado en el Excel; se importará en 0
+TORNI-077,TORNILLO 3/4*3 1/2 GRADO 5 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/f94e7b647f3a7557bf90.jpg,1,INV.ALMACEN GENERAL!77,Stock no informado en el Excel; se importará en 0
+TORNI-076,TORNILLO 3/4*3 GRADO 5 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/6b78ba8637d9255765a8.jpg,1,INV.ALMACEN GENERAL!76,Stock no informado en el Excel; se importará en 0
+TORNI-079,TORNILLO 3/4*4 1/2 GRADO 5 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/f94e7b647f3a7557bf90.jpg,1,INV.ALMACEN GENERAL!79,Stock no informado en el Excel; se importará en 0
+TORNI-078,TORNILLO 3/4*4 GRADO 5 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/f94e7b647f3a7557bf90.jpg,1,INV.ALMACEN GENERAL!78,Stock no informado en el Excel; se importará en 0
+TORNI-081,TORNILLO 3/4*5 1/2 GRADO 5 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/f94e7b647f3a7557bf90.jpg,1,INV.ALMACEN GENERAL!81,Stock no informado en el Excel; se importará en 0
+TORNI-080,TORNILLO 3/4*5 GRADO 5 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/f94e7b647f3a7557bf90.jpg,1,INV.ALMACEN GENERAL!80,Stock no informado en el Excel; se importará en 0
+TORNI-082,TORNILLO 3/4*6 GRADO 5NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!82,Stock no informado en el Excel; se importará en 0
+TORNI-019,TORNILLO 3/8 *1 1/2 GALVANIZADO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/9cf7b59617c95a994a4b.jpg,1,INV.ALMACEN GENERAL!19,Stock no informado en el Excel; se importará en 0
+TORNI-018,TORNILLO 3/8 *1 GALVANIZADO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/5539c6e388eb69c580fd.jpg,1,INV.ALMACEN GENERAL!18,Stock no informado en el Excel; se importará en 0
+TORNI-020,TORNILLO 3/8*2 GRALVANIZADO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/28467c6e6625cc0f0342.jpg,2,INV.ALMACEN GENERAL!20; INV.ALMACEN GENERAL!133,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+TORNI-022,TORNILLO 3/8 *3 1/2 GALVANIZADO SIN GRADO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/f2f20c52999b0baf3fba.jpg,1,INV.ALMACEN GENERAL!22,Stock no informado en el Excel; se importará en 0
+TORNI-021,TORNILLO 3/8 *3 GALVANIZADO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/3be3edd45665f39e06a8.jpg,1,INV.ALMACEN GENERAL!21,Stock no informado en el Excel; se importará en 0
+TORNI-088,TORNILLO 3/8* 3 GRADO 8 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!88,Stock no informado en el Excel; se importará en 0
+TORNI-016,TORNILLO 5/16* 1 1/2 GALVANIZADO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/965297d897660ebf3480.jpg,1,INV.ALMACEN GENERAL!16,Stock no informado en el Excel; se importará en 0
+TORNI-015,TORNILLO 5/16 * 1 1/4 GALVANIZADO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/76737813e2c46e503ad3.jpg,1,INV.ALMACEN GENERAL!15,Stock no informado en el Excel; se importará en 0
+TORNI-014,TORNILLO 5/16 *1 GALVANIZADO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/12e109fd7811e28abee8.jpg,1,INV.ALMACEN GENERAL!14,Stock no informado en el Excel; se importará en 0
+TORNI-017,TORNILLO 5/16*2 GALVANIZADO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/9cf7b59617c95a994a4b.jpg,1,INV.ALMACEN GENERAL!17,Stock no informado en el Excel; se importará en 0
+TORNI-138,TORNILLO 5/16* 4 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!138,Stock no informado en el Excel; se importará en 0
+TORNI-023,TORNILLO 5/32*1 CABEZA GOTA,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/311c073b2d4f0843c545.jpg,1,INV.ALMACEN GENERAL!23,Stock no informado en el Excel; se importará en 0
+TORNI-024,TORNILLO 5/32*2 CABEZA GOTA,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/311c073b2d4f0843c545.jpg,1,INV.ALMACEN GENERAL!24,Stock no informado en el Excel; se importará en 0
+TORNI-065,TORNILLO 5/8*1 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/dc3e9eb76efc181f55a5.jpg,1,INV.ALMACEN GENERAL!65,Stock no informado en el Excel; se importará en 0
+TORNI-064,TORNILLO 5/8*1 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/dc3e9eb76efc181f55a5.jpg,1,INV.ALMACEN GENERAL!64,Stock no informado en el Excel; se importará en 0
+TORNI-096,TORNILLO 5/8* 2 1 1/2 GRADO 8,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!96,Stock no informado en el Excel; se importará en 0
+TORNI-067,TORNILLO 5/8*2 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/dc3e9eb76efc181f55a5.jpg,1,INV.ALMACEN GENERAL!67,Stock no informado en el Excel; se importará en 0
+TORNI-066,TORNILLO 5/8*2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/3bdf6e98f047462b2269.jpg,1,INV.ALMACEN GENERAL!66,Stock no informado en el Excel; se importará en 0
+TORNI-069,TORNILLO 5/8*3 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!69,Stock no informado en el Excel; se importará en 0
+TORNI-068,TORNILLO 5/8*3 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!68,Stock no informado en el Excel; se importará en 0
+TORNI-132,TORNILLO 5/8*3 NEGRO GRADO 8,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!132,Stock no informado en el Excel; se importará en 0
+TORNI-070,TORNILLO 5/8*4 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!70,Stock no informado en el Excel; se importará en 0
+TORNI-071,TORNILLO 5/8*4 /1 2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!71,Stock no informado en el Excel; se importará en 0
+TORNI-072,TORNILLO 5/8*5 GRADO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!72,Stock no informado en el Excel; se importará en 0
+TORNI-040,TORNILLO 7/16 * 1 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/43dc1f76b8b4ec218407.jpg,2,INV.ALMACEN GENERAL!40; INV.ALMACEN GENERAL!129,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+TORNI-039,"TORNILLO 7/16 *1"" NEGRO GRADO 5",LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/43dc1f76b8b4ec218407.jpg,2,INV.ALMACEN GENERAL!39; INV.ALMACEN GENERAL!130,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+TORNI-042,TORNILLO 7/16*2 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/6a3e09e87574fbcf6daf.jpg,1,INV.ALMACEN GENERAL!42,Stock no informado en el Excel; se importará en 0
+TORNI-041,TORNILLO 7/16*2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/43dc1f76b8b4ec218407.jpg,1,INV.ALMACEN GENERAL!41,Stock no informado en el Excel; se importará en 0
+TORNI-044,TORNILLO 7/16*3 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/50daba89bf1f19228daf.jpg,1,INV.ALMACEN GENERAL!44,Stock no informado en el Excel; se importará en 0
+TORNI-043,TORNILLO 7/16*3NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/50daba89bf1f19228daf.jpg,1,INV.ALMACEN GENERAL!43,Stock no informado en el Excel; se importará en 0
+TORNI-045,TORNILLO 7/16* 4 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/fb02b940cfb985d18637.jpg,1,INV.ALMACEN GENERAL!45,Stock no informado en el Excel; se importará en 0
+TORNI-057,TORNILLO 9/16*1 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/43dc1f76b8b4ec218407.jpg,1,INV.ALMACEN GENERAL!57,Stock no informado en el Excel; se importará en 0
+TORNI-056,TORNILLO 9/16*1 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/43dc1f76b8b4ec218407.jpg,1,INV.ALMACEN GENERAL!56,Stock no informado en el Excel; se importará en 0
+TORNI-059,TORNILLO 9/16*2 1/2NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!59,Stock no informado en el Excel; se importará en 0
+TORNI-058,TORNILLO 9/16*2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/43dc1f76b8b4ec218407.jpg,1,INV.ALMACEN GENERAL!58,Stock no informado en el Excel; se importará en 0
+TORNI-061,TORNILLO 9/16*3 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!61,Stock no informado en el Excel; se importará en 0
+TORNI-060,TORNILLO 9/16*3 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/c73d6bf0cedd6404889e.jpg,1,INV.ALMACEN GENERAL!60,Stock no informado en el Excel; se importará en 0
+TORNI-062,TORNILLO 9/16*4 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/09bcfcba1160edb9c731.jpg,1,INV.ALMACEN GENERAL!62,Stock no informado en el Excel; se importará en 0
+TORNI-063,TORNILLO 9/16*5 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/d385c14a7ce21ce651ab.jpg,1,INV.ALMACEN GENERAL!63,Stock no informado en el Excel; se importará en 0
+TORNI-093,TORNILLO DE 1/2 * 4 GRADO 8 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/f94e7b647f3a7557bf90.jpg,2,INV.ALMACEN GENERAL!93; INV.ALMACEN GENERAL!97,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+TORNI-031,TORNILLO DE 3/8*1 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/4e676f9e61fe0dd552cc.jpg,1,INV.ALMACEN GENERAL!31,Stock no informado en el Excel; se importará en 0
+TORNI-030,TORNILLO DE 3/8*1 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/ca7ee99ae9f1462d3f57.jpg,1,INV.ALMACEN GENERAL!30,Stock no informado en el Excel; se importará en 0
+TORNI-032,TORNILLO DE 3/8*2NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/ca7ee99ae9f1462d3f57.jpg,1,INV.ALMACEN GENERAL!32,Stock no informado en el Excel; se importará en 0
+TORNI-034,TORNILLO DE 3/8*3 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/4e676f9e61fe0dd552cc.jpg,1,INV.ALMACEN GENERAL!34,Stock no informado en el Excel; se importará en 0
+TORNI-035,TORNILLO DE 3/8*3 /12 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/8e0d933d44ba7a8c12f2.jpg,1,INV.ALMACEN GENERAL!35,Stock no informado en el Excel; se importará en 0
+TORNI-037,TORNILLO DE 3/8*4 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/8e0d933d44ba7a8c12f2.jpg,1,INV.ALMACEN GENERAL!37,Stock no informado en el Excel; se importará en 0
+TORNI-036,TORNILLO DE 3/8*4 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/2b08e51c431315b90914.jpg,1,INV.ALMACEN GENERAL!36,Stock no informado en el Excel; se importará en 0
+TORNI-038,TORNILLO DE 3/8*5NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/2b08e51c431315b90914.jpg,1,INV.ALMACEN GENERAL!38,Stock no informado en el Excel; se importará en 0
+TORNI-028,TORNILLO DE 5/16*2 1/2 NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/6de78c0348839363542e.jpg,1,INV.ALMACEN GENERAL!28,Stock no informado en el Excel; se importará en 0
+TORNI-029,TORNILLO DE 5/16*3NEGRO GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/8e0d933d44ba7a8c12f2.jpg,1,INV.ALMACEN GENERAL!29,Stock no informado en el Excel; se importará en 0
+TORNI-094,TORNILLO DE 5/8 * 1 1/2 GRADO 8 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!94,Stock no informado en el Excel; se importará en 0
+TORNI-095,TORNILLO DE 5/8* 2 GRADO 8 NEGRO,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/7eb065852bb0c7620071.jpg,1,INV.ALMACEN GENERAL!95,Stock no informado en el Excel; se importará en 0
+TORNI-153,TORNILLO ESTUFA 1/4 * 1 1/2,LAMSSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!153,Stock no informado en el Excel; se importará en 0
+TORNI-152,TORNILLO ESTUFA 5/32 * 1/2,LAMSSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!152,Stock no informado en el Excel; se importará en 0
+TORNI-151,TORNILLO ESTUFA 5/32 * 3/4,LAMSSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!151,Stock no informado en el Excel; se importará en 0
+TORNI-148,TORNILLO GALVANIZADO GRADO 5 1/4 * 1/2,LAMSSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!148,Stock no informado en el Excel; se importará en 0
+TORNI-149,TORNILLO GALVANIZADO GRADO 5 1/4 * 3/4,LAMSSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!149,Stock no informado en el Excel; se importará en 0
+TORNI-150,TORNILLO NEGRO 3/4 * 1 1/2 GRADO 8,LAMSSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!150,Stock no informado en el Excel; se importará en 0
+TORNI-127,TORNILLO NEGRO 3/4 * 3 1/2 GRADO 8,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!127,Stock no informado en el Excel; se importará en 0
+TORNI-128,TORNILLO NEGRO 3/8 * 1 1/4 GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!128,Stock no informado en el Excel; se importará en 0
+TUERC-140,TUERCA 3/8 NEGRA GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!140,Stock no informado en el Excel; se importará en 0
+TUERC-139,TUERCA 5/16 NEGRA GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!139,Stock no informado en el Excel; se importará en 0
+TUERC-120,"TUERCA ACME G2 NEGRA MAQUINADA DE 1 1/2""",LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!120,Stock no informado en el Excel; se importará en 0
+TUERC-134,TUERCA GALVANIZADA 3/8 GRADO 5,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!134,Stock no informado en el Excel; se importará en 0
+TUERC-100,"TUERCA GALVANIZADA GRADO 5 DE 1/4""",LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/3b8d2ecccec7cf4d8361.jpg,1,INV.ALMACEN GENERAL!100,Stock no informado en el Excel; se importará en 0
+TUERC-098,TUERCA GALVANIZADA GRADO 5 DE 1/8,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/bb0ead1d33e5bdfb6269.jpg,1,INV.ALMACEN GENERAL!98,Stock no informado en el Excel; se importará en 0
+TUERC-099,TUERCA GALVANIZADA GRADO 5 DE 5/16,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/bb0ead1d33e5bdfb6269.jpg,1,INV.ALMACEN GENERAL!99,Stock no informado en el Excel; se importará en 0
+TUERC-154,TUERCA HEXAGONAL GALVANIZADA 5/32,LAMSSA,TORNILLERIA,Almacén General,0,No,,2,INV.ALMACEN GENERAL!154; INV.ALMACEN GENERAL!157,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+TUERC-119,"TUERCA NEGRA CUERDA FINA 1""",LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!119,Stock no informado en el Excel; se importará en 0
+TUERC-118,TUERCA NEGRA CUERDA FINA 3/4,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!118,Stock no informado en el Excel; se importará en 0
+TUERC-115,"TUERCA NEGRA GRADO 5 DE 1""",LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/3b8d2ecccec7cf4d8361.jpg,1,INV.ALMACEN GENERAL!115,Stock no informado en el Excel; se importará en 0
+TUERC-110,"TUERCA NEGRA GRADO 5 DE 1/2""",LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/3b8d2ecccec7cf4d8361.jpg,1,INV.ALMACEN GENERAL!110,Stock no informado en el Excel; se importará en 0
+TUERC-113,TUERCA NEGRA GRADO 5 DE 3/4,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/3b8d2ecccec7cf4d8361.jpg,1,INV.ALMACEN GENERAL!113,Stock no informado en el Excel; se importará en 0
+TUERC-101,"TUERCA NEGRA GRADO 5 DE 3/8""",LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/3b8d2ecccec7cf4d8361.jpg,1,INV.ALMACEN GENERAL!101,Stock no informado en el Excel; se importará en 0
+TUERC-112,TUERCA NEGRA GRADO 5 DE 5/8,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/3b8d2ecccec7cf4d8361.jpg,1,INV.ALMACEN GENERAL!112,Stock no informado en el Excel; se importará en 0
+TUERC-109,"TUERCA NEGRA GRADO 5 DE 7/16""",LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!109,Stock no informado en el Excel; se importará en 0
+TUERC-114,TUERCA NEGRA GRADO 5 DE 7/8,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/3b8d2ecccec7cf4d8361.jpg,1,INV.ALMACEN GENERAL!114,Stock no informado en el Excel; se importará en 0
+TUERC-111,TUERCA NEGRA GRADO 5 DE 9/16,LAMSA,TORNILLERIA,Almacén General,0,No,materiales/base-2026/3b8d2ecccec7cf4d8361.jpg,1,INV.ALMACEN GENERAL!111,Stock no informado en el Excel; se importará en 0
+TUERC-137,TUERCA SEGURIDAD GALVANIZADA 1/2,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!137,Stock no informado en el Excel; se importará en 0
+TUERC-136,TUERCA SEGURIDAD GALVANIZADA 3/8,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!136,Stock no informado en el Excel; se importará en 0
+TUERC-135,TUERCA SEGURIDAD GALVANIZADA 5/8,LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!135,Stock no informado en el Excel; se importará en 0
+VARIL-121,"VARILLA ROSCADA CUERDA ACME 1 1/2""",LAMSA,TORNILLERIA,Almacén General,0,No,,1,INV.ALMACEN GENERAL!121,Stock no informado en el Excel; se importará en 0
+CODO I-216,"CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 45° * 1""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/1ae0ce677e4ed85c6dd9.jpg,1,INV.TUBOS MONTERREY!216,Stock no informado en el Excel; se importará en 0
+CODO I-215,"CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 45° * 1 1/2""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/1ae0ce677e4ed85c6dd9.jpg,1,INV.TUBOS MONTERREY!215,Stock no informado en el Excel; se importará en 0
+CODO I-218,CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 45° * 1/2,SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/f9e525577403775db399.jpg,1,INV.TUBOS MONTERREY!218,Stock no informado en el Excel; se importará en 0
+CODO I-214,"CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 45° * 2""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/1ae0ce677e4ed85c6dd9.jpg,1,INV.TUBOS MONTERREY!214,Stock no informado en el Excel; se importará en 0
+CODO I-213,CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 45° * 3,SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/f9e525577403775db399.jpg,1,INV.TUBOS MONTERREY!213,Stock no informado en el Excel; se importará en 0
+CODO I-217,"CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 45° * 3/4""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/f9e525577403775db399.jpg,1,INV.TUBOS MONTERREY!217,Stock no informado en el Excel; se importará en 0
+CODO I-212,CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 45° * 4,SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c616cfa334c9b81e537f.jpg,1,INV.TUBOS MONTERREY!212,Stock no informado en el Excel; se importará en 0
+CODO I-201,CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 90° * 1,SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/b011db35b1b70a2ec372.jpg,1,INV.TUBOS MONTERREY!201,Stock no informado en el Excel; se importará en 0
+CODO I-200,CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 90° * 1 1/2,SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/b011db35b1b70a2ec372.jpg,1,INV.TUBOS MONTERREY!200,Stock no informado en el Excel; se importará en 0
+CODO I-203,CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 90° * 1/2,SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/b011db35b1b70a2ec372.jpg,1,INV.TUBOS MONTERREY!203,Stock no informado en el Excel; se importará en 0
+CODO I-199,"CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 90° * 2""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/b011db35b1b70a2ec372.jpg,1,INV.TUBOS MONTERREY!199,Stock no informado en el Excel; se importará en 0
+CODO I-198,"CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 90° * 3""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/b011db35b1b70a2ec372.jpg,1,INV.TUBOS MONTERREY!198,Stock no informado en el Excel; se importará en 0
+CODO I-202,CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 90° * 3/4,SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/b011db35b1b70a2ec372.jpg,1,INV.TUBOS MONTERREY!202,Stock no informado en el Excel; se importará en 0
+CODO I-197,"CODO INOXIDABLE ROSCADO HEMBRA TIPO 304 DE 90° * 4""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/b011db35b1b70a2ec372.jpg,1,INV.TUBOS MONTERREY!197,Stock no informado en el Excel; se importará en 0
+CODO I-196,CODO INOXIDABLE SOLDABLE TIPO 304 90° * 1/2,SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/9ab868485d41579ae02e.jpg,1,INV.TUBOS MONTERREY!196,Stock no informado en el Excel; se importará en 0
+CODO I-195,CODO INOXIDABLE SOLDABLE TIPO 304 90° * 3/4,SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/9ab868485d41579ae02e.jpg,1,INV.TUBOS MONTERREY!195,Stock no informado en el Excel; se importará en 0
+CODO I-209,"CODO INOXIDABLE SOLDABLE TIPO 304 DE 45° * 1""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/ec6db6c5d110af6f45d6.jpg,1,INV.TUBOS MONTERREY!209,Stock no informado en el Excel; se importará en 0
+CODO I-208,"CODO INOXIDABLE SOLDABLE TIPO 304 DE 45° * 1 1/2""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/56ff00dab79230e1e29f.jpg,1,INV.TUBOS MONTERREY!208,Stock no informado en el Excel; se importará en 0
+CODO I-211,CODO INOXIDABLE SOLDABLE TIPO 304 DE 45° * 1/2,SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/56ff00dab79230e1e29f.jpg,1,INV.TUBOS MONTERREY!211,Stock no informado en el Excel; se importará en 0
+CODO I-207,"CODO INOXIDABLE SOLDABLE TIPO 304 DE 45° * 2""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/68e2ce4e6ce4b0847698.jpg,1,INV.TUBOS MONTERREY!207,Stock no informado en el Excel; se importará en 0
+CODO I-205,"CODO INOXIDABLE SOLDABLE TIPO 304 DE 45° * 3""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/cc57ece509c56bd67bd4.jpg,1,INV.TUBOS MONTERREY!205,Stock no informado en el Excel; se importará en 0
+CODO I-210,"CODO INOXIDABLE SOLDABLE TIPO 304 DE 45° * 3/4""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/56ff00dab79230e1e29f.jpg,1,INV.TUBOS MONTERREY!210,Stock no informado en el Excel; se importará en 0
+CODO I-204,"CODO INOXIDABLE SOLDABLE TIPO 304 DE 45° * 4""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/56ff00dab79230e1e29f.jpg,2,INV.TUBOS MONTERREY!204; INV.TUBOS MONTERREY!206,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+CODO I-194,"CODO INOXIDABLE TIPO 304 SOLDABLE 90° * 1""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/9ab868485d41579ae02e.jpg,1,INV.TUBOS MONTERREY!194,Stock no informado en el Excel; se importará en 0
+CODO I-193,"CODO INOXIDABLE TIPO 304 SOLDABLE 90° * 1 1/2""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/9ab868485d41579ae02e.jpg,1,INV.TUBOS MONTERREY!193,Stock no informado en el Excel; se importará en 0
+CODO I-192,"CODO INOXIDABLE TIPO 304 SOLDABLE 90° * 2""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/9ab868485d41579ae02e.jpg,1,INV.TUBOS MONTERREY!192,Stock no informado en el Excel; se importará en 0
+CODO I-191,"CODO INOXIDABLE TIPO 304 SOLDABLE 90° * 3""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/9ab868485d41579ae02e.jpg,1,INV.TUBOS MONTERREY!191,Stock no informado en el Excel; se importará en 0
+CODO I-190,CODO INOXIDABLE TIPO 304 SOLDABLE 90° * 4,SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/9ab868485d41579ae02e.jpg,1,INV.TUBOS MONTERREY!190,Stock no informado en el Excel; se importará en 0
+CODO N-040,"CODO NEGRO SOLDABLE CED 30 1 1/2 "" * 45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d9ab3e98265b3762dd0b.jpg,1,INV.TUBOS MONTERREY!40,Stock no informado en el Excel; se importará en 0
+CODO N-032,"CODO NEGRO SOLDABLE CED 30 1 1/2 "" * 90°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d1e96ebcdbc87ecec227.jpg,1,INV.TUBOS MONTERREY!32,Stock no informado en el Excel; se importará en 0
+CODO N-043,"CODO NEGRO SOLDABLE CED 30 1/2"" * 45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d9ab3e98265b3762dd0b.jpg,1,INV.TUBOS MONTERREY!43,Stock no informado en el Excel; se importará en 0
+CODO N-035,"CODO NEGRO SOLDABLE CED 30 1/2"" * 90°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/02bdf69abac718fdb70c.jpg,1,INV.TUBOS MONTERREY!35,Stock no informado en el Excel; se importará en 0
+CODO N-041,"CODO NEGRO SOLDABLE CED 30 1"" * 45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d9ab3e98265b3762dd0b.jpg,1,INV.TUBOS MONTERREY!41,Stock no informado en el Excel; se importará en 0
+CODO N-033,"CODO NEGRO SOLDABLE CED 30 1"" * 90°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d1e96ebcdbc87ecec227.jpg,1,INV.TUBOS MONTERREY!33,Stock no informado en el Excel; se importará en 0
+CODO N-039,"CODO NEGRO SOLDABLE CED 30 2"" *45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d9ab3e98265b3762dd0b.jpg,1,INV.TUBOS MONTERREY!39,Stock no informado en el Excel; se importará en 0
+CODO N-031,"CODO NEGRO SOLDABLE CED 30 2"" * 90°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/012ea3652a8b9da4f275.jpg,1,INV.TUBOS MONTERREY!31,Stock no informado en el Excel; se importará en 0
+CODO N-042,"CODO NEGRO SOLDABLE CED 30 3/4"" * 45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d9ab3e98265b3762dd0b.jpg,1,INV.TUBOS MONTERREY!42,Stock no informado en el Excel; se importará en 0
+CODO N-034,"CODO NEGRO SOLDABLE CED 30 3/4"" * 90°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/012ea3652a8b9da4f275.jpg,1,INV.TUBOS MONTERREY!34,Stock no informado en el Excel; se importará en 0
+CODO N-038,"CODO NEGRO SOLDABLE CED 30 3""*45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d9ab3e98265b3762dd0b.jpg,1,INV.TUBOS MONTERREY!38,Stock no informado en el Excel; se importará en 0
+CODO N-030,"CODO NEGRO SOLDABLE CED 30 3"" * 90°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/012ea3652a8b9da4f275.jpg,1,INV.TUBOS MONTERREY!30,Stock no informado en el Excel; se importará en 0
+CODO N-037,"CODO NEGRO SOLDABLE CED 30 4"" *45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d9ab3e98265b3762dd0b.jpg,1,INV.TUBOS MONTERREY!37,Stock no informado en el Excel; se importará en 0
+CODO N-029,"CODO NEGRO SOLDABLE CED 30 4"" * 90°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/b4439ad9b60580a85b10.jpg,1,INV.TUBOS MONTERREY!29,Stock no informado en el Excel; se importará en 0
+CODO N-036,"CODO NEGRO SOLDABLE CED 30 5"" * 45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d9ab3e98265b3762dd0b.jpg,1,INV.TUBOS MONTERREY!36,Stock no informado en el Excel; se importará en 0
+CODO N-028,"CODO NEGRO SOLDABLE CED 30 5"" * 90°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/02bdf69abac718fdb70c.jpg,1,INV.TUBOS MONTERREY!28,Stock no informado en el Excel; se importará en 0
+CODO N-027,"CODO NEGRO SOLDABLE CED 30 6"" * 90°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/02bdf69abac718fdb70c.jpg,1,INV.TUBOS MONTERREY!27,Stock no informado en el Excel; se importará en 0
+CODO N-023,"CODO NEGRO SOLDABLE CED 40 1 1/2""*45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/f9b86934dc40dae2b2b4.jpg,1,INV.TUBOS MONTERREY!23,Stock no informado en el Excel; se importará en 0
+CODO N-014,CODO NEGRO SOLDABLE CED 40 1 1/2 * 90°,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/b4439ad9b60580a85b10.jpg,1,INV.TUBOS MONTERREY!14,Stock no informado en el Excel; se importará en 0
+CODO N-025,"CODO NEGRO SOLDABLE CED 40 1/2"" * 45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d9ab3e98265b3762dd0b.jpg,1,INV.TUBOS MONTERREY!25,Stock no informado en el Excel; se importará en 0
+CODO N-017,"CODO NEGRO SOLDABLE CED 40 1/2"" * 90°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/012ea3652a8b9da4f275.jpg,1,INV.TUBOS MONTERREY!17,Stock no informado en el Excel; se importará en 0
+CODO N-024,"CODO NEGRO SOLDABLE CED 40 1"" * 45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/f9b86934dc40dae2b2b4.jpg,1,INV.TUBOS MONTERREY!24,Stock no informado en el Excel; se importará en 0
+CODO N-015,CODO NEGRO SOLDABLE CED 40 1*90°,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/012ea3652a8b9da4f275.jpg,1,INV.TUBOS MONTERREY!15,Stock no informado en el Excel; se importará en 0
+CODO N-022,"CODO NEGRO SOLDABLE CED 40 2"" * 45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/0402c166f7c4357e3c4b.jpg,1,INV.TUBOS MONTERREY!22,Stock no informado en el Excel; se importará en 0
+CODO N-013,CODO NEGRO SOLDABLE CED 40 2*90°,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d1e96ebcdbc87ecec227.jpg,1,INV.TUBOS MONTERREY!13,Stock no informado en el Excel; se importará en 0
+CODO N-026,"CODO NEGRO SOLDABLE CED 40 3/4"" * 45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d9ab3e98265b3762dd0b.jpg,1,INV.TUBOS MONTERREY!26,Stock no informado en el Excel; se importará en 0
+CODO N-016,"CODO NEGRO SOLDABLE CED 40 3/4"" * 90°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/012ea3652a8b9da4f275.jpg,2,INV.TUBOS MONTERREY!16; INV.TUBOS MONTERREY!18,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+CODO N-021,"CODO NEGRO SOLDABLE CED 40 3"" * 45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/d9ab3e98265b3762dd0b.jpg,1,INV.TUBOS MONTERREY!21,Stock no informado en el Excel; se importará en 0
+CODO N-012,CODO NEGRO SOLDABLE CED 40 3*90°,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/132db1a007c00c734682.jpg,1,INV.TUBOS MONTERREY!12,Stock no informado en el Excel; se importará en 0
+CODO N-020,"CODO NEGRO SOLDABLE CED 40 4"" * 45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/1650ecef49a4973844d8.jpg,1,INV.TUBOS MONTERREY!20,Stock no informado en el Excel; se importará en 0
+CODO N-011,CODO NEGRO SOLDABLE CED 40 4*90°,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/012ea3652a8b9da4f275.jpg,1,INV.TUBOS MONTERREY!11,Stock no informado en el Excel; se importará en 0
+CODO N-019,CODO NEGRO SOLDABLE CED 40 5 * 45°,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/b44bc420944936acbf1e.jpg,1,INV.TUBOS MONTERREY!19,Stock no informado en el Excel; se importará en 0
+CODO N-010,CODO NEGRO SOLDABLE CED 40 DE 5*90°,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/b4439ad9b60580a85b10.jpg,1,INV.TUBOS MONTERREY!10,Stock no informado en el Excel; se importará en 0
+CODO N-009,CODO NEGRO SOLDABLE CED 40 DE 6*90°,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/012ea3652a8b9da4f275.jpg,1,INV.TUBOS MONTERREY!9,Stock no informado en el Excel; se importará en 0
+CODO -069,"CODO ROSCADO ACERO NEGRO 45° * 1""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/200ef4e22559e18f15d7.jpg,1,INV.TUBOS MONTERREY!69,Stock no informado en el Excel; se importará en 0
+CODO -068,"CODO ROSCADO ACERO NEGRO 45° * 1 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/af1a16c001454ddc418c.jpg,1,INV.TUBOS MONTERREY!68,Stock no informado en el Excel; se importará en 0
+CODO -071,CODO ROSCADO ACERO NEGRO 45° * 1/2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/200ef4e22559e18f15d7.jpg,1,INV.TUBOS MONTERREY!71,Stock no informado en el Excel; se importará en 0
+CODO -067,"CODO ROSCADO ACERO NEGRO 45° * 2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/200ef4e22559e18f15d7.jpg,1,INV.TUBOS MONTERREY!67,Stock no informado en el Excel; se importará en 0
+CODO -066,"CODO ROSCADO ACERO NEGRO 45° * 3""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/200ef4e22559e18f15d7.jpg,1,INV.TUBOS MONTERREY!66,Stock no informado en el Excel; se importará en 0
+CODO -070,"CODO ROSCADO ACERO NEGRO 45° * 3/4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/af1a16c001454ddc418c.jpg,1,INV.TUBOS MONTERREY!70,Stock no informado en el Excel; se importará en 0
+CODO -065,"CODO ROSCADO ACERO NEGRO 45° * 4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/200ef4e22559e18f15d7.jpg,1,INV.TUBOS MONTERREY!65,Stock no informado en el Excel; se importará en 0
+CODO R-062,"CODO ROSCADO ACERO NEGRO 90° * 1""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/4aeef9587a2c4e4b2c7f.jpg,1,INV.TUBOS MONTERREY!62,Stock no informado en el Excel; se importará en 0
+CODO R-061,"CODO ROSCADO ACERO NEGRO 90° * 1 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/6195ad92681038a54d45.jpg,1,INV.TUBOS MONTERREY!61,Stock no informado en el Excel; se importará en 0
+CODO R-064,"CODO ROSCADO ACERO NEGRO 90° * 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/916500ed42099aa40e98.jpg,1,INV.TUBOS MONTERREY!64,Stock no informado en el Excel; se importará en 0
+CODO R-060,"CODO ROSCADO ACERO NEGRO 90° * 2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/6195ad92681038a54d45.jpg,1,INV.TUBOS MONTERREY!60,Stock no informado en el Excel; se importará en 0
+CODO R-059,CODO ROSCADO ACERO NEGRO 90° * 3,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/6195ad92681038a54d45.jpg,1,INV.TUBOS MONTERREY!59,Stock no informado en el Excel; se importará en 0
+CODO R-063,"CODO ROSCADO ACERO NEGRO 90° *3/4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/916500ed42099aa40e98.jpg,1,INV.TUBOS MONTERREY!63,Stock no informado en el Excel; se importará en 0
+CODO R-058,"CODO ROSCADO ACERO NEGRO 90° * 4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/6195ad92681038a54d45.jpg,1,INV.TUBOS MONTERREY!58,Stock no informado en el Excel; se importará en 0
+CODO R-083,CODO ROSCADO GALVANIZADO 45° * 1,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/55963cfd3a08fbb548ce.jpg,1,INV.TUBOS MONTERREY!83,Stock no informado en el Excel; se importará en 0
+CODO R-082,CODO ROSCADO GALVANIZADO 45° * 1 1/2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/55963cfd3a08fbb548ce.jpg,1,INV.TUBOS MONTERREY!82,Stock no informado en el Excel; se importará en 0
+CODO R-084,CODO ROSCADO GALVANIZADO 45° * 1/2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/55963cfd3a08fbb548ce.jpg,1,INV.TUBOS MONTERREY!84,Stock no informado en el Excel; se importará en 0
+CODO R-081,CODO ROSCADO GALVANIZADO 45° * 2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/55963cfd3a08fbb548ce.jpg,1,INV.TUBOS MONTERREY!81,Stock no informado en el Excel; se importará en 0
+CODO R-080,CODO ROSCADO GALVANIZADO 45° * 3,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/55963cfd3a08fbb548ce.jpg,1,INV.TUBOS MONTERREY!80,Stock no informado en el Excel; se importará en 0
+CODO R-085,CODO ROSCADO GALVANIZADO 45° * 3/4,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/55963cfd3a08fbb548ce.jpg,1,INV.TUBOS MONTERREY!85,Stock no informado en el Excel; se importará en 0
+CODO R-079,CODO ROSCADO GALVANIZADO 45° * 4,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/55963cfd3a08fbb548ce.jpg,1,INV.TUBOS MONTERREY!79,Stock no informado en el Excel; se importará en 0
+CODO R-076,"CODO ROSCADO GALVANIZADO 90° * 1""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/17b7cd4f1a0c10a97321.jpg,1,INV.TUBOS MONTERREY!76,Stock no informado en el Excel; se importará en 0
+CODO R-075,"CODO ROSCADO GALVANIZADO 90° * 1 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/17b7cd4f1a0c10a97321.jpg,1,INV.TUBOS MONTERREY!75,Stock no informado en el Excel; se importará en 0
+CODO R-078,"CODO ROSCADO GALVANIZADO 90° * 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/17b7cd4f1a0c10a97321.jpg,1,INV.TUBOS MONTERREY!78,Stock no informado en el Excel; se importará en 0
+CODO R-074,"CODO ROSCADO GALVANIZADO 90° * 2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/17b7cd4f1a0c10a97321.jpg,1,INV.TUBOS MONTERREY!74,Stock no informado en el Excel; se importará en 0
+CODO R-073,CODO ROSCADO GALVANIZADO 90° *3,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/17b7cd4f1a0c10a97321.jpg,1,INV.TUBOS MONTERREY!73,Stock no informado en el Excel; se importará en 0
+CODO R-077,"CODO ROSCADO GALVANIZADO 90° * 3/4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/ad37a9d42b0dc41209f8.jpg,1,INV.TUBOS MONTERREY!77,Stock no informado en el Excel; se importará en 0
+CODO R-072,CODO ROSCADO GALVANIZADO 90° * 4,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/17b7cd4f1a0c10a97321.jpg,1,INV.TUBOS MONTERREY!72,Stock no informado en el Excel; se importará en 0
+CODO S-235,"CODO SOLDABLE NEGRO CEDULA 80 2"" * 45°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,,1,INV.TUBOS MONTERREY!235,Stock no informado en el Excel; se importará en 0
+CODO S-234,"CODO SOLDABLE NEGRO CEDULA 80 DE 2""*90°",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,,1,INV.TUBOS MONTERREY!234,Stock no informado en el Excel; se importará en 0
+COPLE -148,"COPLE ACERO AL CARBON DE 1""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/4df75e028e4aee9b4066.jpg,1,INV.TUBOS MONTERREY!148,Stock no informado en el Excel; se importará en 0
+COPLE -147,COPLE ACERO AL CARBON DE 1 1/2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/9f1e0c130005bcb9d1ef.jpg,1,INV.TUBOS MONTERREY!147,Stock no informado en el Excel; se importará en 0
+COPLE -150,COPLE ACERO AL CARBON DE 1/2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/4df75e028e4aee9b4066.jpg,1,INV.TUBOS MONTERREY!150,Stock no informado en el Excel; se importará en 0
+COPLE -151,COPLE ACERO AL CARBON DE 1/4,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/4df75e028e4aee9b4066.jpg,1,INV.TUBOS MONTERREY!151,Stock no informado en el Excel; se importará en 0
+COPLE -146,COPLE ACERO AL CARBON DE 2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/9f1e0c130005bcb9d1ef.jpg,1,INV.TUBOS MONTERREY!146,Stock no informado en el Excel; se importará en 0
+COPLE -145,COPLE ACERO AL CARBON DE 2 1/2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/4df75e028e4aee9b4066.jpg,1,INV.TUBOS MONTERREY!145,Stock no informado en el Excel; se importará en 0
+COPLE -144,"COPLE ACERO AL CARBON DE 3""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/4df75e028e4aee9b4066.jpg,1,INV.TUBOS MONTERREY!144,Stock no informado en el Excel; se importará en 0
+COPLE -149,COPLE ACERO AL CARBON DE 3/4,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/4df75e028e4aee9b4066.jpg,1,INV.TUBOS MONTERREY!149,Stock no informado en el Excel; se importará en 0
+COPLE -152,COPLE ACERO AL CARBON DE 3/8,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/4df75e028e4aee9b4066.jpg,1,INV.TUBOS MONTERREY!152,Stock no informado en el Excel; se importará en 0
+COPLE -143,"COPLE ACERO AL CARBON DE 4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/4df75e028e4aee9b4066.jpg,1,INV.TUBOS MONTERREY!143,Stock no informado en el Excel; se importará en 0
+COPLE -153,COPLE DE ACERO AL CARBON 1/8,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/4df75e028e4aee9b4066.jpg,1,INV.TUBOS MONTERREY!153,Stock no informado en el Excel; se importará en 0
+NIPLE -124,NIPLE ACERO AL CARBON DE 1 1/2 CUERDA CORRIDA,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/86c275ed4321e038ef5b.jpg,1,INV.TUBOS MONTERREY!124,Stock no informado en el Excel; se importará en 0
+NIPLE -119,NIPLE ACERO AL CARBON DE 1 1/2 * 10,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!119,Stock no informado en el Excel; se importará en 0
+NIPLE -123,NIPLE ACERO AL CARBON DE 1 1/2 * 4,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!123,Stock no informado en el Excel; se importará en 0
+NIPLE -122,NIPLE ACERO AL CARBON DE 1 1/2 * 5,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!122,Stock no informado en el Excel; se importará en 0
+NIPLE -121,NIPLE ACERO AL CARBON DE 1 1/2 * 6,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!121,Stock no informado en el Excel; se importará en 0
+NIPLE -120,NIPLE ACERO AL CARBON DE 1 1/2 * 8,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!120,Stock no informado en el Excel; se importará en 0
+NIPLE -142,NIPLE ACERO AL CARBON DE 1/2 CUERDA CORRIDA,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/86c275ed4321e038ef5b.jpg,1,INV.TUBOS MONTERREY!142,Stock no informado en el Excel; se importará en 0
+NIPLE -137,NIPLE ACERO AL CARBON DE 1/2 *10,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!137,Stock no informado en el Excel; se importará en 0
+NIPLE -141,NIPLE ACERO AL CARBON DE 1/2 * 4,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!141,Stock no informado en el Excel; se importará en 0
+NIPLE -140,NIPLE ACERO AL CARBON DE 1/2 * 5,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!140,Stock no informado en el Excel; se importará en 0
+NIPLE -139,NIPLE ACERO AL CARBON DE 1/2 * 6,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!139,Stock no informado en el Excel; se importará en 0
+NIPLE -138,NIPLE ACERO AL CARBON DE 1/2 * 8,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!138,Stock no informado en el Excel; se importará en 0
+NIPLE -125,"NIPLE ACERO AL CARBON DE 1"" * 10",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!125,Stock no informado en el Excel; se importará en 0
+NIPLE -129,"NIPLE ACERO AL CARBON DE 1"" * 4",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!129,Stock no informado en el Excel; se importará en 0
+NIPLE -128,"NIPLE ACERO AL CARBON DE 1"" * 5",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!128,Stock no informado en el Excel; se importará en 0
+NIPLE -127,"NIPLE ACERO AL CARBON DE 1"" * 6",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!127,Stock no informado en el Excel; se importará en 0
+NIPLE -126,"NIPLE ACERO AL CARBON DE 1"" *8",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!126,Stock no informado en el Excel; se importará en 0
+NIPLE -101,NIPLE ACERO AL CARBON DE 2 1/2 *,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/005e6a4a40cdb57a9156.jpg,7,INV.TUBOS MONTERREY!101; INV.TUBOS MONTERREY!102; INV.TUBOS MONTERREY!103; INV.TUBOS MONTERREY!104; INV.TUBOS MONTERREY!105; INV.TUBOS MONTERREY!106; INV.TUBOS MONTERREY!107,Stock no informado en el Excel; se importará en 0; Se consolidaron 7 renglones fuente
+NIPLE -098,NIPLE ACERO AL CARBON DE 2 1/2 * 10,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!98,Stock no informado en el Excel; se importará en 0
+NIPLE -109,NIPLE ACERO AL CARBON DE 2 1/2 * 4,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!109,Stock no informado en el Excel; se importará en 0
+NIPLE -108,NIPLE ACERO AL CARBON DE 2 1/2 * 5,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,,1,INV.TUBOS MONTERREY!108,Stock no informado en el Excel; se importará en 0
+NIPLE -100,NIPLE ACERO AL CARBON DE 2 1/2 * 6,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!100,Stock no informado en el Excel; se importará en 0
+NIPLE -099,NIPLE ACERO AL CARBON DE 2 1/2 * 8,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!99,Stock no informado en el Excel; se importará en 0
+NIPLE -118,"NIPLE ACERO AL CARBON DE 2"" CUERDA CORRIDA",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/86c275ed4321e038ef5b.jpg,1,INV.TUBOS MONTERREY!118,Stock no informado en el Excel; se importará en 0
+NIPLE -111,NIPLE ACERO AL CARBON DE 2 * 10,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!111,Stock no informado en el Excel; se importará en 0
+NIPLE -117,NIPLE ACERO AL CARBON DE 2 * 4,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!117,Stock no informado en el Excel; se importará en 0
+NIPLE -114,NIPLE ACERO AL CARBON DE 2 * 5,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!114,Stock no informado en el Excel; se importará en 0
+NIPLE -113,NIPLE ACERO AL CARBON DE 2 * 6,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/bd01aec5d1365231eb85.jpg,2,INV.TUBOS MONTERREY!113; INV.TUBOS MONTERREY!115,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+NIPLE -116,NIPLE ACERO AL CARBON DE 2 * 7,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/ae00358651981ba52663.jpg,1,INV.TUBOS MONTERREY!116,Stock no informado en el Excel; se importará en 0
+NIPLE -112,NIPLE ACERO AL CARBON DE 2 * 8,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!112,Stock no informado en el Excel; se importará en 0
+NIPLE -097,"NIPLE ACERO AL CARBON DE 3"" CUERDA CORRIDA",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/66eaa477b7adf2890d21.jpg,1,INV.TUBOS MONTERREY!97,Stock no informado en el Excel; se importará en 0
+NIPLE -136,NIPLE ACERO AL CARBON DE 3/4 CUERDA CORRIDA,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/86c275ed4321e038ef5b.jpg,1,INV.TUBOS MONTERREY!136,Stock no informado en el Excel; se importará en 0
+NIPLE -131,NIPLE ACERO AL CARBON DE 3/4 * 10,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!131,Stock no informado en el Excel; se importará en 0
+NIPLE -135,NIPLE ACERO AL CARBON DE 3/4 * 4,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!135,Stock no informado en el Excel; se importará en 0
+NIPLE -134,NIPLE ACERO AL CARBON DE 3/4 * 5,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!134,Stock no informado en el Excel; se importará en 0
+NIPLE -133,NIPLE ACERO AL CARBON DE 3/4 * 6,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!133,Stock no informado en el Excel; se importará en 0
+NIPLE -132,NIPLE ACERO AL CARBON DE 3/4 *8,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/c3032829ce3b32082adf.jpg,1,INV.TUBOS MONTERREY!132,Stock no informado en el Excel; se importará en 0
+NIPLE -092,"NIPLE ACERO AL CARBON DE 3"" * 10",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/145946fdd1e4da1fb20a.jpg,1,INV.TUBOS MONTERREY!92,Stock no informado en el Excel; se importará en 0
+NIPLE -096,"NIPLE ACERO AL CARBON DE 3"" * 4",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/145946fdd1e4da1fb20a.jpg,1,INV.TUBOS MONTERREY!96,Stock no informado en el Excel; se importará en 0
+NIPLE -095,"NIPLE ACERO AL CARBON DE 3"" * 5",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/145946fdd1e4da1fb20a.jpg,1,INV.TUBOS MONTERREY!95,Stock no informado en el Excel; se importará en 0
+NIPLE -094,"NIPLE ACERO AL CARBON DE 3"" * 6",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/145946fdd1e4da1fb20a.jpg,1,INV.TUBOS MONTERREY!94,Stock no informado en el Excel; se importará en 0
+NIPLE -093,"NIPLE ACERO AL CARBON DE 3"" * 8",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/145946fdd1e4da1fb20a.jpg,1,INV.TUBOS MONTERREY!93,Stock no informado en el Excel; se importará en 0
+NIPLE -091,"NIPLE ACERO AL CARBON DE 4"" CUERDA CORRIDA",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/145946fdd1e4da1fb20a.jpg,1,INV.TUBOS MONTERREY!91,Stock no informado en el Excel; se importará en 0
+NIPLE -086,"NIPLE ACERO AL CARBON DE 4"" * 10",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/145946fdd1e4da1fb20a.jpg,1,INV.TUBOS MONTERREY!86,Stock no informado en el Excel; se importará en 0
+NIPLE -090,"NIPLE ACERO AL CARBON DE 4"" * 4",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/145946fdd1e4da1fb20a.jpg,1,INV.TUBOS MONTERREY!90,Stock no informado en el Excel; se importará en 0
+NIPLE -089,"NIPLE ACERO AL CARBON DE 4"" * 5",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/145946fdd1e4da1fb20a.jpg,1,INV.TUBOS MONTERREY!89,Stock no informado en el Excel; se importará en 0
+NIPLE -088,"NIPLE ACERO AL CARBON DE 4"" * 6",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/145946fdd1e4da1fb20a.jpg,1,INV.TUBOS MONTERREY!88,Stock no informado en el Excel; se importará en 0
+NIPLE -087,"NIPLE ACERO AL CARBON DE 4"" * 8",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/145946fdd1e4da1fb20a.jpg,1,INV.TUBOS MONTERREY!87,Stock no informado en el Excel; se importará en 0
+NIPLE -110,NIPLE ACERO AL CARBON DE CUERDA CORRIDA 2 1/2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/86c275ed4321e038ef5b.jpg,1,INV.TUBOS MONTERREY!110,Stock no informado en el Excel; se importará en 0
+NIPLE -130,"NIPLE ACERO AL CARBONO DE 1"" CUERDA CORRIDO",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/86c275ed4321e038ef5b.jpg,1,INV.TUBOS MONTERREY!130,Stock no informado en el Excel; se importará en 0
+NIPLE -174,"NIPLE BOTELLA GALVANIZADO DE 3/4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/442006dfa3f6fc3f5679.jpg,1,INV.TUBOS MONTERREY!174,Stock no informado en el Excel; se importará en 0
+NIPLE -170,"NIPLE TIPO BOTELLA GALVANIZADA DE 4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/442006dfa3f6fc3f5679.jpg,1,INV.TUBOS MONTERREY!170,Stock no informado en el Excel; se importará en 0
+NIPLE -173,"NIPLE TIPO BOTELLA GALVANIZADO DE 1""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/bcc690ad61d2d4272322.jpg,1,INV.TUBOS MONTERREY!173,Stock no informado en el Excel; se importará en 0
+NIPLE -172,"NIPLE TIPO BOTELLA GALVANIZADO DE 2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/442006dfa3f6fc3f5679.jpg,1,INV.TUBOS MONTERREY!172,Stock no informado en el Excel; se importará en 0
+NIPLE -171,"NIPLE TIPO BOTELLA GALVANIZADO DE 3""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/4f1e6bb921f1ddbd0da9.jpg,1,INV.TUBOS MONTERREY!171,Stock no informado en el Excel; se importará en 0
+REDUCC-236,REDUCCION CAMPANA CEDULA,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,,1,INV.TUBOS MONTERREY!236,Stock no informado en el Excel; se importará en 0
+REDUCC-177,REDUCCION CAMPANA SOLDABLE NEGRA DE 2 * 1,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/a60bdfd763dabe801d99.jpg,1,INV.TUBOS MONTERREY!177,Stock no informado en el Excel; se importará en 0
+REDUCC-176,REDUCCION CAMPANA SOLDABLE NEGRA DE 3 * 2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/967ad5c71f67ed7d5237.jpg,1,INV.TUBOS MONTERREY!176,Stock no informado en el Excel; se importará en 0
+REDUCC-175,REDUCCION CAMPANA SOLDABLE NEGRA DE 4 *3,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/967ad5c71f67ed7d5237.jpg,1,INV.TUBOS MONTERREY!175,Stock no informado en el Excel; se importará en 0
+REDUCI-184,REDUCION BUSHING NEGRA 1 1/2* 1,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/2a2f943b4bdb1876903d.jpg,1,INV.TUBOS MONTERREY!184,Stock no informado en el Excel; se importará en 0
+REDUCI-186,REDUCION BUSHING NEGRA 1* 1/2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/f659861756d496df5ccd.jpg,1,INV.TUBOS MONTERREY!186,Stock no informado en el Excel; se importará en 0
+REDUCI-185,REDUCION BUSHING NEGRA 1*3/4,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/2a2f943b4bdb1876903d.jpg,1,INV.TUBOS MONTERREY!185,Stock no informado en el Excel; se importará en 0
+REDUCI-182,REDUCION BUSHING NEGRA 2 * 1,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/2a2f943b4bdb1876903d.jpg,1,INV.TUBOS MONTERREY!182,Stock no informado en el Excel; se importará en 0
+REDUCI-181,REDUCION BUSHING NEGRA 2 * 1 1/2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/2a2f943b4bdb1876903d.jpg,1,INV.TUBOS MONTERREY!181,Stock no informado en el Excel; se importará en 0
+REDUCI-183,REDUCION BUSHING NEGRA 2 * 1/2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/2a2f943b4bdb1876903d.jpg,1,INV.TUBOS MONTERREY!183,Stock no informado en el Excel; se importará en 0
+REDUCI-179,REDUCION BUSHING NEGRA 3*2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/2a2f943b4bdb1876903d.jpg,1,INV.TUBOS MONTERREY!179,Stock no informado en el Excel; se importará en 0
+REDUCI-180,REDUCION BUSHING NEGRA 3*2 1/2,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/2a2f943b4bdb1876903d.jpg,1,INV.TUBOS MONTERREY!180,Stock no informado en el Excel; se importará en 0
+REDUCI-178,REDUCION BUSHING NEGRA 4 * 3,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/2a2f943b4bdb1876903d.jpg,1,INV.TUBOS MONTERREY!178,Stock no informado en el Excel; se importará en 0
+TEE HE-159,"TEE HEMBRA ACERO NEGRO DE 1""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/ac4c5aa02785009bf718.jpg,1,INV.TUBOS MONTERREY!159,Stock no informado en el Excel; se importará en 0
+TEE HE-158,"TEE HEMBRA ACERO NEGRO DE 1 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/f6f5f1d9313e5b022683.jpg,1,INV.TUBOS MONTERREY!158,Stock no informado en el Excel; se importará en 0
+TEE HE-161,"TEE HEMBRA ACERO NEGRO DE 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/f6f5f1d9313e5b022683.jpg,1,INV.TUBOS MONTERREY!161,Stock no informado en el Excel; se importará en 0
+TEE HE-157,"TEE HEMBRA ACERO NEGRO DE 2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/f6f5f1d9313e5b022683.jpg,1,INV.TUBOS MONTERREY!157,Stock no informado en el Excel; se importará en 0
+TEE HE-156,"TEE HEMBRA ACERO NEGRO DE 2 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/ac4c5aa02785009bf718.jpg,1,INV.TUBOS MONTERREY!156,Stock no informado en el Excel; se importará en 0
+TEE HE-155,"TEE HEMBRA ACERO NEGRO DE 3""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/f6f5f1d9313e5b022683.jpg,1,INV.TUBOS MONTERREY!155,Stock no informado en el Excel; se importará en 0
+TEE HE-160,TEE HEMBRA ACERO NEGRO DE 3/4,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/f6f5f1d9313e5b022683.jpg,1,INV.TUBOS MONTERREY!160,Stock no informado en el Excel; se importará en 0
+TEE HE-154,"TEE HEMBRA ACERO NEGRO DE 4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/f6f5f1d9313e5b022683.jpg,1,INV.TUBOS MONTERREY!154,Stock no informado en el Excel; se importará en 0
+TEE HE-167,"TEE HEMBRA GALVANIZADA DE 1""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/6e1eb0111009eaa70454.jpg,1,INV.TUBOS MONTERREY!167,Stock no informado en el Excel; se importará en 0
+TEE HE-166,"TEE HEMBRA GALVANIZADA DE 1 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/68a035bc2e45898a4144.jpg,1,INV.TUBOS MONTERREY!166,Stock no informado en el Excel; se importará en 0
+TEE HE-169,"TEE HEMBRA GALVANIZADA DE 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/600e3c9e4c3a77b83261.jpg,1,INV.TUBOS MONTERREY!169,Stock no informado en el Excel; se importará en 0
+TEE HE-165,"TEE HEMBRA GALVANIZADA DE 2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/68a035bc2e45898a4144.jpg,1,INV.TUBOS MONTERREY!165,Stock no informado en el Excel; se importará en 0
+TEE HE-164,"TEE HEMBRA GALVANIZADA DE 2 1/2 """,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/5f36a3119c6e390c864a.jpg,1,INV.TUBOS MONTERREY!164,Stock no informado en el Excel; se importará en 0
+TEE HE-163,"TEE HEMBRA GALVANIZADA DE 3""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/68a035bc2e45898a4144.jpg,1,INV.TUBOS MONTERREY!163,Stock no informado en el Excel; se importará en 0
+TEE HE-168,"TEE HEMBRA GALVANIZADA DE 3/4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/600e3c9e4c3a77b83261.jpg,1,INV.TUBOS MONTERREY!168,Stock no informado en el Excel; se importará en 0
+TEE HE-162,"TEE HEMBRA GALVANIZADA DE 4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/68a035bc2e45898a4144.jpg,1,INV.TUBOS MONTERREY!162,Stock no informado en el Excel; se importará en 0
+TEE IN-229,"TEE INOXIDABLE ROSCABLE 304 HEMBRA DE 1 1/2""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/e67a80fd9a6f0d9ceae3.jpg,1,INV.TUBOS MONTERREY!229,Stock no informado en el Excel; se importará en 0
+TEE IN-226,"TEE INOXIDABLE ROSCABLE HEMBRA DE 4""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/e67a80fd9a6f0d9ceae3.jpg,1,INV.TUBOS MONTERREY!226,Stock no informado en el Excel; se importará en 0
+TEE IN-232,"TEE INOXIDABLE ROSCABLE HEMBRA TIPO 304 DE 1/2""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/e67a80fd9a6f0d9ceae3.jpg,1,INV.TUBOS MONTERREY!232,Stock no informado en el Excel; se importará en 0
+TEE IN-227,"TEE INOXIDABLE ROSCABLE HEMBRA TIPO 304 DE 3""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/e67a80fd9a6f0d9ceae3.jpg,1,INV.TUBOS MONTERREY!227,Stock no informado en el Excel; se importará en 0
+TEE IN-231,"TEE INOXIDABLE ROSCABLE HEMBRA TIPO 304 DE 3/4""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/e67a80fd9a6f0d9ceae3.jpg,1,INV.TUBOS MONTERREY!231,Stock no informado en el Excel; se importará en 0
+TEE IN-230,"TEE INOXIDABLE ROSCABLE TIPO 304 HEMBRA DE 1""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/e67a80fd9a6f0d9ceae3.jpg,1,INV.TUBOS MONTERREY!230,Stock no informado en el Excel; se importará en 0
+TEE IN-228,"TEE INOXIDABLE ROSCABLE TIPO 304 HEMBRA DE 2""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/e67a80fd9a6f0d9ceae3.jpg,1,INV.TUBOS MONTERREY!228,Stock no informado en el Excel; se importará en 0
+TEE IN-223,"TEE INOXIDABLE SOLDABLE TIPO 304 DE 1""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/cf1a1c1ba77ea3c04428.jpg,1,INV.TUBOS MONTERREY!223,Stock no informado en el Excel; se importará en 0
+TEE IN-222,"TEE INOXIDABLE SOLDABLE TIPO 304 DE 1 1/2""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/cf1a1c1ba77ea3c04428.jpg,1,INV.TUBOS MONTERREY!222,Stock no informado en el Excel; se importará en 0
+TEE IN-225,TEE INOXIDABLE SOLDABLE TIPO 304 DE 1/2,SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/cf1a1c1ba77ea3c04428.jpg,1,INV.TUBOS MONTERREY!225,Stock no informado en el Excel; se importará en 0
+TEE IN-221,"TEE INOXIDABLE SOLDABLE TIPO 304 DE 2""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/cf1a1c1ba77ea3c04428.jpg,1,INV.TUBOS MONTERREY!221,Stock no informado en el Excel; se importará en 0
+TEE IN-220,"TEE INOXIDABLE SOLDABLE TIPO 304 DE 3""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/cf1a1c1ba77ea3c04428.jpg,1,INV.TUBOS MONTERREY!220,Stock no informado en el Excel; se importará en 0
+TEE IN-224,"TEE INOXIDABLE SOLDABLE TIPO 304 DE 3/4""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/cf1a1c1ba77ea3c04428.jpg,1,INV.TUBOS MONTERREY!224,Stock no informado en el Excel; se importará en 0
+TEE IN-219,"TEE INOXIDABLE SOLDABLE TIPO 304 DE 4""",SUMEER,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/cf1a1c1ba77ea3c04428.jpg,1,INV.TUBOS MONTERREY!219,Stock no informado en el Excel; se importará en 0
+TEE SO-055,"TEE SOLDABLE NEGRA CED 30 DE 1""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/3073db1f43dca1d4ab92.jpg,1,INV.TUBOS MONTERREY!55,Stock no informado en el Excel; se importará en 0
+TEE SO-054,"TEE SOLDABLE NEGRA CED 30 DE 1 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/3073db1f43dca1d4ab92.jpg,1,INV.TUBOS MONTERREY!54,Stock no informado en el Excel; se importará en 0
+TEE SO-056,"TEE SOLDABLE NEGRA CED 30 DE 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/3073db1f43dca1d4ab92.jpg,1,INV.TUBOS MONTERREY!56,Stock no informado en el Excel; se importará en 0
+TEE SO-053,"TEE SOLDABLE NEGRA CED 30 DE 2 """,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/3073db1f43dca1d4ab92.jpg,1,INV.TUBOS MONTERREY!53,Stock no informado en el Excel; se importará en 0
+TEE SO-057,"TEE SOLDABLE NEGRA CED 30 DE 3/4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/3073db1f43dca1d4ab92.jpg,1,INV.TUBOS MONTERREY!57,Stock no informado en el Excel; se importará en 0
+TEE SO-051,"TEE SOLDABLE NEGRA CED 30 DE 4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/3073db1f43dca1d4ab92.jpg,1,INV.TUBOS MONTERREY!51,Stock no informado en el Excel; se importará en 0
+TEE SO-048,"TEE SOLDABLE NEGRA CED 40 DE 1""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/3073db1f43dca1d4ab92.jpg,1,INV.TUBOS MONTERREY!48,Stock no informado en el Excel; se importará en 0
+TEE SO-047,"TEE SOLDABLE NEGRA CED 40 DE 1 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/f97e6ef8b8bcdbf42750.jpg,1,INV.TUBOS MONTERREY!47,Stock no informado en el Excel; se importará en 0
+TEE SO-050,"TEE SOLDABLE NEGRA CED 40 DE 1/2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/3073db1f43dca1d4ab92.jpg,1,INV.TUBOS MONTERREY!50,Stock no informado en el Excel; se importará en 0
+TEE SO-046,"TEE SOLDABLE NEGRA CED 40 DE 2""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/3073db1f43dca1d4ab92.jpg,1,INV.TUBOS MONTERREY!46,Stock no informado en el Excel; se importará en 0
+TEE SO-045,"TEE SOLDABLE NEGRA CED 40 DE 3""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/3073db1f43dca1d4ab92.jpg,2,INV.TUBOS MONTERREY!45; INV.TUBOS MONTERREY!52,Stock no informado en el Excel; se importará en 0; Se consolidaron 2 renglones fuente
+TEE SO-049,"TEE SOLDABLE NEGRA CED 40 DE 3/4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/90305d4367ead85557ea.jpg,1,INV.TUBOS MONTERREY!49,Stock no informado en el Excel; se importará en 0
+TEE SO-044,"TEE SOLDABLE NEGRA CED 40 DE 4""",TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/3073db1f43dca1d4ab92.jpg,1,INV.TUBOS MONTERREY!44,Stock no informado en el Excel; se importará en 0
+TUBO N-189,TUBO NEGRO C-40 SIN COSTURA 75MM,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/0a8e20d918190ebef238.jpg,1,INV.TUBOS MONTERREY!189,Stock no informado en el Excel; se importará en 0
+TUBO N-188,TUBO NEGRO C160 SIN COSTURA 51 MM,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/0a8e20d918190ebef238.jpg,1,INV.TUBOS MONTERREY!188,Stock no informado en el Excel; se importará en 0
+TUBO N-187,TUBO NEGRO C80 SIN COSTURA 51MM,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,materiales/base-2026/0a8e20d918190ebef238.jpg,1,INV.TUBOS MONTERREY!187,Stock no informado en el Excel; se importará en 0
+TUBO N-233,TUBO NEGRO ESPECIAL C 30 25MM,TUBOS MONTERREY,TUBERIA,Almacén General - Tubería,0,No,,1,INV.TUBOS MONTERREY!233,Stock no informado en el Excel; se importará en 0
+DOMO 2-513,"DOMO 20"" CON CUELLO DE 6""EN ACERO AL CARBON",ENSA,UTV,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!13,Stock no informado en el Excel; se importará en 0
+OLLA P-511,OLLA PRIMARIA CHANDLER,ENSA,UTV,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!11,Stock no informado en el Excel; se importará en 0
+OLLA S-512,OLLA SECUNDARIA CHANDLER,ENSA,UTV,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!12,Stock no informado en el Excel; se importará en 0
+TUBO M-510,"TUBO MIRILLA DE 2"" * 3MTS EN ACRILICO TRANSPARENTE",ENSA,UTV,Almacén General - Disponible,0,No,,1,INV.DISPONIBLE  (3)!10,Stock no informado en el Excel; se importará en 0
+VALVUL-59,VALVULA AGUJA 1/2 10000# SS316 H X H,VALVOTEK,UTV,Almacén General - Disponible,34,Sí,materiales/base-2026/bbd4e2306ffe0b70d233.jpg,1,INV.DISPONIBLE  (3)!9,
