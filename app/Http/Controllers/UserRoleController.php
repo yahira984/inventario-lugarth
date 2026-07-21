@@ -11,9 +11,9 @@ use Illuminate\View\View;
 
 class UserRoleController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        abort_unless(auth()->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para administrar usuarios.');
+        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para administrar usuarios.');
 
         return view('usuarios.index', [
             'usuarios' => User::query()
