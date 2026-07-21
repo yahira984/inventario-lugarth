@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Etiqueta QR - {{ $material->descripcion }}</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2875/2875878.png" type="image/png">
     <style>
         body { margin: 0; font-family: Arial, sans-serif; background: #e5e7eb; color: #111827; }
         .wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px; }

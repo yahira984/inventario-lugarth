@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de material - Inventario</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2875/2875878.png" type="image/png">
     <style>
         body { margin:0; font-family:"Segoe UI",Tahoma,sans-serif; background:#f6f8fb; color:#102033; }
         .app-shell { display:flex; min-height:100vh; }
