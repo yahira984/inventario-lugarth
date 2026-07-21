@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class IdentificadorVisualController extends Controller
 {
-    private const PUNTAJE_MINIMO = 60;
+    private const PUNTAJE_MINIMO = 74;
 
     public function __construct(private readonly VisualImageDescriptor $visualDescriptor) {}
 
@@ -76,9 +76,17 @@ class IdentificadorVisualController extends Controller
             ->sortByDesc('puntaje_visual')
             ->values();
 
+        if ($resultados->isNotEmpty()) {
+            $margen = ($descriptorFoto['foreground_ratio'] ?? 0) > 0.55 ? 5 : 10;
+            $corteRelativo = max(self::PUNTAJE_MINIMO, (int) $resultados->max('puntaje_visual') - $margen);
+            $resultados = $resultados
+                ->filter(fn (Material $material) => $material->puntaje_visual >= $corteRelativo)
+                ->values();
+        }
+
         return $this->expandirVariantesMismaPieza($resultados)
             ->sortByDesc('puntaje_visual')
-            ->take(20)
+            ->take(5)
             ->values();
     }
 
@@ -158,6 +166,19 @@ class IdentificadorVisualController extends Controller
             $puntaje = max($puntaje, 88);
         }
 
+        if (($foto['foreground_ratio'] ?? 0) > 0.55) {
+            $puntaje = min($puntaje, 59);
+        }
+
+        [$puntajeRegional, $motivosRegionales] = $this->compararRegiones(
+            $foto['regions'] ?? [],
+            $material['regions'] ?? []
+        );
+
+        if ($puntajeRegional > $puntaje) {
+            $puntaje = $puntajeRegional;
+        }
+
         $motivos = [];
         if ($puntaje >= 95) {
             $motivos[] = 'imagen practicamente igual';
@@ -175,7 +196,193 @@ class IdentificadorVisualController extends Controller
             $motivos[] = 'color similar';
         }
 
+        $motivos = array_merge($motivos, $motivosRegionales);
+
         return [$puntaje, array_slice(array_unique($motivos), 0, 4)];
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $foto
+     * @param  array<int, array<string, mixed>>  $material
+     * @return array{0: int, 1: array<int, string>}
+     */
+    private function compararRegiones(array $foto, array $material): array
+    {
+        if ($foto === [] || $material === []) {
+            return [0, []];
+        }
+
+        $regionesColorFoto = array_values(array_filter(
+            $foto,
+            fn (array $region) => (float) ($region['saturation'] ?? 0) >= 35
+                && (float) ($region['pixels_ratio'] ?? 0) >= 0.02
+        ));
+        $comparacionColorDominante = $regionesColorFoto !== [];
+
+        if ($comparacionColorDominante) {
+            $foto = $regionesColorFoto;
+            $material = array_values(array_filter(
+                $material,
+                fn (array $region) => (float) ($region['saturation'] ?? 0) >= 30
+                    && (float) ($region['pixels_ratio'] ?? 0) >= 0.008
+            ));
+
+            if ($material === []) {
+                return [0, []];
+            }
+        }
+
+        $mejorPuntaje = 0;
+        $mejorForma = 0.0;
+        $mejorColor = 0.0;
+
+        foreach ($foto as $regionFoto) {
+            foreach ($material as $regionMaterial) {
+                if ($comparacionColorDominante) {
+                    $proporcionFoto = max(0.0001, (float) ($regionFoto['pixels_ratio'] ?? 0));
+                    $proporcionMaterial = max(0.0001, (float) ($regionMaterial['pixels_ratio'] ?? 0));
+                    $relacionTamano = $proporcionFoto / $proporcionMaterial;
+
+                    if ($relacionTamano > 2.25 || $relacionTamano < (1 / 2.25)) {
+                        continue;
+                    }
+                }
+
+                $formaHu = $this->huSimilarity($regionFoto['hu'] ?? [], $regionMaterial['hu'] ?? []);
+                $contorno = $this->radialSimilarity(
+                    $regionFoto['radial'] ?? [],
+                    $regionMaterial['radial'] ?? []
+                );
+                $aspecto = $this->aspectSimilarity(
+                    (float) ($regionFoto['aspect_ratio'] ?? 0),
+                    (float) ($regionMaterial['aspect_ratio'] ?? 0)
+                );
+                $relleno = max(0, 1 - (abs(
+                    (float) ($regionFoto['fill_ratio'] ?? 0) - (float) ($regionMaterial['fill_ratio'] ?? 0)
+                ) / 0.65));
+                $relacionTamano = max(0.01, (float) ($regionFoto['pixels_ratio'] ?? 0))
+                    / max(0.01, (float) ($regionMaterial['pixels_ratio'] ?? 0));
+                $tamano = max(0, 1 - min(1, abs(log($relacionTamano)) / log(3)));
+                $forma = ($contorno * 0.42)
+                    + ($formaHu * 0.30)
+                    + ($aspecto * 0.08)
+                    + ($relleno * 0.05)
+                    + ($tamano * 0.15);
+                $color = $this->regionColorSimilarity($regionFoto, $regionMaterial);
+                $puntaje = $comparacionColorDominante
+                    ? (int) round((($forma * 0.58) + ($color * 0.42)) * 100)
+                    : (int) round((($forma * 0.72) + ($color * 0.28)) * 100);
+
+                $saturacionFoto = (float) ($regionFoto['saturation'] ?? 0);
+                $saturacionMaterial = (float) ($regionMaterial['saturation'] ?? 0);
+
+                if (($saturacionFoto >= 55 && $saturacionMaterial < 25)
+                    || ($saturacionMaterial >= 55 && $saturacionFoto < 25)) {
+                    $puntaje = min($puntaje, 68);
+                }
+
+                if ($comparacionColorDominante && $contorno < 0.58) {
+                    $puntaje = min($puntaje, 70);
+                }
+
+                if ($puntaje <= $mejorPuntaje) {
+                    continue;
+                }
+
+                $mejorPuntaje = min(99, $puntaje);
+                $mejorForma = $forma;
+                $mejorColor = $color;
+            }
+        }
+
+        $motivos = [];
+        if ($mejorForma >= 0.72) {
+            $motivos[] = 'forma de la pieza similar';
+        }
+        if ($mejorColor >= 0.70) {
+            $motivos[] = 'color de la pieza similar';
+        }
+        if ($mejorPuntaje >= self::PUNTAJE_MINIMO) {
+            $motivos[] = 'pieza separada del fondo';
+        }
+
+        return [$mejorPuntaje, $motivos];
+    }
+
+    private function radialSimilarity(array $first, array $second): float
+    {
+        $count = count($first);
+        if ($count < 12 || $count !== count($second)) {
+            return 0;
+        }
+
+        $bestError = INF;
+        $orientations = [$second, array_reverse($second)];
+
+        foreach ($orientations as $candidate) {
+            for ($shift = 0; $shift < $count; $shift++) {
+                $squaredError = 0.0;
+                $derivativeError = 0.0;
+
+                for ($index = 0; $index < $count; $index++) {
+                    $candidateIndex = ($index + $shift) % $count;
+                    $previous = ($index - 1 + $count) % $count;
+                    $candidatePrevious = ($candidateIndex - 1 + $count) % $count;
+                    $difference = (float) $first[$index] - (float) $candidate[$candidateIndex];
+                    $firstSlope = (float) $first[$index] - (float) $first[$previous];
+                    $candidateSlope = (float) $candidate[$candidateIndex] - (float) $candidate[$candidatePrevious];
+
+                    $squaredError += $difference ** 2;
+                    $derivativeError += abs($firstSlope - $candidateSlope);
+                }
+
+                $rootMeanSquare = sqrt($squaredError / $count);
+                $meanDerivativeError = $derivativeError / $count;
+                $bestError = min($bestError, ($rootMeanSquare * 0.78) + ($meanDerivativeError * 0.22));
+            }
+        }
+
+        return max(0, 1 - min(1, $bestError / 0.32));
+    }
+
+    private function huSimilarity(array $first, array $second): float
+    {
+        if (count($first) !== 7 || count($second) !== 7) {
+            return 0;
+        }
+
+        $weights = [0.30, 0.24, 0.18, 0.14, 0.06, 0.05, 0.03];
+        $distance = 0.0;
+
+        foreach ($weights as $index => $weight) {
+            $difference = abs((float) $first[$index] - (float) $second[$index]);
+            $distance += $weight * min(1, $difference / 3.5);
+        }
+
+        return max(0, 1 - $distance);
+    }
+
+    private function regionColorSimilarity(array $first, array $second): float
+    {
+        $firstSaturation = (float) ($first['saturation'] ?? 0);
+        $secondSaturation = (float) ($second['saturation'] ?? 0);
+
+        if ($firstSaturation >= 35 && $secondSaturation >= 35) {
+            $hueDifference = abs((float) ($first['hue'] ?? 0) - (float) ($second['hue'] ?? 0));
+            $hueDifference = min($hueDifference, 360 - $hueDifference);
+            $hueSimilarity = max(0, 1 - ($hueDifference / 100));
+            $saturationSimilarity = max(0, 1 - (abs($firstSaturation - $secondSaturation) / 255));
+
+            return ($hueSimilarity * 0.78) + ($saturationSimilarity * 0.22);
+        }
+
+        if ($firstSaturation < 50 && $secondSaturation < 50) {
+            return max(0, 1 - (abs(
+                (float) ($first['brightness'] ?? 0) - (float) ($second['brightness'] ?? 0)
+            ) / 210));
+        }
+
+        return 0.12;
     }
 
     private function hammingDistance(string $a, string $b): int
