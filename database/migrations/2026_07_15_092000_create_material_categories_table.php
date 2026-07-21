@@ -19,14 +19,11 @@ return new class extends Migration
 
         $categorias = collect([
             'IMPORTADO XML',
-            'EQUIPO ACERO AL CARBON',
-            'EQUIPO ACERO INOXIDABLE',
-            'EQUIPO TIPO ASA INOXIDABLE',
-            'EQUIPO AC SIST DSPCH MEC FILL',
-            'EQUIPO AC SIST DSPCH MEC LIQUID',
-            'EQUIPO ACERO AL CARBON UPV',
         ])
-            ->merge(DB::table('materials')->whereNotNull('categoria')->pluck('categoria'))
+            ->merge(DB::table('materials')
+                ->whereNotNull('categoria')
+                ->where('categoria', 'not like', 'EQUIPO%')
+                ->pluck('categoria'))
             ->map(fn ($categoria) => trim((string) $categoria))
             ->filter()
             ->unique(fn ($categoria) => strtoupper($categoria))

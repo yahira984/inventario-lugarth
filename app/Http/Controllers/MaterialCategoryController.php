@@ -46,10 +46,11 @@ class MaterialCategoryController extends Controller
         abort_unless($request->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para crear categorias.');
 
         $datos = $request->validate([
-            'nombre' => ['required', 'string', 'max:255', 'unique:material_categories,nombre'],
+            'nombre' => ['required', 'string', 'max:255', 'not_regex:/^\s*EQUIPOS?\b/i', 'unique:material_categories,nombre'],
             'descripcion' => ['nullable', 'string', 'max:255'],
         ], [
             'nombre.required' => 'Escribe el nombre de la categoria.',
+            'nombre.not_regex' => 'Los equipos y paquetes se registran en el modulo Equipos, no como categorias.',
             'nombre.unique' => 'Esa categoria ya existe.',
         ]);
 
@@ -71,11 +72,12 @@ class MaterialCategoryController extends Controller
         abort_unless($request->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para editar categorias.');
 
         $datos = $request->validate([
-            'nombre' => ['required', 'string', 'max:255', Rule::unique('material_categories', 'nombre')->ignore($categoria)],
+            'nombre' => ['required', 'string', 'max:255', 'not_regex:/^\s*EQUIPOS?\b/i', Rule::unique('material_categories', 'nombre')->ignore($categoria)],
             'descripcion' => ['nullable', 'string', 'max:255'],
             'activa' => ['nullable', 'boolean'],
         ], [
             'nombre.required' => 'Escribe el nombre de la categoria.',
+            'nombre.not_regex' => 'Los equipos y paquetes se registran en el modulo Equipos, no como categorias.',
             'nombre.unique' => 'Esa categoria ya existe.',
         ]);
 
