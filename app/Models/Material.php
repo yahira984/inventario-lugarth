@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Material extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'categoria',
         'almacen',
@@ -44,6 +44,7 @@ class Material extends Model
         'costo_unitario' => 'decimal:2',
         'factura_fecha' => 'datetime',
         'xml_importado_at' => 'datetime',
+        'visual_descriptor' => 'array',
     ];
 
     public function requiereReposicion(): bool
@@ -58,6 +59,6 @@ class Material extends Model
 
     public function nombreBusqueda(): string
     {
-        return trim($this->descripcion . ($this->apodo ? " ({$this->apodo})" : ''));
+        return trim($this->descripcion.($this->apodo ? " ({$this->apodo})" : ''));
     }
 }
