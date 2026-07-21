@@ -1,2 +1,6 @@
 *
 !.gitignore
+!materiales/
+materiales/*
+!materiales/base-2026/
+!materiales/base-2026/*.jpg

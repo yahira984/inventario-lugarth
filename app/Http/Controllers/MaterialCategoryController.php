@@ -8,6 +8,7 @@ use App\Support\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -16,6 +17,8 @@ class MaterialCategoryController extends Controller
     public function index(Request $request): View
     {
         abort_unless($request->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para administrar categorias.');
+
+        $this->sincronizarCategoriasDesdeMateriales();
 
         $usoPorCategoria = Material::query()
             ->select('categoria', DB::raw('COUNT(*) as total'))
@@ -29,7 +32,7 @@ class MaterialCategoryController extends Controller
             ->where('nombre', 'not like', 'EQUIPO%')
             ->orderByDesc('activa')
             ->orderBy('nombre')
-            ->paginate(25)
+            ->paginate(50)
             ->withQueryString();
 
         return view('admin.categorias.index', [
@@ -114,5 +117,33 @@ class MaterialCategoryController extends Controller
         AuditLogger::registrar('Categorias', 'Eliminacion de categoria', "Elimino la categoria {$nombre}.", [], $request);
 
         return back()->with('success', 'Categoria eliminada correctamente.');
+    }
+
+    private function sincronizarCategoriasDesdeMateriales(): void
+    {
+        $ahora = now();
+
+        $categorias = Material::query()
+            ->where('es_plantilla_equipo', false)
+            ->whereNotNull('categoria')
+            ->whereRaw("TRIM(categoria) <> ''")
+            ->where('categoria', 'not like', 'EQUIPO%')
+            ->distinct()
+            ->pluck('categoria')
+            ->map(fn ($categoria) => trim((string) $categoria))
+            ->filter()
+            ->unique(fn ($categoria) => Str::upper($categoria))
+            ->map(fn ($categoria) => [
+                'nombre' => $categoria,
+                'descripcion' => null,
+                'activa' => true,
+                'created_at' => $ahora,
+                'updated_at' => $ahora,
+            ])
+            ->values();
+
+        if ($categorias->isNotEmpty()) {
+            DB::table('material_categories')->insertOrIgnore($categorias->all());
+        }
     }
 }

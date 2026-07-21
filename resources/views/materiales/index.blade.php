@@ -613,6 +613,8 @@
 
         /* Resto de modales (ocultos por defecto) adaptados a la paleta */
         .modal { display: none; position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .modal.is-open { display: flex; }
+        .modal[hidden] { display: none !important; }
         .modal-content, .modal-confirm-content { background: #0f172a; border: 1px solid rgba(6, 182, 212, 0.3); padding: 30px; border-radius: 20px; width: min(450px, 100%); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(6, 182, 212, 0.05); }
         .modal-content h3, .modal-confirm-content h3 { margin: 0 0 14px; color: #fff; font-size: 22px; text-align: center; }
         .close-btn { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); padding: 14px; width: 100%; margin-top: 20px; }
@@ -633,6 +635,17 @@
         }
         #reader button:hover,
         #reader a:hover { background: rgba(6, 182, 212, 0.28) !important; color: #fff !important; }
+        #scannerModal { z-index: 2200; }
+        #scannerModal .modal-content {
+            width: min(560px, 100%);
+            max-height: calc(100dvh - 32px);
+            overflow-y: auto;
+        }
+        #scannerModal #reader {
+            min-height: 0;
+            aspect-ratio: 4 / 3;
+            max-height: 62dvh;
+        }
         .modal-confirm-icon { width: 60px; height: 60px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.5); color: #f87171; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 28px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
         .modal-confirm-content p { margin: 0 0 24px; color: var(--muted); font-size: 15px; text-align: center; line-height: 1.6; }
         .modal-confirm-content p strong { color: #fff; font-size: 16px;}
@@ -727,7 +740,7 @@
 
         @media (max-width: 460px) {
             .header-actions {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .container {
@@ -740,6 +753,99 @@
 
             .table-wrap {
                 padding: 10px;
+            }
+        }
+
+        @media (max-width: 340px) {
+            .header-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .table-wrap {
+                overflow: visible;
+            }
+
+            .inventory-table,
+            .inventory-table tbody,
+            .inventory-table tr,
+            .inventory-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .inventory-table {
+                min-width: 0;
+                border-spacing: 0;
+            }
+
+            .inventory-table thead {
+                display: none;
+            }
+
+            .inventory-table tbody {
+                display: grid;
+                gap: 14px;
+            }
+
+            .inventory-table tbody tr {
+                margin: 0;
+                overflow: hidden;
+                border: 1px solid #dbeafe;
+                border-radius: 14px;
+                box-shadow: 0 10px 24px rgba(15, 23, 42, .08);
+                transform: none !important;
+            }
+
+            .inventory-table tbody td {
+                display: grid;
+                grid-template-columns: minmax(92px, 32%) minmax(0, 1fr);
+                gap: 12px;
+                align-items: start;
+                min-width: 0;
+                padding: 12px 14px;
+                border-bottom: 1px solid #edf2f7;
+                border-radius: 0;
+                overflow-wrap: anywhere;
+            }
+
+            .inventory-table tbody td::before {
+                content: attr(data-label);
+                color: #475569;
+                font-size: 11px;
+                font-weight: 900;
+                letter-spacing: 0;
+                text-transform: uppercase;
+            }
+
+            .inventory-table tbody td:last-child {
+                border-bottom: 0;
+            }
+
+            .inventory-table .action-buttons {
+                display: grid;
+                grid-template-columns: 1fr;
+                width: 100%;
+            }
+
+            .inventory-table .action-buttons > *,
+            .inventory-table .action-buttons form,
+            .inventory-table .action-buttons button,
+            .inventory-table .action-buttons a {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+            }
+
+            #scannerModal {
+                padding: 10px;
+            }
+
+            #scannerModal .modal-content {
+                max-height: calc(100dvh - 20px);
+                padding: 18px;
+                border-radius: 16px;
             }
         }
     </style>
@@ -827,7 +933,7 @@
     @endif
 
     <div class="table-wrap">
-        <table>
+        <table class="inventory-table">
             <thead>
                 <tr>
                     <th>Foto</th>
@@ -847,7 +953,7 @@
             <tbody>
                 @forelse($materiales as $material)
                     <tr class="{{ $material->requiereReposicion() ? 'stock-critical' : '' }}">
-                        <td>
+                        <td data-label="Foto">
                             @if($material->fotografia)
                                 <button
                                     type="button"
@@ -861,12 +967,12 @@
                                 <div class="no-photo">Sin foto</div>
                             @endif
                         </td>
-                        <td><span class="badge badge-category">{{ $material->categoria ?: 'Sin categoria' }}</span></td>
-                        <td>
+                        <td data-label="Categoria"><span class="badge badge-category">{{ $material->categoria ?: 'Sin categoria' }}</span></td>
+                        <td data-label="Almacen">
                             <strong>{{ $material->almacen ?: 'Sin asignar' }}</strong>
                             <span class="code-muted">Ubicacion de la pieza</span>
                         </td>
-                        <td>
+                        <td data-label="No. parte / codigo">
                             <strong>{{ $material->numero_parte ?? 'N/A' }}</strong>
                             @if($material->codigo_barras)
                                 <span class="code-muted">{{ $material->codigo_barras }}</span>
@@ -874,24 +980,24 @@
                                 <span class="code-muted">Sin código de barras</span>
                             @endif
                         </td>
-                        <td>
+                        <td data-label="Descripcion">
                             {{ $material->descripcion }}
                             @if($material->apodo)
                                 <div style="margin-top:4px; color:#075985; font-size:12px; font-weight:900;">Apodo: {{ $material->apodo }}</div>
                             @endif
                         </td>
-                        <td>
+                        <td data-label="Apodo">
                             @if($material->apodo)
                                 <span class="badge badge-category">{{ $material->apodo }}</span>
                             @else
                                 <span class="code-muted">Sin apodo</span>
                             @endif
                         </td>
-                        <td>{{ $material->marca ?: 'Sin marca' }}</td>
+                        <td data-label="Marca">{{ $material->marca ?: 'Sin marca' }}</td>
                         @if(auth()->user()?->puedeAdministrarCatalogo())
-                            <td>{{ $material->proveedor ?: 'Sin proveedor' }}</td>
+                            <td data-label="Proveedor">{{ $material->proveedor ?: 'Sin proveedor' }}</td>
                         @endif
-                        <td>
+                        <td data-label="Stock">
                             @php
                                 $estadoStock = $material->stock <= 0
                                     ? ['stop', 'Rojo: agotado']
@@ -913,7 +1019,7 @@
                                 @endif
                             </span>
                         </td>
-                        <td>
+                        <td data-label="Acciones">
                             <div class="action-buttons">
                                 @if($material->codigo_barras && auth()->user()?->puedeMoverStock())
                                     <a href="{{ route('materiales.etiqueta', $material) }}" class="btn-label">
@@ -996,7 +1102,7 @@
 </main>
 </div>
 
-<div id="scannerModal" class="modal">
+<div id="scannerModal" class="modal" hidden>
     <div class="modal-content">
         <h3 id="scannerTitle">Escanear Codigo</h3>
         <div id="reader"></div>
@@ -1074,6 +1180,7 @@
     const barcodeForm = document.getElementById('barcodeForm');
     const barcodeInput = document.getElementById('barcodeInput');
     const barcodeMaterialName = document.getElementById('barcodeMaterialName');
+    const scannerModal = document.getElementById('scannerModal');
     const scannerTitle = document.getElementById('scannerTitle');
     let html5QrcodeScanner = null;
     let scannerTarget = 'buscar';
@@ -1118,28 +1225,23 @@
         searchForm.submit();
     }
 
-    function abrirEscaner() {
-        scannerTarget = 'buscar';
-        scannerTitle.textContent = 'Escanear codigo para buscar';
-        document.getElementById('scannerModal').style.display = 'flex';
-
-        html5QrcodeScanner = new Html5QrcodeScanner(
-            'reader',
-            { fps: 10, qrbox: { width: 250, height: 250 } },
-            false
-        );
-
-        html5QrcodeScanner.render((textoDecodificado) => {
-            usarCodigoEscaneado(textoDecodificado);
-        }, () => {});
-
-        observarTraduccionEscaner();
+    async function abrirEscaner() {
+        await iniciarEscaner('buscar', 'Escanear codigo para buscar');
     }
 
-    function abrirEscanerParaCodigo() {
-        scannerTarget = 'asignar';
-        scannerTitle.textContent = 'Escanear codigo de barras';
-        document.getElementById('scannerModal').style.display = 'flex';
+    async function abrirEscanerParaCodigo() {
+        await iniciarEscaner('asignar', 'Escanear codigo de barras');
+    }
+
+    async function iniciarEscaner(destino, titulo) {
+        if (html5QrcodeScanner) {
+            await cerrarEscaner();
+        }
+
+        scannerTarget = destino;
+        scannerTitle.textContent = titulo;
+        scannerModal.hidden = false;
+        scannerModal.classList.add('is-open');
 
         html5QrcodeScanner = new Html5QrcodeScanner(
             'reader',
@@ -1172,12 +1274,22 @@
         buscarCodigoEscaneado(codigoLimpio);
     }
 
-    function cerrarEscaner() {
-        document.getElementById('scannerModal').style.display = 'none';
+    async function cerrarEscaner() {
+        scannerModal.classList.remove('is-open');
+        scannerModal.hidden = true;
 
-        if (html5QrcodeScanner) {
-            html5QrcodeScanner.clear();
+        const scannerActivo = html5QrcodeScanner;
+        html5QrcodeScanner = null;
+
+        if (scannerActivo) {
+            try {
+                await scannerActivo.clear();
+            } catch (error) {
+                console.debug('El lector ya estaba detenido.', error);
+            }
         }
+
+        document.getElementById('reader').replaceChildren();
 
         if (window.escanerTraductorObserver) {
             window.escanerTraductorObserver.disconnect();

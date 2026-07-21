@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Material;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -12,7 +13,13 @@ class EtiquetaController extends Controller
 {
     public function generar(Material $material): RedirectResponse
     {
-        abort_unless(auth()->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para generar etiquetas.');
+        $usuario = auth()->user();
+
+        abort_unless(
+            $usuario instanceof User && $usuario->puedeAdministrarCatalogo(),
+            403,
+            'No tienes permiso para generar etiquetas.'
+        );
 
         if ($material->codigo_barras) {
             return redirect()->route('materiales.etiqueta', $material);
@@ -28,7 +35,13 @@ class EtiquetaController extends Controller
 
     public function mostrar(Material $material): View
     {
-        abort_unless(auth()->user()?->puedeMoverStock(), 403, 'No tienes permiso para ver etiquetas.');
+        $usuario = auth()->user();
+
+        abort_unless(
+            $usuario instanceof User && $usuario->puedeMoverStock(),
+            403,
+            'No tienes permiso para ver etiquetas.'
+        );
 
         $errorReporting = error_reporting();
         error_reporting($errorReporting & ~E_DEPRECATED);

@@ -59,6 +59,7 @@
                 <div>
                     <h1>Categorias</h1>
                     <div class="muted">Crea y ordena las categorias que aparecen al registrar o editar materiales.</div>
+                    <div class="muted">{{ $categorias->total() }} categorias registradas y sincronizadas con el inventario.</div>
                 </div>
                 <a href="{{ route('materiales.create') }}" class="btn btn-soft">Registrar material</a>
             </div>
