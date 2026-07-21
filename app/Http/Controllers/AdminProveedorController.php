@@ -9,9 +9,9 @@ use Illuminate\View\View;
 
 class AdminProveedorController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        abort_unless(auth()->user()?->puedeAdministrarCatalogo(), 403);
+        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403);
 
         $proveedores = Material::query()
             ->where('es_plantilla_equipo', false)
@@ -39,6 +39,7 @@ class AdminProveedorController extends Controller
             ->where(function ($query) use ($nombre) {
                 if ($nombre === 'Sin proveedor') {
                     $query->whereNull('proveedor')->orWhere('proveedor', '');
+
                     return;
                 }
 

@@ -5,15 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Material;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class EtiquetaController extends Controller
 {
-    public function generar(Material $material): RedirectResponse
+    public function generar(Request $request, Material $material): RedirectResponse
     {
-        $usuario = auth()->user();
+        $usuario = $request->user();
 
         abort_unless(
             $usuario instanceof User && $usuario->puedeAdministrarCatalogo(),
@@ -25,7 +26,7 @@ class EtiquetaController extends Controller
             return redirect()->route('materiales.etiqueta', $material);
         }
 
-        $codigo = 'LUG-' . str_pad((string) $material->id, 6, '0', STR_PAD_LEFT) . '-' . Str::upper(Str::random(4));
+        $codigo = 'LUG-'.str_pad((string) $material->id, 6, '0', STR_PAD_LEFT).'-'.Str::upper(Str::random(4));
         $material->update(['codigo_barras' => $codigo]);
 
         return redirect()
@@ -33,9 +34,9 @@ class EtiquetaController extends Controller
             ->with('success', 'Código QR generado correctamente.');
     }
 
-    public function mostrar(Material $material): View
+    public function mostrar(Request $request, Material $material): View
     {
-        $usuario = auth()->user();
+        $usuario = $request->user();
 
         abort_unless(
             $usuario instanceof User && $usuario->puedeMoverStock(),

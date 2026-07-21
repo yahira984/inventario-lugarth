@@ -14,9 +14,9 @@ use SimpleXMLElement;
 
 class FacturaXmlController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
-        abort_unless(auth()->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para importar XML.');
+        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para importar XML.');
 
         return view('materiales.importar_xml');
     }
@@ -132,7 +132,9 @@ class FacturaXmlController extends Controller
             'omitidos' => 0,
         ];
 
-        DB::transaction(function () use ($factura, $datos, &$resumen) {
+        $usuarioId = $request->user()->getAuthIdentifier();
+
+        DB::transaction(function () use ($factura, $datos, $usuarioId, &$resumen) {
             FacturaXmlImportacion::create([
                 'uuid' => $factura['uuid'],
                 'version' => $factura['version'] ?: null,
@@ -155,12 +157,13 @@ class FacturaXmlController extends Controller
                 'receptor_nombre' => $factura['receptor']['nombre'] ?: null,
                 'conceptos_count' => count($factura['conceptos']),
                 'datos' => $factura,
-                'user_id' => auth()->id(),
+                'user_id' => $usuarioId,
             ]);
 
             foreach ($factura['conceptos'] as $indice => $concepto) {
                 if (! isset($datos['items'][$indice]['importar'])) {
                     $resumen['omitidos']++;
+
                     continue;
                 }
 
@@ -177,6 +180,7 @@ class FacturaXmlController extends Controller
 
                 if ($numeroParte === '' || $descripcion === '' || $cantidad <= 0) {
                     $resumen['omitidos']++;
+
                     continue;
                 }
 
@@ -198,26 +202,27 @@ class FacturaXmlController extends Controller
                         'proveedor' => $factura['emisor']['nombre'] ?? $material->proveedor,
                         'proveedor_rfc' => $factura['emisor']['rfc'] ?? $material->proveedor_rfc,
                         'factura_uuid' => $factura['uuid'] ?? $material->factura_uuid,
-                        'factura_folio' => trim(($factura['serie'] ?? '') . ' ' . ($factura['folio'] ?? '')) ?: $material->factura_folio,
+                        'factura_folio' => trim(($factura['serie'] ?? '').' '.($factura['folio'] ?? '')) ?: $material->factura_folio,
                         'factura_fecha' => $factura['fecha'] ?? $material->factura_fecha,
                         'xml_importado_at' => now(),
                     ]);
 
                     MaterialMovimiento::create([
                         'material_id' => $material->id,
-                        'user_id' => auth()->id(),
+                        'user_id' => $usuarioId,
                         'tipo' => 'entrada',
                         'cantidad' => $cantidad,
                         'stock_anterior' => $stockAnterior,
                         'stock_nuevo' => $material->stock,
                         'codigo_barras' => $material->codigo_barras,
-                        'referencia' => 'XML ' . (($factura['uuid'] ?? '') ?: ($factura['folio'] ?? '')),
+                        'referencia' => 'XML '.(($factura['uuid'] ?? '') ?: ($factura['folio'] ?? '')),
                         'motivo' => 'Entrada importada desde XML',
                         'proveedor' => $factura['emisor']['nombre'] ?? null,
                         'costo_unitario' => (float) ($concepto['valor_unitario'] ?? 0),
                     ]);
 
                     $resumen['actualizados']++;
+
                     continue;
                 }
 
@@ -239,20 +244,20 @@ class FacturaXmlController extends Controller
                     'costo_unitario' => (float) ($concepto['valor_unitario'] ?? 0),
                     'moneda' => $factura['moneda'] ?: 'MXN',
                     'factura_uuid' => $factura['uuid'] ?? null,
-                    'factura_folio' => trim(($factura['serie'] ?? '') . ' ' . ($factura['folio'] ?? '')) ?: null,
+                    'factura_folio' => trim(($factura['serie'] ?? '').' '.($factura['folio'] ?? '')) ?: null,
                     'factura_fecha' => $factura['fecha'] ?? null,
                     'xml_importado_at' => now(),
                 ]);
 
                 MaterialMovimiento::create([
                     'material_id' => $nuevo->id,
-                    'user_id' => auth()->id(),
+                    'user_id' => $usuarioId,
                     'tipo' => 'entrada',
                     'cantidad' => $cantidad,
                     'stock_anterior' => 0,
                     'stock_nuevo' => $cantidad,
                     'codigo_barras' => null,
-                    'referencia' => 'XML ' . (($factura['uuid'] ?? '') ?: ($factura['folio'] ?? '')),
+                    'referencia' => 'XML '.(($factura['uuid'] ?? '') ?: ($factura['folio'] ?? '')),
                     'motivo' => 'Alta importada desde XML',
                     'proveedor' => $factura['emisor']['nombre'] ?? null,
                     'costo_unitario' => (float) ($concepto['valor_unitario'] ?? 0),
