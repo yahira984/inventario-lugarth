@@ -17,6 +17,7 @@
         .tab,.btn { min-height:40px; display:inline-flex; align-items:center; justify-content:center; border-radius:10px; padding:0 13px; font-weight:900; text-decoration:none; border:1px solid #bfd2e6; background:#fff; color:#075985; cursor:pointer; transition:transform .2s, filter .2s; }
         .tab:hover,.btn:hover { transform:translateY(-1px); filter:brightness(1.04); }
         .tab.active,.btn-blue { background:#0f5fb8; color:#fff; border-color:#0f5fb8; }
+        .btn-amber { background:#d97706; color:#fff; border-color:#d97706; }
         .btn-green { background:#16a34a; color:#fff; border-color:#16a34a; }
         .btn-red { background:#dc2626; color:#fff; border-color:#dc2626; }
         .alert { padding:14px 16px; border-radius:12px; margin-bottom:16px; font-weight:800; }
@@ -59,7 +60,7 @@
             <div class="header">
                 <div>
                     <h1>Entradas pendientes</h1>
-                    <p class="muted">Revisa quien subio la entrada, fecha, material, cantidad y evidencia. Al aprobar se suma al stock.</p>
+                    <p class="muted">Revisa y corrige material, cantidad, compra y evidencia. El stock se suma solamente al aprobar.</p>
                 </div>
                 <div class="tabs">
                     <a class="tab {{ $estado === 'pendiente' ? 'active' : '' }}" href="{{ route('admin.entradas.index', ['estado' => 'pendiente']) }}">Pendientes</a>
@@ -142,6 +143,7 @@
                                 <td>
                                     @if($entrada->estado === 'pendiente')
                                         <div class="actions">
+                                            <a class="btn btn-amber" href="{{ route('admin.entradas.edit', $entrada) }}">Editar entrada</a>
                                             <form method="POST" action="{{ route('admin.entradas.approve', $entrada) }}">
                                                 @csrf
                                                 @method('PATCH')
