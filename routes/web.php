@@ -1,16 +1,16 @@
 <?php
 
-use App\Http\Controllers\FacturaXmlController;
 use App\Http\Controllers\AdminEntradaPendienteController;
 use App\Http\Controllers\AdminMaterialController;
 use App\Http\Controllers\AdminProveedorController;
 use App\Http\Controllers\AdminSalidaController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseBackupController;
 use App\Http\Controllers\DevolucionMermaController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\EtiquetaController;
 use App\Http\Controllers\EquipmentPackageController;
+use App\Http\Controllers\EtiquetaController;
+use App\Http\Controllers\FacturaXmlController;
 use App\Http\Controllers\IdentificadorVisualController;
 use App\Http\Controllers\MaterialCategoryController;
 use App\Http\Controllers\MaterialController;
@@ -92,6 +92,10 @@ Route::middleware('auth')->group(function () {
         ->name('admin.salidas.index');
     Route::get('admin/entradas-pendientes', [AdminEntradaPendienteController::class, 'index'])
         ->name('admin.entradas.index');
+    Route::get('admin/entradas-pendientes/{entrada}/editar', [AdminEntradaPendienteController::class, 'edit'])
+        ->name('admin.entradas.edit');
+    Route::patch('admin/entradas-pendientes/{entrada}', [AdminEntradaPendienteController::class, 'update'])
+        ->name('admin.entradas.update');
     Route::patch('admin/entradas-pendientes/{entrada}/aprobar', [AdminEntradaPendienteController::class, 'approve'])
         ->name('admin.entradas.approve');
     Route::patch('admin/entradas-pendientes/{entrada}/rechazar', [AdminEntradaPendienteController::class, 'reject'])
