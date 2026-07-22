@@ -61,4 +61,41 @@ class EtiquetaController extends Controller
             'qrSvg' => $qrSvg,
         ]);
     }
+
+    public function lote(Request $request): View
+    {
+        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403, 'No tienes permiso para imprimir etiquetas por lote.');
+
+        $ids = collect(explode(',', (string) $request->query('ids', '')))
+            ->map(fn (string $id): int => (int) $id)
+            ->filter()
+            ->unique()
+            ->take(100)
+            ->values();
+
+        abort_if($ids->isEmpty(), 422, 'Selecciona al menos un material.');
+
+        $errorReporting = error_reporting();
+        error_reporting($errorReporting & ~E_DEPRECATED);
+        try {
+            $materialesPorId = Material::query()
+                ->where('es_plantilla_equipo', false)
+                ->whereIn('id', $ids)
+                ->get()
+                ->keyBy('id');
+            $materiales = $ids
+                ->map(fn (int $id) => $materialesPorId->get($id))
+                ->filter()
+                ->map(function (Material $material): array {
+                    return [
+                        'material' => $material,
+                        'qrSvg' => QrCode::format('svg')->size(180)->margin(1)->generate($material->codigo_barras ?: 'LUG-' . str_pad((string) $material->id, 6, '0', STR_PAD_LEFT)),
+                    ];
+                });
+        } finally {
+            error_reporting($errorReporting);
+        }
+
+        return view('materiales.etiquetas_lote', compact('materiales'));
+    }
 }

@@ -882,9 +882,13 @@
         </div>
 
         <div class="header-actions">
-            <a href="{{ route('dashboard') }}" class="btn-report btn-dashboard" style="background: #1774f5 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">Dashboard</a>
-            <a href="{{ route('reportes.inventario.csv') }}" class="btn-report btn-excel" style="background: #16a34a !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">Excel</a>
-            <a href="{{ route('reportes.inventario.pdf') }}" class="btn-report btn-pdf" style="background: #b91c1c !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">PDF</a>
+            @if(auth()->user()?->esAdministrador())
+                <a href="{{ route('dashboard') }}" class="btn-report btn-dashboard" style="background: #1774f5 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">Dashboard</a>
+            @endif
+            @if(auth()->user()?->esAdministrador() || auth()->user()?->esConsultor())
+                <a href="{{ route('reportes.inventario.csv') }}" class="btn-report btn-excel" style="background: #16a34a !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">Excel</a>
+                <a href="{{ route('reportes.inventario.pdf') }}" class="btn-report btn-pdf" style="background: #b91c1c !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">PDF</a>
+            @endif
             @if(auth()->user()?->puedeMoverStock())
                 <a href="{{ route('materiales.salidas.create') }}" class="btn-red" style="background: #dc2626 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">Registrar Salida</a>
                 <a href="{{ route('materiales.create') }}" class="btn-alta" style="background: #13dd56 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 14px 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important; text-decoration: none !important;">+ Registrar Entrada</a>
@@ -952,8 +956,15 @@
             </thead>
             <tbody>
                 @forelse($materiales as $material)
-                    <tr class="{{ $material->requiereReposicion() ? 'stock-critical' : '' }}">
+                    <tr
+                        id="material-{{ $material->id }}"
+                        class="{{ trim(($material->requiereReposicion() ? 'stock-critical ' : '') . ((int) request('destacar') === $material->id ? 'workspace-highlight-row' : '')) }}"
+                        data-material-id="{{ $material->id }}"
+                    >
                         <td data-label="Foto">
+                            @if(auth()->user()?->puedeAdministrarCatalogo())
+                                <input type="checkbox" class="workspace-row-select" value="{{ $material->id }}" aria-label="Seleccionar {{ $material->descripcion }}" hidden>
+                            @endif
                             @if($material->fotografia)
                                 <button
                                     type="button"

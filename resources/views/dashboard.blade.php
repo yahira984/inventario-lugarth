@@ -263,7 +263,7 @@
                     <div class="card-top">
                         <p class="card-title">Entradas por aprobar</p>
                         <div class="card-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m3-9.75c-.75-1.5-1.125-3-1.125s-3 .75-3 2.25 1.5 2.25 3 2.25 3 .75 3 2.25-1.5 2.25-3 2.25-2.25-.375-3-1.125M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m4-9.5H10a2.5 2.5 0 0 0 0 5h4a2.5 2.5 0 0 1 0 5H8M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                         </div>
                     </div>
                     <strong class="card-value">{{ number_format($entradasPendientes) }}</strong>

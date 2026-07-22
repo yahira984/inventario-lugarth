@@ -47,6 +47,19 @@
                 </section>
 
                 <section class="profile-card">
+                    <h2 style="margin:0 0 6px">Actividad reciente</h2>
+                    <p style="margin:0 0 16px;color:#64748b">Últimas acciones registradas con tu cuenta.</p>
+                    @forelse($recentActivity as $activity)
+                        <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:11px 0;border-bottom:1px solid #e2e8f0">
+                            <div><strong>{{ $activity->accion }}</strong><div style="margin-top:3px;color:#64748b;font-size:12px">{{ $activity->descripcion }}</div></div>
+                            <small style="white-space:nowrap">{{ $activity->created_at?->format('d/m/Y H:i') }}</small>
+                        </div>
+                    @empty
+                        <div class="workspace-empty-panel"><strong>Aún no hay actividad</strong><span>Tus próximas acciones aparecerán aquí.</span></div>
+                    @endforelse
+                </section>
+
+                <section class="profile-card">
                     @include('profile.partials.delete-user-form')
                 </section>
             </div>

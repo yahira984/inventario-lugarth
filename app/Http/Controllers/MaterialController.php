@@ -24,6 +24,10 @@ class MaterialController extends Controller
     {
         $query = Material::query();
 
+        if ($request->filled('material_id')) {
+            $query->whereKey((int) $request->input('material_id'));
+        }
+
         if (! ($request->boolean('ver_plantillas') && $this->usuarioPuedeAdministrarCatalogo($request))) {
             $query->where('es_plantilla_equipo', false);
         }
