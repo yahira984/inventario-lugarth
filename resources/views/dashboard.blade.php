@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Gerencial - Inventario</title>
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2875/2875878.png" type="image/png">
+    <!-- Scripts necesarios para Alpine (animaciones) y Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         :root {
             --bg: #020617;
@@ -141,6 +143,25 @@
         ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.23); }
         ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.42); border-radius: 999px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.68); }
+        
+        /* ESTILOS AÑADIDOS PARA EL WIDGET DE XBOX */
+        .xbox-widget-container * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .xbox-custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .xbox-custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .xbox-custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+        .xbox-custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.3);
+        }
     </style>
 </head>
 <body>
@@ -349,27 +370,128 @@
                         <span class="critical-counter">{{ number_format($stockCriticoTotal) }} alertas</span>
                     </div>
                     <div class="critical-list">
-                        @forelse($stockCritico as $material)
-                            <div class="critical-item">
+                    @forelse($stockCritico as $material)
+                        <div class="critical-item">
+                            <!-- Nuevo contenedor Flex para agrupar la foto y la información -->
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                
+                                <!-- Validación y miniatura de la imagen -->
+                                @if(isset($material->fotografia) && $material->fotografia)
+                                    <img src="{{ asset('storage/' . $material->fotografia) }}" alt="Foto de {{ $material->descripcion }}" style="width: 42px; height: 42px; border-radius: 8px; object-fit: contain; background-color: rgba(255, 255, 255, 0.5); padding: 2px; border: 1px solid rgba(239, 68, 68, 0.3);">                
+                                @else
+                                    <!-- Icono por defecto si el material no tiene foto -->
+                                    <div style="width: 42px; height: 42px; border-radius: 8px; background: rgba(239, 68, 68, 0.1); border: 1px dashed rgba(239, 68, 68, 0.3); display: flex; align-items: center; justify-content: center;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#fca5a5" style="width: 20px; height: 20px;">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 1-1.5-1.5V6a1.5 1.5 0 0 1 1.5-1.5h16.5A1.5 1.5 0 0 1 22.5 6v12a1.5 1.5 0 0 1-1.5 1.5zm-10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0z" />
+                                        </svg>
+                                    </div>
+                                @endif
+
+                                <!-- Textos originales -->
                                 <div>
                                     <strong>{{ $material->descripcion }}</strong>
                                     <div class="muted">{{ $material->numero_parte ?? 'N/A' }} · {{ $material->categoria ?? 'Sin categoría' }}</div>
                                 </div>
-                                <div class="badge-red">{{ number_format($material->stock) }} / mín. {{ number_format($material->stock_minimo) }}</div>
                             </div>
-                        @empty
-                            <div class="empty-state">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
-                                <strong>Inventario sin alertas críticas</strong>
-                                <span>Todos los materiales se encuentran por encima del stock mínimo.</span>
-                            </div>
-                        @endforelse
+                            
+                            <!-- Etiqueta de stock original -->
+                            <div class="badge-red">{{ number_format($material->stock) }} / mín. {{ number_format($material->stock_minimo) }}</div>
+                        </div>
+                    @empty
+                        <div class="empty-state">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                            <strong>Inventario sin alertas críticas</strong>
+                            <span>Todos los materiales se encuentran por encima del stock mínimo.</span>
+                        </div>
+                    @endforelse
                     </div>
                 </article>
             </section>
         </div>
     </main>
 </div>
+
+<!-- ========================================== -->
+<!-- CONTENEDOR DEL WIDGET XBOX COMPLETAMENTE FIJO -->
+<!-- ========================================== -->
+<div class="xbox-widget-container" style="position: fixed; bottom: 24px; right: 24px; z-index: 99999;">
+    <!-- Inicializamos AlpineJS aquí mismo -->
+    <div x-data="{ openAmigos: false }" @click.outside="openAmigos = false">
+        
+        @php
+            $usuariosXbox = \App\Models\User::orderBy('last_seen_at', 'desc')->get();
+            $enLinea = $usuariosXbox->filter(fn($u) => $u->isOnline());
+            $desconectados = $usuariosXbox->reject(fn($u) => $u->isOnline());
+        @endphp
+
+        <!-- LA LISTA DE AMIGOS (Se despliega hacia arriba) -->
+        <div x-show="openAmigos"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="transform opacity-0 translate-y-4"
+             x-transition:enter-end="transform opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-75"
+             x-transition:leave-start="transform opacity-100 translate-y-0"
+             x-transition:leave-end="transform opacity-0 translate-y-4"
+             style="display: none; margin-bottom: 8px; width: 320px; border-radius: 8px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); background-color: #1c1c1c; color: white; border: 1px solid #303030; overflow: hidden;">
+            
+            <div class="xbox-custom-scrollbar" style="max-height: 350px; overflow-y: auto; padding-top: 12px; padding-bottom: 12px;">
+                <!-- En Línea -->
+                @if($enLinea->count() > 0)
+                <div style="margin-top: 4px;">
+                    <h3 style="padding-left: 16px; padding-right: 16px; font-size: 12px; font-weight: 600; color: #d1d5db; margin-bottom: 4px;">En línea ({{ $enLinea->count() }})</h3>
+                    @foreach($enLinea as $user)
+                    <div style="display: flex; align-items: center; padding: 8px 16px; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#2d2d2d'" onmouseout="this.style.backgroundColor='transparent'">
+                        <div style="position: relative; flex-shrink: 0;">
+                            <img src="{{ $user->avatar ? asset('storage/'.$user->avatar) : asset('https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=7F9CF5&background=EBF4FF') }}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
+                            <span style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #1c1c1c; background-color: #107c10;"></span>
+                        </div>
+                        <div style="margin-left: 12px; flex: 1; overflow: hidden;">
+                            <p style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #f2f2f2; margin: 0;">{{ $user->name }}</p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+
+                <!-- Sin Conexión -->
+                @if($desconectados->count() > 0)
+                <div style="margin-top: 16px;">
+                    <h3 style="padding-left: 16px; padding-right: 16px; font-size: 12px; font-weight: 600; color: #d1d5db; margin-bottom: 4px;">Sin conexión ({{ $desconectados->count() }})</h3>
+                    @foreach($desconectados as $user)
+                    <div style="display: flex; align-items: center; padding: 8px 16px; cursor: pointer; opacity: 0.7; transition: all 0.2s;" onmouseover="this.style.opacity='1'; this.style.backgroundColor='#2d2d2d'" onmouseout="this.style.opacity='0.7'; this.style.backgroundColor='transparent'">
+                        <div style="position: relative; flex-shrink: 0;">
+                            <img src="{{ $user->avatar ? asset('storage/'.$user->avatar) : asset('https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=7F9CF5&background=EBF4FF') }}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; filter: grayscale(100%);">
+                            <span style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #1c1c1c; background-color: transparent;"></span>
+                        </div>
+                        <div style="margin-left: 12px; flex: 1; overflow: hidden;">
+                            <p style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #f2f2f2; margin: 0;">{{ $user->name }}</p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- LA PESTAÑITA EXACTA DE LA CAPTURA -->
+        <div @click="openAmigos = !openAmigos" 
+             style="width: 320px; background-color: #242424; border: 1px solid #333333; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#2a2a2a'" onmouseout="this.style.backgroundColor='#242424'">
+            <div>
+                <p style="color: #f2f2f2; font-weight: 700; font-size: 15px; line-height: 1.25; margin: 0;">Amigos</p>
+                <p style="color: #e0e0e0; font-size: 13px; margin: 0;">{{ $enLinea->count() }} en línea</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px; color: #f2f2f2;">
+                <!-- Flechita -->
+                <svg :style="openAmigos ? 'transform: rotate(180deg);' : ''" style="width: 20px; height: 20px; transition: transform 0.2s;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                <!-- Ícono de expandir -->
+                <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- ========================================== -->
+
 
 <script>
     const consumoLabels = @json($consumoLabels);
@@ -468,5 +590,3 @@
         }
     });
 </script>
-</body>
-</html>

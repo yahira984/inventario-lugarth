@@ -972,11 +972,7 @@
                                     onclick="abrirVisorImagen(@js(asset('storage/' . $material->fotografia)), @js($material->descripcion), @js($material->apodo ?: $material->numero_parte ?: 'Sin apodo'))"
                                     aria-label="Ver foto de {{ $material->descripcion }}"
                                 >
-                                    <img src="{{ asset('storage/' . $material->fotografia) }}" class="img-material" alt="Foto de {{ $material->descripcion }}">
-                                </button>
-                            @else
-                                <div class="no-photo">Sin foto</div>
-                            @endif
+<img src="{{ asset('storage/' . $material->fotografia) }}" class="img-material" style="width: 90px; height: 60px; object-fit: contain; background-color: #ffffff; border-radius: 6px; padding: 2px;">                            @endif
                         </td>
                         <td data-label="Categoria"><span class="badge badge-category">{{ $material->categoria ?: 'Sin categoria' }}</span></td>
                         <td data-label="Almacen">
