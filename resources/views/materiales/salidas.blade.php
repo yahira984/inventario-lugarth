@@ -201,8 +201,9 @@
             align-items: center;
             justify-content: center;
             border-radius: 10px;
-            border: 1px dashed rgba(125, 211, 252, 0.45);
-            color: #7dd3fc;
+            border: 1px dashed #9fb7cc;
+            color: #46627c;
+            background: #f7fafc;
             font-size: 11px;
             font-weight: 900;
             text-transform: uppercase;
@@ -321,13 +322,15 @@
             margin-top: 6px;
             font-size: 12px;
             font-weight: 900;
-            background: rgba(16, 185, 129, 0.14);
-            color: #6ee7b7;
+            background: #e9fbf3;
+            color: #056b43;
+            border: 1px solid #99e1c2;
         }
 
         .stock-pill.empty {
-            background: rgba(239, 68, 68, 0.14);
-            color: #fca5a5;
+            background: #fff0f2;
+            color: #a7182a;
+            border-color: #f1aab2;
         }
 
         .history {
@@ -344,14 +347,28 @@
             grid-template-columns: auto minmax(0, 1fr) auto;
             gap: 12px;
             align-items: center;
-            background: rgba(15, 23, 42, 0.62);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #ffffff;
+            border: 1px solid #d8e3ee;
             border-radius: 12px;
             padding: 10px;
+            box-shadow: 0 4px 12px rgba(17, 48, 78, 0.06);
+        }
+
+        .history-item .manual-title {
+            color: #0b2239;
+        }
+
+        .history-item .muted {
+            color: #5d7187;
+            line-height: 1.45;
         }
 
         .history-qty {
-            color: #fca5a5;
+            color: #a7182a;
+            background: #fff0f2;
+            border: 1px solid #f1aab2;
+            border-radius: 8px;
+            padding: 6px 9px;
             font-size: 18px;
             font-weight: 900;
             white-space: nowrap;

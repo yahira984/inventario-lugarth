@@ -119,6 +119,52 @@ class EquipmentPackageController extends Controller
         ]);
     }
 
+    public function withdrawalsCreate(Request $request): View
+    {
+        abort_unless($request->user()?->puedeMoverStock(), 403, 'No tienes permiso para retirar equipos.');
+
+        $buscar = trim((string) $request->query('buscar', ''));
+        $equipos = EquipmentPackage::query()
+            ->with(['items.material'])
+            ->withCount('items')
+            ->where('activo', true)
+            ->when($buscar !== '', function ($query) use ($buscar): void {
+                $query->where(function ($builder) use ($buscar): void {
+                    $builder->where('nombre', 'like', "%{$buscar}%")
+                        ->orWhere('codigo', 'like', "%{$buscar}%");
+                });
+            })
+            ->orderBy('nombre')
+            ->paginate(18)
+            ->withQueryString();
+
+        return view('equipos.retirar', compact('equipos', 'buscar'));
+    }
+
+    public function withdrawalsHistory(Request $request): View
+    {
+        abort_unless($request->user()?->puedeMoverStock(), 403, 'No tienes permiso para consultar el historial de equipos.');
+
+        $tipo = trim((string) $request->query('tipo', ''));
+        $buscar = trim((string) $request->query('buscar', ''));
+        $retiros = EquipmentPackageWithdrawal::query()
+            ->with(['package', 'user'])
+            ->when(in_array($tipo, ['venta', 'retiro'], true), fn ($query) => $query->where('tipo', $tipo))
+            ->when($buscar !== '', function ($query) use ($buscar): void {
+                $query->where(function ($builder) use ($buscar): void {
+                    $builder->where('referencia', 'like', "%{$buscar}%")
+                        ->orWhere('notas', 'like', "%{$buscar}%")
+                        ->orWhereHas('package', fn ($package) => $package->where('nombre', 'like', "%{$buscar}%"))
+                        ->orWhereHas('user', fn ($user) => $user->where('name', 'like', "%{$buscar}%"));
+                });
+            })
+            ->latest()
+            ->paginate(25)
+            ->withQueryString();
+
+        return view('equipos.historial', compact('retiros', 'tipo', 'buscar'));
+    }
+
     public function addItem(Request $request, EquipmentPackage $equipo): RedirectResponse
     {
         abort_unless($request->user()?->puedeMoverStock(), 403, 'No tienes permiso para editar equipos.');

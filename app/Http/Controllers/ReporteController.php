@@ -4,24 +4,57 @@ namespace App\Http\Controllers;
 
 use App\Models\Material;
 use App\Models\MaterialMovimiento;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReporteController extends Controller
 {
-    public function inventarioCsv(): StreamedResponse
+    public function index(Request $request): View
     {
+        abort_unless(
+            $request->user()?->esAdministrador() || $request->user()?->esConsultor(),
+            403,
+            'No tienes permiso para consultar reportes gerenciales.'
+        );
+
+        return view('reportes.index', [
+            'materiales' => Material::query()->where('es_plantilla_equipo', false)->count(),
+            'stockTotal' => Material::query()->where('es_plantilla_equipo', false)->sum('stock'),
+            'valorInventario' => Material::query()->where('es_plantilla_equipo', false)->sum(DB::raw('stock * costo_unitario')),
+            'movimientos' => MaterialMovimiento::query()
+                ->with(['material:id,descripcion,numero_parte', 'user:id,name'])
+                ->whereHas('material', fn ($query) => $query->where('es_plantilla_equipo', false))
+                ->latest()
+                ->limit(12)
+                ->get(),
+        ]);
+    }
+
+    public function inventarioCsv(Request $request): StreamedResponse
+    {
+        $ids = collect(explode(',', (string) $request->query('ids', '')))
+            ->map(fn (string $id): int => (int) $id)
+            ->filter()
+            ->unique()
+            ->take(500)
+            ->values();
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="reporte_inventario.csv"',
         ];
 
-        $callback = function () {
+        $callback = function () use ($ids) {
             $out = fopen('php://output', 'w');
             fputs($out, "\xEF\xBB\xBF");
             fputcsv($out, ['Categoria', 'Almacen', 'No. Parte', 'Codigo Barras', 'Clave SAT', 'Unidad', 'Descripcion', 'Marca', 'Proveedor', 'RFC Proveedor', 'Stock', 'Stock minimo', 'Stock maximo', 'Costo unitario', 'Moneda', 'Valor']);
 
-            Material::query()->where('es_plantilla_equipo', false)->orderBy('descripcion')->chunk(200, function ($materiales) use ($out) {
+            Material::query()
+                ->where('es_plantilla_equipo', false)
+                ->when($ids->isNotEmpty(), fn ($query) => $query->whereIn('id', $ids))
+                ->orderBy('descripcion')
+                ->chunk(200, function ($materiales) use ($out) {
                 foreach ($materiales as $material) {
                     fputcsv($out, [
                         $material->categoria,
@@ -42,7 +75,7 @@ class ReporteController extends Controller
                         (float) $material->stock * (float) $material->costo_unitario,
                     ]);
                 }
-            });
+                });
 
             fclose($out);
         };
