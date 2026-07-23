@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -10,7 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'approved_at'])]
+// 1. Agregamos 'avatar' al final de esta lista 
+#[Fillable(['name', 'email', 'password', 'role', 'approved_at', 'avatar'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -27,6 +27,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'approved_at' => 'datetime',
+            // Aseguramos que last_seen_at se trate como fecha 👇
+            'last_seen_at' => 'datetime', 
             'password' => 'hashed',
         ];
     }
@@ -59,5 +61,11 @@ class User extends Authenticatable
     public function puedeAdministrarCatalogo(): bool
     {
         return $this->esAdministrador();
+    }
+
+    // 2. Agregamos esta función para saber si está en línea 👇
+    public function isOnline(): bool
+    {
+        return $this->last_seen_at && $this->last_seen_at->diffInMinutes(now()) < 5;
     }
 }

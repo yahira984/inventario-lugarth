@@ -177,6 +177,7 @@
 @endphp
 
 <link rel="stylesheet" href="{{ asset('css/workspace.css') }}">
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <button type="button" class="workspace-mobile-menu" id="workspaceMobileMenu" aria-label="Abrir menú" aria-expanded="false">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -240,7 +241,11 @@
 
     <div class="sidebar-footer">
         <a href="{{ route('profile.edit') }}" class="sidebar-profile {{ request()->routeIs('profile.*') ? 'active' : '' }}" data-label="Mi perfil" title="Mi perfil">
-            <span class="sidebar-avatar">{{ strtoupper(mb_substr($workspaceUser?->name ?? 'U', 0, 1)) }}</span>
+            @if($workspaceUser?->avatar)
+                <img src="{{ asset('storage/' . $workspaceUser->avatar) }}" alt="Avatar" style="width: 34px; height: 34px; border-radius: 50%; object-fit: cover;">
+            @else
+                <span class="sidebar-avatar">{{ strtoupper(mb_substr($workspaceUser?->name ?? 'U', 0, 1)) }}</span>
+            @endif
             <span class="sidebar-user-info"><strong>{{ $workspaceUser?->name }}</strong><small>{{ ucfirst($workspaceUser?->role ?? 'usuario') }}</small></span>
             <span class="user-status" aria-label="Cuenta activa"></span>
         </a>
@@ -274,8 +279,14 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
             @if($workspaceNotificationCount > 0)<span class="workspace-count">{{ $workspaceNotificationCount > 99 ? '99+' : $workspaceNotificationCount }}</span>@endif
         </button>
-        <a class="workspace-user-button" href="{{ route('profile.edit') }}" title="Abrir mi perfil">
-            <span>{{ strtoupper(mb_substr($workspaceUser?->name ?? 'U', 0, 1)) }}</span><strong>{{ strtok($workspaceUser?->name ?? 'Usuario', ' ') }}</strong>
+        
+        <a class="workspace-user-button" href="{{ route('profile.edit') }}" title="Abrir mi perfil" style="display: flex; align-items: center; gap: 8px;">
+            @if($workspaceUser?->avatar)
+                <img src="{{ asset('storage/' . $workspaceUser->avatar) }}" alt="Avatar" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
+            @else
+                <span>{{ strtoupper(mb_substr($workspaceUser?->name ?? 'U', 0, 1)) }}</span>
+            @endif
+            <strong>{{ strtok($workspaceUser?->name ?? 'Usuario', ' ') }}</strong>
         </a>
     </div>
 </header>
@@ -351,4 +362,3 @@
         searchUrl: @json(route('buscar.global')),
     };
 </script>
-<script src="{{ asset('js/workspace.js') }}" defer></script>
