@@ -46,7 +46,8 @@ class VisualIdentifierIndexTest extends TestCase
 
         $response->assertOk()
             ->assertSee('Pieza visual exacta')
-            ->assertSee('100 pts');
+            ->assertSee('Coincidencia exacta')
+            ->assertSee('100%');
     }
 
     public function test_reindex_command_prepares_missing_descriptors(): void
