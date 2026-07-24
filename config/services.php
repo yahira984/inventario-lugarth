@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'visual_ai' => [
+        'node' => env('VISUAL_AI_NODE', 'node'),
+    ],
+
 ];

@@ -3,15 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Material;
+use App\Support\VisualEmbeddingService;
 use App\Support\VisualImageDescriptor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class IdentificadorVisualController extends Controller
 {
     private const PUNTAJE_MINIMO = 74;
 
-    public function __construct(private readonly VisualImageDescriptor $visualDescriptor) {}
+    public function __construct(
+        private readonly VisualImageDescriptor $visualDescriptor,
+        private readonly VisualEmbeddingService $visualAi
+    ) {}
 
     public function create()
     {
@@ -20,6 +26,7 @@ class IdentificadorVisualController extends Controller
             'analisis' => null,
             'preview' => null,
             'busquedaRealizada' => false,
+            'iaActiva' => $this->visualAi->isReady(),
         ]);
     }
 
@@ -30,55 +37,104 @@ class IdentificadorVisualController extends Controller
                 'required',
                 'image',
                 'mimes:jpeg,png,jpg,webp',
+                'dimensions:max_width=8000,max_height=8000',
                 'max:8192',
             ],
         ], [
             'fotografia.required' => 'Toma una foto o selecciona una imagen para buscar sugerencias.',
             'fotografia.image' => 'El archivo debe ser una imagen.',
             'fotografia.mimes' => 'La imagen debe ser JPG, JPEG, PNG o WEBP.',
+            'fotografia.dimensions' => 'La imagen es demasiado grande. Usa una foto de hasta 8000 x 8000 pixeles.',
             'fotografia.max' => 'La imagen no debe pesar más de 8 MB.',
         ]);
 
         $archivo = $datos['fotografia'];
         $descriptor = $this->visualDescriptor->fromPath($archivo->getRealPath());
+        $embedding = null;
+
+        if ($this->visualAi->isReady()) {
+            try {
+                $embedding = $this->visualAi->fromPath($archivo->getRealPath());
+            } catch (Throwable $exception) {
+                Log::warning('No se pudo usar CLIP + DINOv2 en el identificador visual.', [
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
 
         return view('materiales.identificador_visual', [
-            'resultados' => $this->buscarMateriales($descriptor),
+            'resultados' => $this->buscarMateriales($descriptor, $embedding),
             'analisis' => [
                 'descriptor' => $descriptor,
                 'observaciones' => $this->observacionesDescriptor($descriptor),
                 'terminos' => [],
+                'motor' => $embedding ? 'CLIP + DINOv2 local' : 'Comparador clasico',
             ],
             'preview' => $this->previewDataUri($archivo->getRealPath(), $archivo->getMimeType()),
             'busquedaRealizada' => true,
+            'iaActiva' => $embedding !== null,
         ]);
     }
 
-    private function buscarMateriales(array $descriptorFoto): Collection
+    private function buscarMateriales(array $descriptorFoto, ?array $embeddingFoto = null): Collection
     {
-        $comparados = Material::query()
+        $materials = Material::query()
             ->where('es_plantilla_equipo', false)
             ->whereNotNull('fotografia')
             ->where('fotografia', '<>', '')
-            ->get()
-            ->map(function (Material $material) use ($descriptorFoto) {
+            ->get();
+
+        $usarAi = $embeddingFoto !== null && $materials->contains(
+            fn (Material $material) => $this->materialHasAiEmbedding($material)
+        );
+
+        $comparados = $materials
+            ->map(function (Material $material) use ($descriptorFoto, $embeddingFoto, $usarAi) {
                 $descriptorMaterial = $this->visualDescriptor->forMaterial($material);
                 [$puntaje, $motivos] = $this->compararDescriptores($descriptorFoto, $descriptorMaterial);
 
+                if ($usarAi && ! $this->sameImage($descriptorFoto, $descriptorMaterial)) {
+                    $embeddingMaterial = data_get($descriptorMaterial, 'ai.embedding');
+
+                    if (! is_array($embeddingMaterial) || $embeddingMaterial === []) {
+                        $puntaje = 0;
+                        $motivos = ['pendiente de indexar con IA'];
+                    } else {
+                        $detailEmbeddingMaterial = data_get($descriptorMaterial, 'ai.detail_embedding', []);
+                        $detailEmbeddingMaterial = is_array($detailEmbeddingMaterial)
+                            ? $detailEmbeddingMaterial
+                            : [];
+                        $similaridad = $this->visualAi->cosineSimilarity(
+                            $embeddingFoto['embedding'] ?? [],
+                            $embeddingMaterial
+                        );
+                        $similaridadDetalle = $this->visualAi->cosineSimilarity(
+                            $embeddingFoto['detail_embedding'] ?? [],
+                            $detailEmbeddingMaterial
+                        );
+                        $puntajeAi = $this->aiScore($similaridad, $similaridadDetalle);
+                        $puntaje = (int) round(($puntajeAi * 0.88) + (min($puntaje, 95) * 0.12));
+                        $motivos = $this->aiReasons($similaridad, $similaridadDetalle, $motivos);
+                        $material->similitud_ia = round($similaridad, 4);
+                    }
+                }
+
                 $material->puntaje_visual = $puntaje;
                 $material->motivos_visual = $motivos;
+                $material->motor_visual = $usarAi ? 'ia' : 'clasico';
 
                 return $material;
             });
 
+        $minimumScore = $usarAi ? 68 : self::PUNTAJE_MINIMO;
         $resultados = $comparados
-            ->filter(fn (Material $material) => $material->puntaje_visual >= self::PUNTAJE_MINIMO)
+            ->filter(fn (Material $material) => $material->puntaje_visual >= $minimumScore)
             ->sortByDesc('puntaje_visual')
             ->values();
 
         if ($resultados->isNotEmpty()) {
-            $margen = ($descriptorFoto['foreground_ratio'] ?? 0) > 0.55 ? 5 : 10;
-            $corteRelativo = max(self::PUNTAJE_MINIMO, (int) $resultados->max('puntaje_visual') - $margen);
+            $margen = $usarAi ? 8 : (($descriptorFoto['foreground_ratio'] ?? 0) > 0.55 ? 5 : 10);
+            $corteRelativo = max($minimumScore, (int) $resultados->max('puntaje_visual') - $margen);
             $resultados = $resultados
                 ->filter(fn (Material $material) => $material->puntaje_visual >= $corteRelativo)
                 ->values();
@@ -88,6 +144,51 @@ class IdentificadorVisualController extends Controller
             ->sortByDesc('puntaje_visual')
             ->take(5)
             ->values();
+    }
+
+    private function materialHasAiEmbedding(Material $material): bool
+    {
+        return data_get($material->visual_descriptor, 'ai.version') === VisualEmbeddingService::VERSION
+            && is_array(data_get($material->visual_descriptor, 'ai.embedding'));
+    }
+
+    private function sameImage(array $first, array $second): bool
+    {
+        return filled($first['sha1'] ?? null)
+            && ($first['sha1'] ?? null) === ($second['sha1'] ?? null);
+    }
+
+    private function aiScore(float $semanticSimilarity, float $detailSimilarity): int
+    {
+        $semanticScore = max(0, min(1, ($semanticSimilarity - 0.50) / 0.35)) * 100;
+        $detailScore = max(0, min(1, ($detailSimilarity - 0.50) / 0.35)) * 100;
+
+        return (int) round(max(
+            $semanticScore,
+            $detailSimilarity >= 0.58 ? $detailScore : 0
+        ));
+    }
+
+    /**
+     * @param  array<int, string>  $classicReasons
+     * @return array<int, string>
+     */
+    private function aiReasons(
+        float $semanticSimilarity,
+        float $detailSimilarity,
+        array $classicReasons
+    ): array {
+        $reasons = [];
+
+        if ($semanticSimilarity >= 0.82 || $detailSimilarity >= 0.82) {
+            $reasons[] = 'IA: coincidencia visual muy fuerte';
+        } elseif ($semanticSimilarity >= 0.70 || $detailSimilarity >= 0.70) {
+            $reasons[] = 'IA: rasgos de la pieza muy similares';
+        } elseif ($semanticSimilarity >= 0.62 || $detailSimilarity >= 0.62) {
+            $reasons[] = 'IA: pieza visualmente parecida';
+        }
+
+        return array_slice(array_unique([...$reasons, ...$classicReasons]), 0, 4);
     }
 
     private function expandirVariantesMismaPieza(Collection $resultados): Collection
