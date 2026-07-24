@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminChatController;
 use App\Http\Controllers\AdminEntradaPendienteController;
 use App\Http\Controllers\AdminMaterialController;
 use App\Http\Controllers\AdminProveedorController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\SalidaMaterialController;
+use App\Http\Controllers\TeamHubController;
 use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +31,15 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/buscar-global', GlobalSearchController::class)->name('buscar.global');
+    Route::get('/equipo/presencia', [TeamHubController::class, 'presence'])
+        ->middleware('throttle:120,1')
+        ->name('team.presence');
+    Route::get('/equipo/mensajes/{user}', [TeamHubController::class, 'messages'])
+        ->middleware('throttle:120,1')
+        ->name('team.messages');
+    Route::post('/equipo/mensajes/{user}', [TeamHubController::class, 'send'])
+        ->middleware('throttle:30,1')
+        ->name('team.messages.send');
 
     Route::get('materiales/buscar-por-codigo', [MaterialController::class, 'buscarPorCodigo'])
         ->name('materiales.buscarPorCodigo');
@@ -116,6 +127,16 @@ Route::middleware('auth')->group(function () {
         ->name('admin.auditoria.destroy');
     Route::delete('admin/auditoria', [AuditLogController::class, 'clear'])
         ->name('admin.auditoria.clear');
+    Route::get('admin/chats', [AdminChatController::class, 'index'])
+        ->name('admin.chats.index');
+    Route::patch('admin/chats/retencion', [AdminChatController::class, 'updateRetention'])
+        ->name('admin.chats.retention');
+    Route::delete('admin/chats/antiguos', [AdminChatController::class, 'purgeExpired'])
+        ->name('admin.chats.purge');
+    Route::delete('admin/chats/conversaciones/{firstUser}/{secondUser}', [AdminChatController::class, 'destroyConversation'])
+        ->name('admin.chats.conversations.destroy');
+    Route::delete('admin/chats', [AdminChatController::class, 'clear'])
+        ->name('admin.chats.clear');
     Route::get('admin/respaldos', [DatabaseBackupController::class, 'index'])
         ->name('admin.backups.index');
     Route::post('admin/respaldos', [DatabaseBackupController::class, 'store'])

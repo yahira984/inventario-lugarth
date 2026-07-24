@@ -2,11 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\AuditLog;
 use App\Models\Material;
 use App\Models\MaterialEntradaPendiente;
-use App\Models\AuditLog;
 use App\Models\User;
 use App\Observers\MaterialObserver;
+use App\Support\ChatRetention;
 use App\Support\VisualImageDescriptor;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
@@ -55,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
                 'workspaceRecentActivity' => $isAdmin
                     ? AuditLog::query()->with('user:id,name')->latest()->limit(5)->get()
                     : collect(),
+                'workspaceChatRetentionDays' => app(ChatRetention::class)->days(),
             ]);
         });
     }

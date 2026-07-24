@@ -98,10 +98,10 @@
                     <div class="photo-grid">
                         <div class="photo-box">
                             @if($entrada->evidencia_foto)
-                                <img id="evidencePreview" class="photo-preview" src="{{ asset('storage/'.$entrada->evidencia_foto) }}" alt="Evidencia actual" onclick="openViewer(this.src)">
+                                <img id="evidencePreview" class="photo-preview" src="{{ asset('storage/'.$entrada->evidencia_foto) }}" alt="Evidencia actual" data-workspace-lightbox data-lightbox-title="Evidencia de entrada">
                             @else
                                 <div id="evidencePlaceholder" class="photo-placeholder">Sin evidencia</div>
-                                <img id="evidencePreview" class="photo-preview" src="" alt="Nueva evidencia" style="display:none" onclick="openViewer(this.src)">
+                                <img id="evidencePreview" class="photo-preview" src="" alt="Nueva evidencia" style="display:none" data-workspace-lightbox data-lightbox-title="Nueva evidencia">
                             @endif
                             <div class="field">
                                 <label for="evidencia_foto">Reemplazar evidencia</label>
@@ -112,10 +112,10 @@
 
                         <div class="photo-box">
                             @if($productoFoto)
-                                <img id="productPreview" class="photo-preview" src="{{ asset('storage/'.$productoFoto) }}" alt="Foto del producto" onclick="openViewer(this.src)">
+                                <img id="productPreview" class="photo-preview" src="{{ asset('storage/'.$productoFoto) }}" alt="Foto del producto" data-workspace-lightbox data-lightbox-title="Foto del producto">
                             @else
                                 <div id="productPlaceholder" class="photo-placeholder">Sin foto del producto</div>
-                                <img id="productPreview" class="photo-preview" src="" alt="Nueva foto del producto" style="display:none" onclick="openViewer(this.src)">
+                                <img id="productPreview" class="photo-preview" src="" alt="Nueva foto del producto" style="display:none" data-workspace-lightbox data-lightbox-title="Nueva foto del producto">
                             @endif
                             <div class="field">
                                 <label>Foto del producto</label>
@@ -157,7 +157,7 @@
                             </select>
                         </div>
                         <div class="material-summary" id="materialSummary">
-                            <img id="selectedMaterialPhoto" src="" alt="Foto de la pieza seleccionada" style="display:none">
+                            <img id="selectedMaterialPhoto" src="" alt="Foto de la pieza seleccionada" style="display:none" data-workspace-lightbox data-lightbox-title="Pieza seleccionada">
                             <div id="selectedMaterialPhotoEmpty" class="photo-placeholder" style="width:84px;height:76px">Sin foto</div>
                             <div>
                                 <strong id="selectedMaterialName">Pieza seleccionada</strong>
@@ -296,10 +296,6 @@
     </main>
 </div>
 
-<div class="viewer" id="imageViewer" onclick="closeViewer(event)">
-    <img id="viewerImage" src="" alt="Imagen ampliada">
-</div>
-
 <script>
     function updateTotal() {
         const quantity = Number(document.getElementById('cantidad').value || 0);
@@ -333,6 +329,8 @@
 
         if (option.dataset.photo) {
             photo.src = option.dataset.photo;
+            photo.dataset.lightboxTitle = option.dataset.name || 'Pieza seleccionada';
+            photo.dataset.lightboxCaption = `${option.dataset.category || 'Sin categoría'} · ${option.dataset.location || 'Sin almacén'}`;
             photo.style.display = 'block';
             empty.style.display = 'none';
         } else {
@@ -340,22 +338,6 @@
             empty.style.display = 'flex';
         }
     }
-
-    function openViewer(src) {
-        if (!src) return;
-        document.getElementById('viewerImage').src = src;
-        document.getElementById('imageViewer').classList.add('open');
-    }
-
-    function closeViewer(event) {
-        if (event.target.id === 'imageViewer') {
-            document.getElementById('imageViewer').classList.remove('open');
-        }
-    }
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') document.getElementById('imageViewer').classList.remove('open');
-    });
 
     updateTotal();
     updateMaterialSummary();

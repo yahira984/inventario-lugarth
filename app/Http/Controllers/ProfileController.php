@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AuditLog;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\AuditLog;
+use App\Support\ImageStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -32,30 +32,35 @@ class ProfileController extends Controller
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
-{
-    $request->user()->fill($request->validated());
+    {
+        $user = $request->user();
+        $previousAvatar = $user->avatar;
+        $newAvatar = null;
 
-    if ($request->user()->isDirty('email')) {
-        $request->user()->email_verified_at = null;
-    }
+        $user->fill($request->safe()->except('avatar'));
 
-    // --- NUEVO CÓDIGO PARA EL AVATAR ---
-    if ($request->hasFile('avatar')) {
-        // Borramos el avatar anterior para no llenar el servidor de basura
-        if ($request->user()->avatar) {
-            Storage::disk('public')->delete($request->user()->avatar);
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
-        
-        // Guardamos la nueva imagen en la carpeta 'avatars'
-        $path = $request->file('avatar')->store('avatars', 'public');
-        $request->user()->avatar = $path;
+
+        if ($request->hasFile('avatar')) {
+            $newAvatar = ImageStorage::storeOptimized($request->file('avatar'), 'avatars', 640, 80);
+            $user->avatar = $newAvatar;
+        }
+
+        try {
+            $user->save();
+        } catch (\Throwable $exception) {
+            ImageStorage::delete($newAvatar);
+            throw $exception;
+        }
+
+        if ($newAvatar && $previousAvatar !== $newAvatar) {
+            ImageStorage::delete($previousAvatar);
+        }
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
-    // -----------------------------------
-
-    $request->user()->save();
-
-    return Redirect::route('profile.edit')->with('status', 'profile-updated');
-}
 
     /**
      * Delete the user's account.
@@ -71,6 +76,7 @@ class ProfileController extends Controller
         Auth::logout();
 
         $user->delete();
+        ImageStorage::delete($user->avatar);
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

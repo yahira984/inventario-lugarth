@@ -137,6 +137,37 @@
         }
     });
 
+    const showWorkspaceToast = (message, tone = 'blue', timeout = 5200) => {
+        let stack = document.querySelector('.workspace-toast-stack');
+        if (!stack) {
+            stack = document.createElement('div');
+            stack.className = 'workspace-toast-stack';
+            document.body.append(stack);
+        }
+
+        const colors = {
+            blue: 'var(--ws-blue)',
+            green: 'var(--ws-green)',
+            red: 'var(--ws-red)',
+            amber: 'var(--ws-amber)',
+            purple: 'var(--ws-purple)',
+        };
+        const toast = document.createElement('div');
+        toast.className = 'workspace-toast';
+        toast.style.setProperty('--toast', colors[tone] || colors.blue);
+
+        const copy = document.createElement('div');
+        copy.textContent = message;
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.setAttribute('aria-label', 'Cerrar aviso');
+        close.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>';
+        close.addEventListener('click', () => toast.remove());
+        toast.append(document.createElement('span'), copy, close);
+        stack.append(toast);
+        window.setTimeout(() => toast.remove(), timeout);
+    };
+
     /* Notifications */
     const notificationsButton = document.getElementById('workspaceNotifications');
     const notifications = document.getElementById('notificationPopover');
@@ -148,12 +179,395 @@
     notificationsButton?.addEventListener('click', (event) => {
         event.stopPropagation();
         if (!notifications) return;
+        closeTeam();
         notifications.hidden = !notifications.hidden;
         notificationsButton.setAttribute('aria-expanded', notifications.hidden ? 'false' : 'true');
     });
     notifications?.querySelector('[data-close-popover]')?.addEventListener('click', closeNotifications);
     document.addEventListener('click', (event) => {
         if (!notifications?.hidden && !notifications.contains(event.target) && !notificationsButton?.contains(event.target)) closeNotifications();
+    });
+
+    /* Live team presence and direct messages */
+    const teamDock = document.getElementById('workspaceTeamDock');
+    const teamButton = document.getElementById('workspaceTeam');
+    const teamPopover = document.getElementById('teamPopover');
+    const teamList = document.getElementById('teamList');
+    const teamStatus = document.getElementById('teamPopoverStatus');
+    const onlineCount = document.getElementById('workspaceOnlineCount');
+    const unreadCount = document.getElementById('workspaceUnreadCount');
+    const teamUsersCount = document.getElementById('teamUsersCount');
+    const teamChatsCount = document.getElementById('teamChatsCount');
+    const teamTabButtons = [...document.querySelectorAll('[data-team-tab]')];
+    const chat = document.getElementById('workspaceChat');
+    const chatMessages = document.getElementById('workspaceChatMessages');
+    const chatForm = document.getElementById('workspaceChatForm');
+    const chatInput = document.getElementById('workspaceChatInput');
+    let chatAvatar = document.getElementById('chatAvatar');
+    const chatUserName = document.getElementById('chatUserName');
+    const chatUserStatus = document.getElementById('chatUserStatus');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
+        || window.InventoryWorkspace?.csrfToken
+        || '';
+    const presenceUrl = window.InventoryWorkspace?.presenceUrl;
+    const messageUrlTemplate = window.InventoryWorkspace?.messagesUrlTemplate || '';
+    const presenceStorageKey = `${storagePrefix}presence`;
+    let activeChatUser = null;
+    let activeTeamTab = 'users';
+    let latestPresenceData = { online_count: 0, unread_total: 0, users: [] };
+    let presenceRequest = false;
+    let messagesRequest = false;
+    let presenceTimer;
+    let messagesTimer;
+
+    const closeTeam = () => {
+        if (!teamPopover) return;
+        teamPopover.hidden = true;
+        teamButton?.setAttribute('aria-expanded', 'false');
+        teamDock?.classList.remove('is-open');
+    };
+
+    const closeChat = () => {
+        if (!chat) return;
+        chat.hidden = true;
+        activeChatUser = null;
+        document.body.classList.remove('workspace-chat-open');
+        window.clearInterval(messagesTimer);
+    };
+
+    const avatarElement = (user) => {
+        const avatar = document.createElement('span');
+        avatar.className = `team-avatar${user.online ? ' is-online' : ''}`;
+        if (user.avatar_url) {
+            const image = document.createElement('img');
+            image.src = user.avatar_url;
+            image.alt = '';
+            image.dataset.noLightbox = '';
+            avatar.append(image);
+        } else {
+            const initials = document.createElement('span');
+            initials.textContent = user.initials || 'U';
+            avatar.append(initials);
+        }
+        avatar.append(document.createElement('i'));
+        return avatar;
+    };
+
+    const appendTeamHeading = (label, count) => {
+        if (!teamList) return;
+        const heading = document.createElement('div');
+        heading.className = 'team-section-heading';
+        heading.textContent = `${label} (${count})`;
+        teamList.append(heading);
+    };
+
+    const appendTeamRow = (user, chatMode = false) => {
+        if (!teamList) return;
+        const row = document.createElement('button');
+        row.type = 'button';
+        row.className = `team-row${user.is_self ? ' is-self' : ''}`;
+        row.disabled = Boolean(user.is_self);
+        row.append(avatarElement(user));
+
+        const copy = document.createElement('span');
+        copy.className = 'team-copy';
+        const name = document.createElement('strong');
+        name.textContent = user.name;
+        const meta = document.createElement('span');
+        const role = document.createElement('b');
+        role.className = 'team-role';
+        role.textContent = user.role_label;
+        meta.append(
+            role,
+            document.createTextNode(chatMode
+                ? ` · ${user.last_message_at || 'Conversación reciente'}`
+                : ` · ${user.last_seen}`)
+        );
+        copy.append(name, meta);
+
+        if (chatMode && user.last_message) {
+            const preview = document.createElement('small');
+            preview.textContent = user.last_message;
+            copy.append(preview);
+        }
+        row.append(copy);
+
+        if (user.is_self) {
+            const self = document.createElement('span');
+            self.className = 'team-self-label';
+            self.textContent = 'Tú';
+            row.append(self);
+        } else if (user.unread_count > 0) {
+            const unread = document.createElement('span');
+            unread.className = 'team-unread';
+            unread.textContent = user.unread_count > 99 ? '99+' : String(user.unread_count);
+            row.append(unread);
+        } else {
+            const action = document.createElement('span');
+            action.className = 'team-self-label';
+            action.textContent = chatMode ? 'Abrir' : 'Chat';
+            row.append(action);
+        }
+
+        if (!user.is_self) row.addEventListener('click', () => openChat(user));
+        teamList.append(row);
+    };
+
+    const renderTeam = (data = latestPresenceData) => {
+        latestPresenceData = data;
+        const users = data.users || [];
+        const conversationUsers = users
+            .filter((user) => !user.is_self && user.has_conversation)
+            .sort((a, b) => {
+                if (a.unread_count !== b.unread_count) return b.unread_count - a.unread_count;
+                return Number(b.last_message_id || 0) - Number(a.last_message_id || 0);
+            });
+
+        if (onlineCount) onlineCount.textContent = String(data.online_count || 0);
+        if (unreadCount) {
+            const unread = Number(data.unread_total || 0);
+            unreadCount.hidden = unread === 0;
+            unreadCount.textContent = unread > 99 ? '99+' : String(unread);
+        }
+        if (teamUsersCount) teamUsersCount.textContent = String(users.length);
+        if (teamChatsCount) teamChatsCount.textContent = String(conversationUsers.length);
+        if (teamStatus) {
+            teamStatus.textContent = activeTeamTab === 'chats'
+                ? `${conversationUsers.length} conversaciones · ${data.unread_total || 0} mensajes pendientes`
+                : `${data.online_count || 0} en línea · ${users.length} usuarios`;
+        }
+        if (!teamList) return;
+        teamList.replaceChildren();
+
+        if (activeTeamTab === 'chats') {
+            if (!conversationUsers.length) {
+                const empty = document.createElement('div');
+                empty.className = 'workspace-empty';
+                empty.innerHTML = '<strong>Aún no hay conversaciones</strong><span>Abre la pestaña Equipo y selecciona una persona para iniciar un chat.</span>';
+                teamList.append(empty);
+                return;
+            }
+            conversationUsers.forEach((user) => appendTeamRow(user, true));
+            return;
+        }
+
+        if (!users.length) {
+            const empty = document.createElement('div');
+            empty.className = 'workspace-empty';
+            empty.innerHTML = '<strong>No hay usuarios disponibles</strong><span>Los usuarios aprobados aparecerán aquí.</span>';
+            teamList.append(empty);
+            return;
+        }
+
+        const onlineUsers = users.filter((user) => user.online);
+        const offlineUsers = users.filter((user) => !user.online);
+        if (onlineUsers.length) {
+            appendTeamHeading('En línea', onlineUsers.length);
+            onlineUsers.forEach((user) => appendTeamRow(user));
+        }
+        if (offlineUsers.length) {
+            appendTeamHeading('Sin conexión', offlineUsers.length);
+            offlineUsers.forEach((user) => appendTeamRow(user));
+        }
+    };
+
+    const notifyPresenceChanges = (users) => {
+        const current = Object.fromEntries(users.map((user) => [user.id, {
+            name: user.name,
+            role: user.role_label,
+            online: user.online,
+            self: user.is_self,
+        }]));
+        let previous = null;
+        try {
+            previous = JSON.parse(sessionStorage.getItem(presenceStorageKey) || 'null');
+        } catch (_) {
+            previous = null;
+        }
+
+        if (previous) {
+            Object.entries(current).forEach(([id, user]) => {
+                if (user.self || !previous[id] || previous[id].online === user.online) return;
+                showWorkspaceToast(
+                    user.online
+                        ? `${user.name} (${user.role}) acaba de conectarse.`
+                        : `${user.name} (${user.role}) se desconectó.`,
+                    user.online ? 'green' : 'amber',
+                );
+            });
+        }
+        sessionStorage.setItem(presenceStorageKey, JSON.stringify(current));
+    };
+
+    const refreshPresence = async ({ silent = false } = {}) => {
+        if (!presenceUrl || presenceRequest) return;
+        presenceRequest = true;
+        try {
+            const response = await fetch(presenceUrl, {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin',
+            });
+            if (!response.ok) throw new Error('No se pudo actualizar el equipo.');
+            const data = await response.json();
+            notifyPresenceChanges(data.users || []);
+            renderTeam(data);
+        } catch (_) {
+            if (!silent && teamStatus) teamStatus.textContent = 'No se pudo actualizar. Intentaremos nuevamente.';
+        } finally {
+            presenceRequest = false;
+        }
+    };
+
+    const renderChatMessages = (messages) => {
+        if (!chatMessages) return;
+        const wasNearBottom = chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight < 90;
+        const previousLastId = chatMessages.lastElementChild?.dataset?.messageId;
+        chatMessages.replaceChildren();
+
+        if (!messages.length) {
+            const empty = document.createElement('div');
+            empty.className = 'workspace-empty';
+            empty.innerHTML = '<strong>Inicia la conversación</strong><span>Los mensajes son privados entre ambos usuarios.</span>';
+            chatMessages.append(empty);
+            return;
+        }
+
+        messages.forEach((message) => {
+            const bubble = document.createElement('article');
+            bubble.className = `chat-message${message.mine ? ' is-mine' : ''}`;
+            bubble.dataset.messageId = message.id;
+            const body = document.createElement('span');
+            body.textContent = message.body;
+            const time = document.createElement('time');
+            time.textContent = message.created_at;
+            bubble.append(body, time);
+            chatMessages.append(bubble);
+        });
+        const currentLastId = chatMessages.lastElementChild?.dataset?.messageId;
+        if (wasNearBottom || previousLastId !== currentLastId) chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
+
+    const conversationUrl = (userId) => messageUrlTemplate.replace('__USER__', encodeURIComponent(userId));
+
+    const refreshMessages = async ({ silent = false } = {}) => {
+        if (!activeChatUser || messagesRequest) return;
+        messagesRequest = true;
+        try {
+            const response = await fetch(conversationUrl(activeChatUser.id), {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin',
+            });
+            if (!response.ok) throw new Error('No se pudo abrir la conversación.');
+            const data = await response.json();
+            activeChatUser = { ...activeChatUser, ...data.user };
+            if (chatUserStatus) chatUserStatus.textContent = `${data.user.role_label} · ${data.user.online ? 'En línea' : 'Desconectado'}`;
+            renderChatMessages(data.messages || []);
+            refreshPresence({ silent: true });
+        } catch (_) {
+            if (!silent && chatMessages) {
+                chatMessages.innerHTML = '<div class="workspace-empty"><strong>No se pudo cargar el chat</strong><span>Comprueba tu conexión e intenta nuevamente.</span></div>';
+            }
+        } finally {
+            messagesRequest = false;
+        }
+    };
+
+    function openChat(user) {
+        if (!chat) return;
+        activeChatUser = user;
+        chat.hidden = false;
+        document.body.classList.add('workspace-chat-open');
+        closeTeam();
+        if (chatUserName) chatUserName.textContent = user.name;
+        if (chatUserStatus) chatUserStatus.textContent = `${user.role_label} · ${user.online ? 'En línea' : user.last_seen}`;
+        if (chatAvatar) {
+            const replacement = avatarElement(user);
+            replacement.id = 'chatAvatar';
+            chatAvatar.replaceWith(replacement);
+            chatAvatar = replacement;
+        }
+        if (chatMessages) {
+            chatMessages.innerHTML = '<div class="team-loading"><span></span><span></span><span></span></div>';
+        }
+        refreshMessages();
+        window.clearInterval(messagesTimer);
+        messagesTimer = window.setInterval(() => refreshMessages({ silent: true }), 4000);
+        window.setTimeout(() => chatInput?.focus(), 80);
+    }
+
+    teamButton?.addEventListener('click', (event) => {
+        event.stopPropagation();
+        if (!teamPopover) return;
+        closeNotifications();
+        teamPopover.hidden = !teamPopover.hidden;
+        teamButton.setAttribute('aria-expanded', teamPopover.hidden ? 'false' : 'true');
+        teamDock?.classList.toggle('is-open', !teamPopover.hidden);
+        if (!teamPopover.hidden) refreshPresence();
+    });
+    teamTabButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            activeTeamTab = button.dataset.teamTab || 'users';
+            teamTabButtons.forEach((tab) => tab.classList.toggle('is-active', tab === button));
+            renderTeam();
+        });
+    });
+    teamPopover?.querySelector('[data-close-team]')?.addEventListener('click', closeTeam);
+    document.getElementById('closeWorkspaceChat')?.addEventListener('click', closeChat);
+    document.addEventListener('click', (event) => {
+        if (!teamPopover?.hidden && !teamPopover.contains(event.target) && !teamButton?.contains(event.target)) closeTeam();
+    });
+
+    chatForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const body = chatInput?.value.trim() || '';
+        const submit = chatForm.querySelector('button[type="submit"]');
+        if (!activeChatUser || !body || !submit) return;
+        submit.disabled = true;
+        try {
+            const response = await fetch(conversationUrl(activeChatUser.id), {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({ body }),
+            });
+            if (!response.ok) throw new Error('No se pudo enviar el mensaje.');
+            if (chatInput) {
+                chatInput.value = '';
+                chatInput.style.height = '';
+            }
+            await refreshMessages();
+        } catch (_) {
+            showWorkspaceToast('No se pudo enviar el mensaje. Intenta nuevamente.', 'red');
+        } finally {
+            submit.disabled = false;
+            chatInput?.focus();
+        }
+    });
+    chatInput?.addEventListener('input', () => {
+        chatInput.style.height = 'auto';
+        chatInput.style.height = `${Math.min(chatInput.scrollHeight, 120)}px`;
+    });
+    chatInput?.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            chatForm?.requestSubmit();
+        }
+    });
+
+    refreshPresence({ silent: true });
+    presenceTimer = window.setInterval(() => {
+        if (!document.hidden) refreshPresence({ silent: true });
+    }, 10000);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            refreshPresence({ silent: true });
+            if (activeChatUser) refreshMessages({ silent: true });
+        }
     });
 
     /* Global command palette */
@@ -169,6 +583,7 @@
     const openPalette = () => {
         if (!palette) return;
         closeNotifications();
+        closeTeam();
         palette.hidden = false;
         setOverlay(true);
         selectedResult = -1;
@@ -265,6 +680,8 @@
         if (event.key === 'Escape') {
             closePalette();
             closeNotifications();
+            closeTeam();
+            closeChat();
             if (compactQuery.matches) closeMobileSidebar();
             closeLightbox();
             return;
@@ -411,27 +828,66 @@
     /* Image gallery */
     const lightbox = document.getElementById('workspaceLightbox');
     const lightboxImage = lightbox?.querySelector('img');
+    const lightboxTitle = lightbox?.querySelector('.lightbox-title');
     const lightboxCaption = lightbox?.querySelector('.lightbox-caption');
+    let lightboxTrigger = null;
+
     function closeLightbox() {
         if (!lightbox || lightbox.hidden) return;
         lightbox.hidden = true;
+        window.setTimeout(() => {
+            if (lightbox.hidden && lightboxImage) lightboxImage.removeAttribute('src');
+        }, 180);
         if (!palette || palette.hidden) setOverlay(false);
+        lightboxTrigger?.focus?.({ preventScroll: true });
+        lightboxTrigger = null;
     }
+
+    const openLightbox = (trigger, image) => {
+        if (window.InventoryWorkspace?.disableGlobalLightbox) return;
+        const sourceImage = image || (trigger?.matches?.('img') ? trigger : trigger?.querySelector?.('img'));
+        const src = sourceImage?.currentSrc || sourceImage?.src || trigger?.dataset?.workspaceLightbox;
+        if (!src || !lightbox || !lightboxImage || !lightboxTitle || !lightboxCaption) return;
+
+        lightboxTrigger = trigger;
+        lightboxImage.src = src;
+        lightboxImage.alt = sourceImage?.alt || trigger?.dataset?.lightboxTitle || 'Imagen ampliada';
+        lightboxTitle.textContent = trigger?.dataset?.lightboxTitle
+            || sourceImage?.alt
+            || sourceImage?.closest('tr, article, .card')?.querySelector('h2, h3, strong')?.textContent?.trim()
+            || 'Vista ampliada';
+        lightboxCaption.textContent = trigger?.dataset?.lightboxCaption || '';
+        lightbox.hidden = false;
+        setOverlay(true);
+        window.setTimeout(() => lightbox.querySelector('.lightbox-close')?.focus(), 30);
+    };
+
     lightbox?.querySelector('.lightbox-close')?.addEventListener('click', closeLightbox);
     lightbox?.addEventListener('click', (event) => event.target === lightbox && closeLightbox());
     document.querySelector('.app-content')?.addEventListener('click', (event) => {
+        if (window.InventoryWorkspace?.disableGlobalLightbox) return;
+        const explicitTrigger = event.target.closest('[data-workspace-lightbox]');
+        if (explicitTrigger) {
+            event.preventDefault();
+            event.stopPropagation();
+            openLightbox(explicitTrigger);
+            return;
+        }
         const image = event.target.closest('img');
         if (!image || image.closest('[data-no-lightbox]')) return;
         const src = image.currentSrc || image.src;
         if (!src || (!src.includes('/storage/') && !image.closest('table, .suggestion, .result, .photo, .evidence'))) return;
         event.preventDefault();
-        if (!lightbox || !lightboxImage || !lightboxCaption) return;
-        lightboxImage.src = src;
-        lightboxImage.alt = image.alt || 'Imagen ampliada';
-        lightboxCaption.textContent = image.alt || image.closest('tr, article, .card')?.querySelector('h2, h3, strong')?.textContent?.trim() || 'Vista ampliada';
-        lightbox.hidden = false;
-        setOverlay(true);
+        event.stopPropagation();
+        openLightbox(image, image);
     });
+    window.InventoryWorkspace.openImage = (source, title = 'Vista ampliada', caption = '') => {
+        const trigger = document.createElement('button');
+        trigger.dataset.workspaceLightbox = source;
+        trigger.dataset.lightboxTitle = title;
+        trigger.dataset.lightboxCaption = caption;
+        openLightbox(trigger);
+    };
 
     /* Loading feedback and toast messages */
     const progress = document.createElement('div');
@@ -439,7 +895,7 @@
     document.body.append(progress);
     document.querySelectorAll('form').forEach((form) => {
         form.addEventListener('submit', (event) => {
-            if (event.defaultPrevented || !form.checkValidity()) return;
+            if (form.hasAttribute('data-workspace-async') || event.defaultPrevented || !form.checkValidity()) return;
             const submitter = event.submitter || form.querySelector('[type="submit"]');
             submitter?.classList.add('workspace-loading');
             if (submitter) submitter.disabled = true;
@@ -464,22 +920,9 @@
     }
 
     const toastCandidates = [...document.querySelectorAll('.app-content :is(.alert-ok, .alert-success, .alert-bad, .alert-error)')].slice(0, 3);
-    if (toastCandidates.length) {
-        const stack = document.createElement('div');
-        stack.className = 'workspace-toast-stack';
-        toastCandidates.forEach((source) => {
-            const toast = document.createElement('div');
-            toast.className = 'workspace-toast';
-            toast.style.setProperty('--toast', source.matches('.alert-bad,.alert-error') ? 'var(--ws-red)' : 'var(--ws-green)');
-            const message = document.createElement('div');
-            message.textContent = source.textContent.trim();
-            const close = document.createElement('button');
-            close.type = 'button'; close.textContent = '×'; close.setAttribute('aria-label', 'Cerrar aviso');
-            close.addEventListener('click', () => toast.remove());
-            toast.append(document.createElement('span'), message, close);
-            stack.append(toast);
-            window.setTimeout(() => toast.remove(), 6500);
-        });
-        document.body.append(stack);
-    }
+    toastCandidates.forEach((source) => showWorkspaceToast(
+        source.textContent.trim(),
+        source.matches('.alert-bad,.alert-error') ? 'red' : 'green',
+        6500,
+    ));
 })();

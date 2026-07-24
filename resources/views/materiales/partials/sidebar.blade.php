@@ -132,6 +132,10 @@
                     'Aprobaciones, roles y permisos'
                 ) : null,
                 $workspaceIsAdmin ? $workspaceItem(
+                    'Chats internos', route('admin.chats.index'), 'images/usuarios.png', 'cyan', request()->routeIs('admin.chats.*'), 0,
+                    'Retención y limpieza de conversaciones'
+                ) : null,
+                $workspaceIsAdmin ? $workspaceItem(
                     'Auditoría', route('admin.auditoria.index'), 'images/auditoria.jpg', 'indigo', request()->routeIs('admin.auditoria.*'), 0,
                     'Actividad completa del sistema'
                 ) : null,
@@ -167,6 +171,7 @@
         str_starts_with($workspaceRouteName, 'materiales.visual.') => ['Herramientas', 'Identificador visual'],
         str_starts_with($workspaceRouteName, 'reportes.') => ['Herramientas', 'Reportes'],
         str_starts_with($workspaceRouteName, 'usuarios.roles.') => ['Administración', 'Usuarios'],
+        str_starts_with($workspaceRouteName, 'admin.chats.') => ['Administración', 'Chats internos'],
         str_starts_with($workspaceRouteName, 'admin.auditoria.') => ['Administración', 'Auditoría'],
         str_starts_with($workspaceRouteName, 'admin.salidas.') => ['Administración', 'Historial de salidas'],
         str_starts_with($workspaceRouteName, 'admin.backups.') => ['Administración', 'Respaldos'],
@@ -315,6 +320,44 @@
     </div>
 </section>
 
+<div class="workspace-team-dock" id="workspaceTeamDock">
+    <section class="workspace-popover team-popover" id="teamPopover" hidden aria-label="Equipo y conversaciones">
+        <header>
+            <div class="team-panel-heading">
+                <span class="team-panel-mark">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </span>
+                <span><strong>Equipo Lugarth</strong><small id="teamPopoverStatus">Consultando usuarios conectados...</small></span>
+            </div>
+            <button type="button" data-close-team aria-label="Cerrar panel">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+            </button>
+        </header>
+        <nav class="team-tabs" aria-label="Vistas del equipo">
+            <button type="button" class="is-active" data-team-tab="users">Equipo <span id="teamUsersCount">0</span></button>
+            <button type="button" data-team-tab="chats">Chats <span id="teamChatsCount">0</span></button>
+        </nav>
+        <div class="team-list" id="teamList" aria-live="polite">
+            <div class="team-loading"><span></span><span></span><span></span></div>
+        </div>
+    </section>
+
+    <button type="button" class="workspace-team-launcher" id="workspaceTeam" aria-label="Abrir equipo y chats" title="Equipo y chats" aria-expanded="false">
+        <span class="team-launcher-mark">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <i></i>
+        </span>
+        <span class="team-launcher-copy">
+            <strong>Equipo</strong>
+            <small><b id="workspaceOnlineCount">0</b> en línea</small>
+        </span>
+        <span class="team-launcher-actions">
+            <span class="team-launcher-unread" id="workspaceUnreadCount" hidden>0</span>
+            <svg class="team-launcher-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
+        </span>
+    </button>
+</div>
+
 <div class="workspace-overlay" id="workspaceOverlay" hidden></div>
 
 <section class="command-palette" id="commandPalette" hidden role="dialog" aria-modal="true" aria-labelledby="commandTitle" data-search-url="{{ route('buscar.global') }}">
@@ -335,9 +378,47 @@
 </section>
 
 <section class="workspace-lightbox" id="workspaceLightbox" hidden role="dialog" aria-modal="true" aria-label="Vista ampliada de imagen">
-    <button type="button" class="lightbox-close" aria-label="Cerrar imagen">×</button>
-    <div class="lightbox-stage"><img src="" alt=""><div class="lightbox-caption"></div></div>
+    <button type="button" class="lightbox-close" aria-label="Cerrar imagen" title="Cerrar imagen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+    </button>
+    <div class="lightbox-stage">
+        <img src="" alt="">
+        <div class="lightbox-copy">
+            <strong class="lightbox-title"></strong>
+            <span class="lightbox-caption"></span>
+        </div>
+    </div>
 </section>
+
+<aside class="workspace-chat" id="workspaceChat" hidden aria-label="Chat interno">
+    <header class="workspace-chat-header">
+        <div class="team-avatar" id="chatAvatar"><span>U</span><i></i></div>
+        <div><strong id="chatUserName">Conversación</strong><small id="chatUserStatus">Cargando...</small></div>
+        <button type="button" id="closeWorkspaceChat" aria-label="Cerrar chat" title="Cerrar chat">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+    </header>
+    <div class="workspace-chat-messages" id="workspaceChatMessages" aria-live="polite">
+        <div class="workspace-empty"><strong>Selecciona a una persona</strong><span>Podrás enviarle un mensaje directo dentro del sistema.</span></div>
+    </div>
+    <div class="workspace-chat-retention">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-3.2-6.9M21 3v6h-6"/></svg>
+        <span>
+            @if(($workspaceChatRetentionDays ?? 30) === 0)
+                El historial se conserva hasta que un administrador lo elimine.
+            @else
+                Los mensajes se conservan durante {{ $workspaceChatRetentionDays ?? 30 }} días.
+            @endif
+        </span>
+    </div>
+    <form class="workspace-chat-form" id="workspaceChatForm" autocomplete="off" data-workspace-async>
+        <label class="sr-only" for="workspaceChatInput">Mensaje</label>
+        <textarea id="workspaceChatInput" name="body" rows="1" maxlength="1000" placeholder="Escribe un mensaje..." required></textarea>
+        <button type="submit" aria-label="Enviar mensaje" title="Enviar mensaje">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13"/></svg>
+        </button>
+    </form>
+</aside>
 
 <nav class="workspace-mobile-tabs" aria-label="Accesos principales">
     @if($workspaceIsAdmin)
@@ -363,6 +444,11 @@
     window.InventoryWorkspace = {
         routeName: @json($workspaceRouteName),
         userRole: @json($workspaceUser?->role),
+        userId: @json($workspaceUser?->id),
+        presenceUrl: @json(route('team.presence')),
+        messagesUrlTemplate: @json(route('team.messages', ['user' => '__USER__'])),
+        disableGlobalLightbox: @json(request()->routeIs('materiales.visual.*')),
+        csrfToken: @json(csrf_token()),
         searchUrl: @json(route('buscar.global')),
     };
 </script>

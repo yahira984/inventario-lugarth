@@ -969,10 +969,14 @@
                                 <button
                                     type="button"
                                     class="photo-zoom-btn"
-                                    onclick="abrirVisorImagen(@js(asset('storage/' . $material->fotografia)), @js($material->descripcion), @js($material->apodo ?: $material->numero_parte ?: 'Sin apodo'))"
+                                    data-workspace-lightbox
+                                    data-lightbox-title="{{ $material->descripcion }}"
+                                    data-lightbox-caption="Apodo / código: {{ $material->apodo ?: $material->numero_parte ?: 'Sin apodo' }}"
                                     aria-label="Ver foto de {{ $material->descripcion }}"
                                 >
-<img src="{{ asset('storage/' . $material->fotografia) }}" class="img-material" style="width: 90px; height: 60px; object-fit: contain; background-color: #ffffff; border-radius: 6px; padding: 2px;">                            @endif
+                                    <img src="{{ asset('storage/' . $material->fotografia) }}" alt="Foto de {{ $material->descripcion }}" class="img-material" style="width: 90px; height: 60px; object-fit: contain; background-color: #ffffff; border-radius: 6px; padding: 2px;">
+                                </button>
+                            @endif
                         </td>
                         <td data-label="Categoria"><span class="badge badge-category">{{ $material->categoria ?: 'Sin categoria' }}</span></td>
                         <td data-label="Almacen">
@@ -1164,21 +1168,6 @@
     @method('DELETE')
 </form>
 
-<div id="imageViewer" class="image-viewer" role="dialog" aria-modal="true" aria-labelledby="imageViewerTitle">
-    <div class="image-viewer-panel">
-        <div class="image-viewer-top">
-            <div class="image-viewer-title">
-                <strong id="imageViewerTitle">Foto del material</strong>
-                <span id="imageViewerSubtitle"></span>
-            </div>
-            <button type="button" class="image-viewer-close" onclick="cerrarVisorImagen()" aria-label="Cerrar imagen">&times;</button>
-        </div>
-        <div class="image-viewer-frame">
-            <img id="imageViewerPhoto" src="" alt="Foto ampliada">
-        </div>
-    </div>
-</div>
-
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
     const buscarInput = document.getElementById('buscarInput');
@@ -1195,31 +1184,6 @@
     let scannerBufferInicio = 0;
     let scannerUltimaTecla = 0;
     let scannerResetTimer = null;
-    const imageViewer = document.getElementById('imageViewer');
-    const imageViewerPhoto = document.getElementById('imageViewerPhoto');
-    const imageViewerTitle = document.getElementById('imageViewerTitle');
-    const imageViewerSubtitle = document.getElementById('imageViewerSubtitle');
-
-    function abrirVisorImagen(src, titulo, subtitulo) {
-        imageViewerPhoto.src = src;
-        imageViewerPhoto.alt = `Foto de ${titulo}`;
-        imageViewerTitle.textContent = titulo || 'Foto del material';
-        imageViewerSubtitle.textContent = subtitulo ? `Apodo / codigo: ${subtitulo}` : '';
-        imageViewer.classList.add('open');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function cerrarVisorImagen() {
-        imageViewer.classList.remove('open');
-        document.body.style.overflow = '';
-
-        setTimeout(() => {
-            if (!imageViewer.classList.contains('open')) {
-                imageViewerPhoto.src = '';
-            }
-        }, 220);
-    }
-
     function buscarCodigoEscaneado(codigo) {
         const codigoLimpio = codigo.trim();
 
@@ -1383,11 +1347,6 @@
     });
 
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && imageViewer.classList.contains('open')) {
-            cerrarVisorImagen();
-            return;
-        }
-
         if (
             event.ctrlKey
             || event.altKey
@@ -1464,9 +1423,6 @@ function ejecutarEliminar() {
         if (e.target === this) cerrarModalCodigo();
     });
 
-    imageViewer.addEventListener('click', function (e) {
-        if (e.target === this) cerrarVisorImagen();
-    });
 </script>
 
 </body>
