@@ -70,6 +70,16 @@ class TeamHubTest extends TestCase
                 'name' => 'Luis Almacén',
                 'has_conversation' => true,
                 'last_message' => 'La entrada 25 ya quedó revisada.',
+                'last_message_mine' => true,
+            ]);
+
+        $this
+            ->actingAs($recipient)
+            ->getJson(route('team.presence'))
+            ->assertOk()
+            ->assertJsonFragment([
+                'name' => 'Ana Admin',
+                'last_message_mine' => false,
             ]);
 
         $this

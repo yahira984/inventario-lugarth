@@ -9,6 +9,7 @@
     const overlay = document.getElementById('workspaceOverlay');
     const compactQuery = window.matchMedia('(max-width: 1024px)');
     const storagePrefix = `lugarth:${window.InventoryWorkspace?.userRole || 'user'}:`;
+    const communicationStoragePrefix = `${storagePrefix}${window.InventoryWorkspace?.userId || 'anonymous'}:`;
 
     if (!shell || !sidebar) return;
 
@@ -211,7 +212,9 @@
         || '';
     const presenceUrl = window.InventoryWorkspace?.presenceUrl;
     const messageUrlTemplate = window.InventoryWorkspace?.messagesUrlTemplate || '';
-    const presenceStorageKey = `${storagePrefix}presence`;
+    const presenceStorageKey = `${communicationStoragePrefix}presence`;
+    const messageStorageKey = `${communicationStoragePrefix}message-notifications`;
+    const bubblePositionKey = `${communicationStoragePrefix}team-bubble-position`;
     let activeChatUser = null;
     let activeTeamTab = 'users';
     let latestPresenceData = { online_count: 0, unread_total: 0, users: [] };
@@ -219,6 +222,7 @@
     let messagesRequest = false;
     let presenceTimer;
     let messagesTimer;
+    let suppressTeamClick = false;
 
     const closeTeam = () => {
         if (!teamPopover) return;
@@ -235,6 +239,59 @@
         window.clearInterval(messagesTimer);
     };
 
+    const bubbleLimits = (x, y) => {
+        const size = teamDock?.getBoundingClientRect().width || 58;
+        const bottomReserve = compactQuery.matches ? 82 : 8;
+
+        return {
+            x: Math.max(8, Math.min(x, window.innerWidth - size - 8)),
+            y: Math.max(8, Math.min(y, window.innerHeight - size - bottomReserve)),
+        };
+    };
+
+    const setBubblePosition = (x, y, persist = false) => {
+        if (!teamDock) return;
+        const position = bubbleLimits(x, y);
+        teamDock.style.left = `${position.x}px`;
+        teamDock.style.top = `${position.y}px`;
+        teamDock.style.right = 'auto';
+        teamDock.style.bottom = 'auto';
+
+        if (persist) {
+            localStorage.setItem(bubblePositionKey, JSON.stringify(position));
+        }
+    };
+
+    const restoreBubblePosition = () => {
+        if (!teamDock) return;
+        try {
+            const position = JSON.parse(localStorage.getItem(bubblePositionKey) || 'null');
+            if (Number.isFinite(position?.x) && Number.isFinite(position?.y)) {
+                setBubblePosition(position.x, position.y);
+            }
+        } catch (_) {
+            localStorage.removeItem(bubblePositionKey);
+        }
+    };
+
+    const positionTeamPopover = () => {
+        if (!teamPopover || teamPopover.hidden || !teamButton) return;
+        const bubble = teamButton.getBoundingClientRect();
+        const width = Math.min(370, window.innerWidth - 16);
+        teamPopover.style.width = `${width}px`;
+        const renderedHeight = teamPopover.getBoundingClientRect().height || teamPopover.scrollHeight;
+        const height = Math.min(renderedHeight, 610, window.innerHeight - 16);
+        const left = Math.max(8, Math.min(bubble.right - width, window.innerWidth - width - 8));
+        const opensAbove = bubble.top >= height + 18 || bubble.top > window.innerHeight / 2;
+        const preferredTop = opensAbove ? bubble.top - height - 10 : bubble.bottom + 10;
+        const top = Math.max(8, Math.min(preferredTop, window.innerHeight - height - 8));
+
+        teamPopover.style.left = `${left}px`;
+        teamPopover.style.top = `${top}px`;
+        teamPopover.style.right = 'auto';
+        teamPopover.style.bottom = 'auto';
+    };
+
     const avatarElement = (user) => {
         const avatar = document.createElement('span');
         avatar.className = `team-avatar${user.online ? ' is-online' : ''}`;
@@ -244,6 +301,24 @@
             image.alt = '';
             image.dataset.noLightbox = '';
             avatar.append(image);
+            avatar.dataset.profileAvatar = '';
+            avatar.tabIndex = 0;
+            avatar.setAttribute('role', 'button');
+            avatar.setAttribute('aria-label', `Ampliar foto de perfil de ${user.name}`);
+            const openProfilePhoto = (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                window.InventoryWorkspace?.openImage?.(
+                    user.avatar_url,
+                    user.name,
+                    `${user.role_label} · Foto de perfil`,
+                );
+            };
+            avatar.addEventListener('click', openProfilePhoto);
+            avatar.addEventListener('keydown', (event) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                openProfilePhoto(event);
+            });
         } else {
             const initials = document.createElement('span');
             initials.textContent = user.initials || 'U';
@@ -263,10 +338,8 @@
 
     const appendTeamRow = (user, chatMode = false) => {
         if (!teamList) return;
-        const row = document.createElement('button');
-        row.type = 'button';
+        const row = document.createElement('div');
         row.className = `team-row${user.is_self ? ' is-self' : ''}`;
-        row.disabled = Boolean(user.is_self);
         row.append(avatarElement(user));
 
         const copy = document.createElement('span');
@@ -309,7 +382,21 @@
             row.append(action);
         }
 
-        if (!user.is_self) row.addEventListener('click', () => openChat(user));
+        if (!user.is_self) {
+            row.tabIndex = 0;
+            row.setAttribute('role', 'button');
+            row.setAttribute('aria-label', `Abrir chat con ${user.name}`);
+            row.addEventListener('click', (event) => {
+                if (event.target.closest('[data-profile-avatar]')) return;
+                openChat(user);
+            });
+            row.addEventListener('keydown', (event) => {
+                if (event.target.closest('[data-profile-avatar]')) return;
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                openChat(user);
+            });
+        }
         teamList.append(row);
     };
 
@@ -324,6 +411,10 @@
             });
 
         if (onlineCount) onlineCount.textContent = String(data.online_count || 0);
+        if (teamButton) {
+            teamButton.title = `Equipo: ${data.online_count || 0} en línea. Arrastra para mover.`;
+            teamButton.setAttribute('aria-label', `Abrir equipo y chats. ${data.online_count || 0} usuarios en línea.`);
+        }
         if (unreadCount) {
             const unread = Number(data.unread_total || 0);
             unreadCount.hidden = unread === 0;
@@ -338,6 +429,7 @@
         }
         if (!teamList) return;
         teamList.replaceChildren();
+        window.requestAnimationFrame(positionTeamPopover);
 
         if (activeTeamTab === 'chats') {
             if (!conversationUsers.length) {
@@ -399,6 +491,43 @@
         sessionStorage.setItem(presenceStorageKey, JSON.stringify(current));
     };
 
+    const notifyNewMessages = (users) => {
+        const current = Object.fromEntries(users.map((user) => [
+            user.id,
+            Number(user.last_message_id || 0),
+        ]));
+        let previous = null;
+
+        try {
+            previous = JSON.parse(sessionStorage.getItem(messageStorageKey) || 'null');
+        } catch (_) {
+            previous = null;
+        }
+
+        if (previous) {
+            users.forEach((user) => {
+                const lastMessageId = Number(user.last_message_id || 0);
+                const previousMessageId = Number(previous[user.id] || 0);
+                const chatIsOpen = activeChatUser?.id === user.id && !chat?.hidden;
+
+                if (
+                    user.is_self
+                    || user.last_message_mine
+                    || !lastMessageId
+                    || lastMessageId <= previousMessageId
+                    || chatIsOpen
+                ) {
+                    return;
+                }
+
+                const preview = user.last_message ? `: ${user.last_message}` : '';
+                showWorkspaceToast(`Nuevo mensaje de ${user.name}${preview}`, 'blue', 7200);
+            });
+        }
+
+        sessionStorage.setItem(messageStorageKey, JSON.stringify(current));
+    };
+
     const refreshPresence = async ({ silent = false } = {}) => {
         if (!presenceUrl || presenceRequest) return;
         presenceRequest = true;
@@ -410,6 +539,7 @@
             if (!response.ok) throw new Error('No se pudo actualizar el equipo.');
             const data = await response.json();
             notifyPresenceChanges(data.users || []);
+            notifyNewMessages(data.users || []);
             renderTeam(data);
         } catch (_) {
             if (!silent && teamStatus) teamStatus.textContent = 'No se pudo actualizar. Intentaremos nuevamente.';
@@ -497,12 +627,57 @@
 
     teamButton?.addEventListener('click', (event) => {
         event.stopPropagation();
+        if (suppressTeamClick) return;
         if (!teamPopover) return;
         closeNotifications();
         teamPopover.hidden = !teamPopover.hidden;
         teamButton.setAttribute('aria-expanded', teamPopover.hidden ? 'false' : 'true');
         teamDock?.classList.toggle('is-open', !teamPopover.hidden);
-        if (!teamPopover.hidden) refreshPresence();
+        if (!teamPopover.hidden) {
+            positionTeamPopover();
+            refreshPresence();
+        }
+    });
+    teamButton?.addEventListener('pointerdown', (event) => {
+        if (!teamDock || event.button > 0) return;
+        const start = { x: event.clientX, y: event.clientY };
+        const dockRect = teamDock.getBoundingClientRect();
+        let dragging = false;
+
+        teamButton.setPointerCapture?.(event.pointerId);
+
+        const move = (moveEvent) => {
+            const deltaX = moveEvent.clientX - start.x;
+            const deltaY = moveEvent.clientY - start.y;
+            if (!dragging && Math.hypot(deltaX, deltaY) < 7) return;
+            if (!dragging) {
+                dragging = true;
+                suppressTeamClick = true;
+                closeTeam();
+                teamDock.classList.add('is-dragging');
+            }
+            moveEvent.preventDefault();
+            setBubblePosition(dockRect.left + deltaX, dockRect.top + deltaY);
+        };
+
+        const finish = () => {
+            teamButton.removeEventListener('pointermove', move);
+            teamButton.removeEventListener('pointerup', finish);
+            teamButton.removeEventListener('pointercancel', finish);
+            teamDock.classList.remove('is-dragging');
+
+            if (dragging) {
+                const finalRect = teamDock.getBoundingClientRect();
+                setBubblePosition(finalRect.left, finalRect.top, true);
+                window.setTimeout(() => {
+                    suppressTeamClick = false;
+                }, 0);
+            }
+        };
+
+        teamButton.addEventListener('pointermove', move);
+        teamButton.addEventListener('pointerup', finish);
+        teamButton.addEventListener('pointercancel', finish);
     });
     teamTabButtons.forEach((button) => {
         button.addEventListener('click', () => {
@@ -568,6 +743,14 @@
             refreshPresence({ silent: true });
             if (activeChatUser) refreshMessages({ silent: true });
         }
+    });
+    restoreBubblePosition();
+    window.addEventListener('resize', () => {
+        if (teamDock?.style.left) {
+            const rect = teamDock.getBoundingClientRect();
+            setBubblePosition(rect.left, rect.top);
+        }
+        positionTeamPopover();
     });
 
     /* Global command palette */

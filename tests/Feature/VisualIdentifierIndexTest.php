@@ -81,6 +81,22 @@ class VisualIdentifierIndexTest extends TestCase
         $this->assertNull($material->visual_descriptor_signature);
     }
 
+    public function test_visual_identifier_has_a_real_touch_crop_step(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'consultor',
+            'approved_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('materiales.visual.create'))
+            ->assertOk()
+            ->assertSee('Encierra la pieza')
+            ->assertSee('id="cropStage"', false)
+            ->assertSee('id="analyzeCrop"', false)
+            ->assertSee('id="useFullImage"', false);
+    }
+
     public function test_cluttered_phone_photos_prefer_the_matching_piece_shape(): void
     {
         Storage::fake('public');

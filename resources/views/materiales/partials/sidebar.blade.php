@@ -342,19 +342,14 @@
         </div>
     </section>
 
-    <button type="button" class="workspace-team-launcher" id="workspaceTeam" aria-label="Abrir equipo y chats" title="Equipo y chats" aria-expanded="false">
+    <button type="button" class="workspace-team-launcher" id="workspaceTeam" aria-label="Abrir equipo y chats" title="Equipo y chats. Arrastra para mover." aria-expanded="false">
         <span class="team-launcher-mark">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             <i></i>
         </span>
-        <span class="team-launcher-copy">
-            <strong>Equipo</strong>
-            <small><b id="workspaceOnlineCount">0</b> en línea</small>
-        </span>
-        <span class="team-launcher-actions">
-            <span class="team-launcher-unread" id="workspaceUnreadCount" hidden>0</span>
-            <svg class="team-launcher-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
-        </span>
+        <span class="team-launcher-online" id="workspaceOnlineCount" aria-label="Usuarios en línea">0</span>
+        <span class="team-launcher-unread" id="workspaceUnreadCount" hidden>0</span>
+        <span class="sr-only">Abrir equipo y conversaciones</span>
     </button>
 </div>
 
@@ -447,7 +442,7 @@
         userId: @json($workspaceUser?->id),
         presenceUrl: @json(route('team.presence')),
         messagesUrlTemplate: @json(route('team.messages', ['user' => '__USER__'])),
-        disableGlobalLightbox: @json(request()->routeIs('materiales.visual.*')),
+        disableGlobalLightbox: false,
         csrfToken: @json(csrf_token()),
         searchUrl: @json(route('buscar.global')),
     };

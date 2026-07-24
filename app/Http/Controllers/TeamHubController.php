@@ -66,6 +66,7 @@ class TeamHubController extends Controller
                     'last_message' => $latestMessage ? Str::limit($latestMessage->body, 72) : null,
                     'last_message_at' => $latestMessage?->created_at?->diffForHumans(),
                     'last_message_id' => $latestMessage?->id,
+                    'last_message_mine' => $latestMessage?->sender_id === $currentUser->id,
                 ];
             })
             ->sortBy(fn (array $user): string => sprintf(

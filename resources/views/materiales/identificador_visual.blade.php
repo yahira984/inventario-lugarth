@@ -13,25 +13,35 @@
     
     <style>
         :root {
-            --bg: #030712; 
-            --surface: rgba(15, 23, 42, 0.7); 
-            --ink: #ffffff; 
-            --muted: #94a3b8; 
-            --cyan-glow: #0a1169;
-            --blue-glow: #1a0b5e;
-            --emerald-glow: #18117a;
-            --line: rgba(114, 56, 248, 0.2);
-            --shadow-glass: 0 10px 40px rgba(0, 0, 0, 0.6); 
+            --visual-ink: #092743;
+            --visual-muted: #61788e;
+            --visual-line: #d6e3ed;
+            --visual-blue: #1769d2;
+            --visual-blue-dark: #0f55ad;
+            --visual-blue-soft: #eaf4ff;
+            --visual-green: #079669;
+            --visual-green-soft: #eafbf4;
+            --visual-red: #dc2626;
+            --visual-shadow: 0 16px 38px rgba(19, 57, 87, .08);
         }
 
         * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: radial-gradient(circle at top left, #0a192f 0%, #030712 100%);
-            color: var(--ink);
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        body { margin: 0; min-height: 100vh; color: var(--visual-ink); background: #f2f7fa; font-family: "Segoe UI", Tahoma, sans-serif; }
+        button, input { font: inherit; }
+        [hidden] { display: none !important; }
+        .app-shell { display: flex; min-height: 100vh; }
+        .visual-page.app-content { min-width: 0; flex: 1; padding: 34px clamp(18px, 3vw, 48px) 80px; overflow: visible; }
+        .visual-workspace { width: min(1440px, 100%); margin: 0 auto; display: grid; gap: 16px; }
+        .visual-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 22px 24px;
+            background: #fff;
+            border: 1px solid var(--visual-line);
+            border-radius: 8px;
+            box-shadow: var(--visual-shadow);
         }
 
         /* 100dvh previene el bug de la barra de direcciones en celulares */
@@ -56,16 +66,21 @@
             box-shadow: var(--shadow-glass);
             padding: 40px;
         }
-
-        .page-header h1 {
-            margin: 0 0 8px 0;
-            background: linear-gradient(to right, #130d66, #1a0d53);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 32px;
-            font-weight: 900;
-            letter-spacing: 1px;
-            text-shadow: 0 0 20px rgba(13, 8, 77, 0.2); 
+        .visual-title-mark svg { width: 25px; height: 25px; }
+        .visual-header h1 { margin: 0 0 5px; font-size: 34px; }
+        .visual-header p { margin: 0; color: var(--visual-muted); font-size: 13px; font-weight: 600; }
+        .visual-state {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 11px;
+            color: #075e47;
+            background: var(--visual-green-soft);
+            border: 1px solid #a7ebd1;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
         }
 
         .scanner-body { display: grid; grid-template-columns: 1fr 320px; gap: 30px; margin-top: 30px; }
@@ -77,11 +92,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            min-height: 300px;
+            color: var(--visual-blue);
+            background: #fff;
+            border: 1px solid #b9d8f3;
+            border-radius: 8px;
+            box-shadow: 0 9px 22px rgba(23, 105, 210, .1);
         }
         .drop-area:hover { background: rgba(6, 182, 212, 0.08); border-color: var(--cyan-glow); }
 
@@ -95,7 +110,6 @@
         
         .upload-action {
             display: inline-flex;
-            min-height: 42px;
             align-items: center;
             justify-content: center;
             border-radius: 10px;
@@ -124,9 +138,20 @@
             transition: all 0.4s ease;
             box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.05);
         }
-        .status-box:hover {
-            border-color: var(--cyan-glow);
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2), inset 0 0 20px rgba(6, 182, 212, 0.1);
+        .preview-actions {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            left: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px;
+            background: rgba(255, 255, 255, .94);
+            border: 1px solid rgba(185, 205, 222, .9);
+            border-radius: 7px;
+            box-shadow: 0 10px 24px rgba(12, 42, 67, .12);
+            backdrop-filter: blur(10px);
         }
         .status-box strong { color: var(--cyan-glow); font-size: 12px; text-transform: uppercase; display: block; margin-bottom: 8px; text-shadow: 0 0 10px rgba(6, 182, 212, 0.5); }
         .status-box span { font-size: 14px; color: #fff; display: block; line-height: 1.4; }
@@ -169,33 +194,57 @@
             .app-content { padding: 20px 15px; } 
             .container { padding: 20px; margin-bottom: 150px; } /* Añadimos mucho más margen extra al final para brincarnos por completo el menú inferior */
         }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+        }
+
+        @keyframes visual-spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-
 <div class="app-shell">
     @include('materiales.partials.sidebar')
-    <main class="app-content">
-        <div class="container">
-            <div class="page-header">
-                <h1>Identificador Visual</h1>
-                <p class="header-meta">Foto de la pieza y sugerencias del inventario.</p>
-            </div>
 
             @if($errors->any())
                 <div style="padding: 15px; border-radius: 10px; margin-bottom: 20px; background: rgba(239,68,68,0.1); border: 1px solid #ef4444; color: #fca5a5; font-weight: bold;">
                     {{ $errors->first() }}
                 </div>
+                <span class="visual-state">
+                    <i></i>
+                    {{ ($iaActiva ?? false) ? 'IA local activa · fotos privadas' : 'Comparador clásico disponible' }}
+                </span>
+            </header>
+
+            @if($errors->any())
+                <div class="visual-alert" role="alert">{{ $errors->first() }}</div>
             @endif
 
-            <section class="scanner">
+            <section class="capture-card">
                 <form action="{{ route('materiales.visual.search') }}" method="POST" enctype="multipart/form-data" id="visualForm">
                     @csrf
                     <div class="scanner-body">
                         <!-- Convertimos el label en div para controlar los clics con JavaScript -->
                         <div class="drop-area" id="dropArea">
                             @if($preview)
-                                <img src="{{ $preview }}" class="main-preview" alt="Foto analizada">
+                                <img
+                                    src="{{ $preview }}"
+                                    class="main-preview"
+                                    alt="Foto analizada"
+                                    data-workspace-lightbox
+                                    data-lightbox-title="Foto analizada"
+                                    data-lightbox-caption="Imagen utilizada para buscar coincidencias"
+                                >
+                                <div class="preview-actions">
+                                    <button type="button" class="visual-button" id="openCamera">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4 16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1.5-3h5ZM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/></svg>
+                                        Tomar otra foto
+                                    </button>
+                                    <button type="button" class="visual-button visual-button-green" id="openFile">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>
+                                        Elegir otra imagen
+                                    </button>
+                                </div>
                             @else
                                 <span class="upload-state" id="uploadState">
                                     <span class="upload-icon">📷</span>
@@ -220,37 +269,63 @@
                         </div>
 
                         <aside class="side-panel">
-                            <div class="status-box">
+                            <article class="status-box" style="--status-color:#1769d2">
                                 <strong>Lectura actual</strong>
-                                <span>{{ $analisis ? 'Imagen procesada' : 'Sin imagen analizada.' }}</span>
-                            </div>
-                            <div class="status-box">
+                                <span>{{ $analisis ? 'Imagen procesada' : 'Esperando una imagen' }}</span>
+                                <small>
+                                    {{ $analisis['motor'] ?? (($iaActiva ?? false) ? 'CLIP + DINOv2 local preparado' : 'Sin IA local') }}.
+                                    La foto no sale de esta computadora.
+                                </small>
+                            </article>
+                            <article class="status-box" style="--status-color:#079669">
                                 <strong>Resultado</strong>
-                                <span>{{ $busquedaRealizada ? $resultados->count() . ' sugerencias.' : 'Selecciona una imagen.' }}</span>
-                            </div>
+                                <span>{{ $busquedaRealizada ? $resultados->count() . ' sugerencias' : 'Sin búsqueda todavía' }}</span>
+                                <small>Se muestran únicamente coincidencias visuales fuertes.</small>
+                            </article>
+                            <div class="visual-tip">Después de tomar o subir la foto, encierra únicamente la pieza. La IA ignorará mucho mejor el taller, piso, manos y objetos cercanos.</div>
                         </aside>
                     </div>
                 </form>
             </section>
 
-            <section class="results-shell">
-                <div class="results-header">
-                    <strong>Sugerencias</strong>
+            <section class="results-card">
+                <div class="results-heading">
+                    <h2>Sugerencias</h2>
+                    <span>{{ $busquedaRealizada ? $resultados->count() . ' resultados encontrados' : 'Aún no se ha analizado una foto' }}</span>
                 </div>
+
                 @if($busquedaRealizada && $resultados->isEmpty())
                     <div class="empty-result">
-                        No encontre una coincidencia visual confiable. Solo se muestran materiales con foto y parecido fuerte.
+                        No se encontró una coincidencia visual suficientemente confiable. Prueba con la pieza centrada, más cerca y con mejor iluminación.
                     </div>
                 @elseif(!$busquedaRealizada)
                     <p class="muted">Aquí aparecerán solo las coincidencias fuertes.</p>
                 @else
                     <div class="result-grid">
                         @foreach($resultados as $material)
+                            @php
+                                $materialInventoryUrl = route('materiales.index', [
+                                    'material_id' => $material->id,
+                                    'buscar' => $material->numero_parte ?: $material->descripcion,
+                                    'destacar' => $material->id,
+                                ]) . '#material-' . $material->id;
+                            @endphp
                             <article class="result-card">
-                                <img src="{{ asset('storage/' . $material->fotografia) }}" class="result-photo" alt="Foto">
+                                <button
+                                    type="button"
+                                    class="result-photo-button"
+                                    data-workspace-lightbox
+                                    data-lightbox-title="{{ $material->descripcion }}"
+                                    data-lightbox-caption="{{ $material->categoria ?: 'Sin categoría' }} · {{ $material->puntaje_visual }} puntos"
+                                >
+                                    <img src="{{ asset('storage/' . $material->fotografia) }}" class="result-photo" alt="{{ $material->descripcion }}">
+                                </button>
                                 <div class="result-info">
-                                    <div class="category-badge">{{ $material->categoria ?: 'Sin categoria' }}</div>
-                                    <div class="result-title">{{ $material->descripcion }}</div>
+                                    <span class="category-badge">{{ $material->categoria ?: 'Sin categoría' }}</span>
+                                    @if(($material->motor_visual ?? null) === 'ia')
+                                        <span class="ai-engine-badge">IA local</span>
+                                    @endif
+                                    <strong class="result-title">{{ $material->descripcion }}</strong>
                                     <div class="result-meta">
                                         <span>No. parte: {{ $material->numero_parte ?: 'N/A' }}</span>
                                         @if($material->apodo)<span>Apodo: {{ $material->apodo }}</span>@endif
@@ -260,7 +335,7 @@
                                     </div>
                                     <div class="score-row">
                                         <span class="score">{{ $material->puntaje_visual }} pts</span>
-                                        <a href="{{ route('materiales.edit', $material) }}" class="btn-secondary">Ver</a>
+                                        <a href="{{ $materialInventoryUrl }}" class="result-link">Ver en inventario</a>
                                     </div>
                                 </div>
                             </article>
@@ -297,7 +372,42 @@
         <button type="button" class="btn-capture" id="btnProcesarRecorte" onclick="recortarYEnviar()">✂️ Recortar y Buscar</button>
         <button type="button" class="btn-close" onclick="cerrarCropModal()">Cancelar</button>
     </div>
-</div>
+</section>
+
+<section class="crop-modal" id="cropModal" hidden role="dialog" aria-modal="true" aria-labelledby="cropTitle">
+    <div class="crop-dialog">
+        <header class="camera-header">
+            <div>
+                <strong id="cropTitle">Encierra la pieza</strong>
+                <small>Dibuja un cuadro alrededor del objeto que quieres identificar</small>
+            </div>
+            <button type="button" class="camera-close" id="closeCrop" aria-label="Cerrar recorte" title="Cerrar recorte">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+            </button>
+        </header>
+        <div class="crop-stage" id="cropStage">
+            <img class="crop-source" id="cropSource" alt="Fotografía para recortar">
+            <div class="crop-selection" id="cropSelection"></div>
+        </div>
+        <div class="crop-controls">
+            <div class="crop-help">
+                <strong>Deja la menor cantidad de fondo posible</strong>
+                <span>Puedes volver a dibujar el cuadro cuantas veces necesites.</span>
+            </div>
+            <div class="crop-actions">
+                <button type="button" class="visual-button visual-button-green" id="analyzeCrop">
+                    Analizar esta pieza
+                </button>
+                <button type="button" class="visual-button visual-button-orange" id="useFullImage">
+                    Usar foto completa
+                </button>
+                <button type="button" class="visual-button visual-button-light" id="cancelCrop">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -438,6 +548,5 @@
         abrirCropper(dataUrl);
     }
 </script>
-
 </body>
 </html>
