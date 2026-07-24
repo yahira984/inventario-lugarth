@@ -12,9 +12,11 @@ class VisualEmbeddingService
 {
     public const VERSION = 'clip-vit-b32-dinov2s-q8-v1';
 
-    private ?string $resolvedNodeBinary = null;
+    /** @var array<int, string>|null */
+    private ?array $availableNodeBinaries = null;
 
-    private ?bool $nodeAvailable = null;
+    /** @var array<string, string> */
+    private array $nodeProbeErrors = [];
 
     public function __construct(private readonly VisualImageDescriptor $visualDescriptor) {}
 
@@ -27,7 +29,36 @@ class VisualEmbeddingService
         return is_file(base_path('node_modules/@huggingface/transformers/package.json'))
             && is_file(storage_path('app/visual-ai/models/Xenova/dinov2-small/onnx/model_quantized.onnx'))
             && is_file(storage_path('app/visual-ai/models/Xenova/clip-vit-base-patch32/onnx/vision_model_quantized.onnx'))
-            && $this->nodeIsAvailable();
+            && $this->nodeBinaries() !== [];
+    }
+
+    /**
+     * @return array{
+     *     ready: bool,
+     *     transformers: bool,
+     *     semantic_model: bool,
+     *     detail_model: bool,
+     *     node_candidates: array<int, string>,
+     *     node_binaries: array<int, string>,
+     *     node_errors: array<string, string>
+     * }
+     */
+    public function diagnostics(): array
+    {
+        $nodeBinaries = $this->nodeBinaries();
+
+        return [
+            'ready' => is_file(base_path('node_modules/@huggingface/transformers/package.json'))
+                && is_file(storage_path('app/visual-ai/models/Xenova/dinov2-small/onnx/model_quantized.onnx'))
+                && is_file(storage_path('app/visual-ai/models/Xenova/clip-vit-base-patch32/onnx/vision_model_quantized.onnx'))
+                && $nodeBinaries !== [],
+            'transformers' => is_file(base_path('node_modules/@huggingface/transformers/package.json')),
+            'semantic_model' => is_file(storage_path('app/visual-ai/models/Xenova/clip-vit-base-patch32/onnx/vision_model_quantized.onnx')),
+            'detail_model' => is_file(storage_path('app/visual-ai/models/Xenova/dinov2-small/onnx/model_quantized.onnx')),
+            'node_candidates' => $this->nodeCandidates(),
+            'node_binaries' => $nodeBinaries,
+            'node_errors' => $this->nodeProbeErrors,
+        ];
     }
 
     /**
@@ -42,15 +73,13 @@ class VisualEmbeddingService
     public function fromPath(string $path): array
     {
         if (! $this->isReady()) {
-            throw new RuntimeException(
-                'La IA visual aun no esta preparada. Ejecuta php artisan visual:ai-setup.'
-            );
+            throw new RuntimeException($this->readinessMessage());
         }
 
         [$safePath, $temporary] = $this->prepareSafeImage($path);
 
         try {
-            return $this->run(['embed', $safePath], 60);
+            return $this->run(['embed', $safePath], 120);
         } finally {
             if ($temporary) {
                 @unlink($safePath);
@@ -92,9 +121,7 @@ class VisualEmbeddingService
     public function batch(array $manifest): array
     {
         if (! $this->isReady()) {
-            throw new RuntimeException(
-                'La IA visual aun no esta preparada. Ejecuta php artisan visual:ai-setup.'
-            );
+            throw new RuntimeException($this->readinessMessage());
         }
 
         $directory = storage_path('app/visual-ai/tmp');
@@ -156,79 +183,158 @@ class VisualEmbeddingService
             'VISUAL_AI_CACHE' => storage_path('app/visual-ai/models'),
             'VISUAL_AI_ALLOW_DOWNLOAD' => $allowDownload ? '1' : '0',
         ];
+        $errors = [];
 
-        $result = Process::path(base_path())
-            ->env($environment)
-            ->timeout($timeout)
-            ->run([
-                $this->nodeBinary(),
-                base_path('scripts/visual-ai.mjs'),
-                ...$arguments,
-            ]);
+        foreach ($this->nodeBinaries() as $binary) {
+            try {
+                $result = Process::path(base_path())
+                    ->env($environment)
+                    ->timeout($timeout)
+                    ->run([
+                        $binary,
+                        base_path('scripts/visual-ai.mjs'),
+                        ...$arguments,
+                    ]);
+            } catch (Throwable $exception) {
+                $errors[] = $this->nodeLabel($binary).': '.$exception->getMessage();
 
-        if (! $result->successful()) {
-            throw new RuntimeException(
-                trim($result->errorOutput()) ?: 'No se pudo ejecutar el motor de IA visual.'
+                continue;
+            }
+
+            if (! $result->successful()) {
+                $errors[] = $this->nodeLabel($binary).': '.(
+                    trim($result->errorOutput()) ?: 'El proceso terminó sin explicar el error.'
+                );
+
+                continue;
+            }
+
+            $decoded = json_decode($result->output(), true);
+            if (! is_array($decoded)) {
+                $errors[] = $this->nodeLabel($binary).': respuesta JSON inválida.';
+
+                continue;
+            }
+
+            return $decoded;
+        }
+
+        throw new RuntimeException(
+            $errors === []
+                ? $this->readinessMessage()
+                : 'No se pudo ejecutar el motor visual. '.implode(' | ', array_unique($errors))
+        );
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function nodeBinaries(): array
+    {
+        if ($this->availableNodeBinaries !== null) {
+            return $this->availableNodeBinaries;
+        }
+
+        $this->nodeProbeErrors = [];
+        $available = [];
+
+        foreach ($this->nodeCandidates() as $candidate) {
+            if ($this->looksLikePath($candidate) && ! is_file($candidate)) {
+                $this->nodeProbeErrors[$candidate] = 'El archivo no existe.';
+
+                continue;
+            }
+
+            try {
+                $probe = Process::timeout(8)->run([$candidate, '--version']);
+            } catch (Throwable $exception) {
+                $this->nodeProbeErrors[$candidate] = $exception->getMessage();
+
+                continue;
+            }
+
+            if (! $probe->successful()) {
+                $this->nodeProbeErrors[$candidate] = trim($probe->errorOutput())
+                    ?: 'Node.js no respondió correctamente.';
+
+                continue;
+            }
+
+            if (! preg_match('/v(\d+)/', trim($probe->output()), $matches) || (int) $matches[1] < 18) {
+                $this->nodeProbeErrors[$candidate] = 'Se requiere Node.js 18 o superior.';
+
+                continue;
+            }
+
+            $available[] = $candidate;
+        }
+
+        return $this->availableNodeBinaries = array_values(array_unique($available));
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function nodeCandidates(): array
+    {
+        $configured = trim((string) config('services.visual_ai.node', ''));
+        $candidates = [$configured !== '' ? $configured : null];
+
+        if (PHP_OS_FAMILY === 'Windows') {
+            $programFiles = getenv('ProgramFiles') ?: 'C:\\Program Files';
+            $programFilesX86 = getenv('ProgramFiles(x86)') ?: null;
+            $localAppData = getenv('LOCALAPPDATA') ?: null;
+            $appData = getenv('APPDATA') ?: null;
+            $userProfile = getenv('USERPROFILE') ?: null;
+            $nvmSymlink = getenv('NVM_SYMLINK') ?: null;
+
+            array_push(
+                $candidates,
+                $nvmSymlink ? rtrim($nvmSymlink, '\\/').'\\node.exe' : null,
+                $programFiles.'\\nodejs\\node.exe',
+                $programFilesX86 ? $programFilesX86.'\\nodejs\\node.exe' : null,
+                $localAppData ? $localAppData.'\\Programs\\nodejs\\node.exe' : null,
+                $localAppData ? $localAppData.'\\nvm\\node.exe' : null,
+                $appData ? $appData.'\\nvm\\current\\node.exe' : null,
+                $userProfile ? $userProfile.'\\.nvm\\current\\node.exe' : null,
+                $userProfile ? $userProfile.'\\.config\\herd\\bin\\nvm\\current\\node.exe' : null,
             );
         }
 
-        $decoded = json_decode($result->output(), true);
-        if (! is_array($decoded)) {
-            throw new RuntimeException('El motor de IA visual devolvio una respuesta invalida.');
-        }
+        $candidates[] = 'node';
 
-        return $decoded;
+        return array_values(array_unique(array_filter($candidates)));
     }
 
-    private function nodeBinary(): string
+    private function looksLikePath(string $candidate): bool
     {
-        if ($this->resolvedNodeBinary !== null) {
-            return $this->resolvedNodeBinary;
-        }
-
-        $configured = trim((string) config('services.visual_ai.node', 'node'));
-
-        if ($configured !== '' && is_file($configured)) {
-            return $this->resolvedNodeBinary = $configured;
-        }
-
-        if (PHP_OS_FAMILY === 'Windows') {
-            $candidates = array_filter([
-                ($programFiles = getenv('ProgramFiles')) ? $programFiles.'\\nodejs\\node.exe' : null,
-                ($localAppData = getenv('LOCALAPPDATA')) ? $localAppData.'\\Programs\\nodejs\\node.exe' : null,
-                ($userProfile = getenv('USERPROFILE')) ? $userProfile.'\\.config\\herd\\bin\\nvm\\current\\node.exe' : null,
-                'C:\\Program Files\\nodejs\\node.exe',
-            ]);
-
-            foreach ($candidates as $candidate) {
-                if (is_file($candidate)) {
-                    return $this->resolvedNodeBinary = $candidate;
-                }
-            }
-        }
-
-        return $this->resolvedNodeBinary = ($configured !== '' ? $configured : 'node');
+        return str_contains($candidate, '\\')
+            || str_contains($candidate, '/')
+            || preg_match('/^[A-Za-z]:/', $candidate) === 1;
     }
 
-    private function nodeIsAvailable(): bool
+    private function nodeLabel(string $binary): string
     {
-        if ($this->nodeAvailable !== null) {
-            return $this->nodeAvailable;
+        return is_file($binary) ? basename($binary).' ('.$binary.')' : $binary;
+    }
+
+    private function readinessMessage(): string
+    {
+        $diagnostics = $this->diagnostics();
+
+        if (! $diagnostics['transformers']) {
+            return 'Falta instalar el motor de JavaScript. Ejecuta npm ci.';
         }
 
-        $binary = $this->nodeBinary();
-
-        if (is_file($binary)) {
-            return $this->nodeAvailable = true;
+        if (! $diagnostics['semantic_model'] || ! $diagnostics['detail_model']) {
+            return 'Faltan los modelos visuales. Ejecuta php artisan visual:ai-setup --no-index.';
         }
 
-        try {
-            return $this->nodeAvailable = Process::timeout(5)
-                ->run([$binary, '--version'])
-                ->successful();
-        } catch (Throwable) {
-            return $this->nodeAvailable = false;
+        if ($diagnostics['node_binaries'] === []) {
+            return 'Laravel/Herd no puede ejecutar Node.js 18 o superior. Ejecuta php artisan visual:ai-diagnose para ver la ruta que falla.';
         }
+
+        return 'La IA visual no está preparada. Ejecuta php artisan visual:ai-diagnose.';
     }
 
     /**

@@ -58,14 +58,22 @@ class IdentificadorVisualController extends Controller
 
         if ($this->visualAi->isReady()) {
             try {
+                if (function_exists('set_time_limit')) {
+                    @set_time_limit(150);
+                }
+
                 $embedding = $this->visualAi->fromPath($archivo->getRealPath());
             } catch (Throwable $exception) {
                 Log::warning('No se pudo usar CLIP + DINOv2 en el identificador visual.', [
                     'error' => $exception->getMessage(),
+                    'diagnostico' => $this->visualAi->diagnostics(),
                 ]);
                 $motorWarning = 'El análisis inteligente no pudo iniciarse. Para evitar resultados incorrectos, solo se mostrarán coincidencias prácticamente exactas.';
             }
         } else {
+            Log::warning('El identificador visual no tiene disponible el motor inteligente.', [
+                'diagnostico' => $this->visualAi->diagnostics(),
+            ]);
             $motorWarning = 'El análisis inteligente no está disponible en este equipo. Para evitar resultados incorrectos, solo se mostrarán coincidencias prácticamente exactas.';
         }
 
