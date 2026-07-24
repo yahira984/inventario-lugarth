@@ -68,7 +68,10 @@
             white-space: nowrap;
         }
         .visual-state i { width: 9px; height: 9px; background: #10b981; border-radius: 50%; }
+        .visual-state.is-limited { color: #8a4b08; background: #fff7e8; border-color: #f2c879; }
+        .visual-state.is-limited i { background: #e67e00; }
         .visual-alert { padding: 13px 15px; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid var(--visual-red); border-radius: 7px; font-size: 13px; font-weight: 750; }
+        .visual-alert.is-warning { color: #71420a; background: #fff9ec; border-color: #f3d59b; border-left-color: #e67e00; }
         .capture-card, .results-card { padding: 0; background: transparent; border: 0; box-shadow: none; }
         .capture-grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; }
         .upload-stage {
@@ -163,7 +166,7 @@
             justify-items: center;
             gap: 10px;
             color: var(--visual-blue-dark);
-            background: rgba(248, 251, 253, .94);
+            background: #f8fbfd;
             text-align: center;
             font-size: 13px;
             font-weight: 850;
@@ -173,11 +176,11 @@
         .results-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
         .results-heading h2 { margin: 0; font-size: 21px; }
         .results-heading span { color: var(--visual-muted); font-size: 11px; font-weight: 700; }
-        .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 520px)); gap: 12px; }
         .result-card {
             min-width: 0;
             display: grid;
-            grid-template-columns: 104px minmax(0, 1fr);
+            grid-template-columns: 124px minmax(0, 1fr);
             gap: 13px;
             padding: 13px;
             background: #fff;
@@ -186,16 +189,23 @@
             transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
         }
         .result-card:hover { border-color: #8abfed; box-shadow: 0 12px 28px rgba(23, 105, 210, .1); transform: translateY(-2px); }
-        .result-photo-button { width: 104px; height: 104px; padding: 0; overflow: hidden; background: #eef4f8; border: 0; border-radius: 7px; cursor: zoom-in; }
+        .result-card:first-child { border-color: #75cdae; box-shadow: 0 12px 28px rgba(7, 150, 105, .1); }
+        .result-photo-button { width: 124px; height: 124px; padding: 0; overflow: hidden; background: #eef4f8; border: 0; border-radius: 7px; cursor: zoom-in; }
         .result-photo { width: 100%; height: 100%; object-fit: contain; }
         .result-info { min-width: 0; display: grid; align-content: start; gap: 6px; }
+        .result-badges { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
         .category-badge { width: fit-content; max-width: 100%; padding: 4px 7px; overflow: hidden; color: #0759ac; background: var(--visual-blue-soft); border: 1px solid #b9d9f7; border-radius: 6px; font-size: 9px; font-weight: 850; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
         .result-title { color: var(--visual-ink); font-size: 13px; font-weight: 850; line-height: 1.3; overflow-wrap: anywhere; }
         .result-meta { display: grid; gap: 2px; color: var(--visual-muted); font-size: 10px; line-height: 1.35; }
         .result-meta b { color: #35536e; }
         .score-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
-        .score { color: #087f5b; font-size: 12px; font-weight: 900; }
-        .result-link { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0 10px; color: var(--visual-blue-dark); background: #fff; border: 1px solid #9cc9f1; border-radius: 6px; font-size: 10px; font-weight: 850; text-decoration: none; }
+        .score-summary { min-width: 0; flex: 1; display: grid; gap: 4px; }
+        .score-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .score-label { color: #087f5b; font-size: 11px; font-weight: 900; white-space: nowrap; }
+        .score { color: #087f5b; font-size: 11px; font-weight: 900; white-space: nowrap; }
+        .score-meter { width: 100%; height: 5px; overflow: hidden; background: #dce8e3; border-radius: 999px; }
+        .score-meter i { display: block; height: 100%; background: #0aa675; border-radius: inherit; }
+        .result-link { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0 10px; color: var(--visual-blue-dark); background: #fff; border: 1px solid #9cc9f1; border-radius: 6px; font-size: 10px; font-weight: 850; text-decoration: none; white-space: nowrap; }
         .result-link:hover { color: #fff; background: var(--visual-blue); border-color: var(--visual-blue); }
         .empty-result { padding: 28px 18px; color: var(--visual-muted); background: #f8fbfd; border: 1px dashed #b8cddd; border-radius: 8px; text-align: center; font-size: 12px; font-weight: 700; line-height: 1.55; }
         .camera-modal { position: fixed; z-index: 2600; inset: 0; display: grid; place-items: center; padding: 18px; background: rgba(5, 20, 34, .88); backdrop-filter: blur(8px); }
@@ -258,8 +268,12 @@
             .side-panel { grid-template-columns: 1fr 1fr; gap: 8px; }
             .status-box { padding: 13px; }
             .result-grid { grid-template-columns: 1fr; }
-            .result-card { grid-template-columns: 92px minmax(0, 1fr); padding: 10px; }
-            .result-photo-button { width: 92px; height: 104px; }
+            .result-card { grid-template-columns: 108px minmax(0, 1fr); padding: 11px; }
+            .result-photo-button { width: 108px; height: 118px; }
+            .result-title { font-size: 14px; }
+            .result-meta { font-size: 11px; }
+            .score-row { display: grid; grid-template-columns: 1fr; }
+            .result-link { width: 100%; }
             .camera-modal { padding: 0; }
             .camera-dialog { width: 100%; height: 100dvh; max-height: none; border: 0; border-radius: 0; }
             .crop-modal { padding: 0; }
@@ -307,14 +321,17 @@
                         <p>Toma o selecciona una foto y compárala con las piezas reales del inventario.</p>
                     </div>
                 </div>
-                <span class="visual-state">
+                <span class="visual-state {{ ($iaActiva ?? false) ? '' : 'is-limited' }}">
                     <i></i>
-                    {{ ($iaActiva ?? false) ? 'IA local activa · fotos privadas' : 'Comparador clásico disponible' }}
+                    {{ ($iaActiva ?? false) ? 'Análisis inteligente activo' : 'Motor inteligente sin conexión' }}
                 </span>
             </header>
 
             @if($errors->any())
                 <div class="visual-alert" role="alert">{{ $errors->first() }}</div>
+            @endif
+            @if($motorWarning ?? null)
+                <div class="visual-alert is-warning" role="status">{{ $motorWarning }}</div>
             @endif
 
             <section class="capture-card">
@@ -375,16 +392,24 @@
                                 <strong>Lectura actual</strong>
                                 <span>{{ $analisis ? 'Imagen procesada' : 'Esperando una imagen' }}</span>
                                 <small>
-                                    {{ $analisis['motor'] ?? (($iaActiva ?? false) ? 'CLIP + DINOv2 local preparado' : 'Sin IA local') }}.
-                                    La foto no sale de esta computadora.
+                                    {{ $analisis['motor'] ?? (($iaActiva ?? false) ? 'Motor local preparado' : 'Motor inteligente no disponible') }}.
+                                    La fotografía se procesa dentro de este equipo.
                                 </small>
                             </article>
                             <article class="status-box" style="--status-color:#079669">
                                 <strong>Resultado</strong>
-                                <span>{{ $busquedaRealizada ? $resultados->count() . ' sugerencias' : 'Sin búsqueda todavía' }}</span>
-                                <small>Se muestran únicamente coincidencias visuales fuertes.</small>
+                                <span>
+                                    @if(!$busquedaRealizada)
+                                        Sin búsqueda todavía
+                                    @elseif($resultados->count() === 1)
+                                        1 coincidencia
+                                    @else
+                                        {{ $resultados->count() }} coincidencias
+                                    @endif
+                                </span>
+                                <small>Los resultados dudosos se descartan automáticamente.</small>
                             </article>
-                            <div class="visual-tip">Después de tomar o subir la foto, encierra únicamente la pieza. La IA ignorará mucho mejor el taller, piso, manos y objetos cercanos.</div>
+                            <div class="visual-tip">Antes de analizar, encierra únicamente la pieza. El taller, piso y objetos cercanos quedarán fuera de la comparación.</div>
                         </aside>
                     </div>
                 </form>
@@ -392,13 +417,21 @@
 
             <section class="results-card">
                 <div class="results-heading">
-                    <h2>Sugerencias</h2>
-                    <span>{{ $busquedaRealizada ? $resultados->count() . ' resultados encontrados' : 'Aún no se ha analizado una foto' }}</span>
+                    <h2>Mejores coincidencias</h2>
+                    <span>
+                        @if(!$busquedaRealizada)
+                            Aún no se ha analizado una foto
+                        @elseif($resultados->count() === 1)
+                            1 resultado encontrado
+                        @else
+                            {{ $resultados->count() }} resultados encontrados
+                        @endif
+                    </span>
                 </div>
 
                 @if($busquedaRealizada && $resultados->isEmpty())
                     <div class="empty-result">
-                        No se encontró una coincidencia visual suficientemente confiable. Prueba con la pieza centrada, más cerca y con mejor iluminación.
+                        No encontramos una pieza con suficiente confianza. Acércate un poco más, encierra solamente el objeto e intenta de nuevo.
                     </div>
                 @elseif(!$busquedaRealizada)
                     <div class="empty-result">
@@ -413,6 +446,12 @@
                                     'buscar' => $material->numero_parte ?: $material->descripcion,
                                     'destacar' => $material->id,
                                 ]) . '#material-' . $material->id;
+                                $confidenceLabel = match (true) {
+                                    $material->puntaje_visual >= 96 => 'Coincidencia exacta',
+                                    $material->puntaje_visual >= 86 => 'Coincidencia muy alta',
+                                    $material->puntaje_visual >= 78 => 'Coincidencia alta',
+                                    default => 'Posible coincidencia',
+                                };
                             @endphp
                             <article class="result-card">
                                 <button
@@ -420,15 +459,17 @@
                                     class="result-photo-button"
                                     data-workspace-lightbox
                                     data-lightbox-title="{{ $material->descripcion }}"
-                                    data-lightbox-caption="{{ $material->categoria ?: 'Sin categoría' }} · {{ $material->puntaje_visual }} puntos"
+                                    data-lightbox-caption="{{ $material->categoria ?: 'Sin categoría' }} · {{ $material->puntaje_visual }}% de similitud"
                                 >
                                     <img src="{{ asset('storage/' . $material->fotografia) }}" class="result-photo" alt="{{ $material->descripcion }}">
                                 </button>
                                 <div class="result-info">
-                                    <span class="category-badge">{{ $material->categoria ?: 'Sin categoría' }}</span>
-                                    @if(($material->motor_visual ?? null) === 'ia')
-                                        <span class="ai-engine-badge">IA local</span>
-                                    @endif
+                                    <div class="result-badges">
+                                        <span class="category-badge">{{ $material->categoria ?: 'Sin categoría' }}</span>
+                                        @if(($material->motor_visual ?? null) === 'ia')
+                                            <span class="ai-engine-badge">Analizado con IA</span>
+                                        @endif
+                                    </div>
                                     <strong class="result-title">{{ $material->descripcion }}</strong>
                                     <div class="result-meta">
                                         <span><b>No. parte:</b> {{ $material->numero_parte ?: 'N/A' }}</span>
@@ -438,7 +479,15 @@
                                         <span><b>Stock:</b> {{ $material->stock }} pzas</span>
                                     </div>
                                     <div class="score-row">
-                                        <span class="score">{{ $material->puntaje_visual }} pts</span>
+                                        <div class="score-summary">
+                                            <div class="score-heading">
+                                                <span class="score-label">{{ $confidenceLabel }}</span>
+                                                <span class="score">{{ $material->puntaje_visual }}%</span>
+                                            </div>
+                                            <span class="score-meter" role="meter" aria-label="Similitud visual" aria-valuenow="{{ $material->puntaje_visual }}" aria-valuemin="0" aria-valuemax="100">
+                                                <i style="width: {{ $material->puntaje_visual }}%"></i>
+                                            </span>
+                                        </div>
                                         <a href="{{ $materialInventoryUrl }}" class="result-link">Ver en inventario</a>
                                     </div>
                                 </div>

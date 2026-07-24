@@ -12,7 +12,9 @@ use Throwable;
 
 class IdentificadorVisualController extends Controller
 {
-    private const PUNTAJE_MINIMO = 74;
+    private const PUNTAJE_MINIMO_CLASICO = 88;
+
+    private const PUNTAJE_MINIMO_IA = 74;
 
     public function __construct(
         private readonly VisualImageDescriptor $visualDescriptor,
@@ -27,6 +29,7 @@ class IdentificadorVisualController extends Controller
             'preview' => null,
             'busquedaRealizada' => false,
             'iaActiva' => $this->visualAi->isReady(),
+            'motorWarning' => null,
         ]);
     }
 
@@ -51,6 +54,7 @@ class IdentificadorVisualController extends Controller
         $archivo = $datos['fotografia'];
         $descriptor = $this->visualDescriptor->fromPath($archivo->getRealPath());
         $embedding = null;
+        $motorWarning = null;
 
         if ($this->visualAi->isReady()) {
             try {
@@ -59,7 +63,10 @@ class IdentificadorVisualController extends Controller
                 Log::warning('No se pudo usar CLIP + DINOv2 en el identificador visual.', [
                     'error' => $exception->getMessage(),
                 ]);
+                $motorWarning = 'El análisis inteligente no pudo iniciarse. Para evitar resultados incorrectos, solo se mostrarán coincidencias prácticamente exactas.';
             }
+        } else {
+            $motorWarning = 'El análisis inteligente no está disponible en este equipo. Para evitar resultados incorrectos, solo se mostrarán coincidencias prácticamente exactas.';
         }
 
         return view('materiales.identificador_visual', [
@@ -68,11 +75,12 @@ class IdentificadorVisualController extends Controller
                 'descriptor' => $descriptor,
                 'observaciones' => $this->observacionesDescriptor($descriptor),
                 'terminos' => [],
-                'motor' => $embedding ? 'CLIP + DINOv2 local' : 'Comparador clasico',
+                'motor' => $embedding ? 'IA visual local' : 'Comparación exacta limitada',
             ],
             'preview' => $this->previewDataUri($archivo->getRealPath(), $archivo->getMimeType()),
             'busquedaRealizada' => true,
             'iaActiva' => $embedding !== null,
+            'motorWarning' => $motorWarning,
         ]);
     }
 
@@ -126,14 +134,16 @@ class IdentificadorVisualController extends Controller
                 return $material;
             });
 
-        $minimumScore = $usarAi ? 68 : self::PUNTAJE_MINIMO;
+        $minimumScore = $usarAi
+            ? self::PUNTAJE_MINIMO_IA
+            : self::PUNTAJE_MINIMO_CLASICO;
         $resultados = $comparados
             ->filter(fn (Material $material) => $material->puntaje_visual >= $minimumScore)
             ->sortByDesc('puntaje_visual')
             ->values();
 
         if ($resultados->isNotEmpty()) {
-            $margen = $usarAi ? 8 : (($descriptorFoto['foreground_ratio'] ?? 0) > 0.55 ? 5 : 10);
+            $margen = $usarAi ? 6 : 4;
             $corteRelativo = max($minimumScore, (int) $resultados->max('puntaje_visual') - $margen);
             $resultados = $resultados
                 ->filter(fn (Material $material) => $material->puntaje_visual >= $corteRelativo)
@@ -285,7 +295,7 @@ class IdentificadorVisualController extends Controller
             $motivos[] = 'imagen practicamente igual';
         } elseif ($puntaje >= 80) {
             $motivos[] = 'muy parecida';
-        } elseif ($puntaje >= self::PUNTAJE_MINIMO) {
+        } elseif ($puntaje >= self::PUNTAJE_MINIMO_CLASICO) {
             $motivos[] = 'parecida';
         }
 
@@ -403,7 +413,7 @@ class IdentificadorVisualController extends Controller
         if ($mejorColor >= 0.70) {
             $motivos[] = 'color de la pieza similar';
         }
-        if ($mejorPuntaje >= self::PUNTAJE_MINIMO) {
+        if ($mejorPuntaje >= self::PUNTAJE_MINIMO_CLASICO) {
             $motivos[] = 'pieza separada del fondo';
         }
 

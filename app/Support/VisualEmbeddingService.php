@@ -12,6 +12,10 @@ class VisualEmbeddingService
 {
     public const VERSION = 'clip-vit-b32-dinov2s-q8-v1';
 
+    private ?string $resolvedNodeBinary = null;
+
+    private ?bool $nodeAvailable = null;
+
     public function __construct(private readonly VisualImageDescriptor $visualDescriptor) {}
 
     public function isReady(): bool
@@ -22,7 +26,8 @@ class VisualEmbeddingService
 
         return is_file(base_path('node_modules/@huggingface/transformers/package.json'))
             && is_file(storage_path('app/visual-ai/models/Xenova/dinov2-small/onnx/model_quantized.onnx'))
-            && is_file(storage_path('app/visual-ai/models/Xenova/clip-vit-base-patch32/onnx/vision_model_quantized.onnx'));
+            && is_file(storage_path('app/visual-ai/models/Xenova/clip-vit-base-patch32/onnx/vision_model_quantized.onnx'))
+            && $this->nodeIsAvailable();
     }
 
     /**
@@ -45,7 +50,7 @@ class VisualEmbeddingService
         [$safePath, $temporary] = $this->prepareSafeImage($path);
 
         try {
-            return $this->run(['embed', $safePath], 30);
+            return $this->run(['embed', $safePath], 60);
         } finally {
             if ($temporary) {
                 @unlink($safePath);
@@ -156,7 +161,7 @@ class VisualEmbeddingService
             ->env($environment)
             ->timeout($timeout)
             ->run([
-                (string) config('services.visual_ai.node', 'node'),
+                $this->nodeBinary(),
                 base_path('scripts/visual-ai.mjs'),
                 ...$arguments,
             ]);
@@ -173,6 +178,57 @@ class VisualEmbeddingService
         }
 
         return $decoded;
+    }
+
+    private function nodeBinary(): string
+    {
+        if ($this->resolvedNodeBinary !== null) {
+            return $this->resolvedNodeBinary;
+        }
+
+        $configured = trim((string) config('services.visual_ai.node', 'node'));
+
+        if ($configured !== '' && is_file($configured)) {
+            return $this->resolvedNodeBinary = $configured;
+        }
+
+        if (PHP_OS_FAMILY === 'Windows') {
+            $candidates = array_filter([
+                ($programFiles = getenv('ProgramFiles')) ? $programFiles.'\\nodejs\\node.exe' : null,
+                ($localAppData = getenv('LOCALAPPDATA')) ? $localAppData.'\\Programs\\nodejs\\node.exe' : null,
+                ($userProfile = getenv('USERPROFILE')) ? $userProfile.'\\.config\\herd\\bin\\nvm\\current\\node.exe' : null,
+                'C:\\Program Files\\nodejs\\node.exe',
+            ]);
+
+            foreach ($candidates as $candidate) {
+                if (is_file($candidate)) {
+                    return $this->resolvedNodeBinary = $candidate;
+                }
+            }
+        }
+
+        return $this->resolvedNodeBinary = ($configured !== '' ? $configured : 'node');
+    }
+
+    private function nodeIsAvailable(): bool
+    {
+        if ($this->nodeAvailable !== null) {
+            return $this->nodeAvailable;
+        }
+
+        $binary = $this->nodeBinary();
+
+        if (is_file($binary)) {
+            return $this->nodeAvailable = true;
+        }
+
+        try {
+            return $this->nodeAvailable = Process::timeout(5)
+                ->run([$binary, '--version'])
+                ->successful();
+        } catch (Throwable) {
+            return $this->nodeAvailable = false;
+        }
     }
 
     /**

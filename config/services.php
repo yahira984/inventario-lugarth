@@ -36,7 +36,7 @@ return [
     ],
 
     'visual_ai' => [
-        'node' => env('VISUAL_AI_NODE', 'node'),
+        'node' => env('VISUAL_AI_NODE', ''),
     ],
 
 ];
