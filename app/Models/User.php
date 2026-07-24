@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -9,13 +10,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-// 1. Agregamos 'avatar' al final de esta lista 
+// 1. Agregamos 'avatar' al final de esta lista
 #[Fillable(['name', 'email', 'password', 'role', 'approved_at', 'avatar'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    public const ONLINE_WINDOW_SECONDS = 75;
 
     /**
      * Get the attributes that should be cast.
@@ -28,7 +31,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'approved_at' => 'datetime',
             // Aseguramos que last_seen_at se trate como fecha 👇
-            'last_seen_at' => 'datetime', 
+            'last_seen_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -66,6 +69,7 @@ class User extends Authenticatable
     // 2. Agregamos esta función para saber si está en línea 👇
     public function isOnline(): bool
     {
-        return $this->last_seen_at && $this->last_seen_at->diffInMinutes(now()) < 5;
+        return $this->last_seen_at !== null
+            && $this->last_seen_at->greaterThanOrEqualTo(now()->subSeconds(self::ONLINE_WINDOW_SECONDS));
     }
 }

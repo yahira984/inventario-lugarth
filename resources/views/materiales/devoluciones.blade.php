@@ -269,7 +269,9 @@
                                     <button
                                         type="button"
                                         class="photo-zoom-btn"
-                                        onclick="abrirVisorImagen(@js(asset('storage/' . $material->fotografia)), @js($material->descripcion), @js($material->apodo ?: $material->numero_parte ?: 'Sin apodo'))"
+                                        data-workspace-lightbox
+                                        data-lightbox-title="{{ $material->descripcion }}"
+                                        data-lightbox-caption="Apodo / código: {{ $material->apodo ?: $material->numero_parte ?: 'Sin apodo' }}"
                                         aria-label="Ver foto de {{ $material->descripcion }}"
                                     >
                                         <img src="{{ asset('storage/' . $material->fotografia) }}" class="photo" alt="Foto de {{ $material->descripcion }}">
@@ -298,7 +300,9 @@
                                     <button
                                         type="button"
                                         class="photo-zoom-btn"
-                                        onclick="abrirVisorImagen(@js(asset('storage/' . $movimiento->evidencia_foto)), @js(($movimiento->tipo === 'merma' ? 'Evidencia de merma' : 'Evidencia de devolucion')), @js($movimiento->material?->descripcion ?? 'Material eliminado'))"
+                                        data-workspace-lightbox
+                                        data-lightbox-title="{{ $movimiento->tipo === 'merma' ? 'Evidencia de merma' : 'Evidencia de devolución' }}"
+                                        data-lightbox-caption="{{ $movimiento->material?->descripcion ?? 'Material eliminado' }}"
                                         aria-label="Ver evidencia del movimiento"
                                     >
                                         <img src="{{ asset('storage/' . $movimiento->evidencia_foto) }}" class="photo" alt="Evidencia del movimiento">
@@ -307,7 +311,9 @@
                                     <button
                                         type="button"
                                         class="photo-zoom-btn"
-                                        onclick="abrirVisorImagen(@js(asset('storage/' . $movimiento->material->fotografia)), @js($movimiento->material?->descripcion ?? 'Foto del material'), @js($movimiento->tipo === 'merma' ? 'Merma' : 'Devolucion'))"
+                                        data-workspace-lightbox
+                                        data-lightbox-title="{{ $movimiento->material?->descripcion ?? 'Foto del material' }}"
+                                        data-lightbox-caption="{{ $movimiento->tipo === 'merma' ? 'Merma' : 'Devolución' }}"
                                         aria-label="Ver foto del material"
                                     >
                                         <img src="{{ asset('storage/' . $movimiento->material->fotografia) }}" class="photo" alt="Foto del material">
@@ -331,52 +337,9 @@
     </main>
 </div>
 
-<div id="imageViewer" class="image-viewer" role="dialog" aria-modal="true" aria-labelledby="imageViewerTitle">
-    <div class="image-viewer-panel">
-        <div class="image-viewer-top">
-            <div class="image-viewer-title">
-                <strong id="imageViewerTitle">Foto del material</strong>
-                <span id="imageViewerSubtitle"></span>
-            </div>
-            <button type="button" class="image-viewer-close" onclick="cerrarVisorImagen()" aria-label="Cerrar imagen">&times;</button>
-        </div>
-        <div class="image-viewer-frame">
-            <img id="imageViewerPhoto" src="" alt="Foto ampliada">
-        </div>
-    </div>
-</div>
-
 <script>
     const tipoMovimiento = document.getElementById('tipoMovimiento');
     const submitMovimiento = document.getElementById('submitMovimiento');
-    const imageViewer = document.getElementById('imageViewer');
-    const imageViewerPhoto = document.getElementById('imageViewerPhoto');
-    const imageViewerTitle = document.getElementById('imageViewerTitle');
-    const imageViewerSubtitle = document.getElementById('imageViewerSubtitle');
-
-    function abrirVisorImagen(src, titulo, subtitulo) {
-        if (!src) {
-            return;
-        }
-
-        imageViewerPhoto.src = src;
-        imageViewerPhoto.alt = `Foto de ${titulo || 'material'}`;
-        imageViewerTitle.textContent = titulo || 'Foto del material';
-        imageViewerSubtitle.textContent = subtitulo || '';
-        imageViewer.classList.add('open');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function cerrarVisorImagen() {
-        imageViewer.classList.remove('open');
-        document.body.style.overflow = '';
-
-        setTimeout(() => {
-            if (!imageViewer.classList.contains('open')) {
-                imageViewerPhoto.src = '';
-            }
-        }, 220);
-    }
 
     function crearFotoSeleccionada(src, titulo, subtitulo) {
         const fotoActual = document.getElementById('selectedPhoto');
@@ -390,8 +353,10 @@
         boton.type = 'button';
         boton.id = 'selectedPhoto';
         boton.className = 'photo-zoom-btn';
+        boton.dataset.workspaceLightbox = src;
+        boton.dataset.lightboxTitle = titulo || 'Foto del material';
+        boton.dataset.lightboxCaption = subtitulo || '';
         boton.setAttribute('aria-label', `Ver foto de ${titulo || 'material'}`);
-        boton.addEventListener('click', () => abrirVisorImagen(src, titulo, subtitulo));
 
         const imagen = document.createElement('img');
         imagen.src = src;
@@ -418,18 +383,6 @@
     }
 
     tipoMovimiento.addEventListener('change', actualizarTipo);
-
-    imageViewer.addEventListener('click', function (event) {
-        if (event.target === this) {
-            cerrarVisorImagen();
-        }
-    });
-
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && imageViewer.classList.contains('open')) {
-            cerrarVisorImagen();
-        }
-    });
 
     actualizarTipo();
 </script>

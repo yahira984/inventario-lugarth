@@ -104,7 +104,7 @@
                                         <div class="photo-item">
                                             <span class="photo-label">Evidencia</span>
                                             @if($entrada->evidencia_foto)
-                                                <img class="photo" src="{{ asset('storage/'.$entrada->evidencia_foto) }}" alt="Evidencia de recepcion" onclick="abrirImagen(this.src)">
+                                                <img class="photo" src="{{ asset('storage/'.$entrada->evidencia_foto) }}" alt="Evidencia de recepción" data-workspace-lightbox data-lightbox-title="Evidencia de entrada" data-lightbox-caption="{{ $descripcion }}">
                                             @else
                                                 <span class="muted">Sin foto</span>
                                             @endif
@@ -112,7 +112,7 @@
                                         @if($entrada->fotografia)
                                             <div class="photo-item">
                                                 <span class="photo-label">Producto</span>
-                                                <img class="photo" src="{{ asset('storage/'.$entrada->fotografia) }}" alt="Foto del producto" onclick="abrirImagen(this.src)">
+                                                <img class="photo" src="{{ asset('storage/'.$entrada->fotografia) }}" alt="Foto del producto" data-workspace-lightbox data-lightbox-title="{{ $descripcion }}" data-lightbox-caption="Foto propuesta para el inventario">
                                             </div>
                                         @endif
                                     </div>
@@ -199,25 +199,5 @@
         </div>
     </main>
 </div>
-<div class="viewer" id="viewer" onclick="cerrarImagen(event)">
-    <img id="viewerImg" src="" alt="Evidencia ampliada">
-</div>
-<script>
-    function abrirImagen(src) {
-        document.getElementById('viewerImg').src = src;
-        document.getElementById('viewer').classList.add('open');
-    }
-    function cerrarImagen(event) {
-        if (event.target.id === 'viewer') {
-            document.getElementById('viewer').classList.remove('open');
-            document.getElementById('viewerImg').src = '';
-        }
-    }
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            document.getElementById('viewer').classList.remove('open');
-        }
-    });
-</script>
 </body>
 </html>

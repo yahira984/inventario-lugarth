@@ -706,7 +706,9 @@
                                     <button
                                         type="button"
                                         class="photo-zoom-btn"
-                                        onclick="abrirVisorImagen(@js(asset('storage/' . $material->fotografia)), @js($material->descripcion), @js($material->apodo ?: $material->numero_parte ?: 'Sin apodo'))"
+                                        data-workspace-lightbox
+                                        data-lightbox-title="{{ $material->descripcion }}"
+                                        data-lightbox-caption="Apodo / código: {{ $material->apodo ?: $material->numero_parte ?: 'Sin apodo' }}"
                                         aria-label="Ver foto de {{ $material->descripcion }}"
                                     >
                                         <img
@@ -765,7 +767,9 @@
                                 <button
                                     type="button"
                                     class="photo-zoom-btn"
-                                    onclick="abrirVisorImagen(@js(asset('storage/' . $salida->material->fotografia)), @js($salida->material?->descripcion ?? 'Material'), @js($salida->material?->apodo ?: $salida->material?->numero_parte ?: 'Sin apodo'))"
+                                    data-workspace-lightbox
+                                    data-lightbox-title="{{ $salida->material?->descripcion ?? 'Material' }}"
+                                    data-lightbox-caption="Apodo / código: {{ $salida->material?->apodo ?: $salida->material?->numero_parte ?: 'Sin apodo' }}"
                                     aria-label="Ver foto de {{ $salida->material?->descripcion ?? 'material' }}"
                                 >
                                     <img
@@ -814,21 +818,6 @@
     </div>
 </div>
 
-<div id="imageViewer" class="image-viewer" role="dialog" aria-modal="true" aria-labelledby="imageViewerTitle">
-    <div class="image-viewer-panel">
-        <div class="image-viewer-top">
-            <div class="image-viewer-title">
-                <strong id="imageViewerTitle">Foto del material</strong>
-                <span id="imageViewerSubtitle"></span>
-            </div>
-            <button type="button" class="image-viewer-close" onclick="cerrarVisorImagen()" aria-label="Cerrar imagen">&times;</button>
-        </div>
-        <div class="image-viewer-frame">
-            <img id="imageViewerPhoto" src="" alt="Foto ampliada">
-        </div>
-    </div>
-</div>
-
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
     const codigoInput = document.getElementById('codigo_barras');
@@ -840,10 +829,6 @@
     const selectedName = document.getElementById('selectedName');
     const selectedMeta = document.getElementById('selectedMeta');
     const selectedCategory = document.getElementById('selectedCategory');
-    const imageViewer = document.getElementById('imageViewer');
-    const imageViewerPhoto = document.getElementById('imageViewerPhoto');
-    const imageViewerTitle = document.getElementById('imageViewerTitle');
-    const imageViewerSubtitle = document.getElementById('imageViewerSubtitle');
     let html5QrcodeScanner = null;
     let busquedaTimer = null;
     let scannerBuffer = '';
@@ -854,30 +839,6 @@
     function setStatus(mensaje, tipo) {
         statusBox.textContent = mensaje;
         statusBox.className = `status ${tipo}`;
-    }
-
-    function abrirVisorImagen(src, titulo, subtitulo) {
-        if (!src) {
-            return;
-        }
-
-        imageViewerPhoto.src = src;
-        imageViewerPhoto.alt = `Foto de ${titulo || 'material'}`;
-        imageViewerTitle.textContent = titulo || 'Foto del material';
-        imageViewerSubtitle.textContent = subtitulo ? `Apodo / codigo: ${subtitulo}` : '';
-        imageViewer.classList.add('open');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function cerrarVisorImagen() {
-        imageViewer.classList.remove('open');
-        document.body.style.overflow = '';
-
-        setTimeout(() => {
-            if (!imageViewer.classList.contains('open')) {
-                imageViewerPhoto.src = '';
-            }
-        }, 220);
     }
 
     function seleccionarMaterial(material) {
@@ -898,6 +859,9 @@
             botonFoto.type = 'button';
             botonFoto.id = 'selectedPhoto';
             botonFoto.className = 'photo-zoom-btn';
+            botonFoto.dataset.workspaceLightbox = material.foto;
+            botonFoto.dataset.lightboxTitle = material.descripcion;
+            botonFoto.dataset.lightboxCaption = `Apodo / código: ${material.apodo || material.numero_parte || 'Sin apodo'}`;
             botonFoto.setAttribute('aria-label', `Ver foto de ${material.descripcion}`);
 
             const imagenFoto = document.createElement('img');
@@ -905,13 +869,6 @@
             imagenFoto.alt = `Foto de ${material.descripcion}`;
 
             botonFoto.appendChild(imagenFoto);
-            botonFoto.addEventListener('click', () => {
-                abrirVisorImagen(
-                    material.foto,
-                    material.descripcion,
-                    material.apodo || material.numero_parte || 'Sin apodo'
-                );
-            });
 
             fotoActual.replaceWith(botonFoto);
         } else {
@@ -1114,11 +1071,6 @@
     });
 
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && imageViewer.classList.contains('open')) {
-            cerrarVisorImagen();
-            return;
-        }
-
         if (event.ctrlKey || event.altKey || event.metaKey || document.activeElement === codigoInput) {
             return;
         }
@@ -1149,11 +1101,6 @@
         }
     });
 
-    imageViewer.addEventListener('click', function (event) {
-        if (event.target === this) {
-            cerrarVisorImagen();
-        }
-    });
 </script>
 
 </body>

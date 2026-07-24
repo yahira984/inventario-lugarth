@@ -7,7 +7,6 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-
 class ProfileUpdateRequest extends FormRequest
 {
     /**
@@ -27,7 +26,7 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // <-- Agrega esta línea
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
         ];
     }
 
@@ -39,6 +38,9 @@ class ProfileUpdateRequest extends FormRequest
             'email.required' => 'Escribe el correo del usuario.',
             'email.email' => 'El correo no tiene formato válido.',
             'email.unique' => 'Ese correo ya está registrado en otra cuenta.',
+            'avatar.image' => 'Selecciona un archivo de imagen válido.',
+            'avatar.mimes' => 'La foto debe estar en formato JPG, PNG o WEBP.',
+            'avatar.max' => 'La foto no debe superar 5 MB.',
         ];
     }
 }
