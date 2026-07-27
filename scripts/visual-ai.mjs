@@ -5,7 +5,7 @@ import { env, pipeline, RawImage } from '@huggingface/transformers';
 
 const SEMANTIC_MODEL = 'Xenova/clip-vit-base-patch32';
 const DETAIL_MODEL = 'Xenova/dinov2-small';
-const VERSION = 'clip-vit-b32-dinov2s-q8-v1';
+const VERSION = 'clip-aspect-dinov2-square-v3';
 const CACHE_DIR = process.env.VISUAL_AI_CACHE
     ? path.resolve(process.env.VISUAL_AI_CACHE)
     : path.resolve('storage/app/visual-ai/models');
@@ -43,11 +43,13 @@ function normalize(values) {
     return values.map((value) => Number((value / magnitude).toFixed(7)));
 }
 
-async function embedImage(imagePath) {
-    const absolutePath = path.resolve(imagePath);
-    const image = await RawImage.read(absolutePath);
-    const semanticOutput = await (await semanticExtractor())(image);
-    const detailOutput = await (await detailExtractor())(image);
+async function embedImage(semanticImagePath, detailImagePath = semanticImagePath) {
+    const [semanticImage, detailImage] = await Promise.all([
+        RawImage.read(path.resolve(semanticImagePath)),
+        RawImage.read(path.resolve(detailImagePath)),
+    ]);
+    const semanticOutput = await (await semanticExtractor())(semanticImage);
+    const detailOutput = await (await detailExtractor())(detailImage);
     const detailSize = Number(detailOutput.dims.at(-1));
 
     if (!semanticOutput.data.length || !detailSize || detailOutput.data.length < detailSize) {
@@ -73,8 +75,8 @@ async function setup() {
     }));
 }
 
-async function embed(imagePath) {
-    process.stdout.write(JSON.stringify(await embedImage(imagePath)));
+async function embed(semanticImagePath, detailImagePath) {
+    process.stdout.write(JSON.stringify(await embedImage(semanticImagePath, detailImagePath)));
 }
 
 async function batch(manifestPath) {
@@ -89,7 +91,10 @@ async function batch(manifestPath) {
             results.push({
                 id: item.id,
                 signature: item.signature ?? null,
-                ...(await embedImage(item.path)),
+                ...(await embedImage(
+                    item.semantic_path ?? item.path,
+                    item.detail_path ?? item.path,
+                )),
             });
         } catch (error) {
             results.push({
@@ -103,17 +108,17 @@ async function batch(manifestPath) {
     process.stdout.write(JSON.stringify(results));
 }
 
-const [command, argument] = process.argv.slice(2);
+const [command, argument, detailArgument] = process.argv.slice(2);
 
 try {
     if (command === 'setup') {
         await setup();
     } else if (command === 'embed' && argument) {
-        await embed(argument);
+        await embed(argument, detailArgument);
     } else if (command === 'batch' && argument) {
         await batch(argument);
     } else {
-        throw new Error('Uso: visual-ai.mjs setup | embed <imagen> | batch <manifiesto.json>');
+        throw new Error('Uso: visual-ai.mjs setup | embed <imagen-semantica> [imagen-detalle] | batch <manifiesto.json>');
     }
 } catch (error) {
     process.stderr.write(error instanceof Error ? error.message : String(error));

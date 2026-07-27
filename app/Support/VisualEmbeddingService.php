@@ -10,7 +10,7 @@ use Throwable;
 
 class VisualEmbeddingService
 {
-    public const VERSION = 'clip-vit-b32-dinov2s-q8-v1';
+    public const VERSION = 'clip-aspect-dinov2-square-v3';
 
     /** @var array<int, string>|null */
     private ?array $availableNodeBinaries = null;
@@ -18,7 +18,10 @@ class VisualEmbeddingService
     /** @var array<string, string> */
     private array $nodeProbeErrors = [];
 
-    public function __construct(private readonly VisualImageDescriptor $visualDescriptor) {}
+    public function __construct(
+        private readonly VisualImageDescriptor $visualDescriptor,
+        private readonly VisualImagePreprocessor $imagePreprocessor
+    ) {}
 
     public function isReady(): bool
     {
@@ -76,13 +79,22 @@ class VisualEmbeddingService
             throw new RuntimeException($this->readinessMessage());
         }
 
-        [$safePath, $temporary] = $this->prepareSafeImage($path);
+        $prepared = $this->imagePreprocessor->prepare($path);
 
         try {
-            return $this->run(['embed', $safePath], 120);
+            return $this->run([
+                'embed',
+                $prepared['semantic_path'],
+                $prepared['detail_path'],
+            ], 120);
         } finally {
-            if ($temporary) {
-                @unlink($safePath);
+            if ($prepared['semantic_temporary']) {
+                @unlink($prepared['semantic_path']);
+            }
+
+            if ($prepared['detail_temporary']
+                && $prepared['detail_path'] !== $prepared['semantic_path']) {
+                @unlink($prepared['detail_path']);
             }
         }
     }
@@ -129,13 +141,42 @@ class VisualEmbeddingService
             throw new RuntimeException('No se pudo crear el directorio temporal de la IA visual.');
         }
 
-        $manifestPath = $directory.'/manifest-'.bin2hex(random_bytes(8)).'.json';
-        file_put_contents($manifestPath, json_encode($manifest, JSON_THROW_ON_ERROR));
+        $manifestPath = null;
+        $temporaryImages = [];
 
         try {
+            $normalizedManifest = [];
+
+            foreach ($manifest as $item) {
+                $prepared = $this->imagePreprocessor->prepare($item['path']);
+                $normalizedManifest[] = [
+                    ...$item,
+                    'path' => $prepared['semantic_path'],
+                    'semantic_path' => $prepared['semantic_path'],
+                    'detail_path' => $prepared['detail_path'],
+                ];
+
+                if ($prepared['semantic_temporary']) {
+                    $temporaryImages[] = $prepared['semantic_path'];
+                }
+
+                if ($prepared['detail_temporary']) {
+                    $temporaryImages[] = $prepared['detail_path'];
+                }
+            }
+
+            $manifestPath = $directory.'/manifest-'.bin2hex(random_bytes(8)).'.json';
+            file_put_contents($manifestPath, json_encode($normalizedManifest, JSON_THROW_ON_ERROR));
+
             return $this->run(['batch', $manifestPath], max(120, count($manifest) * 3));
         } finally {
-            @unlink($manifestPath);
+            if ($manifestPath) {
+                @unlink($manifestPath);
+            }
+
+            foreach (array_unique($temporaryImages) as $temporaryImage) {
+                @unlink($temporaryImage);
+            }
         }
     }
 
@@ -335,60 +376,5 @@ class VisualEmbeddingService
         }
 
         return 'La IA visual no está preparada. Ejecuta php artisan visual:ai-diagnose.';
-    }
-
-    /**
-     * Re-encodes user images before native AI libraries read them.
-     *
-     * @return array{0: string, 1: bool}
-     */
-    private function prepareSafeImage(string $path): array
-    {
-        if (! function_exists('imagecreatefromstring')) {
-            return [$path, false];
-        }
-
-        $contents = @file_get_contents($path);
-        $source = $contents === false ? false : @imagecreatefromstring($contents);
-        unset($contents);
-
-        if (! $source) {
-            return [$path, false];
-        }
-
-        $sourceWidth = imagesx($source);
-        $sourceHeight = imagesy($source);
-        $scale = min(1, 1600 / max(1, $sourceWidth, $sourceHeight));
-        $width = max(1, (int) round($sourceWidth * $scale));
-        $height = max(1, (int) round($sourceHeight * $scale));
-        $image = imagecreatetruecolor($width, $height);
-        $white = imagecolorallocate($image, 255, 255, 255);
-        imagefill($image, 0, 0, $white);
-        imagecopyresampled(
-            $image,
-            $source,
-            0,
-            0,
-            0,
-            0,
-            $width,
-            $height,
-            $sourceWidth,
-            $sourceHeight
-        );
-        imagedestroy($source);
-
-        $directory = storage_path('app/visual-ai/tmp');
-        if (! is_dir($directory) && ! mkdir($directory, 0775, true) && ! is_dir($directory)) {
-            imagedestroy($image);
-
-            return [$path, false];
-        }
-
-        $temporaryPath = $directory.'/query-'.bin2hex(random_bytes(8)).'.jpg';
-        $written = imagejpeg($image, $temporaryPath, 88);
-        imagedestroy($image);
-
-        return $written ? [$temporaryPath, true] : [$path, false];
     }
 }
