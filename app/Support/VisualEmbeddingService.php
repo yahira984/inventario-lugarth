@@ -25,7 +25,7 @@ class VisualEmbeddingService
 
     public function isReady(): bool
     {
-        if (app()->runningUnitTests()) {
+        if ($this->isPhpUnitProcess()) {
             return false;
         }
 
@@ -33,6 +33,11 @@ class VisualEmbeddingService
             && is_file(storage_path('app/visual-ai/models/Xenova/dinov2-small/onnx/model_quantized.onnx'))
             && is_file(storage_path('app/visual-ai/models/Xenova/clip-vit-base-patch32/onnx/vision_model_quantized.onnx'))
             && $this->nodeBinaries() !== [];
+    }
+
+    private function isPhpUnitProcess(): bool
+    {
+        return defined('PHPUNIT_COMPOSER_INSTALL');
     }
 
     /**
