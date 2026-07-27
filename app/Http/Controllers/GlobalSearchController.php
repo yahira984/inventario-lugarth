@@ -56,6 +56,15 @@ class GlobalSearchController extends Controller
                         'destacar' => $material->id,
                     ]) . '#material-' . $material->id,
                     'tone' => 'blue',
+                    'image' => $material->fotografia
+                        ? asset('storage/' . ltrim(str_replace('\\', '/', $material->fotografia), '/'))
+                        : null,
+                    'image_alt' => 'Foto de ' . $material->nombreBusqueda(),
+                    'image_caption' => trim(implode(' | ', array_filter([
+                        $material->numero_parte,
+                        $material->categoria,
+                        $material->almacen,
+                    ]))),
                 ]);
             });
 
