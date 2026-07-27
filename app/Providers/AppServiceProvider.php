@@ -7,6 +7,7 @@ use App\Models\Material;
 use App\Models\MaterialEntradaPendiente;
 use App\Models\User;
 use App\Observers\MaterialObserver;
+use App\Support\ChatFeatures;
 use App\Support\ChatRetention;
 use App\Support\VisualEmbeddingService;
 use App\Support\VisualImageDescriptor;
@@ -61,6 +62,7 @@ class AppServiceProvider extends ServiceProvider
                     ? AuditLog::query()->with('user:id,name')->latest()->limit(5)->get()
                     : collect(),
                 'workspaceChatRetentionDays' => app(ChatRetention::class)->days(),
+                'workspaceChatStickers' => app(ChatFeatures::class)->stickers(),
             ]);
         });
     }

@@ -40,6 +40,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/equipo/mensajes/{user}', [TeamHubController::class, 'send'])
         ->middleware('throttle:30,1')
         ->name('team.messages.send');
+    Route::post('/equipo/escribiendo/{user}', [TeamHubController::class, 'typing'])
+        ->middleware('throttle:90,1')
+        ->name('team.typing');
+    Route::patch('/equipo/estado', [TeamHubController::class, 'updateAvailability'])
+        ->middleware('throttle:30,1')
+        ->name('team.availability');
+    Route::patch('/equipo/mensajes/{message}/fijar', [TeamHubController::class, 'pin'])
+        ->middleware('throttle:30,1')
+        ->name('team.messages.pin');
+    Route::get('/equipo/conversaciones/{user}/descargar', [TeamHubController::class, 'export'])
+        ->middleware('throttle:10,1')
+        ->name('team.conversations.export');
 
     Route::get('materiales/buscar-por-codigo', [MaterialController::class, 'buscarPorCodigo'])
         ->name('materiales.buscarPorCodigo');
@@ -135,6 +147,8 @@ Route::middleware('auth')->group(function () {
         ->name('admin.chats.purge');
     Route::delete('admin/chats/conversaciones/{firstUser}/{secondUser}', [AdminChatController::class, 'destroyConversation'])
         ->name('admin.chats.conversations.destroy');
+    Route::get('admin/chats/conversaciones/{firstUser}/{secondUser}/descargar', [AdminChatController::class, 'exportConversation'])
+        ->name('admin.chats.conversations.export');
     Route::delete('admin/chats', [AdminChatController::class, 'clear'])
         ->name('admin.chats.clear');
     Route::get('admin/respaldos', [DatabaseBackupController::class, 'index'])
