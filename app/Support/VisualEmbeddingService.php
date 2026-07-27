@@ -285,8 +285,16 @@ class VisualEmbeddingService
         $available = [];
 
         foreach ($this->nodeCandidates() as $candidate) {
-            if ($this->looksLikePath($candidate) && ! is_file($candidate)) {
-                $this->nodeProbeErrors[$candidate] = 'El archivo no existe.';
+            if ($this->looksLikePath($candidate)) {
+                if (! is_file($candidate)) {
+                    $this->nodeProbeErrors[$candidate] = 'El archivo no existe.';
+
+                    continue;
+                }
+
+                // Herd and PHP-FPM can block short probe processes even though
+                // the same absolute executable works for the real inference.
+                $available[] = $candidate;
 
                 continue;
             }

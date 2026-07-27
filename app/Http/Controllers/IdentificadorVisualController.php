@@ -68,13 +68,21 @@ class IdentificadorVisualController extends Controller
                     'error' => $exception->getMessage(),
                     'diagnostico' => $this->visualAi->diagnostics(),
                 ]);
-                $motorWarning = 'El análisis inteligente no pudo iniciarse. Para evitar resultados incorrectos, solo se mostrarán coincidencias prácticamente exactas.';
+                $motorWarning = 'El motor local está instalado, pero el análisis no pudo ejecutarse. Detalle: '
+                    .mb_strimwidth($exception->getMessage(), 0, 280, '...');
             }
         } else {
             Log::warning('El identificador visual no tiene disponible el motor inteligente.', [
                 'diagnostico' => $this->visualAi->diagnostics(),
             ]);
-            $motorWarning = 'El análisis inteligente no está disponible en este equipo. Para evitar resultados incorrectos, solo se mostrarán coincidencias prácticamente exactas.';
+            $diagnostics = $this->visualAi->diagnostics();
+            $missing = collect([
+                ! $diagnostics['transformers'] ? 'dependencias de JavaScript' : null,
+                ! $diagnostics['semantic_model'] ? 'modelo CLIP' : null,
+                ! $diagnostics['detail_model'] ? 'modelo DINOv2' : null,
+                $diagnostics['node_binaries'] === [] ? 'Node.js accesible desde Laravel' : null,
+            ])->filter()->implode(', ');
+            $motorWarning = 'El motor local no está completo. Falta: '.($missing ?: 'componente sin identificar').'.';
         }
 
         return view('materiales.identificador_visual', [
