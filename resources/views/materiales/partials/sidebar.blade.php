@@ -337,6 +337,14 @@
             <button type="button" class="is-active" data-team-tab="users">Equipo <span id="teamUsersCount">0</span></button>
             <button type="button" data-team-tab="chats">Chats <span id="teamChatsCount">0</span></button>
         </nav>
+        <div class="team-availability">
+            <label for="workspaceAvailability">Mi estado</label>
+            <select id="workspaceAvailability" aria-label="Cambiar mi estado">
+                <option value="available" @selected(($workspaceUser?->availability_status ?? 'available') === 'available')>Disponible</option>
+                <option value="busy" @selected(($workspaceUser?->availability_status ?? '') === 'busy')>Ocupado</option>
+                <option value="away" @selected(($workspaceUser?->availability_status ?? '') === 'away')>Fuera</option>
+            </select>
+        </div>
         <div class="team-list" id="teamList" aria-live="polite">
             <div class="team-loading"><span></span><span></span><span></span></div>
         </div>
@@ -389,12 +397,27 @@
     <header class="workspace-chat-header">
         <div class="team-avatar" id="chatAvatar"><span>U</span><i></i></div>
         <div><strong id="chatUserName">Conversación</strong><small id="chatUserStatus">Cargando...</small></div>
-        <button type="button" id="closeWorkspaceChat" aria-label="Cerrar chat" title="Cerrar chat">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
-        </button>
+        <div class="workspace-chat-header-actions">
+            <a id="downloadWorkspaceChat" href="#" aria-label="Descargar conversación" title="Descargar conversación" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+            </a>
+            <button type="button" id="closeWorkspaceChat" aria-label="Cerrar chat" title="Cerrar chat">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+            </button>
+        </div>
     </header>
+    <div class="workspace-chat-pinned" id="workspaceChatPinned" hidden>
+        <button type="button" id="openPinnedMessage" title="Ir al mensaje fijado">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 4 6 6-3 1-4 4-1 5-2-2-2-2 5-1 4-4 1-3-6-6Z"/></svg>
+            <span id="workspacePinnedPreview">Mensaje fijado</span>
+        </button>
+        <small id="workspacePinnedCount"></small>
+    </div>
     <div class="workspace-chat-messages" id="workspaceChatMessages" aria-live="polite">
         <div class="workspace-empty"><strong>Selecciona a una persona</strong><span>Podrás enviarle un mensaje directo dentro del sistema.</span></div>
+    </div>
+    <div class="workspace-chat-typing" id="workspaceChatTyping" hidden aria-live="polite">
+        <span></span><span></span><span></span><strong id="workspaceTypingText">Escribiendo...</strong>
     </div>
     <div class="workspace-chat-retention">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-3.2-6.9M21 3v6h-6"/></svg>
@@ -406,9 +429,38 @@
             @endif
         </span>
     </div>
+    <div class="workspace-chat-reply" id="workspaceChatReply" hidden>
+        <span>
+            <strong id="workspaceReplyAuthor">Responder</strong>
+            <small id="workspaceReplyPreview"></small>
+        </span>
+        <button type="button" id="cancelWorkspaceReply" aria-label="Cancelar respuesta" title="Cancelar respuesta">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+    </div>
+    <div class="workspace-sticker-picker" id="workspaceStickerPicker" hidden aria-label="Stickers disponibles">
+        @foreach(($workspaceChatStickers ?? []) as $sticker)
+            <button
+                type="button"
+                data-chat-sticker="{{ $sticker['key'] }}"
+                aria-label="Enviar sticker {{ $sticker['label'] }}"
+                title="{{ $sticker['label'] }}"
+            >
+                @if($sticker['image_url'])
+                    <img src="{{ $sticker['image_url'] }}" alt="">
+                @else
+                    <span>{{ $sticker['emoji'] }}</span>
+                @endif
+                <small>{{ $sticker['label'] }}</small>
+            </button>
+        @endforeach
+    </div>
     <form class="workspace-chat-form" id="workspaceChatForm" autocomplete="off" data-workspace-async>
+        <button type="button" id="toggleWorkspaceStickers" class="chat-sticker-toggle" aria-label="Mostrar stickers" title="Stickers">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 10h.01M15.5 10h.01M8.5 14.5c2.2 1.8 4.8 1.8 7 0"/></svg>
+        </button>
         <label class="sr-only" for="workspaceChatInput">Mensaje</label>
-        <textarea id="workspaceChatInput" name="body" rows="1" maxlength="1000" placeholder="Escribe un mensaje..." required></textarea>
+        <textarea id="workspaceChatInput" name="body" rows="1" maxlength="1000" placeholder="Escribe un mensaje..."></textarea>
         <button type="submit" aria-label="Enviar mensaje" title="Enviar mensaje">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13"/></svg>
         </button>
@@ -442,6 +494,10 @@
         userId: @json($workspaceUser?->id),
         presenceUrl: @json(route('team.presence')),
         messagesUrlTemplate: @json(route('team.messages', ['user' => '__USER__'])),
+        typingUrlTemplate: @json(url('/equipo/escribiendo/__USER__')),
+        pinUrlTemplate: @json(url('/equipo/mensajes/__MESSAGE__/fijar')),
+        exportChatUrlTemplate: @json(url('/equipo/conversaciones/__USER__/descargar')),
+        availabilityUrl: @json(route('team.availability')),
         disableGlobalLightbox: false,
         csrfToken: @json(csrf_token()),
         searchUrl: @json(route('buscar.global')),

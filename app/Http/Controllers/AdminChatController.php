@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\DirectMessage;
 use App\Models\User;
 use App\Support\AuditLogger;
+use App\Support\ChatConversationExport;
 use App\Support\ChatRetention;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminChatController extends Controller
 {
@@ -20,18 +22,20 @@ class AdminChatController extends Controller
         $messageStats = DirectMessage::query()
             ->selectRaw('COUNT(*) as total')
             ->selectRaw('SUM(CASE WHEN read_at IS NULL THEN 1 ELSE 0 END) as unread')
+            ->selectRaw('SUM(CASE WHEN pinned_at IS NOT NULL THEN 1 ELSE 0 END) as pinned')
             ->selectRaw('COALESCE(SUM(LENGTH(body)), 0) as body_bytes')
             ->selectRaw('MIN(created_at) as oldest_at')
             ->first();
 
         $totalMessages = (int) ($messageStats?->total ?? 0);
-        $estimatedBytes = (int) ($messageStats?->body_bytes ?? 0) + ($totalMessages * 160);
+        $estimatedBytes = (int) ($messageStats?->body_bytes ?? 0) + ($totalMessages * 220);
 
         return view('admin.chats.index', [
             'retentionDays' => $retention->days(),
             'retentionLabel' => $retention->label(),
             'totalMessages' => $totalMessages,
             'unreadMessages' => (int) ($messageStats?->unread ?? 0),
+            'pinnedMessages' => (int) ($messageStats?->pinned ?? 0),
             'oldestMessageAt' => $messageStats?->oldest_at,
             'estimatedSize' => $this->formatBytes($estimatedBytes),
             'conversations' => $this->conversations(),
@@ -143,21 +147,44 @@ class AdminChatController extends Controller
         );
     }
 
+    public function exportConversation(
+        Request $request,
+        User $firstUser,
+        User $secondUser,
+        ChatConversationExport $exporter,
+    ): StreamedResponse {
+        $this->ensureAdmin($request);
+        abort_if($firstUser->is($secondUser), 422);
+
+        return $exporter->download($firstUser, $secondUser);
+    }
+
     public function clear(Request $request): RedirectResponse
     {
         $this->ensureAdmin($request);
 
-        $deleted = DirectMessage::query()->delete();
+        $deleted = DirectMessage::query()
+            ->whereNull('pinned_at')
+            ->delete();
+        $preserved = DirectMessage::query()
+            ->whereNotNull('pinned_at')
+            ->count();
 
         AuditLogger::registrar(
             'Chat interno',
             'Limpieza total',
-            "Eliminó todo el historial del chat interno: {$deleted} mensajes.",
-            ['mensajes_eliminados' => $deleted],
+            "Eliminó el historial no fijado del chat interno: {$deleted} mensajes.",
+            [
+                'mensajes_eliminados' => $deleted,
+                'mensajes_fijados_conservados' => $preserved,
+            ],
             $request,
         );
 
-        return back()->with('success', 'Se eliminó todo el historial del chat interno.');
+        return back()->with(
+            'success',
+            "Se eliminaron {$deleted} mensajes. Se conservaron {$preserved} mensajes fijados.",
+        );
     }
 
     private function ensureAdmin(Request $request): void
@@ -174,6 +201,7 @@ class AdminChatController extends Controller
             ->select(['sender_id', 'recipient_id'])
             ->selectRaw('COUNT(*) as total_messages')
             ->selectRaw('SUM(CASE WHEN read_at IS NULL THEN 1 ELSE 0 END) as unread_messages')
+            ->selectRaw('SUM(CASE WHEN pinned_at IS NOT NULL THEN 1 ELSE 0 END) as pinned_messages')
             ->selectRaw('COALESCE(SUM(LENGTH(body)), 0) as body_bytes')
             ->selectRaw('MAX(created_at) as last_message_at')
             ->groupBy('sender_id', 'recipient_id')
@@ -188,12 +216,14 @@ class AdminChatController extends Controller
                 'second_user_id' => $secondId,
                 'total_messages' => 0,
                 'unread_messages' => 0,
+                'pinned_messages' => 0,
                 'body_bytes' => 0,
                 'last_message_at' => null,
             ]);
 
             $conversation['total_messages'] += (int) $row->total_messages;
             $conversation['unread_messages'] += (int) $row->unread_messages;
+            $conversation['pinned_messages'] += (int) $row->pinned_messages;
             $conversation['body_bytes'] += (int) $row->body_bytes;
 
             if ($conversation['last_message_at'] === null || $row->last_message_at > $conversation['last_message_at']) {
@@ -223,7 +253,7 @@ class AdminChatController extends Controller
                     'first_user' => $firstUser,
                     'second_user' => $secondUser,
                     'estimated_size' => $this->formatBytes(
-                        $conversation['body_bytes'] + ($conversation['total_messages'] * 160),
+                        $conversation['body_bytes'] + ($conversation['total_messages'] * 220),
                     ),
                 ];
             })

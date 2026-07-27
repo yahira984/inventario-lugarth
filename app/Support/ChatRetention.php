@@ -45,6 +45,7 @@ class ChatRetention
 
         return DirectMessage::query()
             ->where('created_at', '<', now()->subDays($days))
+            ->whereNull('pinned_at')
             ->delete();
     }
 

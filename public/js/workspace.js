@@ -138,7 +138,7 @@
         }
     });
 
-    const showWorkspaceToast = (message, tone = 'blue', timeout = 5200) => {
+    const showWorkspaceToast = (message, tone = 'blue', timeout = 5200, options = {}) => {
         let stack = document.querySelector('.workspace-toast-stack');
         if (!stack) {
             stack = document.createElement('div');
@@ -154,17 +154,65 @@
             purple: 'var(--ws-purple)',
         };
         const toast = document.createElement('div');
-        toast.className = 'workspace-toast';
+        const hasMedia = options.imageUrl || options.initials;
+        toast.className = `workspace-toast${hasMedia ? ' has-media' : ''}${options.onClick ? ' is-actionable' : ''}`;
         toast.style.setProperty('--toast', colors[tone] || colors.blue);
 
+        const marker = document.createElement('span');
+        marker.className = 'workspace-toast-marker';
+        toast.append(marker);
+
+        if (options.imageUrl) {
+            const avatar = document.createElement('img');
+            avatar.className = 'workspace-toast-avatar';
+            avatar.src = options.imageUrl;
+            avatar.alt = '';
+            toast.append(avatar);
+        } else if (options.initials) {
+            const avatar = document.createElement('span');
+            avatar.className = 'workspace-toast-avatar workspace-toast-initials';
+            avatar.textContent = options.initials;
+            toast.append(avatar);
+        }
+
         const copy = document.createElement('div');
-        copy.textContent = message;
+        copy.className = 'workspace-toast-copy';
+        if (options.title) {
+            const title = document.createElement('strong');
+            title.textContent = options.title;
+            copy.append(title);
+        }
+        const detail = document.createElement('span');
+        detail.textContent = message;
+        copy.append(detail);
+
         const close = document.createElement('button');
         close.type = 'button';
         close.setAttribute('aria-label', 'Cerrar aviso');
         close.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>';
-        close.addEventListener('click', () => toast.remove());
-        toast.append(document.createElement('span'), copy, close);
+        close.addEventListener('click', (event) => {
+            event.stopPropagation();
+            toast.remove();
+        });
+        toast.append(copy, close);
+
+        if (options.onClick) {
+            toast.tabIndex = 0;
+            toast.setAttribute('role', 'button');
+            const runAction = () => {
+                toast.remove();
+                options.onClick();
+            };
+            toast.addEventListener('click', (event) => {
+                if (!event.target.closest('button')) runAction();
+            });
+            toast.addEventListener('keydown', (event) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                runAction();
+            });
+        }
+
         stack.append(toast);
         window.setTimeout(() => toast.remove(), timeout);
     };
@@ -207,11 +255,28 @@
     let chatAvatar = document.getElementById('chatAvatar');
     const chatUserName = document.getElementById('chatUserName');
     const chatUserStatus = document.getElementById('chatUserStatus');
+    const availabilitySelect = document.getElementById('workspaceAvailability');
+    const chatDownload = document.getElementById('downloadWorkspaceChat');
+    const chatPinned = document.getElementById('workspaceChatPinned');
+    const pinnedPreview = document.getElementById('workspacePinnedPreview');
+    const pinnedCount = document.getElementById('workspacePinnedCount');
+    const openPinnedButton = document.getElementById('openPinnedMessage');
+    const chatTyping = document.getElementById('workspaceChatTyping');
+    const typingText = document.getElementById('workspaceTypingText');
+    const chatReply = document.getElementById('workspaceChatReply');
+    const replyAuthor = document.getElementById('workspaceReplyAuthor');
+    const replyPreview = document.getElementById('workspaceReplyPreview');
+    const stickerPicker = document.getElementById('workspaceStickerPicker');
+    const stickerToggle = document.getElementById('toggleWorkspaceStickers');
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
         || window.InventoryWorkspace?.csrfToken
         || '';
     const presenceUrl = window.InventoryWorkspace?.presenceUrl;
     const messageUrlTemplate = window.InventoryWorkspace?.messagesUrlTemplate || '';
+    const typingUrlTemplate = window.InventoryWorkspace?.typingUrlTemplate || '';
+    const pinUrlTemplate = window.InventoryWorkspace?.pinUrlTemplate || '';
+    const exportChatUrlTemplate = window.InventoryWorkspace?.exportChatUrlTemplate || '';
+    const availabilityUrl = window.InventoryWorkspace?.availabilityUrl || '';
     const presenceStorageKey = `${communicationStoragePrefix}presence`;
     const messageStorageKey = `${communicationStoragePrefix}message-notifications`;
     const bubblePositionKey = `${communicationStoragePrefix}team-bubble-position`;
@@ -222,6 +287,12 @@
     let messagesRequest = false;
     let presenceTimer;
     let messagesTimer;
+    let typingTimer;
+    let typingStopTimer;
+    let typingSent = false;
+    let typingLastSentAt = 0;
+    let replyingToMessage = null;
+    let latestPinnedMessages = [];
     let suppressTeamClick = false;
 
     const closeTeam = () => {
@@ -233,10 +304,21 @@
 
     const closeChat = () => {
         if (!chat) return;
+        if (typingSent && activeChatUser) {
+            sendTypingState(false);
+        }
         chat.hidden = true;
         activeChatUser = null;
+        replyingToMessage = null;
+        latestPinnedMessages = [];
+        if (chatReply) chatReply.hidden = true;
+        if (stickerPicker) stickerPicker.hidden = true;
+        stickerToggle?.classList.remove('is-active');
+        if (chatDownload) chatDownload.hidden = true;
         document.body.classList.remove('workspace-chat-open');
         window.clearInterval(messagesTimer);
+        window.clearTimeout(typingTimer);
+        window.clearTimeout(typingStopTimer);
     };
 
     const bubbleLimits = (x, y) => {
@@ -294,7 +376,7 @@
 
     const avatarElement = (user) => {
         const avatar = document.createElement('span');
-        avatar.className = `team-avatar${user.online ? ' is-online' : ''}`;
+        avatar.className = `team-avatar${user.online ? ' is-online' : ''} availability-${user.availability_status || 'available'}`;
         if (user.avatar_url) {
             const image = document.createElement('img');
             image.src = user.avatar_url;
@@ -353,8 +435,8 @@
         meta.append(
             role,
             document.createTextNode(chatMode
-                ? ` · ${user.last_message_at || 'Conversación reciente'}`
-                : ` · ${user.last_seen}`)
+                ? ` · ${user.availability_label || 'Disponible'} · ${user.last_message_at || 'Conversación reciente'}`
+                : ` · ${user.availability_label || 'Disponible'} · ${user.last_seen}`)
         );
         copy.append(name, meta);
 
@@ -403,6 +485,10 @@
     const renderTeam = (data = latestPresenceData) => {
         latestPresenceData = data;
         const users = data.users || [];
+        const currentUser = users.find((user) => user.is_self);
+        if (availabilitySelect && currentUser && !availabilitySelect.disabled) {
+            availabilitySelect.value = currentUser.availability_status || 'available';
+        }
         const conversationUsers = users
             .filter((user) => !user.is_self && user.has_conversation)
             .sort((a, b) => {
@@ -520,8 +606,17 @@
                     return;
                 }
 
-                const preview = user.last_message ? `: ${user.last_message}` : '';
-                showWorkspaceToast(`Nuevo mensaje de ${user.name}${preview}`, 'blue', 7200);
+                showWorkspaceToast(
+                    user.last_message || 'Abre la conversación para verlo.',
+                    'blue',
+                    7200,
+                    {
+                        title: `Nuevo mensaje de ${user.name}`,
+                        imageUrl: user.avatar_url,
+                        initials: user.initials,
+                        onClick: () => openChat(user),
+                    },
+                );
             });
         }
 
@@ -548,6 +643,98 @@
         }
     };
 
+    const sendTypingState = async (typing) => {
+        if (!activeChatUser || !typingUrlTemplate) return;
+        const now = Date.now();
+        if (typing && typingSent && now - typingLastSentAt < 3000) return;
+        if (!typing && !typingSent) return;
+        const userId = activeChatUser.id;
+        typingSent = typing;
+        typingLastSentAt = now;
+
+        try {
+            await fetch(typingUrlTemplate.replace('__USER__', encodeURIComponent(userId)), {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({ typing }),
+            });
+        } catch (_) {
+            // Typing is temporary. A failed signal must never block the chat.
+        }
+    };
+
+    const cancelReply = () => {
+        replyingToMessage = null;
+        if (chatReply) chatReply.hidden = true;
+    };
+
+    const startReply = (message) => {
+        replyingToMessage = message;
+        if (replyAuthor) replyAuthor.textContent = `Responder a ${message.mine ? 'tu mensaje' : activeChatUser?.name || 'mensaje'}`;
+        if (replyPreview) {
+            replyPreview.textContent = message.message_type === 'sticker'
+                ? `Sticker: ${message.sticker?.label || 'Sticker'}`
+                : message.body;
+        }
+        if (chatReply) chatReply.hidden = false;
+        chatInput?.focus();
+    };
+
+    const togglePinnedMessage = async (message) => {
+        if (!pinUrlTemplate) return;
+        try {
+            const response = await fetch(
+                pinUrlTemplate.replace('__MESSAGE__', encodeURIComponent(message.id)),
+                {
+                    method: 'PATCH',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ pinned: !message.pinned }),
+                },
+            );
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data?.message || data?.errors?.pinned?.[0] || 'No se pudo actualizar el mensaje.');
+            }
+            await refreshMessages({ silent: true });
+            showWorkspaceToast(
+                data.message?.pinned ? 'El aviso quedó protegido de la limpieza automática.' : 'El mensaje dejó de estar fijado.',
+                data.message?.pinned ? 'amber' : 'blue',
+            );
+        } catch (error) {
+            showWorkspaceToast(error.message || 'No se pudo actualizar el mensaje fijado.', 'red');
+        }
+    };
+
+    const renderPinnedMessages = (messages = []) => {
+        latestPinnedMessages = messages;
+        if (!chatPinned || !pinnedPreview || !pinnedCount) return;
+        chatPinned.hidden = messages.length === 0;
+        if (!messages.length) return;
+        pinnedPreview.textContent = `${messages[0].sender}: ${messages[0].preview}`;
+        pinnedCount.textContent = messages.length === 1 ? '1 fijado' : `${messages.length} fijados`;
+        if (openPinnedButton) openPinnedButton.dataset.messageId = messages[0].id;
+    };
+
+    const renderTypingState = (typing) => {
+        if (!chatTyping) return;
+        chatTyping.hidden = !typing;
+        if (typingText && typing) {
+            typingText.textContent = `${activeChatUser?.name || 'Usuario'} está escribiendo...`;
+        }
+    };
+
     const renderChatMessages = (messages) => {
         if (!chatMessages) return;
         const wasNearBottom = chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight < 90;
@@ -564,13 +751,76 @@
 
         messages.forEach((message) => {
             const bubble = document.createElement('article');
-            bubble.className = `chat-message${message.mine ? ' is-mine' : ''}`;
+            bubble.className = `chat-message${message.mine ? ' is-mine' : ''}${message.pinned ? ' is-pinned' : ''}`;
             bubble.dataset.messageId = message.id;
-            const body = document.createElement('span');
-            body.textContent = message.body;
+            bubble.tabIndex = 0;
+
+            const tools = document.createElement('div');
+            tools.className = 'chat-message-tools';
+            const replyButton = document.createElement('button');
+            replyButton.type = 'button';
+            replyButton.title = 'Responder';
+            replyButton.setAttribute('aria-label', 'Responder este mensaje');
+            replyButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7-5 5 5 5M5 12h8a6 6 0 0 1 6 6"/></svg>';
+            replyButton.addEventListener('click', () => startReply(message));
+
+            const pinButton = document.createElement('button');
+            pinButton.type = 'button';
+            pinButton.className = message.pinned ? 'is-pinned' : '';
+            pinButton.title = message.pinned ? 'Dejar de fijar' : 'Fijar aviso';
+            pinButton.setAttribute('aria-label', pinButton.title);
+            pinButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 4 6 6-3 1-4 4-1 5-2-2-2-2 5-1 4-4 1-3-6-6Z"/></svg>';
+            pinButton.addEventListener('click', () => togglePinnedMessage(message));
+            tools.append(replyButton, pinButton);
+            bubble.append(tools);
+
+            if (message.reply) {
+                const reply = document.createElement('div');
+                reply.className = 'chat-message-reply';
+                const replyName = document.createElement('strong');
+                replyName.textContent = message.reply.sender;
+                const replyCopy = document.createElement('span');
+                replyCopy.textContent = message.reply.preview;
+                reply.append(replyName, replyCopy);
+                bubble.append(reply);
+            }
+
+            if (message.message_type === 'sticker') {
+                const sticker = document.createElement('div');
+                sticker.className = 'chat-message-sticker';
+                if (message.sticker?.image_url) {
+                    const image = document.createElement('img');
+                    image.src = message.sticker.image_url;
+                    image.alt = message.sticker.label || 'Sticker';
+                    sticker.append(image);
+                } else {
+                    const emoji = document.createElement('span');
+                    emoji.textContent = message.sticker?.emoji || '✓';
+                    sticker.append(emoji);
+                }
+                const label = document.createElement('small');
+                label.textContent = message.sticker?.label || 'Sticker';
+                sticker.append(label);
+                bubble.append(sticker);
+            } else {
+                const body = document.createElement('span');
+                body.textContent = message.body;
+                bubble.append(body);
+            }
+
+            const footer = document.createElement('footer');
+            footer.className = 'chat-message-footer';
             const time = document.createElement('time');
             time.textContent = message.created_at;
-            bubble.append(body, time);
+            footer.append(time);
+
+            if (message.mine) {
+                const status = document.createElement('span');
+                status.className = `chat-message-status${message.read ? ' is-read' : ''}`;
+                status.textContent = `${message.delivered || message.read ? '✓✓' : '✓'} ${message.status_label || 'Enviado'}`;
+                footer.append(status);
+            }
+            bubble.append(footer);
             chatMessages.append(bubble);
         });
         const currentLastId = chatMessages.lastElementChild?.dataset?.messageId;
@@ -590,8 +840,12 @@
             if (!response.ok) throw new Error('No se pudo abrir la conversación.');
             const data = await response.json();
             activeChatUser = { ...activeChatUser, ...data.user };
-            if (chatUserStatus) chatUserStatus.textContent = `${data.user.role_label} · ${data.user.online ? 'En línea' : 'Desconectado'}`;
+            if (chatUserStatus) {
+                chatUserStatus.textContent = `${data.user.role_label} · ${data.user.availability_label} · ${data.user.online ? 'En línea' : data.user.last_seen}`;
+            }
             renderChatMessages(data.messages || []);
+            renderPinnedMessages(data.pinned_messages || []);
+            renderTypingState(Boolean(data.typing));
             refreshPresence({ silent: true });
         } catch (_) {
             if (!silent && chatMessages) {
@@ -604,12 +858,26 @@
 
     function openChat(user) {
         if (!chat) return;
+        if (activeChatUser && activeChatUser.id !== user.id && typingSent) {
+            sendTypingState(false);
+        }
         activeChatUser = user;
         chat.hidden = false;
         document.body.classList.add('workspace-chat-open');
         closeTeam();
         if (chatUserName) chatUserName.textContent = user.name;
-        if (chatUserStatus) chatUserStatus.textContent = `${user.role_label} · ${user.online ? 'En línea' : user.last_seen}`;
+        if (chatUserStatus) {
+            chatUserStatus.textContent = `${user.role_label} · ${user.availability_label || 'Disponible'} · ${user.online ? 'En línea' : user.last_seen}`;
+        }
+        if (chatDownload) {
+            chatDownload.href = exportChatUrlTemplate.replace('__USER__', encodeURIComponent(user.id));
+            chatDownload.hidden = false;
+        }
+        cancelReply();
+        renderPinnedMessages([]);
+        renderTypingState(false);
+        if (stickerPicker) stickerPicker.hidden = true;
+        stickerToggle?.classList.remove('is-active');
         if (chatAvatar) {
             const replacement = avatarElement(user);
             replacement.id = 'chatAvatar';
@@ -621,7 +889,7 @@
         }
         refreshMessages();
         window.clearInterval(messagesTimer);
-        messagesTimer = window.setInterval(() => refreshMessages({ silent: true }), 4000);
+        messagesTimer = window.setInterval(() => refreshMessages({ silent: true }), 2500);
         window.setTimeout(() => chatInput?.focus(), 80);
     }
 
@@ -692,11 +960,9 @@
         if (!teamPopover?.hidden && !teamPopover.contains(event.target) && !teamButton?.contains(event.target)) closeTeam();
     });
 
-    chatForm?.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const body = chatInput?.value.trim() || '';
-        const submit = chatForm.querySelector('button[type="submit"]');
-        if (!activeChatUser || !body || !submit) return;
+    const sendChatPayload = async (payload) => {
+        const submit = chatForm?.querySelector('button[type="submit"]');
+        if (!activeChatUser || !submit) return;
         submit.disabled = true;
         try {
             const response = await fetch(conversationUrl(activeChatUser.id), {
@@ -708,24 +974,102 @@
                     'X-Requested-With': 'XMLHttpRequest',
                 },
                 credentials: 'same-origin',
-                body: JSON.stringify({ body }),
+                body: JSON.stringify({
+                    ...payload,
+                    reply_to_id: replyingToMessage?.id || null,
+                }),
             });
-            if (!response.ok) throw new Error('No se pudo enviar el mensaje.');
+            const data = await response.json();
+            if (!response.ok) {
+                const validationMessage = Object.values(data?.errors || {}).flat()[0];
+                throw new Error(validationMessage || data?.message || 'No se pudo enviar el mensaje.');
+            }
             if (chatInput) {
                 chatInput.value = '';
                 chatInput.style.height = '';
             }
+            cancelReply();
+            if (stickerPicker) stickerPicker.hidden = true;
+            stickerToggle?.classList.remove('is-active');
+            sendTypingState(false);
             await refreshMessages();
-        } catch (_) {
-            showWorkspaceToast('No se pudo enviar el mensaje. Intenta nuevamente.', 'red');
+        } catch (error) {
+            showWorkspaceToast(error.message || 'No se pudo enviar el mensaje. Intenta nuevamente.', 'red');
         } finally {
             submit.disabled = false;
             chatInput?.focus();
         }
+    };
+
+    chatForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const body = chatInput?.value.trim() || '';
+        if (!body) return;
+        await sendChatPayload({ body });
     });
+
+    document.getElementById('cancelWorkspaceReply')?.addEventListener('click', cancelReply);
+    stickerToggle?.addEventListener('click', () => {
+        if (!stickerPicker) return;
+        stickerPicker.hidden = !stickerPicker.hidden;
+        stickerToggle.classList.toggle('is-active', !stickerPicker.hidden);
+    });
+    stickerPicker?.querySelectorAll('[data-chat-sticker]').forEach((button) => {
+        button.addEventListener('click', async () => {
+            const stickerKey = button.dataset.chatSticker;
+            if (!stickerKey) return;
+            await sendChatPayload({ sticker_key: stickerKey });
+        });
+    });
+
+    openPinnedButton?.addEventListener('click', () => {
+        const messageId = openPinnedButton.dataset.messageId;
+        const message = messageId ? chatMessages?.querySelector(`[data-message-id="${messageId}"]`) : null;
+        if (!message) {
+            showWorkspaceToast('El mensaje fijado es anterior al historial visible. Descarga la conversación para consultarlo.', 'amber');
+            return;
+        }
+        message.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        message.focus({ preventScroll: true });
+    });
+
+    availabilitySelect?.addEventListener('change', async () => {
+        if (!availabilityUrl) return;
+        availabilitySelect.disabled = true;
+        try {
+            const response = await fetch(availabilityUrl, {
+                method: 'PATCH',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({ status: availabilitySelect.value }),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data?.message || 'No se pudo cambiar el estado.');
+            showWorkspaceToast(`Tu estado ahora es ${data.label}.`, 'green');
+            refreshPresence({ silent: true });
+        } catch (error) {
+            showWorkspaceToast(error.message || 'No se pudo cambiar el estado.', 'red');
+        } finally {
+            availabilitySelect.disabled = false;
+        }
+    });
+
     chatInput?.addEventListener('input', () => {
         chatInput.style.height = 'auto';
         chatInput.style.height = `${Math.min(chatInput.scrollHeight, 120)}px`;
+        window.clearTimeout(typingTimer);
+        window.clearTimeout(typingStopTimer);
+        if (chatInput.value.trim()) {
+            typingTimer = window.setTimeout(() => sendTypingState(true), 180);
+            typingStopTimer = window.setTimeout(() => sendTypingState(false), 1800);
+        } else {
+            sendTypingState(false);
+        }
     });
     chatInput?.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' && !event.shiftKey) {
