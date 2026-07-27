@@ -217,8 +217,20 @@
         .camera-close { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; color: #5a7186; background: #f0f4f7; border: 0; border-radius: 7px; cursor: pointer; }
         .camera-close:hover { color: #fff; background: var(--visual-red); }
         .camera-close svg { width: 18px; height: 18px; }
-        .camera-stage { min-height: 0; display: grid; place-items: center; overflow: hidden; background: #06121d; }
+        .camera-stage { position: relative; min-height: 0; display: grid; place-items: center; overflow: hidden; background: #06121d; }
         #videoElement { width: 100%; height: 100%; max-height: 68dvh; object-fit: contain; transform: scale(var(--camera-zoom, 1)); transition: transform .12s ease; }
+        .camera-guide { position: absolute; z-index: 2; inset: 0; display: grid; place-items: center; pointer-events: none; }
+        .camera-guide-frame { position: relative; width: min(76%, 560px); height: min(72%, 440px); }
+        .camera-corner { position: absolute; width: 42px; height: 42px; opacity: .88; filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .5)); }
+        .camera-corner::before, .camera-corner::after { content: ""; position: absolute; background: #fff; border-radius: 2px; }
+        .camera-corner::before { width: 42px; height: 4px; }
+        .camera-corner::after { width: 4px; height: 42px; }
+        .camera-corner.top-left { top: 0; left: 0; }
+        .camera-corner.top-right { top: 0; right: 0; transform: scaleX(-1); }
+        .camera-corner.bottom-left { bottom: 0; left: 0; transform: scaleY(-1); }
+        .camera-corner.bottom-right { right: 0; bottom: 0; transform: scale(-1); }
+        .camera-instruction { position: absolute; right: 16px; bottom: 18px; left: 16px; display: flex; justify-content: center; }
+        .camera-instruction span { max-width: 92%; padding: 8px 12px; color: #fff; background: rgba(3, 14, 24, .76); border: 1px solid rgba(255, 255, 255, .28); border-radius: 7px; box-shadow: 0 7px 18px rgba(0, 0, 0, .22); font-size: 11px; font-weight: 800; text-align: center; backdrop-filter: blur(5px); }
         .camera-controls { display: grid; gap: 11px; padding: 13px 16px 16px; border-top: 1px solid var(--visual-line); }
         .zoom-control { display: grid; grid-template-columns: auto minmax(100px, 1fr) 42px; align-items: center; gap: 10px; color: #47627a; font-size: 10px; font-weight: 800; }
         .zoom-control input { width: 100%; accent-color: var(--visual-blue); }
@@ -514,6 +526,15 @@
         <div class="camera-stage">
             <video id="videoElement" autoplay playsinline muted></video>
             <canvas id="canvasElement" hidden></canvas>
+            <div class="camera-guide" aria-hidden="true">
+                <div class="camera-guide-frame">
+                    <span class="camera-corner top-left"></span>
+                    <span class="camera-corner top-right"></span>
+                    <span class="camera-corner bottom-left"></span>
+                    <span class="camera-corner bottom-right"></span>
+                </div>
+                <div class="camera-instruction"><span>Centra la pieza dentro de las guías</span></div>
+            </div>
         </div>
         <div class="camera-controls">
             <label class="zoom-control" for="cameraZoom">

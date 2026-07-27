@@ -95,7 +95,9 @@ class VisualIdentifierIndexTest extends TestCase
             ->assertSee('Encierra la pieza')
             ->assertSee('id="cropStage"', false)
             ->assertSee('id="analyzeCrop"', false)
-            ->assertSee('id="useFullImage"', false);
+            ->assertSee('id="useFullImage"', false)
+            ->assertSee('camera-guide-frame', false)
+            ->assertSee('Centra la pieza dentro de las guías');
     }
 
     public function test_cluttered_phone_photos_prefer_the_matching_piece_shape(): void

@@ -10,6 +10,7 @@ use App\Observers\MaterialObserver;
 use App\Support\ChatRetention;
 use App\Support\VisualEmbeddingService;
 use App\Support\VisualImageDescriptor;
+use App\Support\VisualImagePreprocessor;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -22,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(VisualImageDescriptor::class);
+        $this->app->singleton(VisualImagePreprocessor::class);
         $this->app->singleton(VisualEmbeddingService::class);
     }
 
