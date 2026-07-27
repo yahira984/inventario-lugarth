@@ -785,26 +785,52 @@
     palette?.addEventListener('click', (event) => event.target === palette && closePalette());
 
     const appendSearchResult = (result) => {
-        const link = document.createElement('a');
-        link.className = 'command-result';
-        link.href = result.url;
+        const row = document.createElement('div');
+        row.className = 'command-result';
 
-        const icon = document.createElement('span');
-        icon.className = `command-result-icon tone-${result.tone || 'blue'}`;
-        icon.textContent = (result.type || 'R').slice(0, 1);
-        icon.style.fontWeight = '850';
+        let media;
+        if (result.image) {
+            media = document.createElement('button');
+            media.type = 'button';
+            media.className = `command-result-icon command-result-photo tone-${result.tone || 'blue'}`;
+            media.setAttribute('aria-label', `Ampliar ${result.image_alt || result.title}`);
+            media.title = 'Ver imagen';
 
-        const copy = document.createElement('span');
+            const image = document.createElement('img');
+            image.src = result.image;
+            image.alt = result.image_alt || `Foto de ${result.title}`;
+            image.loading = 'lazy';
+            media.append(image);
+            media.addEventListener('click', () => {
+                window.InventoryWorkspace?.openImage?.(
+                    result.image,
+                    result.title,
+                    result.image_caption || result.meta || '',
+                    media,
+                );
+            });
+        } else {
+            media = document.createElement('span');
+            media.className = `command-result-icon tone-${result.tone || 'blue'}`;
+            media.textContent = (result.type || 'R').slice(0, 1);
+            media.style.fontWeight = '850';
+        }
+
+        const copy = document.createElement('a');
+        copy.className = 'command-result-copy';
+        copy.href = result.url;
         const title = document.createElement('strong');
         const meta = document.createElement('small');
         title.textContent = result.title;
         meta.textContent = `${result.type} · ${result.meta || ''}`;
         copy.append(title, meta);
 
-        const action = document.createElement('em');
+        const action = document.createElement('a');
+        action.className = 'command-result-action';
+        action.href = result.url;
         action.textContent = 'Abrir';
-        link.append(icon, copy, action);
-        commandResults.append(link);
+        row.append(media, copy, action);
+        commandResults.append(row);
     };
 
     const runSearch = async () => {
@@ -873,7 +899,8 @@
         if (!palette?.hidden && event.key === 'ArrowUp') { event.preventDefault(); moveCommandSelection(-1); }
         if (!palette?.hidden && event.key === 'Enter' && selectedResult >= 0) {
             const selected = commandResults?.querySelectorAll('.command-result')[selectedResult];
-            if (selected) { event.preventDefault(); selected.click(); }
+            const selectedLink = selected?.matches('a') ? selected : selected?.querySelector('.command-result-copy');
+            if (selectedLink) { event.preventDefault(); selectedLink.click(); }
         }
     });
 
@@ -1064,8 +1091,8 @@
         event.stopPropagation();
         openLightbox(image, image);
     });
-    window.InventoryWorkspace.openImage = (source, title = 'Vista ampliada', caption = '') => {
-        const trigger = document.createElement('button');
+    window.InventoryWorkspace.openImage = (source, title = 'Vista ampliada', caption = '', sourceTrigger = null) => {
+        const trigger = sourceTrigger || document.createElement('button');
         trigger.dataset.workspaceLightbox = source;
         trigger.dataset.lightboxTitle = title;
         trigger.dataset.lightboxCaption = caption;
