@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
@@ -59,6 +61,29 @@ class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->refresh()->email_verified_at);
+    }
+
+    public function test_profile_photo_is_optimized_and_stored_on_the_public_disk(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar' => UploadedFile::fake()->image('perfil.png', 1200, 900),
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $avatar = $user->fresh()->avatar;
+
+        $this->assertNotNull($avatar);
+        $this->assertStringStartsWith('avatars/', $avatar);
+        $this->assertStringEndsWith('.jpg', $avatar);
+        Storage::disk('public')->assertExists($avatar);
     }
 
     public function test_user_can_delete_their_account(): void

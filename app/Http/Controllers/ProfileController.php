@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -44,7 +45,16 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('avatar')) {
-            $newAvatar = ImageStorage::storeOptimized($request->file('avatar'), 'avatars', 640, 80);
+            try {
+                $newAvatar = ImageStorage::storeOptimized($request->file('avatar'), 'avatars', 640, 80);
+            } catch (\Throwable $exception) {
+                report($exception);
+
+                throw ValidationException::withMessages([
+                    'avatar' => 'No se pudo guardar la foto en esta computadora. Verifica que storage/app/public tenga permisos de escritura.',
+                ]);
+            }
+
             $user->avatar = $newAvatar;
         }
 

@@ -3,112 +3,329 @@
 namespace App\Http\Controllers;
 
 use App\Support\AuditLogger;
+use App\Support\DatabaseBackupManager;
+use Illuminate\Contracts\Cache\LockTimeoutException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Throwable;
 
 class DatabaseBackupController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, DatabaseBackupManager $backups): View
     {
-        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403);
+        $this->ensureAdmin($request);
+        $backups->purgeStaleChunkUploads();
 
-        $backups = collect(Storage::disk('local')->files('backups'))
-            ->filter(fn ($file) => str_ends_with($file, '.sql'))
-            ->sortDesc()
-            ->values();
-
-        return view('admin.backups.index', compact('backups'));
+        return view('admin.backups.index', [
+            'backups' => $backups->backups(),
+            'capabilities' => $backups->capabilities(),
+            'maximumUploadMegabytes' => (int) floor(
+                (int) config('backup.maximum_upload_kilobytes', 204800) / 1024,
+            ),
+        ]);
     }
 
-    public function store(Request $request): BinaryFileResponse
-    {
-        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403);
+    public function uploadRestoreChunk(
+        Request $request,
+        DatabaseBackupManager $backups,
+    ): JsonResponse {
+        $this->ensureAdmin($request);
 
-        Storage::disk('local')->makeDirectory('backups');
-
-        $filename = 'backups/respaldo_bd_' . now()->format('Ymd_His') . '.sql';
-        $path = Storage::disk('local')->path($filename);
-        file_put_contents($path, $this->generarSql());
-
-        AuditLogger::registrar('Base de datos', 'Respaldo', 'Genero una copia completa de la base de datos.', [
-            'archivo' => $filename,
-        ], $request);
-
-        return response()->download($path);
-    }
-
-    public function restore(Request $request): RedirectResponse
-    {
-        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403);
-
-        $request->validate([
-            'backup_sql' => ['required', 'file', 'mimes:sql,txt', 'max:51200'],
+        $maximumBytes = (int) config('backup.maximum_upload_kilobytes', 204800) * 1024;
+        $validated = $request->validate([
+            'backup_chunk' => ['required', 'file', 'max:5120'],
+            'upload_id' => ['required', 'string', 'regex:/^[a-f0-9]{32}$/'],
+            'chunk_index' => ['required', 'integer', 'min:0', 'max:99'],
+            'total_chunks' => ['required', 'integer', 'min:1', 'max:100'],
+            'backup_name' => ['required', 'string', 'max:255', 'regex:/\.(sql|txt)$/i'],
+            'total_size' => ['required', 'integer', 'min:1', "max:{$maximumBytes}"],
         ], [
-            'backup_sql.required' => 'Selecciona un archivo .sql para restaurar.',
-            'backup_sql.max' => 'El respaldo no debe pesar mas de 50 MB.',
+            'backup_chunk.uploaded' => 'No se pudo recibir una parte del respaldo.',
+            'backup_chunk.max' => 'Una parte del respaldo superó el límite permitido.',
+            'upload_id.regex' => 'El identificador de la carga no es válido.',
+            'backup_name.regex' => 'Selecciona un archivo .sql o .txt.',
+            'total_size.max' => 'El respaldo supera el tamaño máximo permitido.',
         ]);
 
-        $sql = file_get_contents($request->file('backup_sql')->getRealPath());
+        if ((int) $validated['chunk_index'] >= (int) $validated['total_chunks']) {
+            throw ValidationException::withMessages([
+                'chunk_index' => 'El número de bloque recibido no es válido.',
+            ]);
+        }
 
-        DB::unprepared('SET FOREIGN_KEY_CHECKS=0;');
-        DB::unprepared($sql);
-        DB::unprepared('SET FOREIGN_KEY_CHECKS=1;');
+        try {
+            $result = $backups->storeUploadChunk(
+                $validated['backup_chunk'],
+                (int) $request->user()->id,
+                $validated['upload_id'],
+                (int) $validated['chunk_index'],
+                (int) $validated['total_chunks'],
+                $validated['backup_name'],
+                (int) $validated['total_size'],
+            );
 
-        AuditLogger::registrar('Base de datos', 'Restauracion', 'Restauro la base de datos desde un archivo SQL.', [
-            'archivo' => $request->file('backup_sql')->getClientOriginalName(),
-        ], $request);
+            return response()->json($result, 201);
+        } catch (Throwable $exception) {
+            report($exception);
 
-        return back()->with('success', 'Base de datos restaurada correctamente.');
+            return response()->json([
+                'message' => $this->friendlyError(
+                    $exception,
+                    'No se pudo recibir el respaldo.',
+                ),
+            ], 422);
+        }
     }
 
-    private function generarSql(): string
-    {
-        $database = config('database.connections.mysql.database');
-        $tables = collect(DB::select('SHOW TABLES'))
-            ->map(fn ($row) => array_values((array) $row)[0]);
+    public function store(
+        Request $request,
+        DatabaseBackupManager $backups,
+    ): JsonResponse|RedirectResponse {
+        $this->ensureAdmin($request);
 
-        $sql = "-- Respaldo completo de {$database}\n";
-        $sql .= '-- Fecha: ' . now()->format('Y-m-d H:i:s') . "\n\n";
-        $sql .= "SET FOREIGN_KEY_CHECKS=0;\n\n";
+        try {
+            $result = $this->withOperationLock(
+                fn (): array => $backups->create(),
+            );
 
-        foreach ($tables as $table) {
-            $create = (array) DB::selectOne("SHOW CREATE TABLE `{$table}`");
-            $createSql = $create['Create Table'] ?? array_values($create)[1] ?? '';
+            AuditLogger::registrar(
+                'Base de datos',
+                'Respaldo',
+                'Generó una copia completa de la base de datos.',
+                [
+                    'archivo' => $result['name'],
+                    'tamano_bytes' => $result['size'],
+                    'metodo' => $result['method'],
+                ],
+                $request,
+            );
 
-            $sql .= "DROP TABLE IF EXISTS `{$table}`;\n";
-            $sql .= $createSql . ";\n\n";
+            $message = "Respaldo creado correctamente ({$result['size_label']}).";
 
-            DB::table($table)->orderByRaw('1')->chunk(500, function ($rows) use (&$sql, $table) {
-                foreach ($rows as $row) {
-                    $data = (array) $row;
-                    $columns = collect(array_keys($data))->map(fn ($column) => "`{$column}`")->implode(', ');
-                    $values = collect(array_values($data))->map(fn ($value) => $this->sqlValue($value))->implode(', ');
-                    $sql .= "INSERT INTO `{$table}` ({$columns}) VALUES ({$values});\n";
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $message,
+                    'backup' => $result,
+                    'download_url' => route('admin.backups.download', $result['name']),
+                ], 201);
+            }
+
+            return back()->with('success', $message);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return $this->operationError(
+                $request,
+                $this->friendlyError($exception, 'No se pudo crear el respaldo.'),
+            );
+        }
+    }
+
+    public function download(
+        Request $request,
+        string $backup,
+        DatabaseBackupManager $backups,
+    ): BinaryFileResponse {
+        $this->ensureAdmin($request);
+
+        $path = $backups->backupPath($backup);
+        abort_unless($path, 404, 'El respaldo solicitado ya no existe.');
+
+        return response()->download($path, $backup, [
+            'Content-Type' => 'application/sql',
+            'Cache-Control' => 'private, no-store',
+        ]);
+    }
+
+    public function restore(
+        Request $request,
+        DatabaseBackupManager $backups,
+    ): JsonResponse|RedirectResponse {
+        $this->ensureAdmin($request);
+
+        $maximumKilobytes = (int) config('backup.maximum_upload_kilobytes', 204800);
+        $validated = $request->validate([
+            'backup_sql' => ['nullable', 'file', "max:{$maximumKilobytes}", 'required_without:upload_token'],
+            'upload_token' => ['nullable', 'string', 'regex:/^[a-f0-9]{32}$/', 'required_without:backup_sql'],
+            'backup_name' => ['nullable', 'string', 'max:255', 'regex:/\.(sql|txt)$/i', 'required_with:upload_token'],
+            'confirmation' => ['required', 'in:RESTAURAR'],
+        ], [
+            'backup_sql.required_without' => 'Selecciona un archivo .sql para restaurar.',
+            'backup_sql.uploaded' => 'El archivo no pudo cargarse. Revisa su tamaño y vuelve a intentarlo.',
+            'backup_sql.max' => 'El respaldo supera el tamaño máximo permitido.',
+            'upload_token.required_without' => 'No se recibió el respaldo que deseas restaurar.',
+            'upload_token.regex' => 'La carga temporal no es válida.',
+            'backup_name.required_with' => 'No se recibió el nombre del respaldo.',
+            'backup_name.regex' => 'Selecciona un archivo .sql o .txt.',
+            'confirmation.required' => 'Escribe RESTAURAR para confirmar la operación.',
+            'confirmation.in' => 'La confirmación debe decir exactamente RESTAURAR.',
+        ]);
+
+        $uploadedFile = $validated['backup_sql'] ?? null;
+        $uploadToken = $validated['upload_token'] ?? null;
+        $originalName = $uploadedFile?->getClientOriginalName()
+            ?? (string) ($validated['backup_name'] ?? '');
+        $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+
+        if (! in_array($extension, ['sql', 'txt'], true)) {
+            throw ValidationException::withMessages([
+                'backup_sql' => 'Selecciona un archivo con extensión .sql o .txt.',
+            ]);
+        }
+
+        $disk = Storage::disk('local');
+        $temporaryPath = null;
+
+        try {
+            if ($uploadToken) {
+                $temporaryPath = $backups->assembleChunkedUpload(
+                    (int) $request->user()->id,
+                    $uploadToken,
+                    $originalName,
+                );
+            } else {
+                $temporaryPath = $backups->temporaryRestorePath($extension);
+                $stored = $disk->putFileAs(
+                    dirname($temporaryPath),
+                    $uploadedFile,
+                    basename($temporaryPath),
+                );
+
+                if (! $stored) {
+                    throw new RuntimeException(
+                        'No se pudo preparar el archivo para restaurarlo.',
+                    );
                 }
+            }
+
+            $absolutePath = $disk->path($temporaryPath);
+            $backups->assertValidSql($absolutePath);
+
+            $operation = $this->withOperationLock(function () use ($backups, $absolutePath): array {
+                return $this->whileInMaintenance(function () use ($backups, $absolutePath): array {
+                    $safetyBackup = $backups->create('antes_de_restaurar');
+                    $restore = $backups->restore($absolutePath);
+
+                    return compact('safetyBackup', 'restore');
+                });
             });
 
-            $sql .= "\n";
+            AuditLogger::registrar(
+                'Base de datos',
+                'Restauración',
+                'Restauró la base de datos desde un archivo SQL y creó un respaldo de seguridad previo.',
+                [
+                    'archivo_origen' => $originalName,
+                    'respaldo_seguridad' => $operation['safetyBackup']['name'],
+                    'metodo' => $operation['restore']['method'],
+                ],
+                $request,
+            );
+
+            $message = 'Base de datos restaurada correctamente. '
+                ."Se guardó {$operation['safetyBackup']['name']} antes de reemplazarla.";
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $message,
+                    'safety_backup' => $operation['safetyBackup'],
+                    'redirect_url' => route('admin.backups.index'),
+                ]);
+            }
+
+            return redirect()
+                ->route('admin.backups.index')
+                ->with('success', $message);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return $this->operationError(
+                $request,
+                $this->friendlyError($exception, 'No se pudo restaurar la base de datos.'),
+            );
+        } finally {
+            if ($temporaryPath) {
+                $disk->delete($temporaryPath);
+            }
+
+            if ($uploadToken) {
+                $backups->discardChunkedUpload(
+                    (int) $request->user()->id,
+                    $uploadToken,
+                );
+            }
         }
-
-        $sql .= "SET FOREIGN_KEY_CHECKS=1;\n";
-
-        return $sql;
     }
 
-    private function sqlValue(mixed $value): string
+    private function ensureAdmin(Request $request): void
     {
-        if ($value === null) {
-            return 'NULL';
+        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403);
+    }
+
+    private function withOperationLock(callable $operation): mixed
+    {
+        try {
+            return Cache::store('file')
+                ->lock('database-backup-operation', 1200)
+                ->block(1, $operation);
+        } catch (LockTimeoutException) {
+            throw new RuntimeException(
+                'Ya hay un respaldo o una restauración en proceso. Espera a que termine.',
+            );
+        }
+    }
+
+    private function whileInMaintenance(callable $operation): mixed
+    {
+        if (app()->environment('testing')) {
+            return $operation();
         }
 
-        if (is_int($value) || is_float($value)) {
-            return (string) $value;
+        $wasAlreadyDown = app()->isDownForMaintenance();
+
+        if (! $wasAlreadyDown) {
+            Artisan::call('down', [
+                '--retry' => 15,
+                '--refresh' => 15,
+            ]);
         }
 
-        return DB::getPdo()->quote((string) $value);
+        try {
+            return $operation();
+        } finally {
+            if (! $wasAlreadyDown) {
+                Artisan::call('up');
+            }
+        }
+    }
+
+    private function operationError(
+        Request $request,
+        string $message,
+        int $status = 422,
+    ): JsonResponse|RedirectResponse {
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message], $status);
+        }
+
+        return back()->withInput()->with('error', $message);
+    }
+
+    private function friendlyError(Throwable $exception, string $fallback): string
+    {
+        if ($exception instanceof RuntimeException
+            || $exception instanceof ValidationException) {
+            return $exception->getMessage();
+        }
+
+        return $fallback.' Revisa el registro de errores para conocer el detalle.';
     }
 }
