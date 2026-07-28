@@ -361,20 +361,34 @@
         };
 
         const responseMessage = async (response) => {
+            const raw = await response.text();
             let data = {};
             try {
-                data = await response.json();
+                data = raw ? JSON.parse(raw) : {};
             } catch (_) {
-                // A server-level upload error can arrive without JSON.
+                // Los errores del servidor web pueden llegar como HTML.
             }
 
             if (response.ok) return data;
             if (response.status === 413) {
                 throw new Error('El servidor rechazó el archivo por su tamaño. Reinicia Herd para aplicar el nuevo límite y vuelve a intentarlo.');
             }
+            if ([401, 419].includes(response.status)) {
+                throw new Error('Tu sesión terminó mientras se procesaba el respaldo. Recarga la página, inicia sesión y vuelve a intentarlo.');
+            }
+            if (response.status === 403) {
+                throw new Error('Tu usuario ya no tiene permiso de administrador en la base restaurada.');
+            }
+            if ([502, 503, 504].includes(response.status)) {
+                throw new Error('El servidor tardó demasiado o está reiniciando. Espera 30 segundos y recarga Respaldos para comprobar el resultado.');
+            }
 
             const validation = Object.values(data.errors || {}).flat()[0];
-            throw new Error(validation || data.message || 'La operación no pudo completarse.');
+            throw new Error(
+                validation
+                || data.message
+                || `El servidor no entregó el detalle del error (HTTP ${response.status}). Revisa storage/logs/laravel.log.`,
+            );
         };
 
         const submitAsync = async (form, options) => {
@@ -398,7 +412,10 @@
                 showStatus('success', options.successTitle, data.message);
                 options.onSuccess?.(data);
             } catch (error) {
-                showStatus('error', 'No se completó la operación', error.message || 'Ocurrió un error inesperado.');
+                const message = error instanceof TypeError
+                    ? 'Se perdió la comunicación con el servidor. Espera 30 segundos y recarga la página para comprobar si terminó.'
+                    : (error.message || 'Ocurrió un error inesperado.');
+                showStatus('error', 'No se completó la operación', message);
             } finally {
                 button.disabled = false;
             }
@@ -522,7 +539,10 @@
                     window.location.href = data.redirect_url || @json(route('admin.backups.index'));
                 }, 2200);
             } catch (error) {
-                showStatus('error', 'No se completó la operación', error.message || 'Ocurrió un error inesperado.');
+                const message = error instanceof TypeError
+                    ? 'Se perdió la comunicación con el servidor. Espera 30 segundos y recarga la página para comprobar si terminó.'
+                    : (error.message || 'Ocurrió un error inesperado.');
+                showStatus('error', 'No se completó la operación', message);
             } finally {
                 button.disabled = false;
             }
