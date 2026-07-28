@@ -4,6 +4,7 @@ namespace App\Support;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 
 class ImageStorage
 {
@@ -17,8 +18,7 @@ class ImageStorage
         $info = @getimagesize($sourcePath);
 
         if (! $info || ! function_exists('imagecreatetruecolor')) {
-            $file->storeAs($folder, $name, 'public');
-            return $relativePath;
+            return self::storeOriginal($file, $folder);
         }
 
         $source = match ($info['mime'] ?? '') {
@@ -29,8 +29,7 @@ class ImageStorage
         };
 
         if (! $source) {
-            $file->storeAs($folder, $name, 'public');
-            return $relativePath;
+            return self::storeOriginal($file, $folder);
         }
 
         $width = imagesx($source);
@@ -51,12 +50,12 @@ class ImageStorage
         imagedestroy($source);
 
         if (! $encoded || ! is_string($contents) || $contents === '') {
-            $file->storeAs($folder, $name, 'public');
-
-            return $relativePath;
+            return self::storeOriginal($file, $folder);
         }
 
-        Storage::disk('public')->put($relativePath, $contents);
+        if (! Storage::disk('public')->put($relativePath, $contents)) {
+            throw new RuntimeException('No se pudo escribir la imagen optimizada en el almacenamiento público.');
+        }
 
         return $relativePath;
     }
@@ -66,5 +65,18 @@ class ImageStorage
         if ($path) {
             Storage::disk('public')->delete($path);
         }
+    }
+
+    private static function storeOriginal(UploadedFile $file, string $folder): string
+    {
+        $extension = strtolower($file->extension() ?: $file->getClientOriginalExtension() ?: 'jpg');
+        $name = now()->format('Ymd_His') . '_' . bin2hex(random_bytes(5)) . ".{$extension}";
+        $storedPath = $file->storeAs($folder, $name, 'public');
+
+        if (! is_string($storedPath) || $storedPath === '') {
+            throw new RuntimeException('No se pudo escribir la imagen en el almacenamiento público.');
+        }
+
+        return $storedPath;
     }
 }

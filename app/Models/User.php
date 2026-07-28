@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 // 1. Agregamos 'avatar' al final de esta lista
-#[Fillable(['name', 'email', 'password', 'role', 'approved_at', 'avatar'])]
+#[Fillable(['name', 'email', 'password', 'role', 'approved_at', 'avatar', 'availability_status'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -67,6 +67,11 @@ class User extends Authenticatable
     }
 
     // 2. Agregamos esta función para saber si está en línea 👇
+    public function rutaInicio(): string
+    {
+        return $this->esAdministrador() ? 'dashboard' : 'materiales.index';
+    }
+
     public function isOnline(): bool
     {
         return $this->last_seen_at !== null

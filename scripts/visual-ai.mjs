@@ -17,6 +17,30 @@ env.allowLocalModels = true;
 let semanticExtractorPromise;
 let detailExtractorPromise;
 
+async function writeResult(value) {
+    const serialized = JSON.stringify(value);
+
+    if (process.env.VISUAL_AI_OUTPUT) {
+        await fs.writeFile(path.resolve(process.env.VISUAL_AI_OUTPUT), serialized, 'utf8');
+
+        return;
+    }
+
+    process.stdout.write(serialized);
+}
+
+async function writeError(value) {
+    const message = value instanceof Error ? value.message : String(value);
+
+    if (process.env.VISUAL_AI_ERROR) {
+        await fs.writeFile(path.resolve(process.env.VISUAL_AI_ERROR), message, 'utf8');
+
+        return;
+    }
+
+    process.stderr.write(message);
+}
+
 function semanticExtractor() {
     semanticExtractorPromise ??= pipeline('image-feature-extraction', SEMANTIC_MODEL, {
         dtype: 'q8',
@@ -67,16 +91,16 @@ async function embedImage(semanticImagePath, detailImagePath = semanticImagePath
 
 async function setup() {
     await Promise.all([semanticExtractor(), detailExtractor()]);
-    process.stdout.write(JSON.stringify({
+    await writeResult({
         ok: true,
         models: [SEMANTIC_MODEL, DETAIL_MODEL],
         version: VERSION,
         cache: CACHE_DIR,
-    }));
+    });
 }
 
 async function embed(semanticImagePath, detailImagePath) {
-    process.stdout.write(JSON.stringify(await embedImage(semanticImagePath, detailImagePath)));
+    await writeResult(await embedImage(semanticImagePath, detailImagePath));
 }
 
 async function batch(manifestPath) {
@@ -105,7 +129,7 @@ async function batch(manifestPath) {
         }
     }
 
-    process.stdout.write(JSON.stringify(results));
+    await writeResult(results);
 }
 
 const [command, argument, detailArgument] = process.argv.slice(2);
@@ -121,6 +145,6 @@ try {
         throw new Error('Uso: visual-ai.mjs setup | embed <imagen-semantica> [imagen-detalle] | batch <manifiesto.json>');
     }
 } catch (error) {
-    process.stderr.write(error instanceof Error ? error.message : String(error));
+    await writeError(error);
     process.exitCode = 1;
 }

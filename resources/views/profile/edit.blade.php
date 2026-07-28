@@ -85,5 +85,6 @@
         </div>
     </main>
 </div>
+<script src="{{ asset('js/profile-avatar.js') }}" defer></script>
 </body>
 </html>

@@ -47,6 +47,7 @@ class WorkspaceExperienceTest extends TestCase
             'stock' => 4,
             'es_plantilla_equipo' => false,
             'proveedor' => 'Proveedor Industrial Norte',
+            'fotografia' => 'materiales/valvula-inoxidable.webp',
         ]);
         EquipmentPackage::create(['nombre' => 'Equipo válvulas', 'codigo' => 'EQ-VAL']);
 
@@ -62,6 +63,8 @@ class WorkspaceExperienceTest extends TestCase
         $this->assertStringContainsString('material_id=' . $material->id, $materialResult['url']);
         $this->assertStringContainsString('#material-' . $material->id, $materialResult['url']);
         $this->assertStringNotContainsString('/edit', $materialResult['url']);
+        $this->assertSame(asset('storage/materiales/valvula-inoxidable.webp'), $materialResult['image']);
+        $this->assertStringStartsWith('Foto de ', $materialResult['image_alt']);
 
         $this->actingAs($almacenista)
             ->get(route('materiales.index', [

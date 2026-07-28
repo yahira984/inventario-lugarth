@@ -38,6 +38,7 @@ class ProfileUpdateRequest extends FormRequest
             'email.required' => 'Escribe el correo del usuario.',
             'email.email' => 'El correo no tiene formato válido.',
             'email.unique' => 'Ese correo ya está registrado en otra cuenta.',
+            'avatar.uploaded' => 'La foto no pudo llegar al servidor. Intenta nuevamente o selecciona una imagen más ligera.',
             'avatar.image' => 'Selecciona un archivo de imagen válido.',
             'avatar.mimes' => 'La foto debe estar en formato JPG, PNG o WEBP.',
             'avatar.max' => 'La foto no debe superar 5 MB.',

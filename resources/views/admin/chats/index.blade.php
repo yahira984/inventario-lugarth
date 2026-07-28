@@ -88,6 +88,8 @@
         .button-teal { --button-color: #0f8c8c; }
         .button-red { --button-color: var(--chat-red); }
         .button-small { min-height: 36px; padding: 0 11px; font-size: 10px; }
+        .conversation-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+        .conversation-actions form { margin: 0; }
         .cleanup-actions { display: grid; gap: 10px; }
         .cleanup-actions form, .cleanup-actions .button { width: 100%; }
         .cleanup-note { padding: 11px 12px; color: #6b4b16; background: #fff8e8; border: 1px solid #f7d791; border-radius: 7px; font-size: 11px; line-height: 1.45; }
@@ -172,7 +174,7 @@
                 <article class="stat" style="--stat-color:#1769d2">
                     <span>Mensajes guardados</span>
                     <strong>{{ number_format($totalMessages) }}</strong>
-                    <small>Texto almacenado en todas las conversaciones</small>
+                    <small>{{ number_format($pinnedMessages) }} fijados y protegidos de la limpieza automática</small>
                 </article>
                 <article class="stat" style="--stat-color:#dc2626">
                     <span>Sin leer</span>
@@ -231,8 +233,8 @@
                         <form method="POST" action="{{ route('admin.chats.clear') }}">
                             @csrf
                             @method('DELETE')
-                            <button class="button button-red" type="submit" onclick="return confirm('¿Eliminar TODO el historial del chat interno? Esta acción no se puede deshacer.')">
-                                Borrar todo el historial
+                            <button class="button button-red" type="submit" onclick="return confirm('¿Eliminar el historial normal? Los mensajes fijados se conservarán.')">
+                                Borrar historial no fijado
                             </button>
                         </form>
                         <div class="cleanup-note">Las limpiezas quedan registradas en Auditoría con el administrador, la fecha y la cantidad eliminada.</div>
@@ -260,6 +262,7 @@
                                     <th>Participantes</th>
                                     <th>Mensajes</th>
                                     <th>Sin leer</th>
+                                    <th>Fijados</th>
                                     <th>Última actividad</th>
                                     <th>Espacio aprox.</th>
                                     <th>Acción</th>
@@ -276,16 +279,25 @@
                                         </td>
                                         <td data-label="Mensajes"><span class="metric">{{ number_format($conversation['total_messages']) }}</span></td>
                                         <td data-label="Sin leer"><span class="metric unread">{{ number_format($conversation['unread_messages']) }}</span></td>
+                                        <td data-label="Fijados"><span class="metric">{{ number_format($conversation['pinned_messages']) }}</span></td>
                                         <td data-label="Última actividad">{{ \Illuminate\Support\Carbon::parse($conversation['last_message_at'])->format('d/m/Y H:i') }}</td>
                                         <td data-label="Espacio aprox.">{{ $conversation['estimated_size'] }}</td>
                                         <td data-label="Acción">
-                                            <form method="POST" action="{{ route('admin.chats.conversations.destroy', [$conversation['first_user'], $conversation['second_user']]) }}">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="button button-red button-small" type="submit" onclick="return confirm('¿Eliminar esta conversación completa? Esta acción no se puede deshacer.')">
-                                                    Eliminar conversación
-                                                </button>
-                                            </form>
+                                            <div class="conversation-actions">
+                                                <a
+                                                    class="button button-teal button-small"
+                                                    href="{{ route('admin.chats.conversations.export', [$conversation['first_user'], $conversation['second_user']]) }}"
+                                                >
+                                                    Descargar
+                                                </a>
+                                                <form method="POST" action="{{ route('admin.chats.conversations.destroy', [$conversation['first_user'], $conversation['second_user']]) }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="button button-red button-small" type="submit" onclick="return confirm('Descarga la conversación si necesitas conservarla. ¿Eliminarla completa ahora?')">
+                                                        Eliminar
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach

@@ -10,7 +10,7 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
+    <form id="profileInformationForm" method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
         @csrf
         @method('patch')
 
@@ -42,8 +42,9 @@
                     >
                 </button>
                 <div class="profile-file-field">
-                    <input id="avatar" name="avatar" type="file" accept="image/jpeg,image/png,image/webp">
+                    <input id="avatar" name="avatar" type="file" accept="image/*">
                     <small>JPG, PNG o WEBP. La imagen se reduce y optimiza automáticamente para ahorrar espacio.</small>
+                    <small id="avatarProcessingStatus" role="status" aria-live="polite"></small>
                     <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
                 </div>
             </div>

@@ -32,14 +32,26 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/buscar-global', GlobalSearchController::class)->name('buscar.global');
     Route::get('/equipo/presencia', [TeamHubController::class, 'presence'])
-        ->middleware('throttle:120,1')
+        ->middleware('throttle:600,1')
         ->name('team.presence');
     Route::get('/equipo/mensajes/{user}', [TeamHubController::class, 'messages'])
-        ->middleware('throttle:120,1')
+        ->middleware('throttle:600,1')
         ->name('team.messages');
     Route::post('/equipo/mensajes/{user}', [TeamHubController::class, 'send'])
-        ->middleware('throttle:30,1')
+        ->middleware('throttle:120,1')
         ->name('team.messages.send');
+    Route::post('/equipo/escribiendo/{user}', [TeamHubController::class, 'typing'])
+        ->middleware('throttle:300,1')
+        ->name('team.typing');
+    Route::patch('/equipo/estado', [TeamHubController::class, 'updateAvailability'])
+        ->middleware('throttle:120,1')
+        ->name('team.availability');
+    Route::patch('/equipo/mensajes/{message}/fijar', [TeamHubController::class, 'pin'])
+        ->middleware('throttle:120,1')
+        ->name('team.messages.pin');
+    Route::get('/equipo/conversaciones/{user}/descargar', [TeamHubController::class, 'export'])
+        ->middleware('throttle:30,1')
+        ->name('team.conversations.export');
 
     Route::get('materiales/buscar-por-codigo', [MaterialController::class, 'buscarPorCodigo'])
         ->name('materiales.buscarPorCodigo');
@@ -135,12 +147,20 @@ Route::middleware('auth')->group(function () {
         ->name('admin.chats.purge');
     Route::delete('admin/chats/conversaciones/{firstUser}/{secondUser}', [AdminChatController::class, 'destroyConversation'])
         ->name('admin.chats.conversations.destroy');
+    Route::get('admin/chats/conversaciones/{firstUser}/{secondUser}/descargar', [AdminChatController::class, 'exportConversation'])
+        ->name('admin.chats.conversations.export');
     Route::delete('admin/chats', [AdminChatController::class, 'clear'])
         ->name('admin.chats.clear');
     Route::get('admin/respaldos', [DatabaseBackupController::class, 'index'])
         ->name('admin.backups.index');
     Route::post('admin/respaldos', [DatabaseBackupController::class, 'store'])
         ->name('admin.backups.store');
+    Route::get('admin/respaldos/{backup}/descargar', [DatabaseBackupController::class, 'download'])
+        ->where('backup', '[A-Za-z0-9_.-]+\.sql')
+        ->name('admin.backups.download');
+    Route::post('admin/respaldos/restaurar/bloque', [DatabaseBackupController::class, 'uploadRestoreChunk'])
+        ->middleware('throttle:180,1')
+        ->name('admin.backups.restore.chunk');
     Route::post('admin/respaldos/restaurar', [DatabaseBackupController::class, 'restore'])
         ->name('admin.backups.restore');
     Route::get('admin/ordenes-compra', [PurchaseOrderController::class, 'index'])

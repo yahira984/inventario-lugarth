@@ -225,51 +225,80 @@ class VisualEmbeddingService
      */
     private function run(array $arguments, int $timeout, bool $allowDownload = false): array
     {
+        $directory = storage_path('app/visual-ai/tmp');
+        if (! is_dir($directory) && ! mkdir($directory, 0775, true) && ! is_dir($directory)) {
+            throw new RuntimeException('No se pudo crear el directorio temporal de la IA visual.');
+        }
+
+        $token = bin2hex(random_bytes(8));
+        $outputPath = $directory.'/process-'.$token.'.json';
+        $errorPath = $directory.'/process-'.$token.'.error.log';
         $environment = [
             'VISUAL_AI_CACHE' => storage_path('app/visual-ai/models'),
             'VISUAL_AI_ALLOW_DOWNLOAD' => $allowDownload ? '1' : '0',
+            'VISUAL_AI_OUTPUT' => $outputPath,
+            'VISUAL_AI_ERROR' => $errorPath,
+            'TMP' => $directory,
+            'TEMP' => $directory,
         ];
         $errors = [];
 
-        foreach ($this->nodeBinaries() as $binary) {
-            try {
-                $result = Process::path(base_path())
-                    ->env($environment)
-                    ->timeout($timeout)
-                    ->run([
-                        $binary,
-                        base_path('scripts/visual-ai.mjs'),
-                        ...$arguments,
-                    ]);
-            } catch (Throwable $exception) {
-                $errors[] = $this->nodeLabel($binary).': '.$exception->getMessage();
+        try {
+            foreach ($this->nodeBinaries() as $binary) {
+                @unlink($outputPath);
+                @unlink($errorPath);
 
-                continue;
+                try {
+                    $result = Process::path(base_path())
+                        ->env($environment)
+                        ->timeout($timeout)
+                        ->quietly()
+                        ->run([
+                            $binary,
+                            base_path('scripts/visual-ai.mjs'),
+                            ...$arguments,
+                        ]);
+                } catch (Throwable $exception) {
+                    $errors[] = $this->nodeLabel($binary).': '.$exception->getMessage();
+
+                    continue;
+                }
+
+                $errorOutput = is_file($errorPath)
+                    ? trim((string) @file_get_contents($errorPath))
+                    : '';
+
+                if (! $result->successful()) {
+                    $errors[] = $this->nodeLabel($binary).': '.(
+                        $errorOutput !== '' ? $errorOutput : 'El proceso terminó sin explicar el error.'
+                    );
+
+                    continue;
+                }
+
+                $output = is_file($outputPath)
+                    ? @file_get_contents($outputPath)
+                    : false;
+                $decoded = $output === false ? null : json_decode($output, true);
+
+                if (! is_array($decoded)) {
+                    $errors[] = $this->nodeLabel($binary).': respuesta JSON inválida.';
+
+                    continue;
+                }
+
+                return $decoded;
             }
 
-            if (! $result->successful()) {
-                $errors[] = $this->nodeLabel($binary).': '.(
-                    trim($result->errorOutput()) ?: 'El proceso terminó sin explicar el error.'
-                );
-
-                continue;
-            }
-
-            $decoded = json_decode($result->output(), true);
-            if (! is_array($decoded)) {
-                $errors[] = $this->nodeLabel($binary).': respuesta JSON inválida.';
-
-                continue;
-            }
-
-            return $decoded;
+            throw new RuntimeException(
+                $errors === []
+                    ? $this->readinessMessage()
+                    : 'No se pudo ejecutar el motor visual. '.implode(' | ', array_unique($errors))
+            );
+        } finally {
+            @unlink($outputPath);
+            @unlink($errorPath);
         }
-
-        throw new RuntimeException(
-            $errors === []
-                ? $this->readinessMessage()
-                : 'No se pudo ejecutar el motor visual. '.implode(' | ', array_unique($errors))
-        );
     }
 
     /**
