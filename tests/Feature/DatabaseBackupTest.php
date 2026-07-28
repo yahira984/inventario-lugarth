@@ -105,6 +105,8 @@ class DatabaseBackupTest extends TestCase
                 'method' => 'nativo',
                 'statements' => null,
                 'migrations' => 'Nothing to migrate.',
+                'source_version' => '8.0.39',
+                'compatibility_fixes' => ['table_locks' => 2],
             ]);
         $this->app->instance(DatabaseBackupManager::class, $manager);
 
@@ -131,6 +133,70 @@ class DatabaseBackupTest extends TestCase
             'modulo' => 'Base de datos',
             'accion' => 'Restauración',
         ]);
+    }
+
+    public function test_failed_restore_recovers_the_previous_database_and_reports_the_reason(): void
+    {
+        Storage::fake('local');
+        $admin = $this->admin();
+        $inputPath = Storage::disk('local')->path('backups/tmp/restaurar-prueba.sql');
+        $safetyPath = Storage::disk('local')->path('backups/antes_de_restaurar.sql');
+        Storage::disk('local')->put('backups/antes_de_restaurar.sql', 'CREATE TABLE `segura` (`id` bigint);');
+
+        $manager = Mockery::mock(DatabaseBackupManager::class);
+        $manager->shouldReceive('temporaryRestorePath')
+            ->once()
+            ->with('sql')
+            ->andReturn('backups/tmp/restaurar-prueba.sql');
+        $manager->shouldReceive('assertValidSql')->once()->with($inputPath);
+        $manager->shouldReceive('create')
+            ->once()
+            ->with('antes_de_restaurar')
+            ->andReturn([
+                'path' => 'backups/antes_de_restaurar.sql',
+                'name' => 'antes_de_restaurar.sql',
+                'size' => 1024,
+                'size_label' => '1.0 KB',
+                'method' => 'nativo',
+            ]);
+        $manager->shouldReceive('restore')
+            ->once()
+            ->with($inputPath)
+            ->andThrow(new \RuntimeException('Collation desconocida.'));
+        $manager->shouldReceive('backupPath')
+            ->once()
+            ->with('antes_de_restaurar.sql')
+            ->andReturn($safetyPath);
+        $manager->shouldReceive('restore')
+            ->once()
+            ->with($safetyPath)
+            ->andReturn([
+                'method' => 'nativo',
+                'statements' => null,
+                'migrations' => 'Nothing to migrate.',
+                'source_version' => '8.0',
+                'compatibility_fixes' => [],
+            ]);
+        $this->app->instance(DatabaseBackupManager::class, $manager);
+
+        $file = UploadedFile::fake()->createWithContent(
+            'respaldo-incompatible.sql',
+            "CREATE TABLE `prueba` (`id` bigint);\n",
+        );
+
+        $this->actingAs($admin)
+            ->postJson(route('admin.backups.restore'), [
+                'backup_sql' => $file,
+                'confirmation' => 'RESTAURAR',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonPath(
+                'message',
+                'El archivo no pudo aplicarse, pero la base anterior quedó recuperada correctamente. '
+                .'Motivo: Collation desconocida.',
+            );
+
+        Storage::disk('local')->assertMissing('backups/tmp/restaurar-prueba.sql');
     }
 
     public function test_large_restore_can_arrive_in_small_chunks_and_be_reassembled(): void

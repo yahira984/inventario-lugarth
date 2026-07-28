@@ -19,7 +19,10 @@ class DatabaseBackupManager
      */
     private array|false|null $resolvedClients = false;
 
-    public function __construct(private readonly SqlStatementReader $statementReader) {}
+    public function __construct(
+        private readonly SqlStatementReader $statementReader,
+        private readonly SqlBackupNormalizer $backupNormalizer,
+    ) {}
 
     /**
      * @return Collection<int, array{
@@ -129,45 +132,66 @@ class DatabaseBackupManager
     }
 
     /**
-     * @return array{method: string, statements: ?int, migrations: string}
+     * @return array{
+     *     method: string,
+     *     statements: ?int,
+     *     migrations: string,
+     *     source_version: ?string,
+     *     compatibility_fixes: array<string, int>
+     * }
      */
     public function restore(string $absolutePath): array
     {
         $this->ensureMysqlConnection();
         $this->assertValidSql($absolutePath);
-        $clients = $this->clients();
+        $disk = Storage::disk('local');
+        $normalizedPath = $this->temporaryRestorePath('sql');
+        $normalizedAbsolutePath = $disk->path($normalizedPath);
 
-        if ($clients) {
-            $this->restoreWithNativeClient($absolutePath, $clients['client']);
-            $method = 'nativo';
-            $statements = null;
-        } else {
-            $statements = $this->restorePortable($absolutePath);
-            $method = 'compatible';
-        }
-
-        $connection = (string) config('database.default');
-        DB::purge($connection);
-
-        $exitCode = Artisan::call('migrate', [
-            '--force' => true,
-        ]);
-        $migrationOutput = trim(Artisan::output());
-
-        if ($exitCode !== 0) {
-            throw new RuntimeException(
-                'La información fue restaurada, pero no se pudieron actualizar las migraciones. '
-                .'Ejecuta php artisan migrate --force. '.$migrationOutput,
+        try {
+            $normalization = $this->backupNormalizer->normalize(
+                $absolutePath,
+                $normalizedAbsolutePath,
             );
+            $this->assertValidSql($normalizedAbsolutePath);
+            $clients = $this->clients();
+
+            if ($clients) {
+                $this->restoreWithNativeClient($normalizedAbsolutePath, $clients['client']);
+                $method = 'nativo';
+                $statements = null;
+            } else {
+                $statements = $this->restorePortable($normalizedAbsolutePath);
+                $method = 'compatible';
+            }
+
+            $connection = (string) config('database.default');
+            DB::purge($connection);
+
+            $exitCode = Artisan::call('migrate', [
+                '--force' => true,
+            ]);
+            $migrationOutput = trim(Artisan::output());
+
+            if ($exitCode !== 0) {
+                throw new RuntimeException(
+                    'La información fue restaurada, pero no se pudieron actualizar las migraciones. '
+                    .'Ejecuta php artisan migrate --force. '.$migrationOutput,
+                );
+            }
+
+            DB::purge($connection);
+
+            return [
+                'method' => $method,
+                'statements' => $statements,
+                'migrations' => $migrationOutput,
+                'source_version' => $normalization['source_version'],
+                'compatibility_fixes' => $normalization['changes'],
+            ];
+        } finally {
+            $disk->delete($normalizedPath);
         }
-
-        DB::purge($connection);
-
-        return [
-            'method' => $method,
-            'statements' => $statements,
-            'migrations' => $migrationOutput,
-        ];
     }
 
     public function assertValidSql(string $path): void
@@ -400,6 +424,7 @@ class DatabaseBackupManager
             '--single-transaction',
             '--quick',
             '--skip-lock-tables',
+            '--skip-add-locks',
             '--routines',
             '--events',
             '--triggers',

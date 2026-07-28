@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Support\AuditLogger;
 use App\Support\DatabaseBackupManager;
 use Illuminate\Contracts\Cache\LockTimeoutException;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Process\Exceptions\ProcessTimedOutException;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use RuntimeException;
@@ -150,6 +153,7 @@ class DatabaseBackupController extends Controller
         DatabaseBackupManager $backups,
     ): JsonResponse|RedirectResponse {
         $this->ensureAdmin($request);
+        $userId = (int) $request->user()->id;
 
         $maximumKilobytes = (int) config('backup.maximum_upload_kilobytes', 204800);
         $validated = $request->validate([
@@ -187,7 +191,7 @@ class DatabaseBackupController extends Controller
         try {
             if ($uploadToken) {
                 $temporaryPath = $backups->assembleChunkedUpload(
-                    (int) $request->user()->id,
+                    $userId,
                     $uploadToken,
                     $originalName,
                 );
@@ -212,26 +216,73 @@ class DatabaseBackupController extends Controller
             $operation = $this->withOperationLock(function () use ($backups, $absolutePath): array {
                 return $this->whileInMaintenance(function () use ($backups, $absolutePath): array {
                     $safetyBackup = $backups->create('antes_de_restaurar');
-                    $restore = $backups->restore($absolutePath);
+
+                    try {
+                        $restore = $backups->restore($absolutePath);
+                    } catch (Throwable $restoreException) {
+                        $safetyPath = $backups->backupPath($safetyBackup['name']);
+
+                        if (! $safetyPath) {
+                            throw new RuntimeException(
+                                'La restauración falló y no se encontró la copia de seguridad automática. '
+                                .'No realices más cambios y conserva el archivo original. Motivo: '
+                                .Str::limit($restoreException->getMessage(), 500),
+                                previous: $restoreException,
+                            );
+                        }
+
+                        try {
+                            $backups->restore($safetyPath);
+                        } catch (Throwable $rollbackException) {
+                            report($rollbackException);
+
+                            throw new RuntimeException(
+                                'La restauración falló y tampoco fue posible recuperar automáticamente '
+                                .'la base anterior. Conserva el respaldo '
+                                .$safetyBackup['name'].' y revisa el servicio de MySQL. Motivo original: '
+                                .Str::limit($restoreException->getMessage(), 400),
+                                previous: $restoreException,
+                            );
+                        }
+
+                        throw new RuntimeException(
+                            'El archivo no pudo aplicarse, pero la base anterior quedó recuperada '
+                            .'correctamente. Motivo: '
+                            .Str::limit($restoreException->getMessage(), 500),
+                            previous: $restoreException,
+                        );
+                    }
 
                     return compact('safetyBackup', 'restore');
                 });
             });
 
-            AuditLogger::registrar(
-                'Base de datos',
-                'Restauración',
-                'Restauró la base de datos desde un archivo SQL y creó un respaldo de seguridad previo.',
-                [
-                    'archivo_origen' => $originalName,
-                    'respaldo_seguridad' => $operation['safetyBackup']['name'],
-                    'metodo' => $operation['restore']['method'],
-                ],
-                $request,
-            );
+            try {
+                AuditLogger::registrar(
+                    'Base de datos',
+                    'Restauración',
+                    'Restauró la base de datos desde un archivo SQL y creó un respaldo de seguridad previo.',
+                    [
+                        'archivo_origen' => $originalName,
+                        'respaldo_seguridad' => $operation['safetyBackup']['name'],
+                        'metodo' => $operation['restore']['method'],
+                        'version_origen' => $operation['restore']['source_version'],
+                        'ajustes_compatibilidad' => $operation['restore']['compatibility_fixes'],
+                    ],
+                    $request,
+                );
+            } catch (Throwable $auditException) {
+                // Al reemplazar toda la base, el usuario o la tabla de auditoría pueden cambiar.
+                report($auditException);
+            }
 
+            $adjustmentCount = array_sum($operation['restore']['compatibility_fixes']);
+            $compatibilityMessage = $adjustmentCount > 0
+                ? " Se aplicaron {$adjustmentCount} ajustes de compatibilidad entre equipos."
+                : '';
             $message = 'Base de datos restaurada correctamente. '
-                ."Se guardó {$operation['safetyBackup']['name']} antes de reemplazarla.";
+                ."Se guardó {$operation['safetyBackup']['name']} antes de reemplazarla."
+                .$compatibilityMessage;
 
             if ($request->expectsJson()) {
                 return response()->json([
@@ -258,7 +309,7 @@ class DatabaseBackupController extends Controller
 
             if ($uploadToken) {
                 $backups->discardChunkedUpload(
-                    (int) $request->user()->id,
+                    $userId,
                     $uploadToken,
                 );
             }
@@ -321,6 +372,32 @@ class DatabaseBackupController extends Controller
 
     private function friendlyError(Throwable $exception, string $fallback): string
     {
+        if ($exception instanceof ProcessTimedOutException) {
+            return 'MySQL tardó más de lo permitido. La base anterior se recuperó automáticamente. '
+                .'Cierra programas pesados y vuelve a intentarlo.';
+        }
+
+        if ($exception instanceof QueryException) {
+            $message = strtolower($exception->getMessage());
+
+            if (str_contains($message, '[2002]') || str_contains($message, 'connection refused')) {
+                return 'No se pudo conectar con MySQL. Verifica que el servicio esté encendido '
+                    .'y que DB_HOST y DB_PORT sean correctos en el archivo .env.';
+            }
+
+            if (str_contains($message, '[1045]') || str_contains($message, 'access denied')) {
+                return 'MySQL rechazó el usuario o la contraseña configurados en el archivo .env.';
+            }
+
+            if (str_contains($message, '[1049]') || str_contains($message, 'unknown database')) {
+                return 'La base configurada en DB_DATABASE no existe en esta computadora.';
+            }
+
+            if (str_contains($message, 'unknown collation')) {
+                return 'El respaldo usa una configuración de texto que esta versión de MySQL no reconoce.';
+            }
+        }
+
         if ($exception instanceof RuntimeException
             || $exception instanceof ValidationException) {
             return $exception->getMessage();
