@@ -9,9 +9,9 @@
         :root {
             --bg: #030712;
             --surface: rgba(15, 23, 42, 0.72);
-            --panel: rgba(30, 41, 59, 0.72);
-            --ink: #fff;
-            --muted: #94a3b8;
+            --panel: rgba(136, 221, 128, 0.88);
+            --ink: #faf1f1;
+            --muted: #01070f;
             --cyan: #06b6d4;
             --green: #10b981;
             --red: #ef4444;
