@@ -20,6 +20,7 @@ class AuthenticationTest extends TestCase
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
         $user = User::factory()->create([
+            'role' => 'administrador',
             'approved_at' => now(),
         ]);
 
@@ -30,6 +31,39 @@ class AuthenticationTest extends TestCase
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
+    public function test_warehouse_user_is_sent_to_inventory_after_login(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'almacenista',
+            'approved_at' => now(),
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticatedAs($user);
+        $response->assertRedirect(route('materiales.index', absolute: false));
+    }
+
+    public function test_authenticated_warehouse_user_cannot_be_trapped_between_login_and_dashboard(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'almacenista',
+            'approved_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->get('/login')
+            ->assertRedirect(route('materiales.index'));
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertRedirect(route('materiales.index'))
+            ->assertSessionHas('warning');
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

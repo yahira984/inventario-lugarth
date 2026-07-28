@@ -6,15 +6,20 @@ use App\Models\Material;
 use App\Models\MaterialEntradaPendiente;
 use App\Models\MaterialMovimiento;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
-        abort_unless($request->user()?->esAdministrador(), 403, 'El dashboard gerencial solo esta disponible para administradores.');
+        if (! $request->user()?->esAdministrador()) {
+            return redirect()
+                ->route($request->user()->rutaInicio())
+                ->with('warning', 'Tu cuenta abre directamente el inventario según los permisos de tu rol.');
+        }
 
         $inicioMes = Carbon::now()->startOfMonth();
 

@@ -959,7 +959,23 @@ body[data-workspace-theme="dark"] .team-row.is-self:hover { background: var(--ws
     .workspace-team-dock .team-popover { max-height: calc(100dvh - var(--workspace-mobile-tabs) - 20px); }
     .team-list { max-height: calc(100dvh - var(--workspace-topbar) - var(--workspace-mobile-tabs) - 210px); }
     .workspace-chat { inset: var(--workspace-topbar) 0 calc(var(--workspace-mobile-tabs) + env(safe-area-inset-bottom)) 0; width: 100%; border: 0; border-radius: 0; }
-    .chat-message-tools { opacity: 1; transform: none; pointer-events: auto; }
+    .chat-message { min-width: 112px; max-width: 88%; }
+    .chat-message-tools {
+        position: static;
+        order: 3;
+        justify-self: end;
+        margin-top: 2px;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+    }
+    .chat-message-tools button { background: rgba(255,255,255,.88); border: 1px solid #d8e4ed; }
+    .chat-message.is-mine .chat-message-tools button { color: #eaf5ff; background: rgba(3,48,101,.28); border-color: rgba(255,255,255,.34); }
+    .chat-message.is-mine .chat-message-tools button:hover { color: #fff; background: rgba(3,48,101,.5); }
     .workspace-sticker-picker { grid-template-columns: repeat(5, minmax(54px, 1fr)); overflow-x: auto; }
     body.workspace-chat-open .workspace-team-dock { display: none; }
     .workspace-lightbox { padding: 70px 10px 18px; }

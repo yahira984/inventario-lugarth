@@ -295,6 +295,43 @@
     let latestPinnedMessages = [];
     let suppressTeamClick = false;
 
+    const readApiResponse = async (response, fallbackMessage) => {
+        const contentType = response.headers.get('content-type') || '';
+        let data = {};
+
+        if (contentType.includes('application/json')) {
+            try {
+                data = await response.json();
+            } catch (_) {
+                data = {};
+            }
+        }
+
+        if (response.status === 401) {
+            window.setTimeout(() => window.location.assign('/login'), 900);
+            throw new Error('Tu sesión terminó. Te llevaremos al inicio de sesión para que vuelvas a entrar.');
+        }
+
+        if (response.status === 419) {
+            throw new Error('La sesión de seguridad cambió. Recarga la página y vuelve a enviar el mensaje.');
+        }
+
+        if (response.status === 429) {
+            throw new Error('Hay varias actualizaciones en curso. Espera unos segundos y vuelve a intentarlo.');
+        }
+
+        if (!response.ok) {
+            const validationMessage = Object.values(data?.errors || {}).flat()[0];
+            throw new Error(validationMessage || data?.message || fallbackMessage);
+        }
+
+        if (!contentType.includes('application/json')) {
+            throw new Error(fallbackMessage);
+        }
+
+        return data;
+    };
+
     const closeTeam = () => {
         if (!teamPopover) return;
         teamPopover.hidden = true;
@@ -631,8 +668,7 @@
                 headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 credentials: 'same-origin',
             });
-            if (!response.ok) throw new Error('No se pudo actualizar el equipo.');
-            const data = await response.json();
+            const data = await readApiResponse(response, 'No se pudo actualizar el equipo.');
             notifyPresenceChanges(data.users || []);
             notifyNewMessages(data.users || []);
             renderTeam(data);
@@ -703,10 +739,7 @@
                     body: JSON.stringify({ pinned: !message.pinned }),
                 },
             );
-            const data = await response.json();
-            if (!response.ok) {
-                throw new Error(data?.message || data?.errors?.pinned?.[0] || 'No se pudo actualizar el mensaje.');
-            }
+            const data = await readApiResponse(response, 'No se pudo actualizar el mensaje.');
             await refreshMessages({ silent: true });
             showWorkspaceToast(
                 data.message?.pinned ? 'El aviso quedó protegido de la limpieza automática.' : 'El mensaje dejó de estar fijado.',
@@ -837,8 +870,7 @@
                 headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 credentials: 'same-origin',
             });
-            if (!response.ok) throw new Error('No se pudo abrir la conversación.');
-            const data = await response.json();
+            const data = await readApiResponse(response, 'No se pudo abrir la conversación.');
             activeChatUser = { ...activeChatUser, ...data.user };
             if (chatUserStatus) {
                 chatUserStatus.textContent = `${data.user.role_label} · ${data.user.availability_label} · ${data.user.online ? 'En línea' : data.user.last_seen}`;
@@ -889,7 +921,7 @@
         }
         refreshMessages();
         window.clearInterval(messagesTimer);
-        messagesTimer = window.setInterval(() => refreshMessages({ silent: true }), 2500);
+        messagesTimer = window.setInterval(() => refreshMessages({ silent: true }), 4000);
         window.setTimeout(() => chatInput?.focus(), 80);
     }
 
@@ -979,11 +1011,7 @@
                     reply_to_id: replyingToMessage?.id || null,
                 }),
             });
-            const data = await response.json();
-            if (!response.ok) {
-                const validationMessage = Object.values(data?.errors || {}).flat()[0];
-                throw new Error(validationMessage || data?.message || 'No se pudo enviar el mensaje.');
-            }
+            await readApiResponse(response, 'No se pudo enviar el mensaje.');
             if (chatInput) {
                 chatInput.value = '';
                 chatInput.style.height = '';
@@ -1048,8 +1076,7 @@
                 credentials: 'same-origin',
                 body: JSON.stringify({ status: availabilitySelect.value }),
             });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data?.message || 'No se pudo cambiar el estado.');
+            const data = await readApiResponse(response, 'No se pudo cambiar el estado.');
             showWorkspaceToast(`Tu estado ahora es ${data.label}.`, 'green');
             refreshPresence({ silent: true });
         } catch (error) {

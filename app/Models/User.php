@@ -67,6 +67,11 @@ class User extends Authenticatable
     }
 
     // 2. Agregamos esta función para saber si está en línea 👇
+    public function rutaInicio(): string
+    {
+        return $this->esAdministrador() ? 'dashboard' : 'materiales.index';
+    }
+
     public function isOnline(): bool
     {
         return $this->last_seen_at !== null
