@@ -46,13 +46,13 @@
         .inline-form { display:grid; gap:8px; min-width:220px; }
         .history { display:grid; gap:10px; }
         .history-row { border:1px solid #d8e8f7; background:#f8fbff; border-radius:12px; padding:12px; }
-        .piece-photo { width:82px; height:82px; object-fit:cover; border-radius:12px; border:1px solid #cfe0f2; background:#fff; box-shadow:0 8px 18px rgba(15,60,105,.12); margin-bottom:10px; display:block; }
+        .piece-photo { width:82px; height:82px; object-fit:contain; object-position:center; padding:4px; border-radius:12px; border:1px solid #cfe0f2; background:#fff; box-shadow:0 8px 18px rgba(15,60,105,.12); margin-bottom:10px; display:block; }
         .piece-photo-empty { display:flex; align-items:center; justify-content:center; color:#58718a; font-size:11px; font-weight:900; text-transform:uppercase; border-style:dashed; }
         .auto-filled { background:#f1f8ff; color:#34506b; }
         .form-hint { margin:-4px 0 12px; color:#58718a; font-size:12px; font-weight:800; line-height:1.4; }
         .selected-preview { display:none; grid-template-columns:74px minmax(0,1fr); gap:12px; align-items:center; margin:0 0 14px; padding:12px; border:1px solid #b9dcff; border-radius:14px; background:#f1f8ff; }
         .selected-preview.active { display:grid; }
-        .selected-preview img, .selected-preview .preview-empty { width:74px; height:74px; object-fit:cover; border-radius:12px; border:1px solid #cfe0f2; background:#fff; }
+        .selected-preview img, .selected-preview .preview-empty { width:74px; height:74px; object-fit:contain; object-position:center; padding:4px; border-radius:12px; border:1px solid #cfe0f2; background:#fff; }
         .selected-preview .preview-empty { display:flex; align-items:center; justify-content:center; color:#58718a; font-size:11px; font-weight:900; text-transform:uppercase; border-style:dashed; }
         .selected-preview strong { display:block; color:#08233f; font-weight:950; line-height:1.15; }
         .selected-preview span { display:block; margin-top:4px; color:#58718a; font-size:12px; font-weight:800; }
