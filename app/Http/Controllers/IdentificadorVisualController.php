@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Material;
 use App\Models\MaterialPhoto;
 use App\Models\VisualSearchFeedback;
+use App\Jobs\IndexPendingVisualDescriptors;
+use App\Support\VisualConfidenceCalibrator;
 use App\Support\VisualEmbeddingService;
 use App\Support\VisualImageDescriptor;
 use Illuminate\Http\Request;
@@ -22,7 +24,8 @@ class IdentificadorVisualController extends Controller
 
     public function __construct(
         private readonly VisualImageDescriptor $visualDescriptor,
-        private readonly VisualEmbeddingService $visualAi
+        private readonly VisualEmbeddingService $visualAi,
+        private readonly VisualConfidenceCalibrator $confidenceCalibrator,
     ) {}
 
     public function create()
@@ -70,6 +73,7 @@ class IdentificadorVisualController extends Controller
             ->all();
         $embeddings = [];
         $motorWarning = null;
+        $categoryPrediction = null;
 
         if ($this->visualAi->isReady()) {
             try {
@@ -103,6 +107,25 @@ class IdentificadorVisualController extends Controller
             $motorWarning = 'El motor local no está completo. Falta: '.($missing ?: 'componente sin identificar').'.';
         }
 
+        if ($embeddings !== []) {
+            try {
+                $categoryPrediction = $this->visualAi->categorize(
+                    $archivos->map(fn ($archivo): string => $archivo->getRealPath())->all(),
+                    Material::query()
+                        ->where('es_plantilla_equipo', false)
+                        ->whereNotNull('categoria')
+                        ->where('categoria', '<>', '')
+                        ->orderBy('categoria')
+                        ->pluck('categoria')
+                        ->all(),
+                );
+            } catch (Throwable $exception) {
+                Log::notice('La categoria visual directa no estuvo disponible para esta busqueda.', [
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
+
         $previews = $archivos
             ->map(fn ($archivo) => $this->previewDataUri($archivo->getRealPath(), $archivo->getMimeType()))
             ->filter()
@@ -114,7 +137,7 @@ class IdentificadorVisualController extends Controller
         );
 
         return view('materiales.identificador_visual', [
-            'resultados' => $this->buscarMateriales($descriptors, $embeddings),
+            'resultados' => $this->buscarMateriales($descriptors, $embeddings, $categoryPrediction),
             'analisis' => [
                 'descriptor' => $descriptors[0],
                 'observaciones' => collect($descriptors)
@@ -123,6 +146,7 @@ class IdentificadorVisualController extends Controller
                     ->values()
                     ->all(),
                 'terminos' => [],
+                'categoria_directa' => $categoryPrediction,
                 'motor' => $embeddings !== [] ? 'IA visual local con 2 angulos' : 'Comparación exacta limitada',
             ],
             'preview' => $previews[0] ?? null,
@@ -143,7 +167,20 @@ class IdentificadorVisualController extends Controller
             'query_signature' => ['nullable', 'string', 'max:64'],
             'was_correct' => ['required', 'boolean'],
             'confidence' => ['nullable', 'numeric', 'between:0,100'],
+            'context' => ['nullable', 'array'],
+            'context.predicted_category' => ['nullable', 'string', 'max:160'],
+            'context.category_confidence' => ['nullable', 'numeric', 'between:0,1'],
+            'context.color' => ['nullable', 'string', 'max:40'],
+            'context.shape' => ['nullable', 'string', 'max:40'],
         ]);
+
+        $context = array_filter([
+            'source' => 'visual_identifier',
+            'predicted_category' => data_get($data, 'context.predicted_category'),
+            'category_confidence' => data_get($data, 'context.category_confidence'),
+            'color' => data_get($data, 'context.color'),
+            'shape' => data_get($data, 'context.shape'),
+        ], fn ($value) => $value !== null && $value !== '');
 
         VisualSearchFeedback::create([
             'user_id' => $request->user()?->id,
@@ -152,8 +189,22 @@ class IdentificadorVisualController extends Controller
             'query_signature' => $data['query_signature'] ?? null,
             'was_correct' => $data['was_correct'],
             'confidence' => isset($data['confidence']) ? ((float) $data['confidence'] / 100) : null,
-            'context' => ['source' => 'visual_identifier'],
+            'context' => $context,
         ]);
+
+        if (! $data['was_correct']
+            && ! empty($data['selected_material_id'])
+            && (int) $data['selected_material_id'] !== (int) $data['suggested_material_id']) {
+            VisualSearchFeedback::create([
+                'user_id' => $request->user()?->id,
+                'suggested_material_id' => (int) $data['selected_material_id'],
+                'selected_material_id' => (int) $data['selected_material_id'],
+                'query_signature' => $data['query_signature'] ?? null,
+                'was_correct' => true,
+                'confidence' => null,
+                'context' => [...$context, 'source' => 'visual_identifier_correction'],
+            ]);
+        }
 
         return response()->json([
             'ok' => true,
@@ -205,7 +256,11 @@ class IdentificadorVisualController extends Controller
      * @param  array<int, array<string, mixed>>  $descriptoresFoto
      * @param  array<int, array<string, mixed>>  $embeddingsFoto
      */
-    private function buscarMateriales(array $descriptoresFoto, array $embeddingsFoto = []): Collection
+    private function buscarMateriales(
+        array $descriptoresFoto,
+        array $embeddingsFoto = [],
+        ?array $categoryPrediction = null,
+    ): Collection
     {
         $materials = Material::query()
             ->select([
@@ -241,7 +296,7 @@ class IdentificadorVisualController extends Controller
         );
 
         $comparados = $materials
-            ->map(function (Material $material) use ($descriptoresFoto, $embeddingsFoto, $usarAi) {
+            ->map(function (Material $material) use ($descriptoresFoto, $embeddingsFoto, $usarAi, $categoryPrediction) {
                 $descriptorCandidates = collect([$material->visual_descriptor])
                     ->concat($material->photos->pluck('visual_descriptor'))
                     ->filter(fn ($descriptor): bool => is_array($descriptor) && $descriptor !== [])
@@ -297,7 +352,24 @@ class IdentificadorVisualController extends Controller
                         : 'penalizada por retroalimentacion';
                 }
 
+                $directCategory = trim((string) data_get($categoryPrediction, 'label'));
+                $directCategoryConfidence = (float) data_get($categoryPrediction, 'confidence', 0);
+                if ($directCategory !== '' && $directCategoryConfidence >= 0.30) {
+                    if ($this->normalizarTexto($material->categoria) === $this->normalizarTexto($directCategory)) {
+                        $puntaje = min(99, $puntaje + ($directCategoryConfidence >= 0.55 ? 6 : 3));
+                        $motivos[] = 'categoria detectada directamente por IA';
+                    } elseif ($directCategoryConfidence >= 0.60) {
+                        $puntaje = max(0, $puntaje - 2);
+                    }
+                }
+
+                $calibration = $this->confidenceCalibrator->estimate($puntaje / 100);
+
                 $material->puntaje_visual = $puntaje;
+                $material->confianza_visual = $calibration['value'];
+                $material->confianza_calibrada = $calibration['calibrated'];
+                $material->muestras_calibracion = $calibration['samples'];
+                $material->etiqueta_confianza = $calibration['label'];
                 $material->motivos_visual = $motivos;
                 $material->motor_visual = $usarAi ? 'ia' : 'clasico';
 
@@ -887,48 +959,10 @@ class IdentificadorVisualController extends Controller
 
     private function scheduleIncrementalIndexRepair(): void
     {
-        if (! $this->visualAi->isReady()) {
-            return;
+        // En produccion lo atiende el programador cada cinco minutos. Evitamos
+        // crear un trabajo por cada busqueda cuando ya existe una cola configurada.
+        if (config('queue.default') === 'sync') {
+            IndexPendingVisualDescriptors::dispatchAfterResponse(5);
         }
-
-        app()->terminating(function (): void {
-            try {
-                if (function_exists('set_time_limit')) {
-                    @set_time_limit(180);
-                }
-
-                $photos = MaterialPhoto::query()
-                    ->where(function ($query): void {
-                        $query->whereNull('visual_descriptor')
-                            ->orWhere('visual_descriptor->ai->version', '<>', VisualEmbeddingService::VERSION);
-                    })
-                    ->limit(2)
-                    ->get();
-
-                foreach ($photos as $photo) {
-                    $this->visualAi->indexPhoto($photo);
-                }
-
-                if ($photos->count() >= 2) {
-                    return;
-                }
-
-                Material::query()
-                    ->where('es_plantilla_equipo', false)
-                    ->whereNotNull('fotografia')
-                    ->where('fotografia', '<>', '')
-                    ->where(function ($query): void {
-                        $query->whereNull('visual_descriptor')
-                            ->orWhere('visual_descriptor->ai->version', '<>', VisualEmbeddingService::VERSION);
-                    })
-                    ->limit(2 - $photos->count())
-                    ->get()
-                    ->each(fn (Material $material) => $this->visualAi->indexMaterial($material));
-            } catch (Throwable $exception) {
-                Log::warning('La reparacion incremental del indice visual no pudo completarse.', [
-                    'error' => $exception->getMessage(),
-                ]);
-            }
-        });
     }
 }

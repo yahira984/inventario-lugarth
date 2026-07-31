@@ -9,13 +9,16 @@ use Illuminate\Console\Command;
 
 class SnapshotInventory extends Command
 {
-    protected $signature = 'inventario:captura-diaria {--date= : Fecha YYYY-MM-DD; por defecto hoy}';
+    protected $signature = 'inventario:captura-diaria
+        {--date= : Fecha YYYY-MM-DD; por defecto hoy}
+        {--previous-day : Captura el cierre confirmado del dia anterior}';
 
     protected $description = 'Guarda el stock y valor diario de cada material para consultas historicas.';
 
     public function handle(): int
     {
-        $date = Carbon::parse($this->option('date') ?: today())
+        $defaultDate = $this->option('previous-day') ? yesterday() : today();
+        $date = Carbon::parse($this->option('date') ?: $defaultDate)
             ->startOfDay();
         $count = 0;
 
@@ -39,6 +42,8 @@ class SnapshotInventory extends Command
                             'almacen' => $material->almacen,
                             'categoria' => $material->categoria,
                             'proveedor' => $material->proveedor,
+                            'origen' => 'captura_diaria',
+                            'exactitud' => 'confirmada',
                         ]
                     );
                     $count++;

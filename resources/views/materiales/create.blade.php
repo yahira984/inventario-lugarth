@@ -38,6 +38,14 @@
         input::placeholder, textarea::placeholder { color: #64748b; opacity: 1; }
         .input-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
         .help { margin-top: 7px; color: #64748b; font-size: 12px; line-height: 1.45; font-weight: 600; }
+        .code-status { display:none; margin-top:9px; padding:10px 12px; border-radius:9px; font-size:12px; font-weight:750; line-height:1.45; }
+        .code-status.is-info { display:block; color:#075985; background:#eef8ff; border:1px solid #bae6fd; }
+        .code-status.is-success { display:block; color:#047857; background:#ecfdf5; border:1px solid #a7f3d0; }
+        .code-status.is-warning { display:block; color:#9a4d00; background:#fff7e6; border:1px solid #fed7aa; }
+        .code-choices { display:none; gap:8px; margin-top:9px; }
+        .code-choices.is-open { display:grid; }
+        .code-choice { width:100%; min-height:38px; justify-content:flex-start; padding:8px 10px; color:#16436e; background:#fff; border:1px solid #bfdbfe; border-radius:8px; box-shadow:none; text-align:left; font-size:12px; }
+        .code-choice:hover { background:#eff6ff; box-shadow:none; }
         .alert-danger { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 14px; padding: 14px 16px; margin-bottom: 18px; font-weight: 800; }
         .alert-danger ul { margin: 8px 0 0; padding-left: 18px; }
         .upload-box { border: 1px dashed #b8c8dc; border-radius: 14px; padding: 16px; background: #f8fafc; }
@@ -110,7 +118,9 @@
                                         <input type="text" name="codigo_barras" id="codigo_barras" value="{{ old('codigo_barras') }}" placeholder="Escanea con pistolita USB o escribe el codigo" autocomplete="off" autofocus>
                     <button type="button" class="btn btn-amber" onclick="abrirEscaner()" style="background: #d97706 !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Escanear</button>
                                     </div>
-                                    <div class="help">Si el codigo ya existe, el sistema llenara los datos. Si es nuevo, completa el nombre, la cantidad y la evidencia para solicitar su alta al administrador.</div>
+                                    <div class="help">Acepta QR interno, codigo de barras y pistolita USB. Si existe, llena sus datos; la cantidad queda vacia para que captures solo lo recibido.</div>
+                                    <div id="codigoStatus" class="code-status" role="status" aria-live="polite"></div>
+                                    <div id="codigoChoices" class="code-choices" aria-live="polite"></div>
                                 </div>
 
                                 <div class="field">
@@ -225,6 +235,7 @@
                                 <div class="upload-box">
                                     <label for="fotografias">Fotos del producto (hasta 3 ángulos)</label>
                                     <div class="help">La primera será la portada. Todas se comprimen e indexan para el identificador visual.</div>
+                                    <div class="help"><strong>Recomendado:</strong> sube frente, lado y detalle para mejorar el identificador visual. Las tres fotos son opcionales; la primera sera la portada.</div>
                                     <input type="file" name="fotografias[]" id="fotografias" accept="image/jpeg,image/png,image/webp" multiple data-max-files="3" onchange="mostrarVistasProducto(this)">
                                     <div id="previewsProducto" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;"></div>
                                 </div>
@@ -268,7 +279,8 @@
 
 <div id="scannerModal" class="modal">
     <div class="modal-content">
-        <h3>Escanear codigo de barras</h3>
+        <h3>Escanear QR o codigo de barras</h3>
+        <p class="help" style="margin:0 0 12px;">Apunta al QR interno o al codigo impreso del proveedor.</p>
         <div id="reader"></div>
         <button type="button" class="btn" style="width:100%; margin-top:16px; background: #b91c1c !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;" onclick="cerrarEscaner()">Cancelar</button>
     </div>
@@ -293,6 +305,8 @@
     let html5QrcodeScanner = null;
     let streamVideo = null;
     let videoTrack = null;
+    let consultaCodigoTimer = null;
+    let ultimoCodigoConsultado = '';
 
     @if(request()->boolean('continuo') && !$errors->any())
         window.addEventListener('load', () => document.getElementById('codigo_barras')?.focus());
@@ -338,12 +352,27 @@
 
     function abrirEscaner() {
         document.getElementById('scannerModal').style.display = 'flex';
-        html5QrcodeScanner = new Html5QrcodeScanner('reader', { fps: 10, qrbox: { width: 250, height: 250 } }, false);
+        html5QrcodeScanner = new Html5QrcodeScanner('reader', configuracionEscaner(), false);
         html5QrcodeScanner.render((textoDecodificado) => {
             document.getElementById('codigo_barras').value = textoDecodificado.trim();
             cerrarEscaner();
             consultarCodigoLocal(textoDecodificado);
         }, () => {});
+    }
+
+    function configuracionEscaner() {
+        const formatos = window.Html5QrcodeSupportedFormats;
+        const soportados = formatos ? [
+            formatos.QR_CODE, formatos.CODE_128, formatos.CODE_39,
+            formatos.CODE_93, formatos.EAN_13, formatos.EAN_8,
+            formatos.UPC_A, formatos.UPC_E, formatos.ITF,
+        ].filter(Boolean) : [];
+
+        return {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            ...(soportados.length ? { formatsToSupport: soportados } : {}),
+        };
     }
 
     function cerrarEscaner() {
@@ -355,28 +384,114 @@
         }
     }
 
-    function consultarCodigoLocal(codigo) {
-        fetch(`{{ route('materiales.buscarPorCodigo') }}?codigo=${encodeURIComponent(codigo.trim())}`)
-            .then((response) => response.json())
+    function setCodigoStatus(message, type = 'is-info') {
+        const status = document.getElementById('codigoStatus');
+        status.textContent = message;
+        status.className = `code-status ${type}`;
+    }
+
+    function limpiarOpcionesCodigo() {
+        const choices = document.getElementById('codigoChoices');
+        choices.replaceChildren();
+        choices.classList.remove('is-open');
+    }
+
+    function llenarDatosExistentes(data) {
+        const fields = {
+            categoria: data.categoria,
+            numero_parte: data.numero_parte,
+            descripcion: data.descripcion,
+            apodo: data.apodo,
+            marca: data.marca,
+            unidad: data.unidad,
+            proveedor: data.proveedor,
+            proveedor_rfc: data.proveedor_rfc,
+            clave_sat: data.clave_sat,
+            clave_unidad: data.clave_unidad,
+            almacen: data.almacen,
+            costo_unitario: data.costo_unitario,
+            stock_minimo: data.stock_minimo,
+            stock_maximo: data.stock_maximo,
+        };
+
+        Object.entries(fields).forEach(([id, value]) => {
+            const field = document.getElementById(id);
+            if (field && value !== null && value !== undefined) field.value = value;
+        });
+
+        document.getElementById('stock').value = '';
+        document.getElementById('stock').focus();
+        setCodigoStatus(`Material identificado: ${data.descripcion}. Escribe solamente la cantidad recibida.`, 'is-success');
+    }
+
+    function mostrarOpcionesCodigo(resultados) {
+        const choices = document.getElementById('codigoChoices');
+        limpiarOpcionesCodigo();
+        resultados.forEach((material) => {
+            const choice = document.createElement('button');
+            choice.type = 'button';
+            choice.className = 'code-choice';
+            choice.textContent = `${material.descripcion} - ${material.categoria || 'Sin categoria'} - ${material.almacen || 'Sin almacen'}`;
+            choice.addEventListener('click', () => {
+                llenarDatosExistentes(material);
+                limpiarOpcionesCodigo();
+            });
+            choices.append(choice);
+        });
+        choices.classList.add('is-open');
+    }
+
+    function consultarCodigoLocal(codigo, force = false) {
+        const limpio = codigo.trim();
+        if (!limpio) {
+            limpiarOpcionesCodigo();
+            document.getElementById('codigoStatus').className = 'code-status';
+            return;
+        }
+        if (!force && limpio === ultimoCodigoConsultado) return;
+        ultimoCodigoConsultado = limpio;
+        setCodigoStatus('Buscando codigo en inventario...', 'is-info');
+        fetch(`{{ route('materiales.buscarPorCodigo') }}?codigo=${encodeURIComponent(limpio)}`)
+            .then((response) => {
+                if (!response.ok) throw new Error('No se pudo consultar el codigo.');
+                return response.json();
+            })
             .then((data) => {
-                if (!data.encontrado) {
-                    document.getElementById('descripcion').focus();
-                    alert('Codigo nuevo. Completa el nombre, la cantidad recibida y la evidencia. La solicitud se enviara al administrador para su aprobacion.');
+                limpiarOpcionesCodigo();
+                if (data.multiples) {
+                    setCodigoStatus('Este codigo existe en varias piezas. Elige la categoria y almacen correctos.', 'is-warning');
+                    mostrarOpcionesCodigo(data.resultados || []);
                     return;
                 }
-
-                document.getElementById('categoria').value = data.categoria || '';
-                document.getElementById('numero_parte').value = data.numero_parte || '';
-                document.getElementById('descripcion').value = data.descripcion || '';
-                document.getElementById('apodo').value = data.apodo || '';
-                document.getElementById('marca').value = data.marca || '';
-                document.getElementById('proveedor').value = data.proveedor || '';
-                document.getElementById('almacen').value = data.almacen || '';
-                document.getElementById('stock').focus();
-                alert('Material identificado. Escribe cuantas piezas entraron para sumar stock.');
+                if (!data.encontrado) {
+                    document.getElementById('descripcion').focus();
+                    setCodigoStatus('Codigo nuevo. Completa nombre, cantidad y evidencia; se enviara al administrador para aprobacion.', 'is-warning');
+                    return;
+                }
+                llenarDatosExistentes(data);
             })
-            .catch((error) => console.error('Error al consultar codigo:', error));
+            .catch((error) => {
+                console.error('Error al consultar codigo:', error);
+                setCodigoStatus('No se pudo consultar el codigo. Puedes completar el formulario y Laravel lo validara al guardar.', 'is-warning');
+            });
     }
+
+    const codigoInput = document.getElementById('codigo_barras');
+    codigoInput.addEventListener('input', () => {
+        clearTimeout(consultaCodigoTimer);
+        const codigo = codigoInput.value.trim();
+        if (codigo.length < 4) return;
+        consultaCodigoTimer = setTimeout(() => consultarCodigoLocal(codigo), 420);
+    });
+    codigoInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            consultarCodigoLocal(codigoInput.value, true);
+        }
+    });
+    codigoInput.addEventListener('blur', () => {
+        if (codigoInput.value.trim().length >= 4) consultarCodigoLocal(codigoInput.value, true);
+    });
 
     function abrirCamaraWeb() {
         const video = document.getElementById('videoElement');

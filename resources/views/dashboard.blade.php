@@ -95,7 +95,7 @@
         .card-link { color: inherit; text-decoration: none; }
         .card-link.amber .card-footer { color: #b45309; }
         .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--card-color); box-shadow: 0 0 8px var(--card-color); }
-        .charts-main { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(330px, 0.8fr); gap: 18px; margin-bottom: 18px; }
+        .charts-main { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(390px, 0.95fr); gap: 18px; margin-bottom: 18px; }
         .charts-secondary { display: grid; grid-template-columns: minmax(330px, 0.8fr) minmax(0, 1.2fr); gap: 18px; margin-bottom: 18px; }
         .panel { min-width: 0; padding: 19px; background: linear-gradient(145deg, rgba(30, 41, 59, 0.66), rgba(15, 23, 42, 0.75)); border: 1px solid var(--line-soft); border-radius: 18px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28); }
         .panel-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; margin-bottom: 15px; }
@@ -308,7 +308,7 @@
                         </div>
                         <span class="panel-tag">Distribución</span>
                     </div>
-                    <div class="chart-shell medium">
+                    <div class="chart-shell medium" id="valorChartShell">
                         <canvas id="valorChart"></canvas>
                     </div>
                 </article>
@@ -468,20 +468,57 @@
         }
     });
 
-    const coloresCategorias = ['#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#3b82f6', '#ef4444', '#8b5cf6', '#14b8a6', '#f97316'];
-    const totalValorCategorias = valorData.reduce((acumulado, valor) => acumulado + Number(valor || 0), 0);
+    const coloresCategorias = ['#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#3b82f6', '#ef4444', '#8b5cf6', '#14b8a6', '#f97316', '#64748b'];
+    const valorPairs = valorLabels.map((label, index) => ({
+        label: String(label || 'Sin categoria'),
+        value: Number(valorData[index] || 0),
+    })).sort((a, b) => b.value - a.value);
+    const principalesCategorias = valorPairs.slice(0, 10);
+    const valorRestante = valorPairs.slice(10).reduce((sum, item) => sum + item.value, 0);
+    if (valorRestante > 0) principalesCategorias.push({ label: 'Otras categorias', value: valorRestante });
+    const totalValorCategorias = principalesCategorias.reduce((acumulado, item) => acumulado + item.value, 0);
+    const valorChartShell = document.getElementById('valorChartShell');
+    valorChartShell.style.height = `${Math.max(310, Math.min(620, 74 + (principalesCategorias.length * 38)))}px`;
 
     new Chart(document.getElementById('valorChart'), {
-        type: 'doughnut',
-        data: { labels: valorLabels.length ? valorLabels : ['Sin valor capturado'], datasets: [{ data: valorData.length ? valorData : [1], backgroundColor: coloresCategorias, borderColor: '#ffffff', borderWidth: 4, hoverBorderColor: '#FFFF', hoverOffset: 9, spacing: 2 }] },
+        type: 'bar',
+        data: {
+            labels: (principalesCategorias.length ? principalesCategorias : [{ label: 'Sin valor capturado', value: 0 }]).map((item) => acortar(item.label, 34)),
+            datasets: [{
+                label: 'Valor de inventario',
+                data: (principalesCategorias.length ? principalesCategorias : [{ label: 'Sin valor capturado', value: 0 }]).map((item) => item.value),
+                backgroundColor: principalesCategorias.map((_, index) => coloresCategorias[index % coloresCategorias.length]),
+                borderRadius: 7,
+                borderSkipped: false,
+                maxBarThickness: 25,
+            }],
+        },
         options: {
-            responsive: true, maintainAspectRatio: false, cutout: '67%', animation: { animateRotate: true, duration: 1000, easing: 'easeOutQuart' },
+            indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            animation: { duration: 800, easing: 'easeOutQuart' },
             plugins: {
-                legend: { position: 'bottom', labels: { color: '#334155', boxWidth: 11, boxHeight: 11, padding: 14, usePointStyle: true, pointStyle: 'circle', font: { size: 10, weight: '700' }, generateLabels(chart) { const datos = chart.data; if (!datos.labels.length || !datos.datasets.length) { return []; } return datos.labels.map((label, indice) => { const meta = chart.getDatasetMeta(0); const estilo = meta.controller.getStyle(indice); return { text: acortar(label, 25), fillStyle: estilo.backgroundColor, strokeStyle: estilo.borderColor, lineWidth: estilo.borderWidth, hidden: !chart.getDataVisibility(indice), index: indice, pointStyle: 'circle' }; }); } } },
-                tooltip: { callbacks: { label(context) { const valor = Number(context.raw || 0); const porcentaje = totalValorCategorias > 0 ? (valor / totalValorCategorias * 100).toFixed(1) : '0.0'; return ` ${context.label}: ${formatoMoneda(valor)} (${porcentaje}%)`; } } },
-                textoCentral: { mostrar: true, textoPrincipal: `${valorLabels.length}`, textoSecundario: valorLabels.length === 1 ? 'CATEGORIA' : 'CATEGORIAS', tamanoPrincipal: 24, tamanoSecundario: 10, colorPrincipal: '#102033', colorSecundario: '#94a3b8' }
-            }
-        }
+                legend: { display: false },
+                tooltip: { callbacks: {
+                    title(items) { return principalesCategorias[items[0].dataIndex]?.label || 'Categoria'; },
+                    label(context) {
+                        const value = Number(context.raw || 0);
+                        const percentage = totalValorCategorias > 0 ? (value / totalValorCategorias * 100).toFixed(1) : '0.0';
+                        return ` ${formatoMoneda(value)} (${percentage}%)`;
+                    },
+                } },
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: { color: '#64748b', font: { size: 10, weight: '700' }, callback(value) { return `$${formatoNumero(value)}`; } },
+                    grid: { color: 'rgba(148, 163, 184, .22)' }, border: { display: false },
+                },
+                y: {
+                    ticks: { color: '#102033', font: { size: 11, weight: '800' }, padding: 8 },
+                    grid: { display: false }, border: { display: false },
+                },
+            },
+        },
     });
 
     const porcentajeInventario = (cantidad) => {

@@ -545,6 +545,14 @@
         disableGlobalLightbox: false,
         csrfToken: @json(csrf_token()),
         searchUrl: @json(route('buscar.global')),
+        realtime: {
+            enabled: @json(config('broadcasting.default') === 'reverb' && filled(config('broadcasting.connections.reverb.key'))),
+            key: @json(config('broadcasting.connections.reverb.key')),
+            host: @json(env('REVERB_PUBLIC_HOST', request()->getHost())),
+            port: @json((int) env('REVERB_PUBLIC_PORT', config('broadcasting.connections.reverb.options.port', 8080))),
+            forceTls: @json(env('REVERB_PUBLIC_SCHEME', config('broadcasting.connections.reverb.options.useTLS', false) ? 'https' : 'http') === 'https'),
+        },
     };
 </script>
+@vite('resources/js/app.js')
 <script src="{{ asset('js/workspace.js') }}" defer></script>

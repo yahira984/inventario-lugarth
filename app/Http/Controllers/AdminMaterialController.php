@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AuditLog;
 use App\Models\Material;
 use App\Models\MaterialMovimiento;
+use App\Models\MaterialSupplierPrice;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -54,6 +55,39 @@ class AdminMaterialController extends Controller
             ->latest()
             ->paginate(20, ['*'], 'logs_page');
 
-        return view('admin.materiales.historial', compact('material', 'movimientos', 'logs'));
+        $precios = MaterialSupplierPrice::query()
+            ->where('material_id', $material->id)
+            ->latest('registrado_en')
+            ->latest('id')
+            ->paginate(20, ['*'], 'precios_page');
+        $seriePrecios = MaterialSupplierPrice::query()
+            ->where('material_id', $material->id)
+            ->orderBy('registrado_en')
+            ->orderBy('id')
+            ->limit(60)
+            ->get();
+        $resumenProveedores = $seriePrecios
+            ->groupBy(fn (MaterialSupplierPrice $price): string => mb_strtolower($price->proveedor))
+            ->map(function ($items): array {
+                $latest = $items->last();
+
+                return [
+                    'proveedor' => $latest->proveedor,
+                    'precio_actual' => (float) $latest->precio_unitario,
+                    'registros' => $items->count(),
+                    'ultima_fecha' => $latest->registrado_en,
+                ];
+            })
+            ->sortBy('precio_actual')
+            ->values();
+
+        return view('admin.materiales.historial', compact(
+            'material',
+            'movimientos',
+            'logs',
+            'precios',
+            'seriePrecios',
+            'resumenProveedores',
+        ));
     }
 }

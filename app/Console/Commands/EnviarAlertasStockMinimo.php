@@ -30,16 +30,21 @@ class EnviarAlertasStockMinimo extends Command
             ->whereColumn('stock', '>', 'stock_maximo')
             ->orderByRaw('(stock - stock_maximo) desc')
             ->get();
-        $sinMovimiento = Material::query()
-            ->where('es_plantilla_equipo', false)
-            ->where('stock', '>', 0)
-            ->whereDoesntHave('movimientos', function ($query): void {
-                $query->where('created_at', '>=', now()->subDays(90));
-            })
-            ->orderByDesc('stock')
-            ->get();
+        $sinMovimiento = collect([30, 90, 180])
+            ->mapWithKeys(function (int $days) {
+                $items = Material::query()
+                    ->where('es_plantilla_equipo', false)
+                    ->where('stock', '>', 0)
+                    ->whereDoesntHave('movimientos', function ($query) use ($days): void {
+                        $query->where('created_at', '>=', now()->subDays($days));
+                    })
+                    ->orderByDesc('stock')
+                    ->get();
 
-        if ($materiales->isEmpty() && $excesos->isEmpty() && $sinMovimiento->isEmpty()) {
+                return [$days => $items];
+            });
+
+        if ($materiales->isEmpty() && $excesos->isEmpty() && $sinMovimiento->every->isEmpty()) {
             $this->info('Inventario sin alertas operativas.');
 
             return self::SUCCESS;
@@ -64,18 +69,23 @@ class EnviarAlertasStockMinimo extends Command
                 ['date' => today()->toDateString(), 'count' => $excesos->count(), 'type' => 'maximum']
             );
         }
-        if ($sinMovimiento->isNotEmpty()) {
+        foreach ($sinMovimiento as $days => $items) {
+            if ($items->isEmpty()) {
+                continue;
+            }
+
             $notifier->admins(
                 'Materiales sin movimiento',
-                "{$sinMovimiento->count()} materiales llevan al menos 90 dias sin movimiento.",
-                route('admin.compras.index', ['sin_movimiento' => 90]).'#sin-movimiento',
-                'blue',
-                ['date' => today()->toDateString(), 'count' => $sinMovimiento->count(), 'type' => 'inactive']
+                "{$items->count()} materiales llevan al menos {$days} dias sin movimiento.",
+                route('admin.compras.index', ['sin_movimiento' => $days]).'#sin-movimiento',
+                $days >= 180 ? 'red' : ($days >= 90 ? 'amber' : 'blue'),
+                ['date' => today()->toDateString(), 'count' => $items->count(), 'type' => 'inactive', 'days' => $days]
             );
         }
 
         if ($materiales->isEmpty()) {
-            $this->info("Alertas internas creadas: {$excesos->count()} excesos y {$sinMovimiento->count()} materiales inactivos.");
+            $inactiveTotal = $sinMovimiento->sum(fn ($items) => $items->count());
+            $this->info("Alertas internas creadas: {$excesos->count()} excesos y {$inactiveTotal} avisos por inactividad.");
 
             return self::SUCCESS;
         }

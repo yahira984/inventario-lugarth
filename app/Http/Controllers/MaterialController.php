@@ -456,7 +456,18 @@ class MaterialController extends Controller
 
     public function buscarPorCodigo(Request $request)
     {
-        $materiales = Material::where('codigo_barras', $request->codigo)
+        $codigo = trim((string) $request->validate([
+            'codigo' => ['nullable', 'string', 'max:255'],
+        ])['codigo']);
+
+        if ($codigo === '') {
+            return response()->json([
+                'encontrado' => false,
+                'mensaje' => 'Escribe o escanea un codigo para buscarlo.',
+            ]);
+        }
+
+        $materiales = Material::where('codigo_barras', $codigo)
             ->where('es_plantilla_equipo', false)
             ->orderBy('categoria')
             ->orderBy('descripcion')
@@ -478,6 +489,13 @@ class MaterialController extends Controller
                     'apodo' => $material->apodo,
                     'marca' => $material->marca,
                     'proveedor' => $material->proveedor,
+                    'proveedor_rfc' => $material->proveedor_rfc,
+                    'clave_sat' => $material->clave_sat,
+                    'clave_unidad' => $material->clave_unidad,
+                    'unidad' => $material->unidad,
+                    'costo_unitario' => $material->costo_unitario,
+                    'stock_minimo' => $material->stock_minimo,
+                    'stock_maximo' => $material->stock_maximo,
                     'stock' => $material->stock,
                     'fotografia' => $material->fotografia,
                 ])->values(),
@@ -498,6 +516,13 @@ class MaterialController extends Controller
                 'apodo' => $material->apodo,
                 'marca' => $material->marca,
                 'proveedor' => $material->proveedor,
+                'proveedor_rfc' => $material->proveedor_rfc,
+                'clave_sat' => $material->clave_sat,
+                'clave_unidad' => $material->clave_unidad,
+                'unidad' => $material->unidad,
+                'costo_unitario' => $material->costo_unitario,
+                'stock_minimo' => $material->stock_minimo,
+                'stock_maximo' => $material->stock_maximo,
                 'stock' => $material->stock,
                 'fotografia' => $material->fotografia,
             ]);
