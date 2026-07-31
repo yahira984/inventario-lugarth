@@ -62,7 +62,15 @@
         .stock-check li { margin:5px 0; font-size:13px; font-weight:750; line-height:1.4; }
         .stock-check.ok { background:#ecfdf5; border-color:#86efac; color:#166534; }
         .stock-check.bad { background:#fef2f2; border-color:#fecaca; color:#991b1b; }
-        @media (max-width: 980px) { .hero,.grid { display:block; } .form-grid { grid-template-columns:1fr; } .btn { width:100%; } table,thead,tbody,tr,td,th { display:block; } th { display:none; } td { border:1px solid #d8e8f7; border-radius:0; } td:first-child { border-radius:12px 12px 0 0; } td:last-child { border-radius:0 0 12px 12px; } }
+        .planning-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:0 0 18px; }
+        .planning-metric { background:#fff; border:1px solid #cfe0f2; border-radius:14px; padding:16px; box-shadow:0 10px 28px rgba(15,60,105,.08); }
+        .planning-metric small { display:block; color:#58718a; font-size:11px; font-weight:900; text-transform:uppercase; }
+        .planning-metric strong { display:block; margin-top:5px; color:#062443; font-size:24px; }
+        .planning-limit { grid-column:1/-1; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; background:#fff7ed; border-color:#fed7aa; }
+        .planning-limit-copy { min-width:0; }
+        .planning-limit-copy strong { font-size:15px; color:#9a3412; }
+        .planning-limit-copy span { display:block; margin-top:4px; color:#7c2d12; font-size:12px; font-weight:700; }
+        @media (max-width: 980px) { .hero,.grid { display:block; } .planning-strip { grid-template-columns:1fr; } .planning-limit { grid-column:auto; } .form-grid { grid-template-columns:1fr; } .btn { width:100%; } table,thead,tbody,tr,td,th { display:block; } th { display:none; } td { border:1px solid #d8e8f7; border-radius:0; } td:first-child { border-radius:12px 12px 0 0; } td:last-child { border-radius:0 0 12px 12px; } }
     </style>
 </head>
 <body>
@@ -80,6 +88,57 @@
 
             @if(session('success')) <div class="alert alert-ok">{{ session('success') }}</div> @endif
             @if($errors->any()) <div class="alert alert-bad">{{ $errors->first() }}</div> @endif
+
+            <section class="planning-strip" aria-label="Simulador de produccion">
+                <div class="planning-metric">
+                    <small>Equipos fabricables hoy</small>
+                    <strong>{{ number_format($planeacion['fabricables']) }}</strong>
+                </div>
+                <div class="planning-metric">
+                    <small>Costo aproximado por equipo</small>
+                    <strong>≈ ${{ number_format($planeacion['costo_unitario'], 2) }}</strong>
+                    @if($planeacion['costos_sin_factura']->isNotEmpty())
+                        <span class="muted">{{ $planeacion['costos_sin_factura']->count() }} piezas usan costo actual por falta de factura historica.</span>
+                    @else
+                        <span class="muted">Calculado con la ultima factura disponible de cada pieza.</span>
+                    @endif
+                </div>
+                <div class="planning-metric">
+                    <small>Valor de equipos fabricables</small>
+                    <strong>${{ number_format($planeacion['valor_stock_fabricable'], 2) }}</strong>
+                </div>
+                @if($planeacion['limitantes']->isNotEmpty())
+                    @foreach($planeacion['limitantes'] as $limitante)
+                        <div class="planning-metric planning-limit">
+                            <div class="planning-limit-copy">
+                                <small>Pieza limitante</small>
+                                <strong>{{ $limitante['descripcion'] }}</strong>
+                                <span>
+                                    Stock {{ number_format($limitante['stock']) }} ·
+                                    usa {{ rtrim(rtrim(number_format($limitante['cantidad_por_equipo'], 2), '0'), '.') }} por equipo ·
+                                    permite {{ number_format($limitante['fabricables']) }} equipos
+                                </span>
+                            </div>
+                            @if($limitante['material'])
+                                <form method="POST" action="{{ route('admin.compras.requests.quick', $limitante['material']) }}">
+                                    @csrf
+                                    <input type="hidden" name="motivo" value="Pieza limitante para {{ $equipo->nombre }}">
+                                    <input type="hidden" name="prioridad" value="alta">
+                                    <button class="btn btn-amber" type="submit">Solicitar material</button>
+                                </form>
+                            @endif
+                        </div>
+                    @endforeach
+                @elseif(!$planeacion['listo'])
+                    <div class="planning-metric planning-limit">
+                        <div class="planning-limit-copy">
+                            <small>Simulador incompleto</small>
+                            <strong>Vincula todas las piezas reales</strong>
+                            <span>El sistema calculara capacidad y costo cuando la receta quede completa.</span>
+                        </div>
+                    </div>
+                @endif
+            </section>
 
             <div class="grid">
                 <section>

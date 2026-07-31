@@ -57,6 +57,38 @@ class Material extends Model
         return $this->hasMany(MaterialMovimiento::class);
     }
 
+    public function supplierPrices()
+    {
+        return $this->hasMany(MaterialSupplierPrice::class);
+    }
+
+    public function photos()
+    {
+        return $this->hasMany(MaterialPhoto::class);
+    }
+
+    public function purchaseRequestItems()
+    {
+        return $this->hasMany(PurchaseRequestItem::class);
+    }
+
+    public function latestSupplierPrice()
+    {
+        return $this->hasOne(MaterialSupplierPrice::class)->latestOfMany('registrado_en');
+    }
+
+    public function latestInvoicePrice()
+    {
+        return $this->hasOne(MaterialSupplierPrice::class)
+            ->where('origen', 'xml')
+            ->latestOfMany('registrado_en');
+    }
+
+    public function visualFeedback()
+    {
+        return $this->hasMany(VisualSearchFeedback::class, 'suggested_material_id');
+    }
+
     public function nombreBusqueda(): string
     {
         return trim($this->descripcion.($this->apodo ? " ({$this->apodo})" : ''));

@@ -26,4 +26,9 @@ class FacturaXmlImportacion extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function purchaseOrder()
+    {
+        return $this->belongsTo(PurchaseOrder::class);
+    }
 }

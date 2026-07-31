@@ -12,6 +12,11 @@ Schedule::command('inventario:alertas-stock')
     ->dailyAt('08:00')
     ->timezone('America/Mexico_City');
 
+Schedule::command('inventario:captura-diaria')
+    ->dailyAt('23:55')
+    ->timezone('America/Mexico_City')
+    ->withoutOverlapping();
+
 Schedule::command('chat:limpiar')
     ->dailyAt('03:30')
     ->timezone('America/Mexico_City')

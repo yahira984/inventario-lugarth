@@ -76,6 +76,26 @@ class StockMovementIntegrityTest extends TestCase
         $this->assertDatabaseCount('material_movimientos', 0);
     }
 
+    public function test_continuous_output_returns_to_a_clean_scanning_screen(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'almacenista',
+            'approved_at' => now(),
+        ]);
+        $material = $this->material('Conector para salida continua', 5);
+
+        $this->actingAs($user)
+            ->post(route('materiales.salidas.store'), [
+                'material_id' => $material->id,
+                'cantidad' => 2,
+                'modo_continuo' => 1,
+            ])
+            ->assertRedirect(route('materiales.salidas.create', ['continuo' => 1]))
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame(3, $material->fresh()->stock);
+    }
+
     public function test_warehousekeeper_can_request_a_new_material_and_stock_is_added_only_after_approval(): void
     {
         Storage::fake('public');

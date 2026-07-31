@@ -3,9 +3,11 @@
     $workspaceIsAdmin = $workspaceUser?->puedeAdministrarCatalogo() ?? false;
     $workspaceCanMove = $workspaceUser?->puedeMoverStock() ?? false;
     $workspaceIsConsultant = $workspaceUser?->esConsultor() ?? false;
-    $workspaceNotificationCount = ($workspaceStockAlerts ?? 0)
+    $workspaceStaticNotificationCount = ($workspaceStockAlerts ?? 0)
         + ($workspacePendingEntries ?? 0)
         + ($workspacePendingUsers ?? 0);
+    $workspaceNotificationCount = $workspaceStaticNotificationCount
+        + ($workspaceUnreadDatabaseNotifications ?? 0);
 
     $workspaceItem = static fn (
         string $label,
@@ -73,6 +75,10 @@
             'label' => 'Compras',
             'key' => 'compras',
             'items' => array_values(array_filter([
+                $workspaceCanMove ? $workspaceItem(
+                    'Planeación de compras', route('admin.compras.index'), 'images/registro.png', 'amber', request()->routeIs('admin.compras.index'), $workspacePendingPurchases ?? 0,
+                    'Solicitudes, sugerencias y reabastecimiento'
+                ) : null,
                 $workspaceIsAdmin ? $workspaceItem(
                     'Aprobar entradas', route('admin.entradas.index'), 'images/entrada.png', 'amber', request()->routeIs('admin.entradas.*'), $workspacePendingEntries ?? 0,
                     'Solicitudes pendientes de almacén'
@@ -82,12 +88,20 @@
                     'Facturas CFDI y costos de compra'
                 ) : null,
                 $workspaceIsAdmin ? $workspaceItem(
-                    'Proveedores', route('admin.proveedores.index'), 'images/provedor.png', 'amber', request()->routeIs('admin.proveedores.*'), 0,
+                    'Proveedores', route('admin.proveedores.index'), 'images/provedor.png', 'amber', request()->routeIs('admin.proveedores.index', 'admin.proveedores.show'), 0,
                     'Compras y materiales por proveedor'
                 ) : null,
-                $workspaceIsAdmin ? $workspaceItem(
+                $workspaceCanMove ? $workspaceItem(
                     'Órdenes de compra', route('admin.ordenes.index'), 'images/registro.png', 'amber', request()->routeIs('admin.ordenes.*'), 0,
-                    'Planeación y seguimiento de pedidos'
+                    $workspaceIsAdmin ? 'Planeación y seguimiento de pedidos' : 'Recepción de pedidos autorizados'
+                ) : null,
+                $workspaceIsAdmin ? $workspaceItem(
+                    'Comparar precios', route('admin.proveedores.comparador'), 'images/provedor.png', 'teal', request()->routeIs('admin.proveedores.comparador'), 0,
+                    'Mismo material entre distintos proveedores'
+                ) : null,
+                $workspaceIsAdmin ? $workspaceItem(
+                    'Inventario histórico', route('admin.compras.historical'), 'images/historial1.png', 'teal', request()->routeIs('admin.compras.historical'), 0,
+                    'Stock y valor en una fecha determinada'
                 ) : null,
             ])),
         ],
@@ -158,6 +172,9 @@
     $workspaceBreadcrumbs = match (true) {
         str_starts_with($workspaceRouteName, 'admin.entradas.') => ['Compras', 'Entradas pendientes'],
         str_starts_with($workspaceRouteName, 'materiales.xml.') => ['Compras', 'Importar XML'],
+        $workspaceRouteName === 'admin.compras.index' => ['Compras', 'Planeación de compras'],
+        $workspaceRouteName === 'admin.compras.historical' => ['Compras', 'Inventario histórico'],
+        $workspaceRouteName === 'admin.proveedores.comparador' => ['Compras', 'Comparar precios'],
         str_starts_with($workspaceRouteName, 'admin.proveedores.') => ['Compras', 'Proveedores'],
         str_starts_with($workspaceRouteName, 'admin.ordenes.') => ['Compras', 'Órdenes de compra'],
         str_starts_with($workspaceRouteName, 'equipos.withdrawals.history') => ['Equipos', 'Historial'],
@@ -284,7 +301,7 @@
         </button>
         <button type="button" class="workspace-icon-button" id="workspaceNotifications" aria-label="Notificaciones" title="Notificaciones" aria-expanded="false">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
-            @if($workspaceNotificationCount > 0)<span class="workspace-count">{{ $workspaceNotificationCount > 99 ? '99+' : $workspaceNotificationCount }}</span>@endif
+            <span class="workspace-count" id="workspaceNotificationCount" @if($workspaceNotificationCount === 0) hidden @endif>{{ $workspaceNotificationCount > 99 ? '99+' : $workspaceNotificationCount }}</span>
         </button>
 
         <!-- AQUI AGREGAMOS LA FOTO DE PERFIL EN EL TOPBAR (ARRIBA A LA DERECHA) -->
@@ -301,8 +318,29 @@
 </header>
 
 <section class="workspace-popover notification-popover" id="notificationPopover" hidden aria-label="Centro de notificaciones">
-    <header><div><strong>Notificaciones</strong><small>{{ $workspaceNotificationCount }} asuntos requieren atención</small></div><button type="button" data-close-popover aria-label="Cerrar">×</button></header>
-    <div class="notification-list">
+    <header>
+        <div><strong>Notificaciones</strong><small id="workspaceNotificationSummary">{{ $workspaceNotificationCount }} asuntos requieren atención</small></div>
+        <div style="display:flex;gap:6px;">
+            <button type="button" id="workspaceReadAllNotifications" aria-label="Marcar todas como leídas" title="Marcar todas como leídas">✓</button>
+            <button type="button" data-close-popover aria-label="Cerrar">×</button>
+        </div>
+    </header>
+    <div class="notification-list" id="workspaceNotificationList">
+        <div id="workspaceDatabaseNotifications">
+            @foreach(($workspaceDatabaseNotifications ?? collect()) as $notification)
+                <a
+                    href="{{ $notification->data['url'] ?? route('materiales.index') }}"
+                    class="notification-item tone-{{ $notification->data['tone'] ?? 'blue' }} {{ $notification->read_at ? 'is-read' : 'is-unread' }}"
+                    data-notification-id="{{ $notification->id }}"
+                >
+                    <span class="notification-dot"></span>
+                    <span>
+                        <strong>{{ $notification->data['title'] ?? 'Notificación' }}</strong>
+                        <small>{{ $notification->data['message'] ?? '' }} · {{ $notification->created_at?->diffForHumans() }}</small>
+                    </span>
+                </a>
+            @endforeach
+        </div>
         @if(($workspacePendingEntries ?? 0) > 0)
             <a href="{{ route('admin.entradas.index') }}" class="notification-item tone-amber"><span class="notification-dot"></span><span><strong>{{ $workspacePendingEntries }} entradas por aprobar</strong><small>Revisa evidencias y corrige los datos antes de sumar stock.</small></span></a>
         @endif
@@ -312,7 +350,7 @@
         @if(($workspacePendingUsers ?? 0) > 0)
             <a href="{{ route('usuarios.roles.index') }}" class="notification-item tone-indigo"><span class="notification-dot"></span><span><strong>{{ $workspacePendingUsers }} usuarios pendientes</strong><small>Aprueba sus correos y asigna el rol correcto.</small></span></a>
         @endif
-        @forelse(($workspaceRecentActivity ?? collect())->take(4) as $activity)
+        @forelse(($workspaceRecentActivity ?? collect())->take(3) as $activity)
             <a href="{{ route('admin.auditoria.index', ['buscar' => $activity->accion]) }}" class="notification-item"><span class="notification-dot"></span><span><strong>{{ $activity->accion }}</strong><small>{{ $activity->user?->name ?? 'Sistema' }} · {{ $activity->created_at?->diffForHumans() }}</small></span></a>
         @empty
             @if($workspaceNotificationCount === 0)<div class="workspace-empty"><strong>Todo está al día</strong><span>No hay asuntos pendientes en este momento.</span></div>@endif
@@ -498,6 +536,12 @@
         pinUrlTemplate: @json(url('/equipo/mensajes/__MESSAGE__/fijar')),
         exportChatUrlTemplate: @json(url('/equipo/conversaciones/__USER__/descargar')),
         availabilityUrl: @json(route('team.availability')),
+        notificationsUrl: @json(route('notifications.index')),
+        notificationReadUrlTemplate: @json(url('/notificaciones/__NOTIFICATION__/leer')),
+        notificationReadAllUrl: @json(route('notifications.read-all')),
+        preferencesUrl: @json(route('preferences.store')),
+        preferences: @json($workspacePreferences ?? []),
+        staticNotificationCount: @json($workspaceStaticNotificationCount),
         disableGlobalLightbox: false,
         csrfToken: @json(csrf_token()),
         searchUrl: @json(route('buscar.global')),

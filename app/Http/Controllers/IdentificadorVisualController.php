@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Material;
+use App\Models\MaterialPhoto;
+use App\Models\VisualSearchFeedback;
 use App\Support\VisualEmbeddingService;
 use App\Support\VisualImageDescriptor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\Rule;
 use Throwable;
 
 class IdentificadorVisualController extends Controller
@@ -23,47 +27,61 @@ class IdentificadorVisualController extends Controller
 
     public function create()
     {
+        $this->scheduleIncrementalIndexRepair();
+
         return view('materiales.identificador_visual', [
             'resultados' => collect(),
             'analisis' => null,
             'preview' => null,
+            'previews' => [],
             'busquedaRealizada' => false,
             'iaActiva' => $this->visualAi->isReady(),
             'motorWarning' => null,
+            'searchSignature' => null,
+            'visualDiagnostics' => $this->visualDiagnostics(),
         ]);
     }
 
     public function search(Request $request)
     {
+        $this->scheduleIncrementalIndexRepair();
+
         $datos = $request->validate([
-            'fotografia' => [
+            'fotografias' => ['required', 'array', 'size:2'],
+            'fotografias.*' => [
                 'required',
                 'image',
                 'mimes:jpeg,png,jpg,webp',
                 'dimensions:max_width=8000,max_height=8000',
-                'max:8192',
+                'max:6144',
             ],
         ], [
-            'fotografia.required' => 'Toma una foto o selecciona una imagen para buscar sugerencias.',
-            'fotografia.image' => 'El archivo debe ser una imagen.',
-            'fotografia.mimes' => 'La imagen debe ser JPG, JPEG, PNG o WEBP.',
-            'fotografia.dimensions' => 'La imagen es demasiado grande. Usa una foto de hasta 8000 x 8000 pixeles.',
-            'fotografia.max' => 'La imagen no debe pesar más de 8 MB.',
+            'fotografias.required' => 'Toma o selecciona dos fotografias de la misma pieza.',
+            'fotografias.size' => 'Necesitamos exactamente dos fotografias de la misma pieza, desde angulos distintos.',
+            'fotografias.*.image' => 'Cada archivo debe ser una imagen.',
+            'fotografias.*.mimes' => 'Las imagenes deben ser JPG, JPEG, PNG o WEBP.',
+            'fotografias.*.dimensions' => 'Una imagen es demasiado grande. Usa fotos de hasta 8000 x 8000 pixeles.',
+            'fotografias.*.max' => 'Cada imagen debe pesar menos de 6 MB.',
         ]);
 
-        $archivo = $datos['fotografia'];
-        $descriptor = $this->visualDescriptor->fromPath($archivo->getRealPath());
-        $embedding = null;
+        $archivos = collect($datos['fotografias'])->values();
+        $descriptors = $archivos
+            ->map(fn ($archivo): array => $this->visualDescriptor->fromPath($archivo->getRealPath()))
+            ->all();
+        $embeddings = [];
         $motorWarning = null;
 
         if ($this->visualAi->isReady()) {
             try {
                 if (function_exists('set_time_limit')) {
-                    @set_time_limit(150);
+                    @set_time_limit(240);
                 }
 
-                $embedding = $this->visualAi->fromPath($archivo->getRealPath());
+                foreach ($archivos as $archivo) {
+                    $embeddings[] = $this->visualAi->fromPath($archivo->getRealPath());
+                }
             } catch (Throwable $exception) {
+                $embeddings = [];
                 Log::warning('No se pudo usar CLIP + DINOv2 en el identificador visual.', [
                     'error' => $exception->getMessage(),
                     'diagnostico' => $this->visualAi->diagnostics(),
@@ -85,22 +103,109 @@ class IdentificadorVisualController extends Controller
             $motorWarning = 'El motor local no está completo. Falta: '.($missing ?: 'componente sin identificar').'.';
         }
 
+        $previews = $archivos
+            ->map(fn ($archivo) => $this->previewDataUri($archivo->getRealPath(), $archivo->getMimeType()))
+            ->filter()
+            ->values()
+            ->all();
+        $searchSignature = hash(
+            'sha256',
+            implode('|', collect($descriptors)->pluck('sha1')->filter()->all())
+        );
+
         return view('materiales.identificador_visual', [
-            'resultados' => $this->buscarMateriales($descriptor, $embedding),
+            'resultados' => $this->buscarMateriales($descriptors, $embeddings),
             'analisis' => [
-                'descriptor' => $descriptor,
-                'observaciones' => $this->observacionesDescriptor($descriptor),
+                'descriptor' => $descriptors[0],
+                'observaciones' => collect($descriptors)
+                    ->flatMap(fn (array $descriptor): array => $this->observacionesDescriptor($descriptor))
+                    ->unique()
+                    ->values()
+                    ->all(),
                 'terminos' => [],
-                'motor' => $embedding ? 'IA visual local' : 'Comparación exacta limitada',
+                'motor' => $embeddings !== [] ? 'IA visual local con 2 angulos' : 'Comparación exacta limitada',
             ],
-            'preview' => $this->previewDataUri($archivo->getRealPath(), $archivo->getMimeType()),
+            'preview' => $previews[0] ?? null,
+            'previews' => $previews,
             'busquedaRealizada' => true,
-            'iaActiva' => $embedding !== null,
+            'iaActiva' => $embeddings !== [],
             'motorWarning' => $motorWarning,
+            'searchSignature' => $searchSignature,
+            'visualDiagnostics' => $this->visualDiagnostics(),
         ]);
     }
 
-    private function buscarMateriales(array $descriptorFoto, ?array $embeddingFoto = null): Collection
+    public function feedback(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $data = $request->validate([
+            'suggested_material_id' => ['required', 'integer', 'exists:materials,id'],
+            'selected_material_id' => ['nullable', 'integer', 'exists:materials,id'],
+            'query_signature' => ['nullable', 'string', 'max:64'],
+            'was_correct' => ['required', 'boolean'],
+            'confidence' => ['nullable', 'numeric', 'between:0,100'],
+        ]);
+
+        VisualSearchFeedback::create([
+            'user_id' => $request->user()?->id,
+            'suggested_material_id' => $data['suggested_material_id'],
+            'selected_material_id' => $data['selected_material_id'] ?? null,
+            'query_signature' => $data['query_signature'] ?? null,
+            'was_correct' => $data['was_correct'],
+            'confidence' => isset($data['confidence']) ? ((float) $data['confidence'] / 100) : null,
+            'context' => ['source' => 'visual_identifier'],
+        ]);
+
+        return response()->json([
+            'ok' => true,
+            'message' => $data['was_correct']
+                ? 'Gracias. Esta confirmacion ayudara a ordenar mejor futuras busquedas.'
+                : 'Gracias. La coincidencia dudosa quedo registrada para reducir falsos positivos.',
+        ]);
+    }
+
+    public function repairIndex(Request $request): RedirectResponse
+    {
+        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403);
+
+        $materials = Material::query()
+            ->where('es_plantilla_equipo', false)
+            ->whereNotNull('fotografia')
+            ->where('fotografia', '<>', '')
+            ->where(function ($query): void {
+                $query->whereNull('visual_descriptor')
+                    ->orWhere('visual_descriptor->ai->version', '<>', VisualEmbeddingService::VERSION);
+            })
+            ->limit(20)
+            ->get();
+        $photos = MaterialPhoto::query()
+            ->where(function ($query): void {
+                $query->whereNull('visual_descriptor')
+                    ->orWhere('visual_descriptor->ai->version', '<>', VisualEmbeddingService::VERSION);
+            })
+            ->limit(max(0, 20 - $materials->count()))
+            ->get();
+        $indexed = 0;
+
+        foreach ($materials as $material) {
+            $indexed += $this->visualAi->indexMaterial($material) ? 1 : 0;
+        }
+        foreach ($photos as $photo) {
+            $indexed += $this->visualAi->indexPhoto($photo) ? 1 : 0;
+        }
+
+        return back()->with(
+            'success',
+            $indexed > 0
+                ? "Indice visual reparado: {$indexed} imagenes procesadas. Puedes repetir si aun quedan pendientes."
+                : 'El indice visual ya esta actualizado o el motor local no esta disponible.'
+        );
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $descriptoresFoto
+     * @param  array<int, array<string, mixed>>  $embeddingsFoto
+     */
+    private function buscarMateriales(array $descriptoresFoto, array $embeddingsFoto = []): Collection
     {
         $materials = Material::query()
             ->select([
@@ -116,53 +221,80 @@ class IdentificadorVisualController extends Controller
                 'visual_descriptor',
                 'visual_descriptor_signature',
             ])
+            ->with('photos:id,material_id,path,visual_descriptor,visual_descriptor_signature')
+            ->withCount([
+                'visualFeedback as visual_correct_count' => fn ($query) => $query->where('was_correct', true),
+                'visualFeedback as visual_incorrect_count' => fn ($query) => $query->where('was_correct', false),
+            ])
             ->where('es_plantilla_equipo', false)
             ->whereNotNull('fotografia')
             ->where('fotografia', '<>', '')
             ->get();
 
-        $usarAi = $embeddingFoto !== null && $materials->contains(
+        $usarAi = count($embeddingsFoto) === count($descriptoresFoto)
+            && $embeddingsFoto !== []
+            && $materials->contains(
             fn (Material $material) => $this->materialHasAiEmbedding($material)
+                || $material->photos->contains(
+                    fn (MaterialPhoto $photo) => data_get($photo->visual_descriptor, 'ai.version') === VisualEmbeddingService::VERSION
+                )
         );
 
         $comparados = $materials
-            ->map(function (Material $material) use ($descriptorFoto, $embeddingFoto, $usarAi) {
-                $descriptorMaterial = $usarAi
-                    ? (is_array($material->visual_descriptor) ? $material->visual_descriptor : [])
-                    : $this->visualDescriptor->forMaterial($material);
+            ->map(function (Material $material) use ($descriptoresFoto, $embeddingsFoto, $usarAi) {
+                $descriptorCandidates = collect([$material->visual_descriptor])
+                    ->concat($material->photos->pluck('visual_descriptor'))
+                    ->filter(fn ($descriptor): bool => is_array($descriptor) && $descriptor !== [])
+                    ->values();
+                $descriptorMaterial = $descriptorCandidates->first()
+                    ?: $this->visualDescriptor->forMaterial($material);
+                $descriptorCandidates = $descriptorCandidates
+                    ->push($descriptorMaterial)
+                    ->unique(fn (array $descriptor): string => (string) (
+                        $descriptor['sha1'] ?? spl_object_id((object) $descriptor)
+                    ))
+                    ->values();
 
-                if (! $usarAi) {
-                    [$puntaje, $motivos] = $this->compararDescriptores(
+                $matchesByAngle = collect($descriptoresFoto)
+                    ->map(fn (array $descriptorFoto, int $index): array => $this->bestCandidateScore(
                         $descriptorFoto,
-                        $descriptorMaterial
-                    );
-                } elseif ($this->sameImage($descriptorFoto, $descriptorMaterial)) {
-                    $puntaje = 100;
-                    $motivos = ['imagen exacta'];
-                } else {
-                    $embeddingMaterial = data_get($descriptorMaterial, 'ai.embedding');
+                        $usarAi ? ($embeddingsFoto[$index] ?? null) : null,
+                        $descriptorCandidates,
+                        $usarAi
+                    ));
+                $scores = $matchesByAngle->pluck(0)->map(fn ($score): int => (int) $score);
+                $averageScore = (float) $scores->average();
+                $minimumAngleScore = (int) ($scores->min() ?? 0);
+                $puntaje = (int) round(($averageScore * 0.72) + ($minimumAngleScore * 0.28));
+                $motivos = $matchesByAngle
+                    ->flatMap(fn (array $match): array => $match[1])
+                    ->unique()
+                    ->values()
+                    ->all();
 
-                    if (! is_array($embeddingMaterial) || $embeddingMaterial === []) {
-                        $puntaje = 0;
-                        $motivos = ['pendiente de indexar con IA'];
-                    } else {
-                        $detailEmbeddingMaterial = data_get($descriptorMaterial, 'ai.detail_embedding', []);
-                        $detailEmbeddingMaterial = is_array($detailEmbeddingMaterial)
-                            ? $detailEmbeddingMaterial
-                            : [];
-                        $similaridad = $this->visualAi->cosineSimilarity(
-                            $embeddingFoto['embedding'] ?? [],
-                            $embeddingMaterial
-                        );
-                        $similaridadDetalle = $this->visualAi->cosineSimilarity(
-                            $embeddingFoto['detail_embedding'] ?? [],
-                            $detailEmbeddingMaterial
-                        );
-                        $puntaje = $this->aiScore($similaridad, $similaridadDetalle);
-                        $motivos = $this->aiReasons($similaridad, $similaridadDetalle);
-                        $material->similitud_ia = round($similaridad, 4);
-                        $material->similitud_detalle = round($similaridadDetalle, 4);
-                    }
+                if ($usarAi) {
+                    $material->similitud_ia = round(
+                        (float) $matchesByAngle->avg(fn (array $match): float => (float) $match[2]),
+                        4
+                    );
+                    $material->similitud_detalle = round(
+                        (float) $matchesByAngle->avg(fn (array $match): float => (float) $match[3]),
+                        4
+                    );
+                }
+                if ($scores->count() === 2 && $minimumAngleScore >= 62) {
+                    $motivos[] = 'confirmada desde dos angulos';
+                    $puntaje = min(99, $puntaje + 3);
+                }
+
+                $feedbackTotal = (int) $material->visual_correct_count + (int) $material->visual_incorrect_count;
+                if ($feedbackTotal >= 2 && $puntaje < 100) {
+                    $ratio = (int) $material->visual_correct_count / $feedbackTotal;
+                    $adjustment = (int) round(($ratio - 0.5) * 10);
+                    $puntaje = max(0, min(99, $puntaje + $adjustment));
+                    $motivos[] = $adjustment >= 0
+                        ? 'confirmada por usuarios'
+                        : 'penalizada por retroalimentacion';
                 }
 
                 $material->puntaje_visual = $puntaje;
@@ -175,6 +307,7 @@ class IdentificadorVisualController extends Controller
         $minimumScore = $usarAi
             ? self::PUNTAJE_MINIMO_IA
             : self::PUNTAJE_MINIMO_CLASICO;
+        $comparados = $this->applyCategoryConsensus($comparados, $minimumScore, $usarAi);
         $resultados = $comparados
             ->filter(fn (Material $material) => $material->puntaje_visual >= $minimumScore)
             ->sortByDesc('puntaje_visual')
@@ -203,6 +336,115 @@ class IdentificadorVisualController extends Controller
             ->values();
     }
 
+    private function applyCategoryConsensus(
+        Collection $materials,
+        int $minimumScore,
+        bool $useAi
+    ): Collection {
+        if (! $useAi || $materials->count() < 3) {
+            return $materials;
+        }
+
+        $bestScore = (int) $materials->max('puntaje_visual');
+        $nearby = $materials
+            ->filter(fn (Material $material): bool => $material->puntaje_visual >= max(
+                $minimumScore - 2,
+                $bestScore - 6
+            ))
+            ->filter(fn (Material $material): bool => filled($material->categoria));
+        $categories = $nearby
+            ->groupBy(fn (Material $material): string => $this->normalizarTexto($material->categoria))
+            ->map->count()
+            ->sortDesc();
+        $dominantCategory = (string) ($categories->keys()->first() ?? '');
+        $dominantCount = (int) ($categories->first() ?? 0);
+        $secondCount = (int) ($categories->values()->get(1) ?? 0);
+
+        if ($dominantCategory === '' || $dominantCount < 2 || $dominantCount <= $secondCount) {
+            return $materials;
+        }
+
+        return $materials->map(function (Material $material) use ($dominantCategory): Material {
+            if ($this->normalizarTexto($material->categoria) === $dominantCategory) {
+                $material->puntaje_visual = min(99, (int) $material->puntaje_visual + 3);
+                $material->motivos_visual = collect($material->motivos_visual)
+                    ->push('categoria respaldada por varias referencias')
+                    ->unique()
+                    ->values()
+                    ->all();
+            } else {
+                $material->puntaje_visual = max(0, (int) $material->puntaje_visual - 1);
+            }
+
+            return $material;
+        });
+    }
+
+    /**
+     * @param  Collection<int, array<string, mixed>>  $candidates
+     * @return array{0:int,1:array<int,string>,2:float,3:float}
+     */
+    private function bestCandidateScore(
+        array $photoDescriptor,
+        ?array $photoEmbedding,
+        Collection $candidates,
+        bool $useAi
+    ): array {
+        $matches = $candidates->map(function (array $candidate) use (
+            $photoDescriptor,
+            $photoEmbedding,
+            $useAi
+        ): ?array {
+            if ($this->sameImage($photoDescriptor, $candidate)) {
+                return [100, ['imagen exacta'], 1.0, 1.0];
+            }
+
+            if (! $useAi || ! $photoEmbedding) {
+                [$score, $reasons] = $this->compararDescriptores($photoDescriptor, $candidate);
+
+                return [(int) $score, $reasons, 0.0, 0.0];
+            }
+
+            $semantic = data_get($candidate, 'ai.embedding');
+            $detail = data_get($candidate, 'ai.detail_embedding');
+            if (! is_array($semantic) || $semantic === []) {
+                return null;
+            }
+
+            $semanticSimilarity = $this->visualAi->cosineSimilarity(
+                $photoEmbedding['embedding'] ?? [],
+                $semantic
+            );
+            $detailSimilarity = $this->visualAi->cosineSimilarity(
+                $photoEmbedding['detail_embedding'] ?? [],
+                is_array($detail) ? $detail : []
+            );
+            $score = $this->aiScore($semanticSimilarity, $detailSimilarity);
+            $reasons = $this->aiReasons($semanticSimilarity, $detailSimilarity);
+
+            if (($photoDescriptor['color'] ?? null)
+                && ($photoDescriptor['color'] ?? null) === ($candidate['color'] ?? null)) {
+                $score = min(99, $score + 2);
+                $reasons[] = 'color dominante compatible';
+            }
+            if (($photoDescriptor['forma'] ?? null)
+                && ($photoDescriptor['forma'] ?? null) === ($candidate['forma'] ?? null)) {
+                $score = min(99, $score + 3);
+                $reasons[] = 'forma general compatible';
+            }
+
+            return [
+                $score,
+                array_values(array_unique($reasons)),
+                $semanticSimilarity,
+                $detailSimilarity,
+            ];
+        })->filter()->sortByDesc(fn (array $match): int => $match[0])->values();
+
+        return $matches->first()
+            ?? [0, [$useAi ? 'pendiente de indexar con IA' : 'foto no comparable'], 0.0, 0.0];
+    }
+
     private function materialHasAiEmbedding(Material $material): bool
     {
         return data_get($material->visual_descriptor, 'ai.version') === VisualEmbeddingService::VERSION
@@ -217,15 +459,15 @@ class IdentificadorVisualController extends Controller
 
     private function aiScore(float $semanticSimilarity, float $detailSimilarity): int
     {
-        if ($semanticSimilarity < 0.60) {
+        if ($semanticSimilarity < 0.58 || $detailSimilarity < 0.30) {
             return 0;
         }
 
-        $semanticScore = max(0, min(1, ($semanticSimilarity - 0.52) / 0.33)) * 100;
-        $detailSupport = max(0, min(1, ($detailSimilarity - 0.45) / 0.40));
-        $detailBonus = $semanticSimilarity >= 0.66 ? $detailSupport * 8 : 0;
+        $semantic = max(0, min(1, ($semanticSimilarity - 0.55) / 0.35));
+        $detail = max(0, min(1, ($detailSimilarity - 0.30) / 0.55));
+        $confidence = ($semantic * 0.42) + ($detail * 0.58);
 
-        return (int) round(min(100, $semanticScore + $detailBonus));
+        return $confidence < 0.50 ? 0 : (int) round(min(99, $confidence * 100));
     }
 
     /**
@@ -617,5 +859,76 @@ class IdentificadorVisualController extends Controller
         }
 
         return 'data:'.$mime.';base64,'.base64_encode($contenido);
+    }
+
+    private function visualDiagnostics(): array
+    {
+        $engine = $this->visualAi->diagnostics();
+        $materialPhotos = Material::query()
+            ->where('es_plantilla_equipo', false)
+            ->whereNotNull('fotografia')
+            ->where('fotografia', '<>', '')
+            ->count();
+        $referencePhotos = MaterialPhoto::query()->count();
+        $indexedMaterials = Material::query()
+            ->where('visual_descriptor->ai->version', VisualEmbeddingService::VERSION)
+            ->count();
+        $indexedReferences = MaterialPhoto::query()
+            ->where('visual_descriptor->ai->version', VisualEmbeddingService::VERSION)
+            ->count();
+
+        return [
+            ...$engine,
+            'images' => $materialPhotos + $referencePhotos,
+            'indexed' => $indexedMaterials + $indexedReferences,
+            'pending' => max(0, ($materialPhotos + $referencePhotos) - ($indexedMaterials + $indexedReferences)),
+        ];
+    }
+
+    private function scheduleIncrementalIndexRepair(): void
+    {
+        if (! $this->visualAi->isReady()) {
+            return;
+        }
+
+        app()->terminating(function (): void {
+            try {
+                if (function_exists('set_time_limit')) {
+                    @set_time_limit(180);
+                }
+
+                $photos = MaterialPhoto::query()
+                    ->where(function ($query): void {
+                        $query->whereNull('visual_descriptor')
+                            ->orWhere('visual_descriptor->ai->version', '<>', VisualEmbeddingService::VERSION);
+                    })
+                    ->limit(2)
+                    ->get();
+
+                foreach ($photos as $photo) {
+                    $this->visualAi->indexPhoto($photo);
+                }
+
+                if ($photos->count() >= 2) {
+                    return;
+                }
+
+                Material::query()
+                    ->where('es_plantilla_equipo', false)
+                    ->whereNotNull('fotografia')
+                    ->where('fotografia', '<>', '')
+                    ->where(function ($query): void {
+                        $query->whereNull('visual_descriptor')
+                            ->orWhere('visual_descriptor->ai->version', '<>', VisualEmbeddingService::VERSION);
+                    })
+                    ->limit(2 - $photos->count())
+                    ->get()
+                    ->each(fn (Material $material) => $this->visualAi->indexMaterial($material));
+            } catch (Throwable $exception) {
+                Log::warning('La reparacion incremental del indice visual no pudo completarse.', [
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        });
     }
 }

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Material;
 use App\Models\User;
+use App\Models\VisualSearchFeedback;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -36,12 +37,14 @@ class VisualIdentifierIndexTest extends TestCase
             'role' => 'consultor',
             'approved_at' => now(),
         ]);
-        $searchPhoto = UploadedFile::fake()
-            ->createWithContent('consulta.jpg', Storage::disk('public')->get($path))
-            ->mimeType('image/jpeg');
+        $contents = Storage::disk('public')->get($path);
+        $searchPhotos = [
+            UploadedFile::fake()->createWithContent('consulta-frente.jpg', $contents)->mimeType('image/jpeg'),
+            UploadedFile::fake()->createWithContent('consulta-lado.jpg', $contents)->mimeType('image/jpeg'),
+        ];
 
         $response = $this->actingAs($user)->post(route('materiales.visual.search'), [
-            'fotografia' => $searchPhoto,
+            'fotografias' => $searchPhotos,
         ]);
 
         $response->assertOk()
@@ -100,6 +103,53 @@ class VisualIdentifierIndexTest extends TestCase
             ->assertSee('Centra la pieza dentro de las guías');
     }
 
+    public function test_visual_identifier_requires_exactly_two_photos(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'consultor',
+            'approved_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->from(route('materiales.visual.create'))
+            ->post(route('materiales.visual.search'), [
+                'fotografias' => [
+                    UploadedFile::fake()->image('un-solo-angulo.jpg', 600, 600),
+                ],
+            ])
+            ->assertRedirect(route('materiales.visual.create'))
+            ->assertSessionHasErrors('fotografias');
+    }
+
+    public function test_user_can_confirm_or_reject_a_visual_suggestion(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'consultor',
+            'approved_at' => now(),
+        ]);
+        $material = Material::create([
+            'descripcion' => 'Pieza para retroalimentacion',
+            'stock' => 1,
+            'es_plantilla_equipo' => false,
+        ]);
+
+        $this->actingAs($user)
+            ->postJson(route('materiales.visual.feedback'), [
+                'suggested_material_id' => $material->id,
+                'query_signature' => str_repeat('a', 64),
+                'was_correct' => true,
+                'confidence' => 91,
+            ])
+            ->assertOk()
+            ->assertJsonPath('ok', true);
+
+        $feedback = VisualSearchFeedback::query()->firstOrFail();
+        $this->assertSame($user->id, $feedback->user_id);
+        $this->assertSame($material->id, $feedback->suggested_material_id);
+        $this->assertTrue($feedback->was_correct);
+        $this->assertSame('0.910', $feedback->confidence);
+    }
+
     public function test_cluttered_phone_photos_prefer_the_matching_piece_shape(): void
     {
         Storage::fake('public');
@@ -126,24 +176,28 @@ class VisualIdentifierIndexTest extends TestCase
             'role' => 'consultor',
             'approved_at' => now(),
         ]);
-        $query = UploadedFile::fake()
-            ->createWithContent('foto-celular.jpg', $this->createClutteredShapePhoto('triangle'))
-            ->mimeType('image/jpeg');
+        $triangleContents = $this->createClutteredShapePhoto('triangle');
+        $query = [
+            UploadedFile::fake()->createWithContent('foto-celular-1.jpg', $triangleContents)->mimeType('image/jpeg'),
+            UploadedFile::fake()->createWithContent('foto-celular-2.jpg', $triangleContents)->mimeType('image/jpeg'),
+        ];
 
         $response = $this->actingAs($user)->post(route('materiales.visual.search'), [
-            'fotografia' => $query,
+            'fotografias' => $query,
         ]);
 
         $response->assertOk()
             ->assertSee('Banderola triangular')
             ->assertDontSee('Cubeta con etiqueta roja');
 
-        $rectangleQuery = UploadedFile::fake()
-            ->createWithContent('foto-rectangulo.jpg', $this->createClutteredShapePhoto('rectangle'))
-            ->mimeType('image/jpeg');
+        $rectangleContents = $this->createClutteredShapePhoto('rectangle');
+        $rectangleQuery = [
+            UploadedFile::fake()->createWithContent('foto-rectangulo-1.jpg', $rectangleContents)->mimeType('image/jpeg'),
+            UploadedFile::fake()->createWithContent('foto-rectangulo-2.jpg', $rectangleContents)->mimeType('image/jpeg'),
+        ];
 
         $rectangleResponse = $this->actingAs($user)->post(route('materiales.visual.search'), [
-            'fotografia' => $rectangleQuery,
+            'fotografias' => $rectangleQuery,
         ]);
 
         $rectangleResponse->assertOk()

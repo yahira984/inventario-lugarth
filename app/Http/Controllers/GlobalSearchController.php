@@ -25,6 +25,10 @@ class GlobalSearchController extends Controller
         $results = collect();
 
         Material::query()
+            ->with(['photos' => fn ($builder) => $builder
+                ->orderByDesc('es_principal')
+                ->oldest()
+                ->limit(3)])
             ->where('es_plantilla_equipo', false)
             ->where(function ($builder) use ($like): void {
                 $builder->where('descripcion', 'like', $like)
@@ -37,9 +41,45 @@ class GlobalSearchController extends Controller
             ->orderBy('descripcion')
             ->limit(8)
             ->get()
-            ->each(function (Material $material) use ($results): void {
+            ->each(function (Material $material) use ($request, $results): void {
                 $inventoryTerm = $material->codigo_barras
                     ?: ($material->numero_parte ?: $material->descripcion);
+                $inventoryUrl = route('materiales.index', [
+                    'material_id' => $material->id,
+                    'buscar' => $inventoryTerm,
+                    'destacar' => $material->id,
+                ]) . '#material-' . $material->id;
+                $photos = collect([$material->fotografia])
+                    ->concat($material->photos->pluck('path'))
+                    ->filter()
+                    ->unique()
+                    ->take(3)
+                    ->map(fn (string $path): string => asset(
+                        'storage/' . ltrim(str_replace('\\', '/', $path), '/')
+                    ))
+                    ->values();
+                $actions = collect([
+                    [
+                        'label' => 'Ver en inventario',
+                        'url' => $inventoryUrl,
+                        'tone' => 'blue',
+                    ],
+                    $request->user()?->puedeMoverStock() ? [
+                        'label' => 'Registrar salida',
+                        'url' => route('materiales.salidas.create', ['buscar' => $inventoryTerm]),
+                        'tone' => 'red',
+                    ] : null,
+                    $request->user()?->puedeMoverStock() ? [
+                        'label' => 'Registrar entrada',
+                        'url' => route('materiales.create', ['codigo' => $material->codigo_barras]),
+                        'tone' => 'green',
+                    ] : null,
+                    $request->user()?->puedeAdministrarCatalogo() ? [
+                        'label' => 'Editar ficha',
+                        'url' => route('materiales.edit', $material),
+                        'tone' => 'amber',
+                    ] : null,
+                ])->filter()->values();
 
                 $results->push([
                     'type' => 'Material',
@@ -50,11 +90,7 @@ class GlobalSearchController extends Controller
                         $material->almacen,
                         $material->stock . ' ' . ($material->unidad ?: 'pzas'),
                     ]))),
-                    'url' => route('materiales.index', [
-                        'material_id' => $material->id,
-                        'buscar' => $inventoryTerm,
-                        'destacar' => $material->id,
-                    ]) . '#material-' . $material->id,
+                    'url' => $inventoryUrl,
                     'tone' => 'blue',
                     'image' => $material->fotografia
                         ? asset('storage/' . ltrim(str_replace('\\', '/', $material->fotografia), '/'))
@@ -65,6 +101,24 @@ class GlobalSearchController extends Controller
                         $material->categoria,
                         $material->almacen,
                     ]))),
+                    'preview' => [
+                        'description' => $material->descripcion,
+                        'nickname' => $material->apodo,
+                        'part_number' => $material->numero_parte,
+                        'barcode' => $material->codigo_barras,
+                        'category' => $material->categoria ?: 'Sin categoria',
+                        'warehouse' => $material->almacen ?: 'Sin almacen asignado',
+                        'brand' => $material->marca ?: 'Sin marca',
+                        'supplier' => $request->user()?->puedeAdministrarCatalogo()
+                            ? ($material->proveedor ?: 'Sin proveedor')
+                            : null,
+                        'stock' => $material->stock,
+                        'minimum_stock' => $material->stock_minimo,
+                        'maximum_stock' => $material->stock_maximo,
+                        'unit' => $material->unidad ?: 'pzas',
+                        'photos' => $photos,
+                        'actions' => $actions,
+                    ],
                 ]);
             });
 

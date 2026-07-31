@@ -124,6 +124,40 @@
         .header-actions { display: flex; gap: 15px; flex-wrap: wrap; }
         .legacy-logout { display: none; }
         .toolbar { padding: 24px 30px 0; }
+        .saved-filter-bar {
+            display: grid;
+            grid-template-columns: minmax(170px, 1fr) minmax(170px, 1fr) auto auto;
+            gap: 10px;
+            align-items: center;
+            margin-top: 11px;
+            padding: 11px;
+            background: #f8fbfd;
+            border: 1px solid #d7e3ed;
+            border-radius: 10px;
+        }
+        .saved-filter-bar input,
+        .saved-filter-bar select {
+            width: 100%;
+            min-height: 40px;
+            padding: 8px 11px;
+            color: #17324d;
+            background: #fff;
+            border: 1px solid #b9cde1;
+            border-radius: 7px;
+            font: inherit;
+        }
+        .saved-filter-bar button {
+            min-height: 40px;
+            padding: 0 13px;
+            color: #fff;
+            background: #0877d1;
+            border: 0;
+            border-radius: 7px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .saved-filter-bar .delete-filter { background: #dc2626; }
+        .saved-filter-status { grid-column: 1 / -1; min-height: 16px; color: #58718a; font-size: 11px; font-weight: 700; }
 
         .filter-form {
             display: grid;
@@ -712,6 +746,8 @@
                 grid-template-columns: 1fr;
                 gap: 10px;
             }
+            .saved-filter-bar { grid-template-columns: 1fr; }
+            .saved-filter-status { grid-column: 1; }
 
             .filter-form select,
             .filter-form input[type="text"],
@@ -916,12 +952,31 @@
                 @endforeach
             </select>
 
+            <select name="stock" aria-label="Filtrar por estado del inventario">
+                <option value="">Todos los estados</option>
+                <option value="agotado" @selected(request('stock') === 'agotado')>Agotado</option>
+                <option value="critico" @selected(request('stock') === 'critico')>Stock minimo</option>
+                <option value="exceso" @selected(request('stock') === 'exceso')>Exceso de stock</option>
+                <option value="sin_movimiento_30" @selected(request('stock') === 'sin_movimiento_30')>Sin movimiento 30 dias</option>
+                <option value="sin_movimiento_90" @selected(request('stock') === 'sin_movimiento_90')>Sin movimiento 90 dias</option>
+                <option value="sin_movimiento_180" @selected(request('stock') === 'sin_movimiento_180')>Sin movimiento 180 dias</option>
+            </select>
+
             <button type="submit" class="btn-filter" style="background: #1e293b !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; padding: 0 24px !important; border-radius: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 13px !important;">Buscar</button>
 
-            @if(request('filtrar_categoria') || request('buscar'))
+            @if(request('filtrar_categoria') || request('buscar') || request('stock'))
                 <a href="{{ route('materiales.index') }}" class="btn-clear" style="background: transparent !important; color: #64748b !important; border: 2px solid #64748b !important; box-shadow: none !important; padding: 0 16px !important; border-radius: 12px !important; font-weight: 700 !important; text-decoration: none !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">Limpiar</a>
             @endif
         </form>
+        <div class="saved-filter-bar" aria-label="Filtros guardados">
+            <select id="savedFilterSelect" aria-label="Elegir filtro guardado">
+                <option value="">Filtros guardados...</option>
+            </select>
+            <input id="savedFilterName" type="text" maxlength="50" placeholder="Nombre para guardar este filtro" aria-label="Nombre del filtro">
+            <button type="button" id="saveCurrentFilter">Guardar filtro</button>
+            <button type="button" id="deleteSavedFilter" class="delete-filter">Eliminar</button>
+            <span id="savedFilterStatus" class="saved-filter-status">Guarda combinaciones de busqueda, categoria y estado para reutilizarlas.</span>
+        </div>
     </div>
 
     @if(session('success'))
@@ -1073,6 +1128,14 @@
                                 @elseif(! auth()->user()?->puedeMoverStock())
                                     <span class="code-muted">Solo consulta</span>
                                 @endif
+                                @if($material->requiereReposicion() && auth()->user()?->puedeMoverStock())
+                                    <form action="{{ route('admin.compras.requests.quick', $material) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn-scan" title="Crear solicitud de reabasto">
+                                            Solicitar material
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                             <div class="action-buttons" style="display:none;">
                                 @unless($material->codigo_barras)
@@ -1176,6 +1239,10 @@
     const barcodeForm = document.getElementById('barcodeForm');
     const barcodeInput = document.getElementById('barcodeInput');
     const barcodeMaterialName = document.getElementById('barcodeMaterialName');
+    const savedFilterSelect = document.getElementById('savedFilterSelect');
+    const savedFilterName = document.getElementById('savedFilterName');
+    const savedFilterStatus = document.getElementById('savedFilterStatus');
+    let savedFilters = { ...(window.InventoryWorkspace?.preferences?.['inventory.saved_filters'] || {}) };
     const scannerModal = document.getElementById('scannerModal');
     const scannerTitle = document.getElementById('scannerTitle');
     let html5QrcodeScanner = null;
@@ -1184,6 +1251,78 @@
     let scannerBufferInicio = 0;
     let scannerUltimaTecla = 0;
     let scannerResetTimer = null;
+
+    function renderSavedFilters(selected = '') {
+        if (!savedFilterSelect) return;
+        savedFilterSelect.replaceChildren(new Option('Filtros guardados...', ''));
+        Object.keys(savedFilters)
+            .sort((first, second) => first.localeCompare(second, 'es'))
+            .forEach((name) => savedFilterSelect.add(new Option(name, name)));
+        savedFilterSelect.value = selected;
+    }
+
+    function currentInventoryFilters() {
+        const data = new FormData(searchForm);
+        return ['buscar', 'filtrar_categoria', 'stock', 'sin_codigo'].reduce((filters, key) => {
+            const value = String(data.get(key) || '').trim();
+            if (value) filters[key] = value;
+            return filters;
+        }, {});
+    }
+
+    function persistSavedFilters(message) {
+        savedFilterStatus.textContent = 'Guardando...';
+        return fetch(window.InventoryWorkspace.preferencesUrl, {
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': window.InventoryWorkspace.csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({ key: 'inventory.saved_filters', value: savedFilters }),
+        }).then((response) => {
+            if (!response.ok) throw new Error();
+            savedFilterStatus.textContent = message;
+        }).catch(() => {
+            savedFilterStatus.textContent = 'No se pudo guardar la preferencia. Intenta nuevamente.';
+        });
+    }
+
+    savedFilterSelect?.addEventListener('change', () => {
+        const filters = savedFilters[savedFilterSelect.value];
+        if (!filters) return;
+        const url = new URL(searchForm.action, window.location.origin);
+        Object.entries(filters).forEach(([key, value]) => url.searchParams.set(key, value));
+        window.location.assign(url.toString());
+    });
+
+    document.getElementById('saveCurrentFilter')?.addEventListener('click', async () => {
+        const name = savedFilterName.value.trim();
+        if (!name) {
+            savedFilterStatus.textContent = 'Escribe un nombre corto para identificar este filtro.';
+            savedFilterName.focus();
+            return;
+        }
+        savedFilters[name] = currentInventoryFilters();
+        renderSavedFilters(name);
+        savedFilterName.value = '';
+        await persistSavedFilters(`Filtro "${name}" guardado correctamente.`);
+    });
+
+    document.getElementById('deleteSavedFilter')?.addEventListener('click', async () => {
+        const name = savedFilterSelect.value;
+        if (!name || !savedFilters[name]) {
+            savedFilterStatus.textContent = 'Selecciona primero el filtro que quieres eliminar.';
+            return;
+        }
+        delete savedFilters[name];
+        renderSavedFilters();
+        await persistSavedFilters(`Filtro "${name}" eliminado.`);
+    });
+
+    renderSavedFilters();
     function buscarCodigoEscaneado(codigo) {
         const codigoLimpio = codigo.trim();
 

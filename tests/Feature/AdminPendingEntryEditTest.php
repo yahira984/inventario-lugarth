@@ -144,7 +144,11 @@ class AdminPendingEntryEditTest extends TestCase
                 'referencia' => 'FACT-900',
                 'motivo' => 'Compra de material nuevo',
                 'evidencia_foto' => UploadedFile::fake()->image('evidencia-nueva.jpg', 1200, 900),
-                'fotografia' => UploadedFile::fake()->image('producto-nuevo.jpg', 700, 700),
+                'fotografias' => [
+                    UploadedFile::fake()->image('producto-frente.jpg', 900, 700),
+                    UploadedFile::fake()->image('producto-lado.jpg', 700, 900),
+                    UploadedFile::fake()->image('producto-detalle.jpg', 800, 800),
+                ],
             ])
             ->assertSessionHasNoErrors();
 
@@ -161,6 +165,7 @@ class AdminPendingEntryEditTest extends TestCase
         Storage::disk('public')->assertMissing('entradas-pendientes/materiales/producto-viejo.jpg');
         Storage::disk('public')->assertExists($entry->evidencia_foto);
         Storage::disk('public')->assertExists($entry->fotografia);
+        $this->assertCount(3, $entry->datos_material['fotografias_referencia']);
 
         $this->actingAs($admin)
             ->patch(route('admin.entradas.approve', $entry))
@@ -175,6 +180,8 @@ class AdminPendingEntryEditTest extends TestCase
         $this->assertSame(20, $material->stock_maximo);
         $this->assertSame('125.50', $material->costo_unitario);
         $this->assertSame($entry->fotografia, $material->fotografia);
+        $this->assertSame(3, $material->photos()->count());
+        $this->assertSame(1, $material->photos()->where('es_principal', true)->count());
     }
 
     public function test_warehousekeeper_cannot_edit_a_pending_entry(): void

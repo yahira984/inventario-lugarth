@@ -136,6 +136,8 @@
         .field { margin-bottom: 15px; }
         .field-help { color: var(--muted); font-size: 12px; margin-top: 7px; line-height: 1.4; }
         .field-error { color: #fca5a5; font-size: 12px; font-weight: 800; margin-top: 7px; }
+        .continuous-mode { display:flex; align-items:flex-start; gap:10px; margin:0 0 13px; padding:11px; color:#254665; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; font-size:12px; font-weight:700; line-height:1.4; }
+        .continuous-mode input { width:18px; min-width:18px; height:18px; margin:0; }
 
         .input-row {
             display: grid;
@@ -685,6 +687,11 @@
                             @error('motivo') <div class="field-error">{{ $message }}</div> @enderror
                         </div>
 
+                        <label class="continuous-mode">
+                            <input type="checkbox" name="modo_continuo" value="1" @checked(old('modo_continuo', request()->boolean('continuo')))>
+                            <span><strong>Escaneo continuo</strong><br>Tras registrar la salida, deja la pantalla lista para escanear la siguiente pieza.</span>
+                        </label>
+
                         <button type="submit" class="btn btn-red" style="width: 100%;">
                             Registrar salida y descontar stock
                         </button>
@@ -695,6 +702,9 @@
                     <h2>Buscar manualmente</h2>
 
                     <form action="{{ route('materiales.salidas.create') }}" method="GET" class="manual-search">
+                        @if(request()->boolean('continuo'))
+                            <input type="hidden" name="continuo" value="1">
+                        @endif
                         <input type="text" name="buscar" value="{{ $buscar }}" placeholder="Descripcion, apodo, no. parte, categoria, almacen, marca o codigo">
                         <button type="submit" class="btn btn-green">Buscar</button>
                     </form>
@@ -835,6 +845,10 @@
     let scannerBufferInicio = 0;
     let scannerUltimaTecla = 0;
     let scannerResetTimer = null;
+
+    @if(request()->boolean('continuo') && !$errors->any())
+        window.addEventListener('load', () => codigoInput?.focus());
+    @endif
 
     function setStatus(mensaje, tipo) {
         statusBox.textContent = mensaje;

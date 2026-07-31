@@ -8,6 +8,8 @@ use App\Models\MaterialEntradaPendiente;
 use App\Models\MaterialMovimiento;
 use App\Support\AuditLogger;
 use App\Support\ImageStorage;
+use App\Support\SupplierPriceService;
+use App\Support\VisualEmbeddingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -20,6 +22,11 @@ use Illuminate\View\View;
 
 class MaterialController extends Controller
 {
+    public function __construct(
+        private readonly SupplierPriceService $prices,
+        private readonly VisualEmbeddingService $visualAi,
+    ) {}
+
     public function index(Request $request): View
     {
         $query = Material::query();
@@ -39,6 +46,29 @@ class MaterialController extends Controller
         if ($request->filled('filtrar_categoria')) {
             $query->where('categoria', $request->filtrar_categoria);
         }
+
+        match ($request->string('stock')->toString()) {
+            'agotado' => $query->where('stock', '<=', 0),
+            'critico' => $query
+                ->where('stock_minimo', '>', 0)
+                ->whereColumn('stock', '<=', 'stock_minimo'),
+            'exceso' => $query
+                ->where('stock_maximo', '>', 0)
+                ->whereColumn('stock', '>=', 'stock_maximo'),
+            'sin_movimiento_30' => $query->whereDoesntHave(
+                'movimientos',
+                fn ($movimientos) => $movimientos->where('created_at', '>=', now()->subDays(30))
+            ),
+            'sin_movimiento_90' => $query->whereDoesntHave(
+                'movimientos',
+                fn ($movimientos) => $movimientos->where('created_at', '>=', now()->subDays(90))
+            ),
+            'sin_movimiento_180' => $query->whereDoesntHave(
+                'movimientos',
+                fn ($movimientos) => $movimientos->where('created_at', '>=', now()->subDays(180))
+            ),
+            default => null,
+        };
 
         if ($request->filled('buscar')) {
             $termino = trim((string) $request->buscar);
@@ -124,9 +154,10 @@ class MaterialController extends Controller
 
                     $this->notificarAdministradoresEntrada($entrada);
 
-                    return redirect()
-                        ->route('materiales.index')
-                        ->with('success', 'Entrada enviada al administrador. El stock se sumara cuando sea aprobada.');
+                    return $this->entryRedirect(
+                        $request,
+                        'Entrada enviada al administrador. El stock se sumara cuando sea aprobada.'
+                    );
                 }
 
                 if ($request->hasFile('evidencia_foto')) {
@@ -165,6 +196,17 @@ class MaterialController extends Controller
                         'proveedor' => $proveedorEntrada,
                         'costo_unitario' => $costoEntrada,
                     ]);
+
+                    $this->prices->record(
+                        $bloqueado,
+                        $proveedorEntrada,
+                        $costoEntrada,
+                        $bloqueado->moneda ?: 'MXN',
+                        'entrada_directa',
+                        'Entrada por codigo '.now()->format('YmdHis'),
+                        $bloqueado->proveedor_rfc,
+                        now()
+                    );
                 });
 
                 AuditLogger::registrar('Inventario', 'Entrada', "Sumo {$cantidad} piezas a {$material->descripcion}.", [
@@ -172,9 +214,10 @@ class MaterialController extends Controller
                     'cantidad' => $cantidad,
                 ], $request);
 
-                return redirect()
-                    ->route('materiales.index')
-                    ->with('success', "Ese codigo ya existia. Se sumaron {$cantidad} piezas al stock.");
+                return $this->entryRedirect(
+                    $request,
+                    "Ese codigo ya existia. Se sumaron {$cantidad} piezas al stock."
+                );
             }
         }
 
@@ -224,6 +267,8 @@ class MaterialController extends Controller
                 'costo_unitario',
                 'moneda',
             ]);
+            $productPhotos = $this->storeProductPhotos($request, 'entradas-pendientes/materiales');
+            $datosMaterial['fotografias_referencia'] = $productPhotos;
 
             $entrada = MaterialEntradaPendiente::create([
                 'material_id' => null,
@@ -236,9 +281,7 @@ class MaterialController extends Controller
                 'referencia' => 'Alta de material nuevo',
                 'motivo' => 'Pendiente de aprobacion',
                 'evidencia_foto' => ImageStorage::storeOptimized($request->file('evidencia_foto'), 'entradas-pendientes', 1600, 72),
-                'fotografia' => $request->hasFile('fotografia')
-                    ? ImageStorage::storeOptimized($request->file('fotografia'), 'entradas-pendientes/materiales', 1600, 72)
-                    : null,
+                'fotografia' => $productPhotos[0] ?? null,
                 'proveedor' => $datosMaterial['proveedor'] ?? null,
                 'costo_unitario' => $datosMaterial['costo_unitario'] ?? 0,
             ]);
@@ -251,20 +294,28 @@ class MaterialController extends Controller
 
             $this->notificarAdministradoresEntrada($entrada);
 
-            return redirect()
-                ->route('materiales.index')
-                ->with('success', 'Solicitud enviada al administrador. La pieza se creara y el stock se sumara solamente cuando sea aprobada.');
+            return $this->entryRedirect(
+                $request,
+                'Solicitud enviada al administrador. La pieza se creara y el stock se sumara solamente cuando sea aprobada.'
+            );
         }
 
-        if ($request->hasFile('fotografia')) {
-            $datos['fotografia'] = ImageStorage::storeOptimized($request->file('fotografia'), 'materiales', 1600, 72);
-        }
+        $productPhotos = $this->storeProductPhotos($request, 'materiales');
+        $datos['fotografia'] = $productPhotos[0] ?? null;
 
         if ($request->hasFile('evidencia_foto')) {
             $datos['evidencia_foto'] = ImageStorage::storeOptimized($request->file('evidencia_foto'), 'evidencias', 1600, 72);
         }
 
         $material = Material::create($datos);
+        foreach ($productPhotos as $index => $path) {
+            $photo = $material->photos()->create([
+                'path' => $path,
+                'angulo' => 'Vista '.($index + 1),
+                'es_principal' => $index === 0,
+            ]);
+            $this->visualAi->indexPhoto($photo);
+        }
 
         if ($material->stock > 0) {
             MaterialMovimiento::create([
@@ -281,6 +332,17 @@ class MaterialController extends Controller
                 'proveedor' => $material->proveedor,
                 'costo_unitario' => $material->costo_unitario,
             ]);
+
+            $this->prices->record(
+                $material,
+                $material->proveedor,
+                (float) $material->costo_unitario,
+                $material->moneda ?: 'MXN',
+                'alta_material',
+                'Alta de material #'.$material->id,
+                $material->proveedor_rfc,
+                now()
+            );
         }
 
         AuditLogger::registrar('Inventario', 'Alta de material', "Registro el material {$material->descripcion}.", [
@@ -288,12 +350,16 @@ class MaterialController extends Controller
             'stock' => $material->stock,
         ], $request);
 
-        return redirect()->route('materiales.index')->with('success', 'Material registrado correctamente en el almacen.');
+        return $this->entryRedirect(
+            $request,
+            'Material registrado correctamente en el almacen.'
+        );
     }
 
     public function edit(Request $request, Material $material): View
     {
         $this->autorizarAdministrarCatalogo($request, 'No tienes permiso para editar materiales.');
+        $material->load('photos');
 
         return view('materiales.edit', [
             'material' => $material,
@@ -308,11 +374,18 @@ class MaterialController extends Controller
         $datos = $this->validarMaterial($request, $material);
 
         if ($request->hasFile('fotografia')) {
-            if ($material->fotografia) {
-                Storage::disk('public')->delete($material->fotografia);
-            }
+            $previousPhoto = $material->fotografia;
+            $datos['fotografia'] = ImageStorage::storeOptimized(
+                $request->file('fotografia'),
+                'materiales',
+                1600,
+                72
+            );
 
-            $datos['fotografia'] = ImageStorage::storeOptimized($request->file('fotografia'), 'materiales', 1600, 72);
+            if ($previousPhoto) {
+                $material->photos()->where('path', $previousPhoto)->delete();
+                ImageStorage::delete($previousPhoto);
+            }
         }
 
         if ($request->hasFile('evidencia_foto')) {
@@ -338,13 +411,11 @@ class MaterialController extends Controller
 
         $descripcion = $material->descripcion;
 
-        if ($material->fotografia) {
-            Storage::disk('public')->delete($material->fotografia);
-        }
-
-        if ($material->evidencia_foto) {
-            Storage::disk('public')->delete($material->evidencia_foto);
-        }
+        collect([$material->fotografia, $material->evidencia_foto])
+            ->concat($material->photos()->pluck('path'))
+            ->filter()
+            ->unique()
+            ->each(fn (string $path) => ImageStorage::delete($path));
 
         $material->delete();
 
@@ -461,6 +532,8 @@ class MaterialController extends Controller
             'costo_unitario' => ['nullable', 'numeric', 'min:0'],
             'moneda' => ['nullable', 'string', 'max:10'],
             'fotografia' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'fotografias' => ['nullable', 'array', 'max:3'],
+            'fotografias.*' => ['image', 'mimes:jpeg,png,jpg,webp', 'max:6144'],
             'evidencia_foto' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:10240'],
         ], [
             'codigo_barras.unique' => 'Ese codigo de barras ya pertenece a otro material.',
@@ -470,6 +543,8 @@ class MaterialController extends Controller
             'stock_minimo.integer' => 'El stock minimo debe ser un numero entero.',
             'stock_maximo.integer' => 'El stock maximo debe ser un numero entero.',
             'costo_unitario.numeric' => 'El precio por unidad debe ser numerico.',
+            'fotografias.max' => 'Cada producto puede tener como máximo 3 fotografías.',
+            'fotografias.*.image' => 'Cada archivo de referencia debe ser una imagen válida.',
         ]);
 
         $datos['codigo_barras'] = trim((string) ($datos['codigo_barras'] ?? '')) ?: null;
@@ -489,6 +564,36 @@ class MaterialController extends Controller
         $datos['moneda'] = trim((string) ($datos['moneda'] ?? '')) ?: ($material?->moneda ?: 'MXN');
 
         return $datos;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function storeProductPhotos(Request $request, string $directory): array
+    {
+        $files = collect($request->file('fotografias', []));
+        if ($files->isEmpty() && $request->hasFile('fotografia')) {
+            $files->push($request->file('fotografia'));
+        }
+
+        return $files
+            ->take(3)
+            ->map(fn ($file): string => ImageStorage::storeOptimized($file, $directory, 1100, 68))
+            ->values()
+            ->all();
+    }
+
+    private function entryRedirect(Request $request, string $message): RedirectResponse
+    {
+        if ($request->boolean('modo_continuo')) {
+            return redirect()
+                ->route('materiales.create', ['continuo' => 1])
+                ->with('success', $message.' El formulario esta listo para la siguiente entrada.');
+        }
+
+        return redirect()
+            ->route('materiales.index')
+            ->with('success', $message);
     }
 
     private function categoriasDisponibles()

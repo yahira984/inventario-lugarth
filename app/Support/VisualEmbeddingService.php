@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Material;
+use App\Models\MaterialPhoto;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
@@ -127,6 +128,35 @@ class VisualEmbeddingService
         $descriptor['ai'] = $embedding;
 
         $material->forceFill(['visual_descriptor' => $descriptor])->saveQuietly();
+
+        return true;
+    }
+
+    public function indexPhoto(MaterialPhoto $photo): bool
+    {
+        $relativePath = trim((string) $photo->path);
+        if ($relativePath === '') {
+            return false;
+        }
+
+        $absolutePath = Storage::disk('public')->path(ltrim($relativePath, '/\\'));
+        if (! is_file($absolutePath)) {
+            return false;
+        }
+
+        try {
+            $descriptor = $this->visualDescriptor->fromPath($absolutePath);
+            if ($this->isReady()) {
+                $descriptor['ai'] = $this->fromPath($absolutePath);
+            }
+        } catch (Throwable) {
+            return false;
+        }
+
+        $photo->forceFill([
+            'visual_descriptor' => $descriptor,
+            'visual_descriptor_signature' => $descriptor['sha1'] ?? sha1_file($absolutePath),
+        ])->saveQuietly();
 
         return true;
     }

@@ -6,6 +6,9 @@ use App\Models\FacturaXmlImportacion;
 use App\Models\Material;
 use App\Models\MaterialCategory;
 use App\Models\MaterialMovimiento;
+use App\Models\MaterialSupplierPrice;
+use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderItem;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -133,6 +136,90 @@ class FacturaXmlImportTest extends TestCase
         $this->assertSame(1, $material->fresh()->stock);
         $this->assertDatabaseCount('factura_xml_importaciones', 0);
         $this->assertDatabaseCount('material_movimientos', 0);
+    }
+
+    public function test_invoice_linked_to_received_order_does_not_add_stock_twice(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'administrador',
+            'approved_at' => now(),
+        ]);
+        $material = Material::create([
+            'numero_parte' => '34006319',
+            'descripcion' => 'FT200 GTS GRIS',
+            'stock' => 5,
+            'es_plantilla_equipo' => false,
+        ]);
+        $order = PurchaseOrder::create([
+            'user_id' => $admin->id,
+            'proveedor' => 'COMERCIALIZADORA DE MOTOCICLETAS DE CALIDAD',
+            'referencia' => 'OC-PRUEBA-001',
+            'estado' => 'recibida',
+            'fecha_orden' => today(),
+            'received_at' => now(),
+            'total' => 22412.93,
+        ]);
+        PurchaseOrderItem::create([
+            'purchase_order_id' => $order->id,
+            'material_id' => $material->id,
+            'descripcion' => $material->descripcion,
+            'cantidad' => 1,
+            'cantidad_recibida' => 1,
+            'costo_unitario' => 22412.93,
+            'subtotal' => 22412.93,
+        ]);
+
+        $preview = $this->actingAs($admin)->post(route('materiales.xml.preview'), [
+            'xml_file' => UploadedFile::fake()->createWithContent('factura-orden.xml', $this->cfdi()),
+            'purchase_order_id' => $order->id,
+        ]);
+        $preview->assertOk();
+
+        $this->actingAs($admin)->post(route('materiales.xml.store'), [
+            'payload' => $preview->viewData('payload'),
+            'payload_signature' => $preview->viewData('payloadSignature'),
+            'purchase_order_id' => $order->id,
+            'items' => [
+                ['importar' => 1, 'categoria' => 'IMPORTADO XML'],
+            ],
+        ])->assertRedirect(route('materiales.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame(5, $material->fresh()->stock);
+        $this->assertDatabaseCount('material_movimientos', 0);
+        $order->refresh();
+        $this->assertSame('facturada', $order->estado);
+        $this->assertSame('B9AA6783-CAF4-4B17-94E3-1BAC718160F8', $order->invoice_uuid);
+        $this->assertSame($order->id, FacturaXmlImportacion::firstOrFail()->purchase_order_id);
+        $this->assertSame('xml', MaterialSupplierPrice::firstOrFail()->origen);
+        $this->assertSame('22412.9300', MaterialSupplierPrice::firstOrFail()->precio_unitario);
+    }
+
+    public function test_one_purchase_order_cannot_be_linked_to_multiple_xml_files_at_once(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'administrador',
+            'approved_at' => now(),
+        ]);
+        $order = PurchaseOrder::create([
+            'user_id' => $admin->id,
+            'proveedor' => 'Proveedor',
+            'referencia' => 'OC-PRUEBA-002',
+            'estado' => 'recibida',
+            'fecha_orden' => today(),
+        ]);
+
+        $this->actingAs($admin)
+            ->from(route('materiales.xml.create'))
+            ->post(route('materiales.xml.preview'), [
+                'xml_files' => [
+                    UploadedFile::fake()->createWithContent('factura-1.xml', $this->cfdi()),
+                    UploadedFile::fake()->createWithContent('factura-2.xml', $this->cfdi()),
+                ],
+                'purchase_order_id' => $order->id,
+            ])
+            ->assertRedirect(route('materiales.xml.create'))
+            ->assertSessionHasErrors('purchase_order_id');
     }
 
     private function cfdi(): string

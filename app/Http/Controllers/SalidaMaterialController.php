@@ -63,6 +63,7 @@ class SalidaMaterialController extends Controller
             'cantidad' => ['required', 'integer', 'min:1'],
             'referencia' => ['nullable', 'string', 'max:120'],
             'motivo' => ['nullable', 'string', 'max:255'],
+            'modo_continuo' => ['nullable', 'boolean'],
         ], [
             'material_id.exists' => 'El material seleccionado ya no existe. Busca el producto otra vez.',
             'cantidad.required' => 'Escribe cuántas piezas van a salir.',
@@ -146,10 +147,11 @@ class SalidaMaterialController extends Controller
         ], $request);
 
         return redirect()
-            ->route('materiales.salidas.create')
+            ->route('materiales.salidas.create', $request->boolean('modo_continuo') ? ['continuo' => 1] : [])
             ->with(
                 'success',
                 "Salida registrada: {$cantidad} pzas de {$material->descripcion}. Stock actualizado."
+                .($request->boolean('modo_continuo') ? ' Listo para escanear el siguiente producto.' : '')
             );
     }
 }

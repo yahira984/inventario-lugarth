@@ -96,10 +96,23 @@
                     <div class="list">
                         @forelse($equipos as $equipo)
                             @php($disponibilidad = $equipo->evaluarDisponibilidad())
+                            @php($planeacion = $equipo->planeacion)
                             <article class="row">
                                 <div>
                                     <div class="title">{{ $equipo->nombre }}</div>
                                     <div class="muted">{{ $equipo->codigo ?: 'Sin codigo' }}</div>
+                                    @if($planeacion['listo'])
+                                        <div class="equipment-metrics">
+                                            <span><strong>{{ $planeacion['fabricables'] }}</strong> fabricables</span>
+                                            <span><strong>≈ ${{ number_format($planeacion['costo_unitario'], 2) }}</strong> segun ultima factura</span>
+                                        </div>
+                                        @if($planeacion['limitantes']->isNotEmpty())
+                                            <div class="limiting-piece">
+                                                Pieza limitante:
+                                                <strong>{{ $planeacion['limitantes']->pluck('descripcion')->implode(', ') }}</strong>
+                                            </div>
+                                        @endif
+                                    @endif
                                     @if($disponibilidad['sin_piezas'])
                                         <span class="pill danger">Sin piezas configuradas</span>
                                     @elseif($disponibilidad['sin_vincular']->isNotEmpty())
@@ -132,5 +145,10 @@
         </div>
     </main>
 </div>
+<style>
+    .equipment-metrics { display:flex; flex-wrap:wrap; gap:8px; margin-top:9px; }
+    .equipment-metrics span { padding:6px 9px; border:1px solid #bae6fd; background:#f0f9ff; color:#075985; border-radius:8px; font-size:12px; font-weight:750; }
+    .limiting-piece { margin-top:7px; color:#9a3412; font-size:12px; font-weight:700; }
+</style>
 </body>
 </html>

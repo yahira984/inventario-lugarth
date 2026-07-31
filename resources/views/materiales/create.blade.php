@@ -47,6 +47,9 @@
         .note { padding: 14px; border-radius: 14px; background: #f8fafc; border: 1px solid #e2e8f0; }
         .note strong { display: block; color: #0f2742; margin-bottom: 4px; }
         .actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; margin-top: 18px; }
+        .continuous-mode { display:flex; align-items:flex-start; gap:10px; margin-top:16px; padding:12px; color:#254665; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; font-size:12px; font-weight:700; line-height:1.4; }
+        .continuous-mode input { width:18px; min-width:18px; height:18px; margin:0; }
+        .alert-success { margin: 0 0 18px; padding: 14px 16px; color:#166534; background:#ecfdf5; border:1px solid #86efac; border-radius:10px; font-weight:750; }
         .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, .72); align-items: center; justify-content: center; z-index: 1800; padding: 20px; backdrop-filter: blur(6px); }
         .modal-content { width: min(520px, 100%); background: #fff; border: 1px solid #dbe5f0; border-radius: 18px; padding: 24px; box-shadow: 0 24px 70px rgba(15,23,42,.28); text-align: center; }
         .modal-content h3 { margin: 0 0 14px; color: #0f2742; }
@@ -84,6 +87,10 @@
                         @endforeach
                     </ul>
                 </div>
+            @endif
+
+            @if(session('success'))
+                <div class="alert-success">{{ session('success') }}</div>
             @endif
 
             <form action="{{ route('materiales.store') }}" method="POST" enctype="multipart/form-data">
@@ -216,9 +223,10 @@
 
                             <div class="side-note">
                                 <div class="upload-box">
-                                    <label for="fotografia">Foto del producto</label>
-                                    <input type="file" name="fotografia" id="fotografia" accept="image/*" onchange="mostrarVistaPreviaArchivo(this, 'previewProducto')">
-                                    <img id="previewProducto" class="preview" alt="Vista previa del producto">
+                                    <label for="fotografias">Fotos del producto (hasta 3 ángulos)</label>
+                                    <div class="help">La primera será la portada. Todas se comprimen e indexan para el identificador visual.</div>
+                                    <input type="file" name="fotografias[]" id="fotografias" accept="image/jpeg,image/png,image/webp" multiple data-max-files="3" onchange="mostrarVistasProducto(this)">
+                                    <div id="previewsProducto" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;"></div>
                                 </div>
 
                                 <div class="upload-box">
@@ -243,6 +251,10 @@
                             </div>
                         </section>
 
+                        <label class="continuous-mode">
+                            <input type="checkbox" name="modo_continuo" value="1" @checked(old('modo_continuo', request()->boolean('continuo')))>
+                            <span><strong>Registro continuo</strong><br>Despues de guardar, limpia el formulario y queda listo para capturar la siguiente entrada.</span>
+                        </label>
                         <div class="actions">
                             <button type="submit" class="btn" style="background: #16a34a !important; color: #ffffff !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;">Guardar entrada</button>
                 <a href="{{ route('materiales.index') }}" class="btn btn-red" style="background: #b91c1c !important; color: #ffffff !important; border: 1px solid #991b1b !important; box-shadow: none !important;">Cancelar</a>
@@ -282,6 +294,10 @@
     let streamVideo = null;
     let videoTrack = null;
 
+    @if(request()->boolean('continuo') && !$errors->any())
+        window.addEventListener('load', () => document.getElementById('codigo_barras')?.focus());
+    @endif
+
     function mostrarVistaPreviaArchivo(input, previewId) {
         const preview = document.getElementById(previewId);
 
@@ -296,6 +312,28 @@
             preview.style.display = 'block';
         };
         reader.readAsDataURL(input.files[0]);
+    }
+
+    function mostrarVistasProducto(input) {
+        const container = document.getElementById('previewsProducto');
+        const files = [...(input.files || [])];
+        container.replaceChildren();
+
+        if (files.length > 3) {
+            input.value = '';
+            alert('Cada producto puede tener como máximo 3 fotografías.');
+            return;
+        }
+
+        files.forEach((file, index) => {
+            const image = document.createElement('img');
+            image.className = 'preview';
+            image.alt = `Vista ${index + 1} del producto`;
+            image.style.cssText = 'display:block;width:100%;height:110px;object-fit:contain;background:#fff;border:1px solid #cbd5e1;border-radius:8px;';
+            image.src = URL.createObjectURL(file);
+            image.addEventListener('load', () => URL.revokeObjectURL(image.src), { once: true });
+            container.append(image);
+        });
     }
 
     function abrirEscaner() {

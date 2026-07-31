@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Material;
 use App\Models\MaterialEntradaPendiente;
 use App\Models\MaterialMovimiento;
+use App\Support\ProcurementSuggestionService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,8 @@ use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
+    public function __construct(private readonly ProcurementSuggestionService $purchaseSuggestions) {}
+
     public function index(Request $request): View|RedirectResponse
     {
         if (! $request->user()?->esAdministrador()) {
@@ -47,7 +50,13 @@ class DashboardController extends Controller
             ->whereColumn('stock', '<=', 'stock_minimo')
             ->orderBy('stock')
             ->limit(10)
-            ->get();
+            ->get()
+            ->each(function (Material $material): void {
+                $material->setAttribute(
+                    'cantidad_sugerida',
+                    $this->purchaseSuggestions->forMaterial($material)['cantidad_sugerida']
+                );
+            });
 
         $salidasMes = MaterialMovimiento::query()
             ->whereHas('material', fn ($query) => $query->where('es_plantilla_equipo', false))

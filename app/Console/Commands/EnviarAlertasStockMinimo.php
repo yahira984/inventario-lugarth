@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Material;
+use App\Support\InventoryNotifier;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
@@ -12,15 +13,9 @@ class EnviarAlertasStockMinimo extends Command
 
     protected $description = 'Envia un correo con materiales por debajo del stock minimo.';
 
-    public function handle(): int
+    public function handle(InventoryNotifier $notifier): int
     {
         $destino = $this->option('to') ?: env('STOCK_ALERT_EMAIL');
-
-        if (! $destino) {
-            $this->warn('No se envio correo: configura STOCK_ALERT_EMAIL en .env o usa --to=correo@empresa.com');
-
-            return self::SUCCESS;
-        }
 
         $materiales = Material::query()
             ->where('es_plantilla_equipo', false)
@@ -29,14 +24,68 @@ class EnviarAlertasStockMinimo extends Command
             ->orderBy('stock')
             ->orderBy('descripcion')
             ->get();
+        $excesos = Material::query()
+            ->where('es_plantilla_equipo', false)
+            ->where('stock_maximo', '>', 0)
+            ->whereColumn('stock', '>', 'stock_maximo')
+            ->orderByRaw('(stock - stock_maximo) desc')
+            ->get();
+        $sinMovimiento = Material::query()
+            ->where('es_plantilla_equipo', false)
+            ->where('stock', '>', 0)
+            ->whereDoesntHave('movimientos', function ($query): void {
+                $query->where('created_at', '>=', now()->subDays(90));
+            })
+            ->orderByDesc('stock')
+            ->get();
 
-        if ($materiales->isEmpty()) {
-            $this->info('Inventario sin alertas de stock minimo.');
+        if ($materiales->isEmpty() && $excesos->isEmpty() && $sinMovimiento->isEmpty()) {
+            $this->info('Inventario sin alertas operativas.');
 
             return self::SUCCESS;
         }
 
         $total = $materiales->count();
+        if ($materiales->isNotEmpty()) {
+            $notifier->admins(
+                'Alerta diaria de reabastecimiento',
+                "{$total} materiales estan en su minimo o agotados.",
+                route('admin.compras.index').'#sugerencias',
+                'red',
+                ['date' => today()->toDateString(), 'count' => $total, 'type' => 'minimum']
+            );
+        }
+        if ($excesos->isNotEmpty()) {
+            $notifier->admins(
+                'Exceso de inventario',
+                "{$excesos->count()} materiales superan su stock maximo.",
+                route('admin.compras.index').'#exceso-stock',
+                'amber',
+                ['date' => today()->toDateString(), 'count' => $excesos->count(), 'type' => 'maximum']
+            );
+        }
+        if ($sinMovimiento->isNotEmpty()) {
+            $notifier->admins(
+                'Materiales sin movimiento',
+                "{$sinMovimiento->count()} materiales llevan al menos 90 dias sin movimiento.",
+                route('admin.compras.index', ['sin_movimiento' => 90]).'#sin-movimiento',
+                'blue',
+                ['date' => today()->toDateString(), 'count' => $sinMovimiento->count(), 'type' => 'inactive']
+            );
+        }
+
+        if ($materiales->isEmpty()) {
+            $this->info("Alertas internas creadas: {$excesos->count()} excesos y {$sinMovimiento->count()} materiales inactivos.");
+
+            return self::SUCCESS;
+        }
+
+        if (! $destino) {
+            $this->warn('La alerta interna se creo, pero no se envio correo. Configura STOCK_ALERT_EMAIL o usa --to=correo@empresa.com.');
+
+            return self::SUCCESS;
+        }
+
         $filas = $materiales->map(function (Material $material): string {
             $stock = number_format((int) $material->stock);
             $minimo = number_format((int) $material->stock_minimo);
