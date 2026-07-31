@@ -220,6 +220,7 @@
         .score { color: #087f5b; font-size: 11px; font-weight: 900; white-space: nowrap; }
         .score-meter { width: 100%; height: 5px; overflow: hidden; background: #dce8e3; border-radius: 999px; }
         .score-meter i { display: block; height: 100%; background: #0aa675; border-radius: inherit; }
+        .score-calibration { display:block; margin-top:5px; color:#5a7186; font-size:9px; font-weight:750; line-height:1.35; }
         .result-link { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0 10px; color: var(--visual-blue-dark); background: #fff; border: 1px solid #9cc9f1; border-radius: 6px; font-size: 10px; font-weight: 850; text-decoration: none; white-space: nowrap; }
         .result-link:hover { color: #fff; background: var(--visual-blue); border-color: var(--visual-blue); }
         .result-feedback { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 2px; }
@@ -231,6 +232,7 @@
         .feedback-button.is-selected { color: #fff; }
         .feedback-button:disabled { cursor: default; opacity: .72; }
         .feedback-response { min-height: 14px; color: #06734f; font-size: 9px; font-weight: 800; }
+        .feedback-target { min-height:29px; max-width:100%; padding:0 7px; color:#35536e; background:#fff; border:1px solid #c8d8e6; border-radius:6px; font-size:9px; font-weight:750; }
         .empty-result { padding: 28px 18px; color: var(--visual-muted); background: #f8fbfd; border: 1px dashed #b8cddd; border-radius: 8px; text-align: center; font-size: 12px; font-weight: 700; line-height: 1.55; }
         .camera-modal { position: fixed; z-index: 2600; inset: 0; display: grid; place-items: center; padding: 18px; background: rgba(5, 20, 34, .88); backdrop-filter: blur(8px); }
         .camera-dialog { width: min(760px, 100%); max-height: calc(100dvh - 36px); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; background: #fff; border: 1px solid #b7cad9; border-radius: 8px; box-shadow: 0 28px 80px rgba(0, 0, 0, .34); }
@@ -465,6 +467,13 @@
                                 </span>
                                 <small>Los resultados dudosos se descartan automáticamente.</small>
                             </article>
+                            @if(data_get($analisis, 'categoria_directa.label'))
+                                <article class="status-box" style="--status-color:#7c3aed">
+                                    <strong>Categoría detectada</strong>
+                                    <span>{{ data_get($analisis, 'categoria_directa.label') }}</span>
+                                    <small>CLIP la estima con {{ number_format((float) data_get($analisis, 'categoria_directa.confidence', 0) * 100, 0) }}% de afinidad visual.</small>
+                                </article>
+                            @endif
                             <div class="visual-tip">Usa dos ángulos diferentes de la misma pieza. Antes de cada foto, encierra únicamente el objeto para excluir el taller, piso y objetos cercanos.</div>
                         </aside>
                     </div>
@@ -494,6 +503,14 @@
                         Las piezas parecidas aparecerán aquí después de tomar o seleccionar una fotografía.
                     </div>
                 @else
+                    @php
+                        $feedbackContext = [
+                            'predicted_category' => data_get($analisis, 'categoria_directa.label'),
+                            'category_confidence' => data_get($analisis, 'categoria_directa.confidence'),
+                            'color' => data_get($analisis, 'descriptor.color'),
+                            'shape' => data_get($analisis, 'descriptor.forma'),
+                        ];
+                    @endphp
                     <div class="result-grid">
                         @foreach($resultados as $material)
                             @php
@@ -543,10 +560,18 @@
                                             <span class="score-meter" role="meter" aria-label="Similitud visual" aria-valuenow="{{ $material->puntaje_visual }}" aria-valuemin="0" aria-valuemax="100">
                                                 <i style="width: {{ $material->puntaje_visual }}%"></i>
                                             </span>
+                                            <small class="score-calibration">
+                                                {{ $material->etiqueta_confianza ?? 'Similitud del motor' }}: {{ number_format((float) ($material->confianza_visual ?? $material->puntaje_visual), 0) }}%
+                                                @if($material->confianza_calibrada ?? false)
+                                                    · {{ $material->muestras_calibracion }} validaciones similares
+                                                @else
+                                                    · requiere más validaciones humanas
+                                                @endif
+                                            </small>
                                         </div>
                                         <a href="{{ $materialInventoryUrl }}" class="result-link">Ver en inventario</a>
                                     </div>
-                                    <div class="result-feedback" data-feedback-group>
+                                    <div class="result-feedback" data-feedback-group data-feedback-context='@json($feedbackContext)'>
                                         <span class="feedback-label">¿La sugerencia es correcta?</span>
                                         <button
                                             type="button"
@@ -562,6 +587,16 @@
                                             data-material-id="{{ $material->id }}"
                                             data-confidence="{{ $material->puntaje_visual }}"
                                         >Incorrecto</button>
+                                        @if($resultados->count() > 1)
+                                            <select class="feedback-target" data-feedback-target aria-label="Indicar la pieza correcta">
+                                                <option value="">Si era otra, selecciónala</option>
+                                                @foreach($resultados as $candidate)
+                                                    @if($candidate->id !== $material->id)
+                                                        <option value="{{ $candidate->id }}">{{ \Illuminate\Support\Str::limit($candidate->descripcion, 42) }}</option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        @endif
                                         <span class="feedback-response" aria-live="polite"></span>
                                     </div>
                                 </div>
@@ -1042,9 +1077,11 @@
                         },
                         body: JSON.stringify({
                             suggested_material_id: Number(button.dataset.materialId),
+                            selected_material_id: Number(group?.querySelector('[data-feedback-target]')?.value || 0) || null,
                             query_signature: @json($searchSignature),
                             was_correct: button.dataset.visualFeedback === '1',
                             confidence: Number(button.dataset.confidence),
+                            context: JSON.parse(group?.dataset.feedbackContext || '{}'),
                         }),
                     });
                     const payload = await response.json();

@@ -16,6 +16,7 @@ env.allowLocalModels = true;
 
 let semanticExtractorPromise;
 let detailExtractorPromise;
+let categoryClassifierPromise;
 
 async function writeResult(value) {
     const serialized = JSON.stringify(value);
@@ -55,6 +56,14 @@ function detailExtractor() {
     });
 
     return detailExtractorPromise;
+}
+
+function categoryClassifier() {
+    categoryClassifierPromise ??= pipeline('zero-shot-image-classification', SEMANTIC_MODEL, {
+        dtype: 'q8',
+    });
+
+    return categoryClassifierPromise;
 }
 
 function normalize(values) {
@@ -132,6 +141,21 @@ async function batch(manifestPath) {
     await writeResult(results);
 }
 
+async function categorize(imagePath, labelsJson) {
+    const labels = JSON.parse(labelsJson);
+    if (!Array.isArray(labels) || labels.length === 0) {
+        throw new Error('Se requiere al menos una categoria para clasificar.');
+    }
+
+    const image = await RawImage.read(path.resolve(imagePath));
+    const results = await (await categoryClassifier())(image, labels.slice(0, 45));
+    const ranked = Array.isArray(results) ? results : (results?.results ?? []);
+    await writeResult(ranked.map((item) => ({
+        label: String(item.label ?? ''),
+        score: Number(item.score ?? 0),
+    })));
+}
+
 const [command, argument, detailArgument] = process.argv.slice(2);
 
 try {
@@ -141,8 +165,10 @@ try {
         await embed(argument, detailArgument);
     } else if (command === 'batch' && argument) {
         await batch(argument);
+    } else if (command === 'categorize' && argument && detailArgument) {
+        await categorize(argument, detailArgument);
     } else {
-        throw new Error('Uso: visual-ai.mjs setup | embed <imagen-semantica> [imagen-detalle] | batch <manifiesto.json>');
+        throw new Error('Uso: visual-ai.mjs setup | embed <imagen-semantica> [imagen-detalle] | batch <manifiesto.json> | categorize <imagen> <categorias-json>');
     }
 } catch (error) {
     await writeError(error);

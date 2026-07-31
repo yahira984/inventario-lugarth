@@ -221,6 +221,74 @@ class VisualEmbeddingService
     }
 
     /**
+     * @param  array<int, string>  $paths
+     * @param  array<int, string>  $categories
+     * @return array{label:string,confidence:float,candidates:array<int,array{label:string,confidence:float}>}|null
+     */
+    public function categorize(array $paths, array $categories): ?array
+    {
+        $categories = collect($categories)
+            ->map(fn ($category) => trim((string) $category))
+            ->filter()
+            ->unique(fn (string $category) => mb_strtolower($category))
+            ->take(45)
+            ->values()
+            ->all();
+
+        if (! $this->isReady() || $paths === [] || $categories === []) {
+            return null;
+        }
+
+        $scores = [];
+        foreach ($paths as $path) {
+            $prepared = $this->imagePreprocessor->prepare($path);
+
+            try {
+                $result = $this->run([
+                    'categorize',
+                    $prepared['semantic_path'],
+                    json_encode($categories, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+                ], 120);
+            } finally {
+                if ($prepared['semantic_temporary']) {
+                    @unlink($prepared['semantic_path']);
+                }
+                if ($prepared['detail_temporary'] && $prepared['detail_path'] !== $prepared['semantic_path']) {
+                    @unlink($prepared['detail_path']);
+                }
+            }
+
+            foreach ($result as $candidate) {
+                if (! is_array($candidate) || empty($candidate['label'])) {
+                    continue;
+                }
+
+                $label = (string) $candidate['label'];
+                $scores[$label][] = max(0.0, min(1.0, (float) ($candidate['score'] ?? 0)));
+            }
+        }
+
+        if ($scores === []) {
+            return null;
+        }
+
+        $ranked = collect($scores)
+            ->map(fn (array $values, string $label): array => [
+                'label' => $label,
+                'confidence' => round(array_sum($values) / count($values), 4),
+            ])
+            ->sortByDesc('confidence')
+            ->values();
+        $best = $ranked->first();
+
+        return $best ? [
+            'label' => $best['label'],
+            'confidence' => $best['confidence'],
+            'candidates' => $ranked->take(3)->all(),
+        ] : null;
+    }
+
+    /**
      * @param  array<int, float|int>  $first
      * @param  array<int, float|int>  $second
      */

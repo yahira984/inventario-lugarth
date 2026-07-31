@@ -150,6 +150,49 @@ class VisualIdentifierIndexTest extends TestCase
         $this->assertSame('0.910', $feedback->confidence);
     }
 
+    public function test_user_can_mark_the_actual_piece_after_rejecting_a_suggestion(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'consultor',
+            'approved_at' => now(),
+        ]);
+        $suggested = Material::create([
+            'descripcion' => 'Pieza sugerida por error',
+            'stock' => 1,
+            'es_plantilla_equipo' => false,
+        ]);
+        $correct = Material::create([
+            'descripcion' => 'Pieza correcta',
+            'stock' => 1,
+            'es_plantilla_equipo' => false,
+        ]);
+
+        $this->actingAs($user)
+            ->postJson(route('materiales.visual.feedback'), [
+                'suggested_material_id' => $suggested->id,
+                'selected_material_id' => $correct->id,
+                'query_signature' => str_repeat('b', 64),
+                'was_correct' => false,
+                'confidence' => 74,
+                'context' => [
+                    'predicted_category' => 'SEGURIDAD',
+                    'category_confidence' => 0.71,
+                ],
+            ])
+            ->assertOk();
+
+        $this->assertDatabaseHas('visual_search_feedback', [
+            'suggested_material_id' => $suggested->id,
+            'selected_material_id' => $correct->id,
+            'was_correct' => false,
+        ]);
+        $this->assertDatabaseHas('visual_search_feedback', [
+            'suggested_material_id' => $correct->id,
+            'selected_material_id' => $correct->id,
+            'was_correct' => true,
+        ]);
+    }
+
     public function test_cluttered_phone_photos_prefer_the_matching_piece_shape(): void
     {
         Storage::fake('public');

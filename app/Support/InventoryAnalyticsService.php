@@ -58,7 +58,17 @@ class InventoryAnalyticsService
                 $material->setAttribute('proveedor_historico', $snapshot?->proveedor ?? $material->proveedor);
                 $material->setAttribute(
                     'origen_historico',
-                    $snapshot ? 'Captura diaria' : ($historicalPrice ? 'Precio conocido en la fecha' : 'Reconstruccion estimada')
+                    $snapshot
+                        ? match ($snapshot->exactitud ?? 'confirmada') {
+                            'confirmada' => 'Cierre confirmado',
+                            'movimientos_registrados' => 'Reconstruido desde movimientos registrados',
+                            default => 'Captura historica',
+                        }
+                        : ($historicalPrice ? 'Reconstruccion con precio de la fecha' : 'Reconstruccion estimada')
+                );
+                $material->setAttribute(
+                    'exactitud_historica',
+                    $snapshot?->exactitud ?? ($historicalPrice ? 'movimientos_registrados' : 'estimada')
                 );
 
                 return $material;

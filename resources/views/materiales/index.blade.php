@@ -1353,11 +1353,7 @@
         scannerModal.hidden = false;
         scannerModal.classList.add('is-open');
 
-        html5QrcodeScanner = new Html5QrcodeScanner(
-            'reader',
-            { fps: 10, qrbox: { width: 250, height: 250 } },
-            false
-        );
+        html5QrcodeScanner = new Html5QrcodeScanner('reader', configuracionEscaner(), false);
 
         html5QrcodeScanner.render((textoDecodificado) => {
             usarCodigoEscaneado(textoDecodificado);
@@ -1405,6 +1401,21 @@
             window.escanerTraductorObserver.disconnect();
             window.escanerTraductorObserver = null;
         }
+    }
+
+    function configuracionEscaner() {
+        const formatos = window.Html5QrcodeSupportedFormats;
+        const soportados = formatos ? [
+            formatos.QR_CODE, formatos.CODE_128, formatos.CODE_39,
+            formatos.CODE_93, formatos.EAN_13, formatos.EAN_8,
+            formatos.UPC_A, formatos.UPC_E, formatos.ITF,
+        ].filter(Boolean) : [];
+
+        return {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            ...(soportados.length ? { formatsToSupport: soportados } : {}),
+        };
     }
 
     function abrirModalCodigo(url, nombre) {

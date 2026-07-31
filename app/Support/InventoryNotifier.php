@@ -2,10 +2,12 @@
 
 namespace App\Support;
 
-use App\Models\User;
+use App\Events\InventoryNotificationCreated;
 use App\Notifications\InventoryNotification;
+use App\Models\User;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class InventoryNotifier
 {
@@ -53,9 +55,25 @@ class InventoryNotifier
             return;
         }
 
-        Notification::send(
-            $users,
-            new InventoryNotification($title, $message, $url, $tone, $metadata)
-        );
+        foreach ($users as $user) {
+            $user->notify(new InventoryNotification($title, $message, $url, $tone, $metadata));
+
+            try {
+                InventoryNotificationCreated::dispatch($user->id, [
+                    'title' => $title,
+                    'message' => $message,
+                    'url' => $url,
+                    'tone' => $tone,
+                    'read' => false,
+                    'created_at' => 'Ahora',
+                ]);
+            } catch (Throwable $exception) {
+                // La notificacion ya quedo guardada; Reverb no debe bloquear la operacion.
+                Log::notice('No se pudo emitir una notificacion en tiempo real.', [
+                    'user_id' => $user->id,
+                    'exception' => $exception->getMessage(),
+                ]);
+            }
+        }
     }
 }

@@ -15,6 +15,8 @@ class InventorySnapshot extends Model
         'almacen',
         'categoria',
         'proveedor',
+        'origen',
+        'exactitud',
     ];
 
     protected $casts = [

@@ -22,7 +22,23 @@
         .pill.salida,.pill.merma { background:#fee2e2; color:#b91c1c; }
         .pill.entrada,.pill.devolucion { background:#dcfce7; color:#166534; }
         .photo { width:72px; height:72px; object-fit:cover; border-radius:12px; border:1px solid #dbe5f0; margin-top:8px; }
+        .price-card { margin-bottom:18px; }
+        .price-overview { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr); gap:18px; margin-top:14px; }
+        .price-chart { width:100%; min-height:220px; padding:12px; border:1px solid #dbe5f0; border-radius:12px; background:linear-gradient(180deg,#f8fbff,#fff); }
+        .price-chart svg { width:100%; height:210px; overflow:visible; }
+        .price-chart polyline { fill:none; stroke:#0b76d0; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+        .price-chart circle { fill:#10b981; stroke:#fff; stroke-width:2; }
+        .price-legend { display:flex; justify-content:space-between; gap:10px; color:#64748b; font-size:11px; font-weight:700; }
+        .supplier-price { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; padding:10px 0; border-bottom:1px solid #e5edf5; }
+        .supplier-price:last-child { border-bottom:0; }
+        .supplier-price small { display:block; color:#64748b; margin-top:3px; }
+        .price-table { margin-top:18px; overflow:auto; border:1px solid #dbe5f0; border-radius:12px; }
+        .price-table table { width:100%; min-width:760px; border-collapse:collapse; }
+        .price-table th { padding:10px; text-align:left; background:#eff7ff; color:#315673; font-size:11px; text-transform:uppercase; }
+        .price-table td { padding:10px; border-top:1px solid #e5edf5; vertical-align:top; }
+        .price-up { color:#b45309; font-weight:900; }.price-down { color:#047857; font-weight:900; }
         @media(max-width:900px){ .app-content{padding-top:76px;} .hero,.grid{display:block;} .card{margin-bottom:16px;} }
+        @media(max-width:900px){ .price-overview{grid-template-columns:1fr;} }
     </style>
 </head>
 <body>
@@ -39,6 +55,57 @@
                     </div>
                 </div>
             <a class="btn btn-soft" href="{{ route('admin.materiales.index') }}">Volver</a>
+            </section>
+
+            <section class="card price-card">
+                <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+                    <div><h2>Historial de precios</h2><p class="muted">Cada entrada, orden recibida o factura conserva proveedor, fecha, importe y variación contra el registro previo.</p></div>
+                    <a class="btn" href="{{ route('admin.proveedores.comparador', ['buscar' => $material->numero_parte ?: $material->descripcion]) }}">Comparar proveedores</a>
+                </div>
+                @php
+                    $chartPrices = $seriePrecios->pluck('precio_unitario')->map(fn ($price) => (float) $price)->values();
+                    $chartMin = $chartPrices->min() ?? 0;
+                    $chartMax = $chartPrices->max() ?? 0;
+                    $chartRange = max(0.01, $chartMax - $chartMin);
+                    $chartPoints = $chartPrices->map(function (float $price, int $index) use ($chartPrices, $chartMin, $chartRange): string {
+                        $x = $chartPrices->count() <= 1 ? 150 : 10 + (($index / ($chartPrices->count() - 1)) * 280);
+                        $y = 188 - ((($price - $chartMin) / $chartRange) * 160);
+                        return round($x, 1).','.round($y, 1);
+                    })->implode(' ');
+                @endphp
+                <div class="price-overview">
+                    <div class="price-chart">
+                        @if($seriePrecios->isNotEmpty())
+                            <svg viewBox="0 0 300 210" role="img" aria-label="Evolución del precio unitario">
+                                <line x1="10" x2="290" y1="188" y2="188" stroke="#cbddec" stroke-width="1"/>
+                                <line x1="10" x2="290" y1="28" y2="28" stroke="#e5edf5" stroke-width="1" stroke-dasharray="4 4"/>
+                                <polyline points="{{ $chartPoints }}"/>
+                                @foreach($chartPrices as $index => $price)
+                                    @php($x = $chartPrices->count() <= 1 ? 150 : 10 + (($index / ($chartPrices->count() - 1)) * 280))
+                                    @php($y = 188 - ((($price - $chartMin) / $chartRange) * 160))
+                                    <circle cx="{{ $x }}" cy="{{ $y }}" r="4"><title>${{ number_format($price,2) }}</title></circle>
+                                @endforeach
+                            </svg>
+                            <div class="price-legend"><span>{{ $seriePrecios->first()->registrado_en?->format('d/m/Y') }}</span><strong>${{ number_format($chartMin,2) }} - ${{ number_format($chartMax,2) }}</strong><span>{{ $seriePrecios->last()->registrado_en?->format('d/m/Y') }}</span></div>
+                        @else
+                            <div class="muted" style="padding:55px 10px;text-align:center;">Todavía no hay compras o facturas con precio para esta pieza.</div>
+                        @endif
+                    </div>
+                    <div>
+                        <strong>Último precio por proveedor</strong>
+                        @forelse($resumenProveedores as $supplier)
+                            <div class="supplier-price"><span><strong>{{ $supplier['proveedor'] }}</strong><small>{{ $supplier['registros'] }} registros · {{ $supplier['ultima_fecha']?->format('d/m/Y') }}</small></span><strong>${{ number_format($supplier['precio_actual'],2) }}</strong></div>
+                        @empty
+                            <p class="muted">Sin historial de proveedores.</p>
+                        @endforelse
+                    </div>
+                </div>
+                <div class="price-table"><table><thead><tr><th>Fecha</th><th>Proveedor</th><th>Precio</th><th>Variación</th><th>Factura / referencia</th><th>Origen</th></tr></thead><tbody>
+                    @forelse($precios as $price)
+                        <tr><td>{{ $price->registrado_en?->format('d/m/Y H:i') }}</td><td><strong>{{ $price->proveedor }}</strong>@if($price->proveedor_rfc)<div class="muted">{{ $price->proveedor_rfc }}</div>@endif</td><td><strong>${{ number_format((float)$price->precio_unitario,2) }} {{ $price->moneda }}</strong>@if($price->precio_anterior)<div class="muted">Anterior: ${{ number_format((float)$price->precio_anterior,2) }}</div>@endif</td><td>@if($price->variacion_porcentaje !== null)<span class="{{ $price->variacion_porcentaje >= 0 ? 'price-up' : 'price-down' }}">{{ $price->variacion_porcentaje >= 0 ? '+' : '' }}{{ number_format((float)$price->variacion_porcentaje,1) }}%</span>@else<span class="muted">Primer registro</span>@endif</td><td>{{ $price->referencia ?: 'Sin referencia' }}</td><td>{{ ucfirst($price->origen) }}</td></tr>
+                    @empty<tr><td colspan="6" class="muted">Sin precios registrados todavía.</td></tr>@endforelse
+                </tbody></table></div>
+                {{ $precios->links() }}
             </section>
 
             <div class="grid">

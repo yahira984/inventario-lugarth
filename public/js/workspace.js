@@ -343,7 +343,34 @@
         if (!notifications?.hidden && !notifications.contains(event.target) && !notificationsButton?.contains(event.target)) closeNotifications();
     });
     refreshNotifications();
-    window.setInterval(refreshNotifications, 5000);
+    window.setInterval(
+        refreshNotifications,
+        window.InventoryWorkspace?.realtime?.enabled ? 30000 : 5000
+    );
+    window.addEventListener('inventory:notification', (event) => {
+        const item = event.detail;
+        if (!item) return;
+
+        if (notificationsContainer && item.id) {
+            notificationsContainer.prepend(notificationNode(item));
+        }
+        const currentTotal = Number(notificationCount?.textContent || staticNotificationCount);
+        const total = currentTotal + 1;
+        if (notificationCount) {
+            notificationCount.hidden = false;
+            notificationCount.textContent = total > 99 ? '99+' : String(total);
+        }
+        if (notificationSummary) {
+            notificationSummary.textContent = total === 1
+                ? '1 asunto requiere atención'
+                : `${total} asuntos requieren atención`;
+        }
+        showWorkspaceToast(item.message || 'Tienes una nueva notificación.', item.tone || 'blue', 7000, {
+            title: item.title || 'Notificación',
+            onClick: item.url ? () => { window.location.href = item.url; } : null,
+        });
+        window.setTimeout(refreshNotifications, 350);
+    });
     document.addEventListener('visibilitychange', () => !document.hidden && refreshNotifications());
 
     /* Live team presence and direct messages */
