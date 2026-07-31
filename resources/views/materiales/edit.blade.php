@@ -345,6 +345,72 @@
                     <button type="submit" class="btn-save">Guardar Cambios</button>
                 </div>
             </form>
+
+            <section class="reference-gallery">
+                @php
+                    $referencePhotoCount = collect([$material->fotografia])
+                        ->concat($material->photos->pluck('path'))
+                        ->filter()
+                        ->unique()
+                        ->count();
+                    $referencePhotoSlots = max(0, 3 - $referencePhotoCount);
+                @endphp
+                <div class="reference-gallery-head">
+                    <div>
+                        <h2>Fotografias de referencia · {{ $referencePhotoCount }}/3</h2>
+                        <p>Guarda hasta 3 angulos distintos. Se comprimen automaticamente para ahorrar espacio.</p>
+                    </div>
+                    @if($referencePhotoSlots > 0)
+                        <form method="POST" action="{{ route('materiales.photos.store', $material) }}" enctype="multipart/form-data" class="reference-upload">
+                            @csrf
+                            <input type="text" name="angle" placeholder="Angulo: frente, lado, detalle">
+                            <input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple required data-max-files="{{ $referencePhotoSlots }}">
+                            <button type="submit" class="btn-save">Agregar {{ $referencePhotoSlots === 1 ? 'foto' : 'fotos' }}</button>
+                        </form>
+                    @else
+                        <div class="reference-limit">Galeria completa. Elimina una foto para reemplazarla.</div>
+                    @endif
+                </div>
+                <div class="reference-grid">
+                    <article class="reference-photo is-primary">
+                        @if($material->fotografia)
+                            <img
+                                src="{{ asset('storage/'.$material->fotografia) }}"
+                                alt="Imagen principal"
+                                data-workspace-lightbox
+                                data-lightbox-title="{{ $material->descripcion }}"
+                                data-lightbox-caption="Imagen principal"
+                            >
+                        @else
+                            <div class="reference-empty">Sin imagen principal</div>
+                        @endif
+                        <strong>Imagen principal</strong>
+                    </article>
+                    @foreach($material->photos->where('path', '!=', $material->fotografia) as $photo)
+                        <article class="reference-photo">
+                            <img
+                                src="{{ asset('storage/'.$photo->path) }}"
+                                alt="{{ $photo->angulo ?: 'Referencia' }}"
+                                data-workspace-lightbox
+                                data-lightbox-title="{{ $material->descripcion }}"
+                                data-lightbox-caption="{{ $photo->angulo ?: 'Otro angulo' }}"
+                            >
+                            <strong>{{ $photo->angulo ?: 'Otro angulo' }}</strong>
+                            <div class="reference-actions">
+                                @if($material->fotografia !== $photo->path)
+                                    <form method="POST" action="{{ route('materiales.photos.primary', [$material,$photo]) }}">@csrf @method('PATCH')<button type="submit">Usar como principal</button></form>
+                                    <form method="POST" action="{{ route('materiales.photos.destroy', [$material,$photo]) }}">@csrf @method('DELETE')<button type="submit" class="delete">Eliminar</button></form>
+                                @else
+                                    <span>Principal actual</span>
+                                @endif
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+            <style>
+.reference-gallery{margin-top:24px;padding-top:22px;border-top:1px solid #d8e5f0}.reference-gallery-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.reference-gallery h2{margin:0;color:#08233f}.reference-gallery p{margin:5px 0 0;color:#60768c;font-size:13px}.reference-upload{display:grid;grid-template-columns:170px minmax(190px,1fr) auto;gap:8px;align-items:center}.reference-upload input{min-height:42px;border:1px solid #bfd2e6;border-radius:8px;padding:8px}.reference-limit{padding:11px 13px;color:#8a5300;background:#fff7df;border:1px solid #f6cf76;border-radius:8px;font-size:12px;font-weight:800}.reference-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:16px}.reference-photo{padding:9px;border:1px solid #d8e5f0;border-radius:8px;background:#f8fbfe}.reference-photo.is-primary{border-color:#7dd3fc;background:#f0f9ff}.reference-photo img,.reference-empty{width:100%;aspect-ratio:1;object-fit:contain;border-radius:7px;background:#fff;border:1px solid #e0e8f0}.reference-empty{display:grid;place-items:center;color:#60768c;font-size:12px}.reference-photo strong{display:block;margin-top:7px}.reference-actions{display:grid;gap:5px;margin-top:7px}.reference-actions button{width:100%;min-height:34px;border:1px solid #93c5fd;border-radius:6px;background:#eff6ff;color:#075c9d;font-weight:800;cursor:pointer}.reference-actions button.delete{border-color:#fecaca;background:#fff1f2;color:#b91c1c}.reference-actions span{font-size:11px;color:#047857;font-weight:850}@media(max-width:850px){.reference-gallery-head{display:block}.reference-upload{grid-template-columns:1fr;margin-top:12px}.reference-upload .btn-save{width:100%}}
+            </style>
         </div>
     </main>
 </div>

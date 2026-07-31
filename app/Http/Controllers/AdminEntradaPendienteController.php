@@ -8,6 +8,8 @@ use App\Models\MaterialEntradaPendiente;
 use App\Models\MaterialMovimiento;
 use App\Support\AuditLogger;
 use App\Support\ImageStorage;
+use App\Support\SupplierPriceService;
+use App\Support\VisualEmbeddingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -17,6 +19,11 @@ use Illuminate\View\View;
 
 class AdminEntradaPendienteController extends Controller
 {
+    public function __construct(
+        private readonly SupplierPriceService $prices,
+        private readonly VisualEmbeddingService $visualAi,
+    ) {}
+
     public function index(Request $request): View
     {
         abort_unless($request->user()?->puedeAdministrarCatalogo(), 403);
@@ -62,11 +69,27 @@ class AdminEntradaPendienteController extends Controller
         $nuevaEvidencia = $request->hasFile('evidencia_foto')
             ? ImageStorage::storeOptimized($request->file('evidencia_foto'), 'entradas-pendientes', 1600, 72)
             : null;
-        $nuevaFotografia = $entrada->es_material_nuevo && $request->hasFile('fotografia')
-            ? ImageStorage::storeOptimized($request->file('fotografia'), 'entradas-pendientes/materiales', 1600, 72)
-            : null;
+        $nuevasFotografias = collect($request->file('fotografias', []));
+        if ($nuevasFotografias->isEmpty() && $request->hasFile('fotografia')) {
+            $nuevasFotografias->push($request->file('fotografia'));
+        }
+        $nuevasFotografias = $entrada->es_material_nuevo
+            ? $nuevasFotografias
+                ->take(3)
+                ->map(fn ($file): string => ImageStorage::storeOptimized(
+                    $file,
+                    'entradas-pendientes/materiales',
+                    1100,
+                    68
+                ))
+                ->values()
+            : collect();
         $evidenciaAnterior = $entrada->evidencia_foto;
-        $fotografiaAnterior = $entrada->fotografia;
+        $fotografiasAnteriores = collect(data_get($entrada->datos_material, 'fotografias_referencia', []))
+            ->prepend($entrada->fotografia)
+            ->filter()
+            ->unique()
+            ->values();
         $antes = [
             'material_id' => $entrada->material_id,
             'cantidad' => $entrada->cantidad,
@@ -79,7 +102,7 @@ class AdminEntradaPendienteController extends Controller
         ];
 
         try {
-            DB::transaction(function () use ($entrada, $datos, $nuevaEvidencia, $nuevaFotografia): void {
+            DB::transaction(function () use ($entrada, $datos, $nuevaEvidencia, $nuevasFotografias): void {
                 $entradaBloqueada = MaterialEntradaPendiente::query()
                     ->whereKey($entrada->id)
                     ->lockForUpdate()
@@ -125,12 +148,13 @@ class AdminEntradaPendienteController extends Controller
                         'moneda' => $this->textoOpcional($datos, 'moneda') ?: 'MXN',
                     ]);
 
+                    if ($nuevasFotografias->isNotEmpty()) {
+                        $datosMaterial['fotografias_referencia'] = $nuevasFotografias->all();
+                        $actualizacion['fotografia'] = $nuevasFotografias->first();
+                    }
+
                     $actualizacion['codigo_barras'] = $codigo;
                     $actualizacion['datos_material'] = $datosMaterial;
-
-                    if ($nuevaFotografia) {
-                        $actualizacion['fotografia'] = $nuevaFotografia;
-                    }
                 } else {
                     $material = Material::query()
                         ->whereKey($datos['material_id'])
@@ -151,7 +175,7 @@ class AdminEntradaPendienteController extends Controller
             });
         } catch (\Throwable $exception) {
             ImageStorage::delete($nuevaEvidencia);
-            ImageStorage::delete($nuevaFotografia);
+            $nuevasFotografias->each(fn (string $path) => ImageStorage::delete($path));
 
             throw $exception;
         }
@@ -159,8 +183,10 @@ class AdminEntradaPendienteController extends Controller
         if ($nuevaEvidencia && $evidenciaAnterior !== $nuevaEvidencia) {
             ImageStorage::delete($evidenciaAnterior);
         }
-        if ($nuevaFotografia && $fotografiaAnterior !== $nuevaFotografia) {
-            ImageStorage::delete($fotografiaAnterior);
+        if ($nuevasFotografias->isNotEmpty()) {
+            $fotografiasAnteriores
+                ->diff($nuevasFotografias)
+                ->each(fn (string $path) => ImageStorage::delete($path));
         }
 
         $entrada->refresh();
@@ -194,6 +220,11 @@ class AdminEntradaPendienteController extends Controller
         }
 
         $esMaterialNuevo = (bool) $entrada->es_material_nuevo;
+        $fotosEnviadas = collect(data_get($entrada->datos_material, 'fotografias_referencia', []))
+            ->prepend($entrada->fotografia)
+            ->filter()
+            ->unique()
+            ->values();
 
         DB::transaction(function () use ($entrada, $request): void {
             $entradaBloqueada = MaterialEntradaPendiente::query()
@@ -253,6 +284,52 @@ class AdminEntradaPendienteController extends Controller
                         ]
                     ));
                 }
+
+                $pendingPhotos = collect(data_get($datosMaterial, 'fotografias_referencia', []))
+                    ->prepend($entradaBloqueada->fotografia)
+                    ->filter()
+                    ->unique()
+                    ->take(3);
+                if (! $material->fotografia && $pendingPhotos->isNotEmpty()) {
+                    $material->update(['fotografia' => $pendingPhotos->first()]);
+                }
+
+                $galleryPaths = $material->photos()
+                    ->pluck('path')
+                    ->filter()
+                    ->unique()
+                    ->values();
+                $retainedPhotos = collect();
+
+                foreach ($pendingPhotos as $path) {
+                    if ($galleryPaths->contains($path)) {
+                        $retainedPhotos->push($path);
+
+                        continue;
+                    }
+
+                    if ($galleryPaths->count() >= 3) {
+                        continue;
+                    }
+
+                    $photo = $material->photos()->firstOrCreate(
+                        ['path' => $path],
+                        [
+                            'angulo' => 'Vista '.($galleryPaths->count() + 1),
+                            'es_principal' => $material->fotografia === $path,
+                        ]
+                    );
+                    $galleryPaths->push($photo->path);
+                    $retainedPhotos->push($photo->path);
+                }
+
+                $datosMaterial['fotografias_referencia'] = $retainedPhotos
+                    ->unique()
+                    ->take(3)
+                    ->values()
+                    ->all();
+                $entradaBloqueada->datos_material = $datosMaterial;
+                $entradaBloqueada->fotografia = $retainedPhotos->first();
             } else {
                 $material = Material::query()
                     ->whereKey($entradaBloqueada->material_id)
@@ -287,6 +364,19 @@ class AdminEntradaPendienteController extends Controller
                     : $material->costo_unitario,
             ]);
 
+            $this->prices->record(
+                $material,
+                $entradaBloqueada->proveedor ?: $material->proveedor,
+                (float) $entradaBloqueada->costo_unitario > 0
+                    ? (float) $entradaBloqueada->costo_unitario
+                    : (float) $material->costo_unitario,
+                $material->moneda ?: 'MXN',
+                'entrada_aprobada',
+                $entradaBloqueada->referencia ?: 'Entrada #'.$entradaBloqueada->id,
+                $material->proveedor_rfc,
+                now()
+            );
+
             $entradaBloqueada->update([
                 'material_id' => $material->id,
                 'estado' => 'aprobada',
@@ -298,6 +388,17 @@ class AdminEntradaPendienteController extends Controller
         });
 
         $entrada->refresh();
+        $fotosConservadas = collect(data_get($entrada->datos_material, 'fotografias_referencia', []))
+            ->prepend($entrada->fotografia)
+            ->filter()
+            ->unique();
+        $fotosEnviadas
+            ->diff($fotosConservadas)
+            ->each(fn (string $path) => ImageStorage::delete($path));
+        $entrada->material?->photos()
+            ->whereNull('visual_descriptor')
+            ->get()
+            ->each(fn ($photo) => $this->visualAi->indexPhoto($photo));
 
         AuditLogger::registrar('Entradas', 'Entrada aprobada', "Aprobo entrada de {$entrada->cantidad} piezas.", [
             'entrada_pendiente_id' => $entrada->id,
@@ -321,6 +422,12 @@ class AdminEntradaPendienteController extends Controller
             return back()->withErrors(['entrada' => 'Esta entrada ya fue revisada.']);
         }
 
+        $productPhotos = collect(data_get($entrada->datos_material, 'fotografias_referencia', []))
+            ->prepend($entrada->fotografia)
+            ->filter()
+            ->unique()
+            ->values();
+
         DB::transaction(function () use ($entrada, $request): void {
             $entradaBloqueada = MaterialEntradaPendiente::query()
                 ->whereKey($entrada->id)
@@ -339,8 +446,14 @@ class AdminEntradaPendienteController extends Controller
                 'rejected_at' => now(),
                 'comentario_admin' => trim((string) $request->input('comentario_admin', ''))
                     ?: $entradaBloqueada->comentario_admin,
+                'fotografia' => null,
+                'datos_material' => array_diff_key(
+                    $entradaBloqueada->datos_material ?? [],
+                    ['fotografias_referencia' => true]
+                ),
             ]);
         });
+        $productPhotos->each(fn (string $path) => ImageStorage::delete($path));
 
         AuditLogger::registrar('Entradas', 'Entrada rechazada', "Rechazo entrada de {$entrada->cantidad} piezas.", [
             'entrada_pendiente_id' => $entrada->id,
@@ -366,6 +479,8 @@ class AdminEntradaPendienteController extends Controller
             'comentario_admin' => ['nullable', 'string', 'max:2000'],
             'evidencia_foto' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:8192'],
             'fotografia' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'fotografias' => ['nullable', 'array', 'max:3'],
+            'fotografias.*' => ['image', 'mimes:jpeg,png,jpg,webp', 'max:6144'],
         ];
 
         if ($entrada->es_material_nuevo) {
@@ -399,6 +514,8 @@ class AdminEntradaPendienteController extends Controller
             'evidencia_foto.max' => 'La evidencia no debe pesar mas de 8 MB.',
             'fotografia.image' => 'La foto del producto debe ser una imagen valida.',
             'fotografia.max' => 'La foto del producto no debe pesar mas de 5 MB.',
+            'fotografias.max' => 'Cada producto puede tener como maximo 3 fotografias.',
+            'fotografias.*.image' => 'Cada archivo del producto debe ser una imagen valida.',
         ]);
     }
 

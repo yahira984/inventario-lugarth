@@ -77,4 +77,9 @@ class User extends Authenticatable
         return $this->last_seen_at !== null
             && $this->last_seen_at->greaterThanOrEqualTo(now()->subSeconds(self::ONLINE_WINDOW_SECONDS));
     }
+
+    public function preferences()
+    {
+        return $this->hasMany(UserPreference::class);
+    }
 }

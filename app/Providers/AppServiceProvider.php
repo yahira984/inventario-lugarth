@@ -5,7 +5,9 @@ namespace App\Providers;
 use App\Models\AuditLog;
 use App\Models\Material;
 use App\Models\MaterialEntradaPendiente;
+use App\Models\PurchaseRequest;
 use App\Models\User;
+use App\Models\UserPreference;
 use App\Observers\MaterialObserver;
 use App\Support\ChatFeatures;
 use App\Support\ChatRetention;
@@ -53,11 +55,34 @@ class AppServiceProvider extends ServiceProvider
             $pendingUsers = $isAdmin
                 ? User::query()->whereNull('approved_at')->count()
                 : 0;
+            $pendingPurchases = PurchaseRequest::query()
+                ->whereIn('estado', ['solicitada', 'autorizada', 'ordenada'])
+                ->when(! $isAdmin, fn ($query) => $query->where('requested_by', $user?->id))
+                ->count();
+            $databaseNotifications = $user
+                ? $user->notifications()->latest()->limit(12)->get()
+                : collect();
+            $unreadDatabaseNotifications = $user
+                ? $user->unreadNotifications()->count()
+                : 0;
+            $preferences = $user
+                ? UserPreference::query()
+                    ->where('user_id', $user->id)
+                    ->get()
+                    ->mapWithKeys(fn (UserPreference $preference): array => [
+                        $preference->key => $preference->value,
+                    ])
+                    ->all()
+                : [];
 
             $view->with([
                 'workspaceStockAlerts' => $stockAlerts,
                 'workspacePendingEntries' => $pendingEntries,
                 'workspacePendingUsers' => $pendingUsers,
+                'workspacePendingPurchases' => $pendingPurchases,
+                'workspaceDatabaseNotifications' => $databaseNotifications,
+                'workspaceUnreadDatabaseNotifications' => $unreadDatabaseNotifications,
+                'workspacePreferences' => $preferences,
                 'workspaceRecentActivity' => $isAdmin
                     ? AuditLog::query()->with('user:id,name')->latest()->limit(5)->get()
                     : collect(),

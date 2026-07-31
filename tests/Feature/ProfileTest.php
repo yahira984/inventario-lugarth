@@ -82,7 +82,7 @@ class ProfileTest extends TestCase
 
         $this->assertNotNull($avatar);
         $this->assertStringStartsWith('avatars/', $avatar);
-        $this->assertStringEndsWith('.jpg', $avatar);
+        $this->assertContains(pathinfo($avatar, PATHINFO_EXTENSION), ['webp', 'jpg']);
         Storage::disk('public')->assertExists($avatar);
     }
 

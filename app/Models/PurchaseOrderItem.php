@@ -11,12 +11,14 @@ class PurchaseOrderItem extends Model
         'material_id',
         'descripcion',
         'cantidad',
+        'cantidad_recibida',
         'costo_unitario',
         'subtotal',
     ];
 
     protected $casts = [
         'cantidad' => 'decimal:2',
+        'cantidad_recibida' => 'decimal:2',
         'costo_unitario' => 'decimal:2',
         'subtotal' => 'decimal:2',
     ];

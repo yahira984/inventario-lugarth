@@ -70,6 +70,12 @@
         .visual-state i { width: 9px; height: 9px; background: #10b981; border-radius: 50%; }
         .visual-state.is-limited { color: #8a4b08; background: #fff7e8; border-color: #f2c879; }
         .visual-state.is-limited i { background: #e67e00; }
+        .visual-diagnostics { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 14px; background: #fff; border: 1px solid var(--visual-line); border-radius: 8px; box-shadow: 0 8px 20px rgba(19, 57, 87, .05); }
+        .diagnostic-copy { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; color: var(--visual-muted); font-size: 11px; font-weight: 700; }
+        .diagnostic-copy strong { color: var(--visual-ink); }
+        .diagnostic-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; color: #06734f; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 999px; font-size: 10px; font-weight: 850; }
+        .diagnostic-pill.is-offline { color: #915000; background: #fff7e8; border-color: #f4cc83; }
+        .diagnostic-action { min-height: 34px; padding: 0 11px; color: #fff; background: #d97706; border: 1px solid #c26705; border-radius: 6px; font-size: 10px; font-weight: 850; cursor: pointer; }
         .visual-alert { padding: 13px 15px; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid var(--visual-red); border-radius: 7px; font-size: 13px; font-weight: 750; }
         .visual-alert.is-warning { color: #71420a; background: #fff9ec; border-color: #f3d59b; border-left-color: #e67e00; }
         .capture-card, .results-card { padding: 0; background: transparent; border: 0; box-shadow: none; }
@@ -130,12 +136,21 @@
         .visual-button-light { color: var(--visual-blue-dark); background: #fff; border-color: #9cc9f1; box-shadow: none; }
         .main-preview {
             width: 100%;
-            height: min(520px, 62vh);
+            height: 100%;
             object-fit: contain;
             background: #eef4f8;
             border-radius: 7px;
             cursor: zoom-in;
         }
+        .dual-photo-capture { width: min(760px, 100%); display: grid; gap: 14px; }
+        .dual-photo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .photo-angle-slot { position: relative; min-height: 220px; overflow: hidden; display: grid; place-items: center; background: #fff; border: 1px solid #bdd4e7; border-radius: 8px; }
+        .photo-angle-slot img { position: absolute; inset: 0; }
+        .photo-angle-empty { display: grid; justify-items: center; gap: 8px; padding: 18px; color: #5a7186; text-align: center; }
+        .photo-angle-empty strong { color: var(--visual-ink); font-size: 14px; }
+        .photo-angle-empty span { max-width: 230px; font-size: 11px; line-height: 1.45; }
+        .photo-angle-number { position: absolute; z-index: 1; top: 8px; left: 8px; padding: 5px 8px; color: #fff; background: rgba(6, 35, 61, .82); border-radius: 5px; font-size: 10px; font-weight: 850; }
+        .dual-photo-help { margin: 0; color: var(--visual-muted); font-size: 11px; font-weight: 700; text-align: center; }
         .preview-actions {
             position: absolute;
             right: 12px;
@@ -207,6 +222,15 @@
         .score-meter i { display: block; height: 100%; background: #0aa675; border-radius: inherit; }
         .result-link { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0 10px; color: var(--visual-blue-dark); background: #fff; border: 1px solid #9cc9f1; border-radius: 6px; font-size: 10px; font-weight: 850; text-decoration: none; white-space: nowrap; }
         .result-link:hover { color: #fff; background: var(--visual-blue); border-color: var(--visual-blue); }
+        .result-feedback { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 2px; }
+        .feedback-label { margin-right: 2px; color: #5a7186; font-size: 9px; font-weight: 800; }
+        .feedback-button { min-height: 29px; display: inline-flex; align-items: center; gap: 5px; padding: 0 8px; color: #35536e; background: #fff; border: 1px solid #c8d8e6; border-radius: 6px; font-size: 9px; font-weight: 850; cursor: pointer; transition: .18s ease; }
+        .feedback-button:hover { color: #fff; background: var(--visual-blue); border-color: var(--visual-blue); }
+        .feedback-button.is-correct:hover, .feedback-button.is-selected.is-correct { background: #07875f; border-color: #07875f; }
+        .feedback-button.is-incorrect:hover, .feedback-button.is-selected.is-incorrect { background: #c73535; border-color: #c73535; }
+        .feedback-button.is-selected { color: #fff; }
+        .feedback-button:disabled { cursor: default; opacity: .72; }
+        .feedback-response { min-height: 14px; color: #06734f; font-size: 9px; font-weight: 800; }
         .empty-result { padding: 28px 18px; color: var(--visual-muted); background: #f8fbfd; border: 1px dashed #b8cddd; border-radius: 8px; text-align: center; font-size: 12px; font-weight: 700; line-height: 1.55; }
         .camera-modal { position: fixed; z-index: 2600; inset: 0; display: grid; place-items: center; padding: 18px; background: rgba(5, 20, 34, .88); backdrop-filter: blur(8px); }
         .camera-dialog { width: min(760px, 100%); max-height: calc(100dvh - 36px); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; background: #fff; border: 1px solid #b7cad9; border-radius: 8px; box-shadow: 0 28px 80px rgba(0, 0, 0, .34); }
@@ -270,9 +294,11 @@
             .visual-title-mark { width: 44px; height: 44px; flex-basis: 44px; }
             .visual-header h1 { font-size: 26px !important; line-height: 1.08; }
             .visual-state { justify-self: start; white-space: normal; }
+            .visual-diagnostics { align-items: flex-start; flex-direction: column; }
             .capture-card, .results-card { padding: 12px !important; }
             .upload-stage { min-height: 390px; padding: 14px; }
-            .main-preview { height: min(520px, 58dvh); }
+            .dual-photo-grid { grid-template-columns: 1fr; }
+            .photo-angle-slot { min-height: 210px; }
             .preview-actions { flex-direction: column; }
             .preview-actions .visual-button { width: 100%; }
             .upload-actions { display: grid; grid-template-columns: 1fr; }
@@ -330,7 +356,7 @@
                     </span>
                     <div>
                         <h1>Identificador visual</h1>
-                        <p>Toma o selecciona una foto y compárala con las piezas reales del inventario.</p>
+                        <p>Toma dos fotos de la misma pieza desde ángulos distintos para obtener una comparación más confiable.</p>
                     </div>
                 </div>
                 <span class="visual-state {{ ($iaActiva ?? false) ? '' : 'is-limited' }}">
@@ -338,6 +364,26 @@
                     {{ ($iaActiva ?? false) ? 'Análisis inteligente activo' : 'Motor inteligente sin conexión' }}
                 </span>
             </header>
+
+            <section class="visual-diagnostics" aria-label="Estado del motor visual">
+                <div class="diagnostic-copy">
+                    <span class="diagnostic-pill {{ ($visualDiagnostics['ready'] ?? false) ? '' : 'is-offline' }}">
+                        {{ ($visualDiagnostics['ready'] ?? false) ? 'Motor inteligente disponible' : 'Motor inteligente sin conexión' }}
+                    </span>
+                    <span><strong>{{ $visualDiagnostics['indexed'] ?? 0 }}</strong> de <strong>{{ $visualDiagnostics['images'] ?? 0 }}</strong> fotografías indexadas</span>
+                    @if(($visualDiagnostics['pending'] ?? 0) > 0)
+                        <span><strong>{{ $visualDiagnostics['pending'] }}</strong> pendientes</span>
+                    @else
+                        <span>Índice actualizado</span>
+                    @endif
+                </div>
+                @if(auth()->user()?->puedeAdministrarCatalogo() && ($visualDiagnostics['pending'] ?? 0) > 0)
+                    <form method="POST" action="{{ route('materiales.visual.repair') }}">
+                        @csrf
+                        <button class="diagnostic-action" type="submit">Reparar pendientes</button>
+                    </form>
+                @endif
+            </section>
 
             @if($errors->any())
                 <div class="visual-alert" role="alert">{{ $errors->first() }}</div>
@@ -349,48 +395,46 @@
             <section class="capture-card">
                 <form action="{{ route('materiales.visual.search') }}" method="POST" enctype="multipart/form-data" id="visualForm">
                     @csrf
-                    <input type="file" name="fotografia" id="fotografia" accept="image/jpeg,image/png,image/webp" hidden>
+                    <input type="file" name="fotografias[]" id="fotografias" accept="image/jpeg,image/png,image/webp" multiple hidden>
+                    <input type="file" id="visualPhotoPicker" accept="image/jpeg,image/png,image/webp" hidden>
 
                     <div class="capture-grid">
                         <div class="upload-stage" id="dropArea" tabindex="0" role="group" aria-label="Seleccionar fotografía de una pieza">
-                            @if($preview)
-                                <img
-                                    src="{{ $preview }}"
-                                    class="main-preview"
-                                    alt="Foto analizada"
-                                    data-workspace-lightbox
-                                    data-lightbox-title="Foto analizada"
-                                    data-lightbox-caption="Imagen utilizada para buscar coincidencias"
-                                >
-                                <div class="preview-actions">
+                            <div class="dual-photo-capture">
+                                <div class="dual-photo-grid">
+                                    @for($photoIndex = 0; $photoIndex < 2; $photoIndex++)
+                                        <article class="photo-angle-slot" data-photo-slot="{{ $photoIndex }}">
+                                            <span class="photo-angle-number">Foto {{ $photoIndex + 1 }}</span>
+                                            @if(($previews[$photoIndex] ?? null))
+                                                <img
+                                                    src="{{ $previews[$photoIndex] }}"
+                                                    class="main-preview"
+                                                    alt="Foto {{ $photoIndex + 1 }} analizada"
+                                                    data-workspace-lightbox
+                                                    data-lightbox-title="Foto {{ $photoIndex + 1 }} analizada"
+                                                    data-lightbox-caption="Ángulo utilizado para buscar coincidencias"
+                                                >
+                                            @else
+                                                <div class="photo-angle-empty">
+                                                    <strong>{{ $photoIndex === 0 ? 'Vista principal' : 'Segundo ángulo' }}</strong>
+                                                    <span>{{ $photoIndex === 0 ? 'Centra la pieza completa.' : 'Gírala un poco para mostrar otra cara o detalle.' }}</span>
+                                                </div>
+                                            @endif
+                                        </article>
+                                    @endfor
+                                </div>
+                                <p class="dual-photo-help" id="dualPhotoHelp">Agrega la primera foto. Después te pediremos automáticamente la segunda.</p>
+                                <div class="upload-actions">
                                     <button type="button" class="visual-button" id="openCamera">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4 16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1.5-3h5ZM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/></svg>
-                                        Tomar otra foto
+                                        Tomar foto
                                     </button>
                                     <button type="button" class="visual-button visual-button-green" id="openFile">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>
-                                        Elegir otra imagen
+                                        Elegir imagen
                                     </button>
                                 </div>
-                            @else
-                                <div class="upload-placeholder">
-                                    <span class="upload-placeholder-mark">
-                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4 16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1.5-3h5ZM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/></svg>
-                                    </span>
-                                    <strong>Fotografía de la pieza</strong>
-                                    <p>Procura centrar la pieza y usar buena iluminación. No necesitas ingresar medidas ni datos.</p>
-                                    <div class="upload-actions">
-                                        <button type="button" class="visual-button" id="openCamera">
-                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4 16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1.5-3h5ZM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/></svg>
-                                            Usar cámara
-                                        </button>
-                                        <button type="button" class="visual-button visual-button-green" id="openFile">
-                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>
-                                            Subir imagen
-                                        </button>
-                                    </div>
-                                </div>
-                            @endif
+                            </div>
 
                             <div class="loading-layer" aria-live="polite">
                                 <span class="loading-spinner"></span>
@@ -402,10 +446,10 @@
                         <aside class="side-panel">
                             <article class="status-box" style="--status-color:#1769d2">
                                 <strong>Lectura actual</strong>
-                                <span>{{ $analisis ? 'Imagen procesada' : 'Esperando una imagen' }}</span>
+                                <span>{{ $analisis ? '2 imágenes procesadas' : 'Esperando 2 imágenes' }}</span>
                                 <small>
                                     {{ $analisis['motor'] ?? (($iaActiva ?? false) ? 'Motor local preparado' : 'Motor inteligente no disponible') }}.
-                                    La fotografía se procesa dentro de este equipo.
+                                    Las fotografías se procesan temporalmente y no se guardan.
                                 </small>
                             </article>
                             <article class="status-box" style="--status-color:#079669">
@@ -421,7 +465,7 @@
                                 </span>
                                 <small>Los resultados dudosos se descartan automáticamente.</small>
                             </article>
-                            <div class="visual-tip">Antes de analizar, encierra únicamente la pieza. El taller, piso y objetos cercanos quedarán fuera de la comparación.</div>
+                            <div class="visual-tip">Usa dos ángulos diferentes de la misma pieza. Antes de cada foto, encierra únicamente el objeto para excluir el taller, piso y objetos cercanos.</div>
                         </aside>
                     </div>
                 </form>
@@ -501,6 +545,24 @@
                                             </span>
                                         </div>
                                         <a href="{{ $materialInventoryUrl }}" class="result-link">Ver en inventario</a>
+                                    </div>
+                                    <div class="result-feedback" data-feedback-group>
+                                        <span class="feedback-label">¿La sugerencia es correcta?</span>
+                                        <button
+                                            type="button"
+                                            class="feedback-button is-correct"
+                                            data-visual-feedback="1"
+                                            data-material-id="{{ $material->id }}"
+                                            data-confidence="{{ $material->puntaje_visual }}"
+                                        >Correcto</button>
+                                        <button
+                                            type="button"
+                                            class="feedback-button is-incorrect"
+                                            data-visual-feedback="0"
+                                            data-material-id="{{ $material->id }}"
+                                            data-confidence="{{ $material->puntaje_visual }}"
+                                        >Incorrecto</button>
+                                        <span class="feedback-response" aria-live="polite"></span>
                                     </div>
                                 </div>
                             </article>
@@ -591,7 +653,8 @@
 <script>
     (() => {
         const form = document.getElementById('visualForm');
-        const input = document.getElementById('fotografia');
+        const input = document.getElementById('fotografias');
+        const picker = document.getElementById('visualPhotoPicker');
         const dropArea = document.getElementById('dropArea');
         const openCamera = document.getElementById('openCamera');
         const openFile = document.getElementById('openFile');
@@ -605,7 +668,8 @@
         const cropSource = document.getElementById('cropSource');
         const cropSelection = document.getElementById('cropSelection');
         let stream = null;
-        let previewUrl = null;
+        let selectedFiles = [];
+        let previewUrls = [];
         let cropUrl = null;
         let crop = { x: .06, y: .06, width: .88, height: .88 };
         let cropStart = null;
@@ -613,20 +677,21 @@
         let activePointer = null;
 
         const beginAnalysis = () => {
+            if (selectedFiles.length !== 2) return;
             dropArea.classList.add('is-loading');
             window.setTimeout(() => form.submit(), 120);
         };
 
         const validImage = (file) => {
-            if (file.size > 8 * 1024 * 1024) {
-                window.alert('La imagen no debe pesar más de 8 MB.');
-                input.value = '';
+            if (file.size > 6 * 1024 * 1024) {
+                window.alert('Cada imagen debe pesar menos de 6 MB.');
+                picker.value = '';
                 return false;
             }
 
             if (!file.type.startsWith('image/')) {
                 window.alert('Selecciona una fotografía JPG, PNG o WEBP.');
-                input.value = '';
+                picker.value = '';
                 return false;
             }
 
@@ -664,7 +729,7 @@
             activePointer = null;
             cropStart = null;
 
-            if (clearFile) input.value = '';
+            if (clearFile) picker.value = '';
         };
 
         const openCropper = (file) => {
@@ -681,21 +746,56 @@
         };
 
         const assignFileAndAnalyze = (file) => {
+            if (selectedFiles.length >= 2) {
+                selectedFiles = [];
+            }
+            if (selectedFiles.length === 0) {
+                previewUrls.forEach((url) => URL.revokeObjectURL(url));
+                previewUrls = [];
+                dropArea.querySelectorAll('[data-photo-slot]').forEach((slot, index) => {
+                    slot.querySelector('.main-preview')?.remove();
+                    let empty = slot.querySelector('.photo-angle-empty');
+                    if (!empty) {
+                        empty = document.createElement('div');
+                        empty.className = 'photo-angle-empty';
+                        empty.innerHTML = `<strong>${index === 0 ? 'Vista principal' : 'Segundo ángulo'}</strong><span>${index === 0 ? 'Centra la pieza completa.' : 'Gírala un poco para mostrar otra cara o detalle.'}</span>`;
+                        slot.append(empty);
+                    }
+                    empty.hidden = false;
+                });
+            }
+            selectedFiles.push(file);
+
             try {
                 const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
+                selectedFiles.forEach((selectedFile) => dataTransfer.items.add(selectedFile));
                 input.files = dataTransfer.files;
             } catch (_) {
                 window.alert('El navegador no pudo preparar el recorte. Actualiza el navegador e intenta nuevamente.');
                 return;
             }
 
-            if (previewUrl) URL.revokeObjectURL(previewUrl);
-            previewUrl = URL.createObjectURL(file);
-            const currentPreview = dropArea.querySelector('.main-preview');
+            const previewUrl = URL.createObjectURL(file);
+            previewUrls.push(previewUrl);
+            const currentSlot = dropArea.querySelector(`[data-photo-slot="${selectedFiles.length - 1}"]`);
+            currentSlot?.querySelector('.photo-angle-empty')?.setAttribute('hidden', '');
+            let currentPreview = currentSlot?.querySelector('.main-preview');
+            if (!currentPreview && currentSlot) {
+                currentPreview = document.createElement('img');
+                currentPreview.className = 'main-preview';
+                currentPreview.alt = `Vista ${selectedFiles.length} seleccionada`;
+                currentSlot.append(currentPreview);
+            }
             if (currentPreview) currentPreview.src = previewUrl;
+
+            const help = document.getElementById('dualPhotoHelp');
+            if (help) {
+                help.textContent = selectedFiles.length === 1
+                    ? 'Primera foto lista. Ahora toma la misma pieza desde otro ángulo.'
+                    : 'Dos fotos listas. Iniciando el análisis inteligente...';
+            }
             closeCropper(false);
-            beginAnalysis();
+            if (selectedFiles.length === 2) beginAnalysis();
         };
 
         const analyzeCrop = () => {
@@ -748,13 +848,13 @@
         };
 
         const chooseFile = (capture = false) => {
-            input.value = '';
+            picker.value = '';
             if (capture) {
-                input.setAttribute('capture', 'environment');
+                picker.setAttribute('capture', 'environment');
             } else {
-                input.removeAttribute('capture');
+                picker.removeAttribute('capture');
             }
-            input.click();
+            picker.click();
         };
 
         const stopCamera = () => {
@@ -838,7 +938,7 @@
             }, 'image/jpeg', .84);
         };
 
-        input.addEventListener('change', () => openCropper(input.files?.[0]));
+        picker.addEventListener('change', () => openCropper(picker.files?.[0]));
         openFile?.addEventListener('click', () => chooseFile(false));
         openCamera?.addEventListener('click', startWebCamera);
         document.getElementById('capturePhoto')?.addEventListener('click', capture);
@@ -921,6 +1021,42 @@
             const file = event.dataTransfer?.files?.[0];
             if (!file) return;
             openCropper(file);
+        });
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        document.querySelectorAll('[data-visual-feedback]').forEach((button) => {
+            button.addEventListener('click', async () => {
+                const group = button.closest('[data-feedback-group]');
+                const responseText = group?.querySelector('.feedback-response');
+                const buttons = group?.querySelectorAll('[data-visual-feedback]') ?? [];
+                buttons.forEach((item) => { item.disabled = true; });
+                if (responseText) responseText.textContent = 'Guardando...';
+
+                try {
+                    const response = await fetch(@json(route('materiales.visual.feedback')), {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                        },
+                        body: JSON.stringify({
+                            suggested_material_id: Number(button.dataset.materialId),
+                            query_signature: @json($searchSignature),
+                            was_correct: button.dataset.visualFeedback === '1',
+                            confidence: Number(button.dataset.confidence),
+                        }),
+                    });
+                    const payload = await response.json();
+                    if (!response.ok) throw new Error(payload.message || 'No se pudo guardar la respuesta.');
+
+                    button.classList.add('is-selected');
+                    if (responseText) responseText.textContent = 'Respuesta guardada';
+                } catch (error) {
+                    buttons.forEach((item) => { item.disabled = false; });
+                    if (responseText) responseText.textContent = error.message || 'Intenta nuevamente.';
+                }
+            });
         });
     })();
 </script>

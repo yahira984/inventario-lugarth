@@ -431,6 +431,9 @@
                 @csrf
                 <input type="hidden" name="payload" value="{{ $payload }}">
                 <input type="hidden" name="payload_signature" value="{{ $payloadSignature }}">
+                @if($purchaseOrderId ?? null)
+                    <input type="hidden" name="purchase_order_id" value="{{ $purchaseOrderId }}">
+                @endif
 
                 <div class="xml-table-heading">
                     <h2>Productos de la factura</h2>

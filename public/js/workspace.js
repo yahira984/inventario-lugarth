@@ -10,6 +10,23 @@
     const compactQuery = window.matchMedia('(max-width: 1024px)');
     const storagePrefix = `lugarth:${window.InventoryWorkspace?.userRole || 'user'}:`;
     const communicationStoragePrefix = `${storagePrefix}${window.InventoryWorkspace?.userId || 'anonymous'}:`;
+    const serverPreferences = window.InventoryWorkspace?.preferences || {};
+    const saveWorkspacePreference = (key, value) => {
+        const url = window.InventoryWorkspace?.preferencesUrl;
+        if (!url) return Promise.resolve(null);
+
+        return fetch(url, {
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': window.InventoryWorkspace?.csrfToken || '',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({ key, value }),
+        }).catch(() => null);
+    };
 
     if (!shell || !sidebar) return;
 
@@ -220,6 +237,81 @@
     /* Notifications */
     const notificationsButton = document.getElementById('workspaceNotifications');
     const notifications = document.getElementById('notificationPopover');
+    const notificationsContainer = document.getElementById('workspaceDatabaseNotifications');
+    const notificationCount = document.getElementById('workspaceNotificationCount');
+    const notificationSummary = document.getElementById('workspaceNotificationSummary');
+    const notificationReadAll = document.getElementById('workspaceReadAllNotifications');
+    const notificationUrl = window.InventoryWorkspace?.notificationsUrl || '';
+    const notificationReadUrlTemplate = window.InventoryWorkspace?.notificationReadUrlTemplate || '';
+    const staticNotificationCount = Number(window.InventoryWorkspace?.staticNotificationCount || 0);
+    let notificationRequestActive = false;
+
+    const notificationNode = (item) => {
+        const link = document.createElement('a');
+        link.href = item.url || '#';
+        link.className = `notification-item tone-${item.tone || 'blue'} ${item.read ? 'is-read' : 'is-unread'}`;
+        link.dataset.notificationId = item.id;
+
+        const dot = document.createElement('span');
+        dot.className = 'notification-dot';
+        const content = document.createElement('span');
+        const title = document.createElement('strong');
+        title.textContent = item.title || 'Notificación';
+        const detail = document.createElement('small');
+        detail.textContent = `${item.message || ''}${item.created_at ? ` · ${item.created_at}` : ''}`;
+        content.append(title, detail);
+        link.append(dot, content);
+
+        link.addEventListener('click', (event) => {
+            if (item.read || !notificationReadUrlTemplate) return;
+            event.preventDefault();
+            fetch(notificationReadUrlTemplate.replace('__NOTIFICATION__', encodeURIComponent(item.id)), {
+                method: 'PATCH',
+                headers: {
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': window.InventoryWorkspace?.csrfToken || '',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                credentials: 'same-origin',
+            }).finally(() => {
+                window.location.href = link.href;
+            });
+        });
+
+        return link;
+    };
+
+    const refreshNotifications = async () => {
+        if (!notificationUrl || notificationRequestActive || document.hidden) return;
+        notificationRequestActive = true;
+        try {
+            const response = await fetch(notificationUrl, {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin',
+            });
+            if (!response.ok) return;
+            const data = await response.json();
+            const unread = Number(data.unread || 0);
+            const total = staticNotificationCount + unread;
+            if (notificationCount) {
+                notificationCount.hidden = total === 0;
+                notificationCount.textContent = total > 99 ? '99+' : String(total);
+            }
+            if (notificationSummary) {
+                notificationSummary.textContent = total === 1
+                    ? '1 asunto requiere atención'
+                    : `${total} asuntos requieren atención`;
+            }
+            if (notificationsContainer) {
+                notificationsContainer.replaceChildren(...(data.notifications || []).map(notificationNode));
+            }
+        } catch {
+            // Conserva el último estado visible si la red está ocupada.
+        } finally {
+            notificationRequestActive = false;
+        }
+    };
+
     const closeNotifications = () => {
         if (!notifications) return;
         notifications.hidden = true;
@@ -233,9 +325,26 @@
         notificationsButton.setAttribute('aria-expanded', notifications.hidden ? 'false' : 'true');
     });
     notifications?.querySelector('[data-close-popover]')?.addEventListener('click', closeNotifications);
+    notificationReadAll?.addEventListener('click', async () => {
+        const url = window.InventoryWorkspace?.notificationReadAllUrl;
+        if (!url) return;
+        await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                Accept: 'application/json',
+                'X-CSRF-TOKEN': window.InventoryWorkspace?.csrfToken || '',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            credentials: 'same-origin',
+        });
+        await refreshNotifications();
+    });
     document.addEventListener('click', (event) => {
         if (!notifications?.hidden && !notifications.contains(event.target) && !notificationsButton?.contains(event.target)) closeNotifications();
     });
+    refreshNotifications();
+    window.setInterval(refreshNotifications, 5000);
+    document.addEventListener('visibilitychange', () => !document.hidden && refreshNotifications());
 
     /* Live team presence and direct messages */
     const teamDock = document.getElementById('workspaceTeamDock');
@@ -1133,6 +1242,7 @@
     let searchTimer;
     let searchController;
     let selectedResult = -1;
+    let quickView = null;
 
     const openPalette = () => {
         if (!palette) return;
@@ -1154,6 +1264,120 @@
         closeMobileSidebar();
     });
     palette?.addEventListener('click', (event) => event.target === palette && closePalette());
+
+    const closeQuickView = () => {
+        quickView?.remove();
+        quickView = null;
+    };
+
+    const quickViewField = (label, value) => {
+        if (value === null || value === undefined || value === '') return null;
+        const field = document.createElement('div');
+        field.className = 'workspace-quick-field';
+        const key = document.createElement('small');
+        key.textContent = label;
+        const content = document.createElement('strong');
+        content.textContent = String(value);
+        field.append(key, content);
+
+        return field;
+    };
+
+    const openQuickView = (result) => {
+        if (!result.preview) return;
+        closeQuickView();
+
+        const backdrop = document.createElement('section');
+        backdrop.className = 'workspace-quick-view';
+        backdrop.setAttribute('role', 'dialog');
+        backdrop.setAttribute('aria-modal', 'true');
+        backdrop.setAttribute('aria-label', `Vista rapida de ${result.title}`);
+
+        const panel = document.createElement('div');
+        panel.className = 'workspace-quick-panel';
+        const header = document.createElement('header');
+        const heading = document.createElement('div');
+        const eyebrow = document.createElement('small');
+        eyebrow.textContent = 'Vista rapida del inventario';
+        const title = document.createElement('h2');
+        title.textContent = result.title;
+        heading.append(eyebrow, title);
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'workspace-quick-close';
+        close.setAttribute('aria-label', 'Cerrar vista rapida');
+        close.title = 'Cerrar';
+        close.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>';
+        close.addEventListener('click', closeQuickView);
+        header.append(heading, close);
+
+        const body = document.createElement('div');
+        body.className = 'workspace-quick-body';
+        const photos = document.createElement('div');
+        photos.className = 'workspace-quick-photos';
+        const photoUrls = result.preview.photos || [];
+        if (photoUrls.length) {
+            photoUrls.forEach((url, index) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.setAttribute('aria-label', `Ampliar vista ${index + 1}`);
+                const image = document.createElement('img');
+                image.src = url;
+                image.alt = `Vista ${index + 1} de ${result.title}`;
+                image.loading = 'lazy';
+                button.append(image);
+                button.addEventListener('click', () => window.InventoryWorkspace?.openImage?.(
+                    url,
+                    result.title,
+                    `Vista ${index + 1} de ${photoUrls.length}`,
+                    button,
+                ));
+                photos.append(button);
+            });
+        } else {
+            const emptyPhoto = document.createElement('div');
+            emptyPhoto.className = 'workspace-quick-photo-empty';
+            emptyPhoto.textContent = 'Sin fotografias';
+            photos.append(emptyPhoto);
+        }
+
+        const details = document.createElement('div');
+        details.className = 'workspace-quick-details';
+        [
+            ['Descripcion', result.preview.description],
+            ['Apodo', result.preview.nickname],
+            ['No. de parte', result.preview.part_number],
+            ['Codigo', result.preview.barcode],
+            ['Categoria', result.preview.category],
+            ['Almacen', result.preview.warehouse],
+            ['Marca', result.preview.brand],
+            ['Proveedor', result.preview.supplier],
+            ['Stock actual', `${result.preview.stock} ${result.preview.unit}`],
+            ['Stock minimo', `${result.preview.minimum_stock || 0} ${result.preview.unit}`],
+            ['Stock maximo', `${result.preview.maximum_stock || 0} ${result.preview.unit}`],
+        ].forEach(([label, value]) => {
+            const field = quickViewField(label, value);
+            if (field) details.append(field);
+        });
+        body.append(photos, details);
+
+        const actions = document.createElement('footer');
+        (result.preview.actions || []).forEach((item) => {
+            const link = document.createElement('a');
+            link.href = item.url;
+            link.className = `workspace-quick-action tone-${item.tone || 'blue'}`;
+            link.textContent = item.label;
+            actions.append(link);
+        });
+
+        panel.append(header, body, actions);
+        backdrop.append(panel);
+        backdrop.addEventListener('click', (event) => event.target === backdrop && closeQuickView());
+        document.body.append(backdrop);
+        quickView = backdrop;
+        closePalette();
+        window.setTimeout(() => close.focus(), 30);
+    };
 
     const appendSearchResult = (result) => {
         const row = document.createElement('div');
@@ -1196,10 +1420,19 @@
         meta.textContent = `${result.type} · ${result.meta || ''}`;
         copy.append(title, meta);
 
-        const action = document.createElement('a');
-        action.className = 'command-result-action';
-        action.href = result.url;
-        action.textContent = 'Abrir';
+        let action;
+        if (result.preview) {
+            action = document.createElement('button');
+            action.type = 'button';
+            action.className = 'command-result-action';
+            action.textContent = 'Vista rapida';
+            action.addEventListener('click', () => openQuickView(result));
+        } else {
+            action = document.createElement('a');
+            action.className = 'command-result-action';
+            action.href = result.url;
+            action.textContent = 'Abrir';
+        }
         row.append(media, copy, action);
         commandResults.append(row);
     };
@@ -1258,6 +1491,14 @@
             return;
         }
         if (event.key === 'Escape') {
+            if (lightbox && !lightbox.hidden) {
+                closeLightbox();
+                return;
+            }
+            if (quickView) {
+                closeQuickView();
+                return;
+            }
             closePalette();
             closeNotifications();
             closeTeam();
@@ -1367,7 +1608,10 @@
         }
 
         const tableKey = `${storagePrefix}table:${window.InventoryWorkspace.routeName}:${tableIndex}`;
-        const compact = localStorage.getItem(`${tableKey}:density`) === 'compact';
+        const preferenceKey = `table.${window.InventoryWorkspace.routeName}.${tableIndex}`;
+        const savedDensity = serverPreferences[`${preferenceKey}.density`]
+            || localStorage.getItem(`${tableKey}:density`);
+        const compact = savedDensity === 'compact';
         shell.classList.toggle('workspace-density-compact', compact);
         density.textContent = compact ? 'Vista cómoda' : 'Vista compacta';
         density.addEventListener('click', () => {
@@ -1375,9 +1619,12 @@
             const isCompact = shell.classList.contains('workspace-density-compact');
             density.textContent = isCompact ? 'Vista cómoda' : 'Vista compacta';
             localStorage.setItem(`${tableKey}:density`, isCompact ? 'compact' : 'comfortable');
+            saveWorkspacePreference(`${preferenceKey}.density`, isCompact ? 'compact' : 'comfortable');
         });
 
-        const hiddenColumns = new Set(JSON.parse(localStorage.getItem(`${tableKey}:columns`) || '[]'));
+        const savedColumns = serverPreferences[`${preferenceKey}.columns`]
+            || JSON.parse(localStorage.getItem(`${tableKey}:columns`) || '[]');
+        const hiddenColumns = new Set(Array.isArray(savedColumns) ? savedColumns : []);
         const setColumn = (index, hidden) => {
             table.querySelectorAll('tr').forEach((row) => row.children[index]?.classList.toggle('workspace-column-hidden', hidden));
         };
@@ -1398,6 +1645,7 @@
                     checkbox.checked ? hiddenColumns.delete(index) : hiddenColumns.add(index);
                     setColumn(index, !checkbox.checked);
                     localStorage.setItem(`${tableKey}:columns`, JSON.stringify([...hiddenColumns]));
+                    saveWorkspacePreference(`${preferenceKey}.columns`, [...hiddenColumns]);
                 });
                 label.append(checkbox, document.createTextNode(header));
                 menu.append(label);

@@ -31,7 +31,7 @@ class WorkspaceExperienceTest extends TestCase
             ->assertOk()
             ->assertSee('Registrar entrada')
             ->assertSee('Retirar equipo')
-            ->assertDontSee('Órdenes de compra')
+            ->assertSee('Órdenes de compra')
             ->assertDontSee('Auditoría')
             ->assertDontSee('href="'.route('dashboard').'"', false);
     }
@@ -65,6 +65,10 @@ class WorkspaceExperienceTest extends TestCase
         $this->assertStringNotContainsString('/edit', $materialResult['url']);
         $this->assertSame(asset('storage/materiales/valvula-inoxidable.webp'), $materialResult['image']);
         $this->assertStringStartsWith('Foto de ', $materialResult['image_alt']);
+        $this->assertSame(4, $materialResult['preview']['stock']);
+        $this->assertNull($materialResult['preview']['supplier']);
+        $this->assertSame('Ver en inventario', $materialResult['preview']['actions'][0]['label']);
+        $this->assertContains('Registrar salida', collect($materialResult['preview']['actions'])->pluck('label'));
 
         $this->actingAs($almacenista)
             ->get(route('materiales.index', [
@@ -80,6 +84,12 @@ class WorkspaceExperienceTest extends TestCase
             ->getJson(route('buscar.global', ['q' => 'Proveedor Industrial']))
             ->assertOk()
             ->assertJsonFragment(['type' => 'Proveedor', 'title' => 'Proveedor Industrial Norte']);
+
+        $adminMaterial = $this->actingAs($admin)
+            ->getJson(route('buscar.global', ['q' => 'válvula']))
+            ->json('results.0');
+        $this->assertSame('Proveedor Industrial Norte', $adminMaterial['preview']['supplier']);
+        $this->assertContains('Editar ficha', collect($adminMaterial['preview']['actions'])->pluck('label'));
     }
 
     public function test_admin_can_create_purchase_order_and_total_is_calculated_on_server(): void
@@ -115,7 +125,9 @@ class WorkspaceExperienceTest extends TestCase
 
         $this->actingAs($this->user('almacenista'))
             ->get(route('admin.ordenes.index'))
-            ->assertForbidden();
+            ->assertOk()
+            ->assertDontSee('Nueva orden de compra')
+            ->assertDontSee('Proveedor de prueba');
     }
 
     public function test_equipment_withdrawal_pages_show_readiness_and_history(): void

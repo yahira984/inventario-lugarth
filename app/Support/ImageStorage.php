@@ -11,7 +11,9 @@ class ImageStorage
     public static function storeOptimized(UploadedFile $file, string $folder, int $maxWidth = 1600, int $quality = 72): string
     {
         $folder = trim($folder, '/');
-        $name = now()->format('Ymd_His') . '_' . bin2hex(random_bytes(5)) . '.jpg';
+        $useWebp = function_exists('imagewebp');
+        $extension = $useWebp ? 'webp' : 'jpg';
+        $name = now()->format('Ymd_His') . '_' . bin2hex(random_bytes(5)) . ".{$extension}";
         $relativePath = "{$folder}/{$name}";
 
         $sourcePath = $file->getRealPath();
@@ -32,9 +34,10 @@ class ImageStorage
             return self::storeOriginal($file, $folder);
         }
 
+        $source = self::orientJpeg($source, $sourcePath, $info['mime'] ?? '');
         $width = imagesx($source);
         $height = imagesy($source);
-        $ratio = $width > $maxWidth ? $maxWidth / $width : 1;
+        $ratio = min(1, $maxWidth / max($width, $height));
         $newWidth = max(1, (int) round($width * $ratio));
         $newHeight = max(1, (int) round($height * $ratio));
 
@@ -44,7 +47,9 @@ class ImageStorage
         imagecopyresampled($canvas, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
         ob_start();
-        $encoded = imagejpeg($canvas, null, $quality);
+        $encoded = $useWebp
+            ? imagewebp($canvas, null, $quality)
+            : imagejpeg($canvas, null, $quality);
         $contents = ob_get_clean();
         imagedestroy($canvas);
         imagedestroy($source);
@@ -58,6 +63,34 @@ class ImageStorage
         }
 
         return $relativePath;
+    }
+
+    private static function orientJpeg($source, string $sourcePath, string $mime)
+    {
+        if ($mime !== 'image/jpeg' || ! function_exists('exif_read_data')) {
+            return $source;
+        }
+
+        $orientation = (int) (@exif_read_data($sourcePath)['Orientation'] ?? 1);
+        $degrees = match ($orientation) {
+            3 => 180,
+            6 => -90,
+            8 => 90,
+            default => 0,
+        };
+
+        if ($degrees === 0) {
+            return $source;
+        }
+
+        $rotated = imagerotate($source, $degrees, 0);
+        if ($rotated === false) {
+            return $source;
+        }
+
+        imagedestroy($source);
+
+        return $rotated;
     }
 
     public static function delete(?string $path): void

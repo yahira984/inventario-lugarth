@@ -8,6 +8,7 @@ use App\Models\EquipmentPackageWithdrawal;
 use App\Models\Material;
 use App\Models\MaterialMovimiento;
 use App\Support\AuditLogger;
+use App\Support\EquipmentPlanningService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,8 @@ use Illuminate\View\View;
 
 class EquipmentPackageController extends Controller
 {
+    public function __construct(private readonly EquipmentPlanningService $planning) {}
+
     public function index(Request $request): View
     {
         abort_unless($request->user()?->puedeMoverStock(), 403, 'No tienes permiso para consultar equipos.');
@@ -24,7 +27,7 @@ class EquipmentPackageController extends Controller
         $buscar = trim((string) $request->query('buscar', ''));
 
         $equipos = EquipmentPackage::query()
-            ->with(['items.material:id,descripcion,stock'])
+            ->with(['items.material:id,descripcion,stock,costo_unitario,fotografia,factura_uuid'])
             ->withCount('items')
             ->when($buscar !== '', function ($query) use ($buscar): void {
                 $query->where(function ($q) use ($buscar): void {
@@ -37,6 +40,9 @@ class EquipmentPackageController extends Controller
             ->orderBy('nombre')
             ->paginate(20)
             ->withQueryString();
+        $equipos->getCollection()->each(function (EquipmentPackage $package): void {
+            $package->setAttribute('planeacion', $this->planning->analyze($package));
+        });
 
         return view('equipos.index', [
             'equipos' => $equipos,
@@ -84,6 +90,7 @@ class EquipmentPackageController extends Controller
 
         return view('equipos.show', [
             'equipo' => $equipo,
+            'planeacion' => $this->planning->analyze($equipo),
             'materiales' => $materiales,
             'piezasSinVincular' => $equipo->items
                 ->whereNull('material_id')

@@ -41,6 +41,8 @@
         .photo-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
         .photo-box { display:grid; grid-template-columns:132px minmax(0,1fr); gap:16px; align-items:center; padding:15px; border:1px solid #d5e2ef; border-radius:12px; background:#f8fbff; }
         .photo-preview { width:132px; height:112px; border-radius:9px; border:1px solid #bfd2e6; background:#fff; object-fit:contain; cursor:zoom-in; }
+        .product-gallery { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+        .product-gallery .photo-preview,.product-gallery .photo-placeholder { width:100%; height:112px; }
         .photo-placeholder { width:132px; height:112px; display:flex; align-items:center; justify-content:center; border:1px dashed #9fb8d1; border-radius:9px; color:#58718a; background:#fff; font-size:12px; font-weight:850; text-align:center; }
         .material-summary { display:grid; grid-template-columns:84px minmax(0,1fr); gap:14px; align-items:center; margin-top:12px; padding:13px; border:1px solid #bfdbfe; border-radius:10px; background:#eff6ff; }
         .material-summary img { width:84px; height:76px; object-fit:contain; border:1px solid #c7d9eb; border-radius:8px; background:#fff; }
@@ -61,7 +63,14 @@
 <body>
 @php
     $datosMaterial = $entrada->datos_material ?? [];
-    $productoFoto = $entrada->es_material_nuevo ? $entrada->fotografia : $entrada->material?->fotografia;
+    $productoFotos = $entrada->es_material_nuevo
+        ? collect(data_get($datosMaterial, 'fotografias_referencia', []))
+            ->prepend($entrada->fotografia)
+            ->filter()
+            ->unique()
+            ->take(3)
+            ->values()
+        : collect([$entrada->material?->fotografia])->filter();
 @endphp
 <div class="app-shell">
     @include('materiales.partials.sidebar')
@@ -110,18 +119,19 @@
                             </div>
                         </div>
 
-                        <div class="photo-box">
-                            @if($productoFoto)
-                                <img id="productPreview" class="photo-preview" src="{{ asset('storage/'.$productoFoto) }}" alt="Foto del producto" data-workspace-lightbox data-lightbox-title="Foto del producto">
-                            @else
-                                <div id="productPlaceholder" class="photo-placeholder">Sin foto del producto</div>
-                                <img id="productPreview" class="photo-preview" src="" alt="Nueva foto del producto" style="display:none" data-workspace-lightbox data-lightbox-title="Nueva foto del producto">
-                            @endif
+                        <div class="photo-box" style="grid-template-columns:minmax(0,1fr);">
+                            <div id="productGallery" class="product-gallery">
+                                @forelse($productoFotos as $index => $productoFoto)
+                                    <img class="photo-preview" src="{{ asset('storage/'.$productoFoto) }}" alt="Vista {{ $index + 1 }} del producto" data-workspace-lightbox data-lightbox-title="Vista {{ $index + 1 }} del producto">
+                                @empty
+                                    <div id="productPlaceholder" class="photo-placeholder">Sin fotos del producto</div>
+                                @endforelse
+                            </div>
                             <div class="field">
-                                <label>Foto del producto</label>
+                                <label>Fotos del producto</label>
                                 @if($entrada->es_material_nuevo)
-                                    <input id="fotografia" name="fotografia" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewFile(this, 'productPreview', 'productPlaceholder')">
-                                    <span class="help">Esta sera la imagen que aparezca en el inventario.</span>
+                                    <input id="fotografias" name="fotografias[]" type="file" accept="image/jpeg,image/png,image/webp" multiple onchange="previewProductFiles(this)">
+                                    <span class="help">Puedes reemplazar las vistas actuales con hasta 3 fotos. La primera sera la portada.</span>
                                 @else
                                     <span class="muted">La foto pertenece a la pieza seleccionada en inventario.</span>
                                 @endif
@@ -313,6 +323,29 @@
         image.src = URL.createObjectURL(input.files[0]);
         image.style.display = 'block';
         if (placeholder) placeholder.style.display = 'none';
+    }
+
+    function previewProductFiles(input) {
+        const files = [...(input.files || [])];
+        const gallery = document.getElementById('productGallery');
+
+        if (files.length > 3) {
+            input.value = '';
+            alert('Selecciona un maximo de 3 fotos para el producto.');
+            return;
+        }
+
+        if (!files.length) return;
+        gallery.replaceChildren();
+
+        files.forEach((file, index) => {
+            const image = document.createElement('img');
+            image.className = 'photo-preview';
+            image.alt = `Vista ${index + 1} del producto`;
+            image.src = URL.createObjectURL(file);
+            image.addEventListener('load', () => URL.revokeObjectURL(image.src), { once: true });
+            gallery.append(image);
+        });
     }
 
     function updateMaterialSummary() {

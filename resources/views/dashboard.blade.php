@@ -131,6 +131,9 @@
         .critical-item strong { display: block; color: #ffffff; font-size: 14px; line-height: 1.4; }
         .muted { margin-top: 4px; color: var(--muted); font-size: 12px; font-weight: 650; line-height: 1.4; }
         .badge-red { min-width: 110px; padding: 8px 10px; background: rgba(239, 68, 68, 0.10); border: 1px solid rgba(239, 68, 68, 0.21); border-radius: 9px; color: #fca5a5; font-size: 12px; font-weight: 900; text-align: center; }
+        .critical-actions { display: grid; gap: 7px; justify-items: stretch; }
+        .request-stock-button { min-height: 34px; padding: 0 10px; color: #fff; background: #d97706; border: 0; border-radius: 8px; font-size: 11px; font-weight: 850; cursor: pointer; }
+        .request-stock-button:hover { background: #b85f05; }
         .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 150px; padding: 20px; background: rgba(16, 185, 129, 0.055); border: 1px dashed rgba(16, 185, 129, 0.24); border-radius: 13px; color: #6ee7b7; text-align: center; }
         .empty-state svg { width: 37px; height: 37px; margin-bottom: 9px; }
         .empty-state strong { font-size: 14px; }
@@ -376,7 +379,14 @@
                             </div>
                             
                             <!-- Etiqueta de stock original -->
-                            <div class="badge-red">{{ number_format($material->stock) }} / mín. {{ number_format($material->stock_minimo) }}</div>
+                            <div class="critical-actions">
+                                <div class="badge-red">{{ number_format($material->stock) }} / mín. {{ number_format($material->stock_minimo) }}</div>
+                                <form method="POST" action="{{ route('admin.compras.requests.quick', $material) }}">
+                                    @csrf
+                                    <input type="hidden" name="cantidad" value="{{ max(1, (int) $material->cantidad_sugerida) }}">
+                                    <button class="request-stock-button" type="submit">Solicitar {{ number_format(max(1, (int) $material->cantidad_sugerida)) }} pzas</button>
+                                </form>
+                            </div>
                         </div>
                     @empty
                         <div class="empty-state">
@@ -422,16 +432,17 @@
             if (!opciones || !opciones.mostrar) return;
             const { ctx, chartArea } = chart;
             if (!chartArea) return;
+            const resolver = (valor) => typeof valor === 'function' ? valor(chart) : valor;
             const centroX = (chartArea.left + chartArea.right) / 2;
             const centroY = (chartArea.top + chartArea.bottom) / 2;
             ctx.save();
             ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillStyle = opciones.colorPrincipal || '#ffffff';
+            ctx.fillStyle = resolver(opciones.colorPrincipal) || '#ffffff';
             ctx.font = `900 ${opciones.tamanoPrincipal || 24}px "Segoe UI"`;
-            ctx.fillText(opciones.textoPrincipal || '', centroX, centroY - 8);
-            ctx.fillStyle = opciones.colorSecundario || '#94a3b8';
+            ctx.fillText(resolver(opciones.textoPrincipal) || '', centroX, centroY - 8);
+            ctx.fillStyle = resolver(opciones.colorSecundario) || '#94a3b8';
             ctx.font = `700 ${opciones.tamanoSecundario || 11}px "Segoe UI"`;
-            ctx.fillText(opciones.textoSecundario || '', centroX, centroY + 17);
+            ctx.fillText(resolver(opciones.textoSecundario) || '', centroX, centroY + 17);
             ctx.restore();
         }
     };
@@ -473,8 +484,38 @@
         }
     });
 
-    const totalParaPorcentaje = totalMateriales > 0 ? totalMateriales : 1;
-    const porcentajeSaludable = totalMateriales > 0 ? (materialesSaludables / totalParaPorcentaje * 100).toFixed(0) : 0;
+    const porcentajeInventario = (cantidad) => {
+        if (totalMateriales <= 0) return '0';
+        const porcentaje = Number(cantidad || 0) / totalMateriales * 100;
+
+        return porcentaje.toLocaleString('es-MX', {
+            minimumFractionDigits: porcentaje > 0 && porcentaje < 100 ? 1 : 0,
+            maximumFractionDigits: 1,
+        });
+    };
+
+    const estadoCentralInventario = (chart) => {
+        const saludableVisible = chart.getDataVisibility(0);
+        const criticoVisible = chart.getDataVisibility(1);
+
+        if (!saludableVisible && criticoVisible) {
+            return {
+                porcentaje: porcentajeInventario(stockCriticoTotal),
+                etiqueta: 'CRÍTICO',
+                color: '#ef4444',
+            };
+        }
+
+        if (saludableVisible) {
+            return {
+                porcentaje: porcentajeInventario(materialesSaludables),
+                etiqueta: 'SALUDABLE',
+                color: '#10b981',
+            };
+        }
+
+        return { porcentaje: '0', etiqueta: 'SIN SELECCIÓN', color: '#64748b' };
+    };
 
     new Chart(document.getElementById('estadoInventarioChart'), {
         type: 'doughnut',
@@ -484,7 +525,15 @@
             plugins: {
                 legend: { position: 'bottom', labels: { color: '#04224b', usePointStyle: true, pointStyle: 'circle', boxWidth: 10, boxHeight: 10, padding: 16, font: { size: 11, weight: '750' } } },
                 tooltip: { callbacks: { label(context) { const valor = Number(context.raw || 0); const porcentaje = totalMateriales > 0 ? (valor / totalMateriales * 100).toFixed(1) : '0.0'; return ` ${context.label}: ${formatoNumero(valor)} materiales (${porcentaje}%)`; } } },
-                textoCentral: { mostrar: true, textoPrincipal: `${porcentajeSaludable}%`, textoSecundario: 'SALUDABLE', tamanoPrincipal: 29, tamanoSecundario: 10, colorPrincipal: '#6ee7b7', colorSecundario: '#94a3b8' }
+                textoCentral: {
+                    mostrar: true,
+                    textoPrincipal: (chart) => `${estadoCentralInventario(chart).porcentaje}%`,
+                    textoSecundario: (chart) => estadoCentralInventario(chart).etiqueta,
+                    tamanoPrincipal: 29,
+                    tamanoSecundario: 10,
+                    colorPrincipal: (chart) => estadoCentralInventario(chart).color,
+                    colorSecundario: '#64748b'
+                }
             }
         }
     });

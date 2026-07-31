@@ -16,12 +16,16 @@ use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\IdentificadorVisualController;
 use App\Http\Controllers\MaterialCategoryController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\MaterialPhotoController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\SalidaMaterialController;
 use App\Http\Controllers\TeamHubController;
 use App\Http\Controllers\UserRoleController;
+use App\Http\Controllers\UserPreferenceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -31,6 +35,16 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/buscar-global', GlobalSearchController::class)->name('buscar.global');
+    Route::get('/notificaciones', [NotificationController::class, 'index'])
+        ->middleware('throttle:180,1')
+        ->name('notifications.index');
+    Route::patch('/notificaciones/leer-todas', [NotificationController::class, 'readAll'])
+        ->name('notifications.read-all');
+    Route::patch('/notificaciones/{notification}/leer', [NotificationController::class, 'read'])
+        ->name('notifications.read');
+    Route::put('/preferencias', [UserPreferenceController::class, 'store'])
+        ->middleware('throttle:120,1')
+        ->name('preferences.store');
     Route::get('/equipo/presencia', [TeamHubController::class, 'presence'])
         ->middleware('throttle:600,1')
         ->name('team.presence');
@@ -74,6 +88,12 @@ Route::middleware('auth')->group(function () {
         ->name('materiales.etiquetas.lote');
     Route::patch('materiales/{material}/codigo-barras', [MaterialController::class, 'guardarCodigoBarras'])
         ->name('materiales.codigo.guardar');
+    Route::post('materiales/{material}/fotografias', [MaterialPhotoController::class, 'store'])
+        ->name('materiales.photos.store');
+    Route::patch('materiales/{material}/fotografias/{photo}/principal', [MaterialPhotoController::class, 'primary'])
+        ->name('materiales.photos.primary');
+    Route::delete('materiales/{material}/fotografias/{photo}', [MaterialPhotoController::class, 'destroy'])
+        ->name('materiales.photos.destroy');
 
     Route::get('materiales/importar-xml', [FacturaXmlController::class, 'create'])
         ->name('materiales.xml.create');
@@ -86,6 +106,11 @@ Route::middleware('auth')->group(function () {
         ->name('materiales.visual.create');
     Route::post('materiales/identificador-visual/buscar', [IdentificadorVisualController::class, 'search'])
         ->name('materiales.visual.search');
+    Route::post('materiales/identificador-visual/retroalimentacion', [IdentificadorVisualController::class, 'feedback'])
+        ->middleware('throttle:120,1')
+        ->name('materiales.visual.feedback');
+    Route::post('materiales/identificador-visual/reparar-indice', [IdentificadorVisualController::class, 'repairIndex'])
+        ->name('materiales.visual.repair');
 
     Route::get('equipos', [EquipmentPackageController::class, 'index'])
         ->name('equipos.index');
@@ -115,6 +140,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('admin/proveedores', [AdminProveedorController::class, 'index'])
         ->name('admin.proveedores.index');
+    Route::get('admin/proveedores/comparador/precios', [ProcurementController::class, 'comparator'])
+        ->name('admin.proveedores.comparador');
     Route::get('admin/proveedores/{proveedor}', [AdminProveedorController::class, 'show'])
         ->name('admin.proveedores.show');
     Route::get('admin/materiales-completo', [AdminMaterialController::class, 'index'])
@@ -169,6 +196,24 @@ Route::middleware('auth')->group(function () {
         ->name('admin.ordenes.store');
     Route::patch('admin/ordenes-compra/{orden}/estado', [PurchaseOrderController::class, 'updateStatus'])
         ->name('admin.ordenes.status');
+    Route::post('admin/ordenes-compra/{orden}/recibir', [PurchaseOrderController::class, 'receive'])
+        ->name('admin.ordenes.receive');
+    Route::patch('admin/ordenes-compra/{orden}/factura', [PurchaseOrderController::class, 'invoice'])
+        ->name('admin.ordenes.invoice');
+    Route::get('compras', [ProcurementController::class, 'index'])
+        ->name('admin.compras.index');
+    Route::post('compras/solicitudes', [ProcurementController::class, 'storeRequest'])
+        ->name('admin.compras.requests.store');
+    Route::post('compras/solicitar/{material}', [ProcurementController::class, 'quickRequest'])
+        ->name('admin.compras.requests.quick');
+    Route::patch('compras/solicitudes/{solicitud}/autorizar', [ProcurementController::class, 'authorizeRequest'])
+        ->name('admin.compras.requests.authorize');
+    Route::patch('compras/solicitudes/{solicitud}/rechazar', [ProcurementController::class, 'rejectRequest'])
+        ->name('admin.compras.requests.reject');
+    Route::post('compras/solicitudes/{solicitud}/orden', [ProcurementController::class, 'createOrder'])
+        ->name('admin.compras.requests.order');
+    Route::get('compras/inventario-historico', [ProcurementController::class, 'historicalInventory'])
+        ->name('admin.compras.historical');
     Route::resource('admin/categorias', MaterialCategoryController::class)
         ->only(['index', 'store', 'update', 'destroy'])
         ->parameters(['categorias' => 'categoria'])
