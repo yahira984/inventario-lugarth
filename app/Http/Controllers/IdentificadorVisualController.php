@@ -9,6 +9,7 @@ use App\Jobs\IndexPendingVisualDescriptors;
 use App\Support\VisualConfidenceCalibrator;
 use App\Support\VisualEmbeddingService;
 use App\Support\VisualImageDescriptor;
+use App\Support\VisualIndexMaintenanceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -26,6 +27,7 @@ class IdentificadorVisualController extends Controller
         private readonly VisualImageDescriptor $visualDescriptor,
         private readonly VisualEmbeddingService $visualAi,
         private readonly VisualConfidenceCalibrator $confidenceCalibrator,
+        private readonly VisualIndexMaintenanceService $visualIndexMaintenance,
     ) {}
 
     public function create()
@@ -42,6 +44,7 @@ class IdentificadorVisualController extends Controller
             'motorWarning' => null,
             'searchSignature' => null,
             'visualDiagnostics' => $this->visualDiagnostics(),
+            'materialOptions' => $this->materialOptions(),
         ]);
     }
 
@@ -156,13 +159,14 @@ class IdentificadorVisualController extends Controller
             'motorWarning' => $motorWarning,
             'searchSignature' => $searchSignature,
             'visualDiagnostics' => $this->visualDiagnostics(),
+            'materialOptions' => $this->materialOptions(),
         ]);
     }
 
     public function feedback(Request $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->validate([
-            'suggested_material_id' => ['required', 'integer', 'exists:materials,id'],
+            'suggested_material_id' => ['nullable', 'integer', 'exists:materials,id'],
             'selected_material_id' => ['nullable', 'integer', 'exists:materials,id'],
             'query_signature' => ['nullable', 'string', 'max:64'],
             'was_correct' => ['required', 'boolean'],
@@ -174,6 +178,18 @@ class IdentificadorVisualController extends Controller
             'context.shape' => ['nullable', 'string', 'max:40'],
         ]);
 
+        if (! $data['was_correct'] && empty($data['selected_material_id'])) {
+            throw ValidationException::withMessages([
+                'selected_material_id' => 'Selecciona la pieza real para guardar esta corrección.',
+            ]);
+        }
+
+        if ($data['was_correct'] && empty($data['suggested_material_id'])) {
+            throw ValidationException::withMessages([
+                'suggested_material_id' => 'Falta la sugerencia que deseas confirmar.',
+            ]);
+        }
+
         $context = array_filter([
             'source' => 'visual_identifier',
             'predicted_category' => data_get($data, 'context.predicted_category'),
@@ -184,7 +200,7 @@ class IdentificadorVisualController extends Controller
 
         VisualSearchFeedback::create([
             'user_id' => $request->user()?->id,
-            'suggested_material_id' => $data['suggested_material_id'],
+            'suggested_material_id' => $data['suggested_material_id'] ?? null,
             'selected_material_id' => $data['selected_material_id'] ?? null,
             'query_signature' => $data['query_signature'] ?? null,
             'was_correct' => $data['was_correct'],
@@ -192,9 +208,7 @@ class IdentificadorVisualController extends Controller
             'context' => $context,
         ]);
 
-        if (! $data['was_correct']
-            && ! empty($data['selected_material_id'])
-            && (int) $data['selected_material_id'] !== (int) $data['suggested_material_id']) {
+        if (! $data['was_correct'] && ! empty($data['selected_material_id'])) {
             VisualSearchFeedback::create([
                 'user_id' => $request->user()?->id,
                 'suggested_material_id' => (int) $data['selected_material_id'],
@@ -206,11 +220,15 @@ class IdentificadorVisualController extends Controller
             ]);
         }
 
+        $isNoMatchCorrection = ! $data['was_correct'] && empty($data['suggested_material_id']);
+
         return response()->json([
             'ok' => true,
-            'message' => $data['was_correct']
+            'message' => $isNoMatchCorrection
+                ? 'Corrección guardada. Esta pieza tendrá más peso en futuras búsquedas similares.'
+                : ($data['was_correct']
                 ? 'Gracias. Esta confirmacion ayudara a ordenar mejor futuras busquedas.'
-                : 'Gracias. La coincidencia dudosa quedo registrada para reducir falsos positivos.',
+                : 'Gracias. La coincidencia dudosa quedo registrada para reducir falsos positivos.'),
         ]);
     }
 
@@ -218,38 +236,21 @@ class IdentificadorVisualController extends Controller
     {
         abort_unless($request->user()?->puedeAdministrarCatalogo(), 403);
 
-        $materials = Material::query()
-            ->where('es_plantilla_equipo', false)
-            ->whereNotNull('fotografia')
-            ->where('fotografia', '<>', '')
-            ->where(function ($query): void {
-                $query->whereNull('visual_descriptor')
-                    ->orWhere('visual_descriptor->ai->version', '<>', VisualEmbeddingService::VERSION);
-            })
-            ->limit(20)
-            ->get();
-        $photos = MaterialPhoto::query()
-            ->where(function ($query): void {
-                $query->whereNull('visual_descriptor')
-                    ->orWhere('visual_descriptor->ai->version', '<>', VisualEmbeddingService::VERSION);
-            })
-            ->limit(max(0, 20 - $materials->count()))
-            ->get();
-        $indexed = 0;
+        $result = $this->visualIndexMaintenance->process(20);
 
-        foreach ($materials as $material) {
-            $indexed += $this->visualAi->indexMaterial($material) ? 1 : 0;
-        }
-        foreach ($photos as $photo) {
-            $indexed += $this->visualAi->indexPhoto($photo) ? 1 : 0;
+        $message = $result['indexed'] > 0
+            ? "Índice visual reparado: {$result['indexed']} imágenes procesadas."
+            : ($result['failed'] > 0
+                ? "No se pudo procesar {$result['failed']} imágenes. Revisa que el motor visual esté disponible y que los archivos existan."
+                : 'El índice visual ya está actualizado.');
+
+        if ($result['pending'] > 0) {
+            $message .= " Quedan {$result['pending']} pendientes; puedes ejecutar la reparación nuevamente.";
         }
 
-        return back()->with(
-            'success',
-            $indexed > 0
-                ? "Indice visual reparado: {$indexed} imagenes procesadas. Puedes repetir si aun quedan pendientes."
-                : 'El indice visual ya esta actualizado o el motor local no esta disponible.'
-        );
+        return redirect()
+            ->route('materiales.visual.create')
+            ->with($result['failed'] > 0 && $result['indexed'] === 0 ? 'warning' : 'success', $message);
     }
 
     /**
@@ -931,6 +932,34 @@ class IdentificadorVisualController extends Controller
         }
 
         return 'data:'.$mime.';base64,'.base64_encode($contenido);
+    }
+
+    /**
+     * Opciones ligeras para corregir una búsqueda sin guardar las fotos consultadas.
+     *
+     * @return Collection<int, array{id:int,label:string}>
+     */
+    private function materialOptions(): Collection
+    {
+        return Material::query()
+            ->where('es_plantilla_equipo', false)
+            ->select(['id', 'descripcion', 'numero_parte', 'apodo', 'categoria'])
+            ->orderBy('descripcion')
+            ->limit(2500)
+            ->get()
+            ->map(function (Material $material): array {
+                $details = collect([
+                    trim((string) $material->descripcion),
+                    filled($material->numero_parte) ? $material->numero_parte : null,
+                    filled($material->apodo) ? 'Apodo: '.$material->apodo : null,
+                    filled($material->categoria) ? $material->categoria : null,
+                ])->filter()->implode(' · ');
+
+                return [
+                    'id' => $material->id,
+                    'label' => $details.' [#'.$material->id.']',
+                ];
+            });
     }
 
     private function visualDiagnostics(): array
