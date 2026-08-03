@@ -239,7 +239,15 @@
         .learning-card h3 { margin:0; color:var(--visual-ink); font-size:15px; }
         .learning-card p { margin:0; color:var(--visual-muted); font-size:12px; font-weight:650; line-height:1.5; }
         .learning-controls { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; }
-        .learning-controls input { min-width:0; min-height:40px; padding:8px 10px; color:var(--visual-ink); background:#fff; border:1px solid #b8cede; border-radius:7px; font:inherit; }
+        .learning-picker { position:relative; min-width:0; }
+        .learning-controls input { width:100%; min-width:0; min-height:40px; padding:8px 10px; color:var(--visual-ink); background:#fff; border:1px solid #b8cede; border-radius:7px; font:inherit; }
+        .learning-results { position:absolute; z-index:30; top:calc(100% + 5px); right:0; left:0; display:grid; gap:3px; max-height:250px; overflow-y:auto; padding:5px; background:#fff; border:1px solid #b8cede; border-radius:7px; box-shadow:0 14px 28px rgba(19,57,87,.18); }
+        .learning-results[hidden] { display:none; }
+        .learning-result { width:100%; padding:9px 10px; color:#173e60; background:#fff; border:0; border-radius:6px; cursor:pointer; font:inherit; text-align:left; }
+        .learning-result:hover, .learning-result:focus { color:#074f91; background:#eaf4ff; outline:0; }
+        .learning-result strong, .learning-result small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .learning-result strong { font-size:11px; }
+        .learning-result small { margin-top:2px; color:#5e7690; font-size:10px; font-weight:650; }
         .learning-status { min-height:16px; color:#087149; font-size:11px; font-weight:800; }
         .camera-modal { position: fixed; z-index: 2600; inset: 0; display: grid; place-items: center; padding: 18px; background: rgba(5, 20, 34, .88); backdrop-filter: blur(8px); }
         .camera-dialog { width: min(760px, 100%); max-height: calc(100dvh - 36px); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; background: #fff; border: 1px solid #b7cad9; border-radius: 8px; box-shadow: 0 28px 80px rgba(0, 0, 0, .34); }
@@ -526,16 +534,15 @@
                             <p>Selecciónala para registrar la corrección. No guardamos las fotos de esta búsqueda; solo la relación para mejorar futuras sugerencias.</p>
                         </div>
                         <div class="learning-controls">
-                            <input type="search" list="visualMaterialOptions" data-no-match-material placeholder="Escribe nombre, no. de parte o apodo" autocomplete="off">
+                            <div class="learning-picker">
+                                <input type="search" data-no-match-material-input placeholder="Escribe nombre, no. de parte o apodo" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false">
+                                <input type="hidden" data-no-match-material-id>
+                                <div class="learning-results" data-no-match-results hidden></div>
+                            </div>
                             <button type="button" class="visual-button visual-button-green" data-no-match-save disabled>Guardar corrección</button>
                         </div>
                         <span class="learning-status" data-no-match-status aria-live="polite">Selecciona una pieza de la lista.</span>
                     </section>
-                    <datalist id="visualMaterialOptions">
-                        @foreach($materialOptions as $option)
-                            <option value="{{ $option['label'] }}"></option>
-                        @endforeach
-                    </datalist>
                 @elseif(!$busquedaRealizada)
                     <div class="empty-result">
                         Las piezas parecidas aparecerán aquí después de tomar o seleccionar una fotografía.
@@ -1097,28 +1104,96 @@
         });
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-        const noMatchMaterialMap = @json($materialOptions->pluck('id', 'label'));
+        const noMatchMaterials = @json($materialOptions->values());
+        const normalizeSearch = (value) => String(value || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase();
 
         document.querySelectorAll('[data-no-match-feedback]').forEach((panel) => {
-            const input = panel.querySelector('[data-no-match-material]');
+            const input = panel.querySelector('[data-no-match-material-input]');
+            const hiddenId = panel.querySelector('[data-no-match-material-id]');
+            const results = panel.querySelector('[data-no-match-results]');
             const save = panel.querySelector('[data-no-match-save]');
             const status = panel.querySelector('[data-no-match-status]');
-            const selectedId = () => Number(noMatchMaterialMap[input?.value || ''] || 0);
+            const selectedId = () => Number(hiddenId?.value || 0);
 
-            input?.addEventListener('input', () => {
-                const validSelection = selectedId() > 0;
-                if (save) save.disabled = !validSelection;
-                if (status) {
-                    status.textContent = validSelection
-                        ? 'Pieza seleccionada. Puedes guardar la corrección.'
-                        : 'Elige una pieza de la lista para guardar la corrección.';
+            const clearSelection = () => {
+                if (hiddenId) hiddenId.value = '';
+                if (save) save.disabled = true;
+            };
+
+            const hideResults = () => {
+                if (results) results.hidden = true;
+                input?.setAttribute('aria-expanded', 'false');
+            };
+
+            const chooseMaterial = (material) => {
+                if (input) input.value = material.label;
+                if (hiddenId) hiddenId.value = material.id;
+                if (save) save.disabled = false;
+                if (status) status.textContent = 'Pieza seleccionada. Puedes guardar la corrección.';
+                hideResults();
+            };
+
+            const renderResults = () => {
+                if (!input || !results) return;
+                const terms = normalizeSearch(input.value).split(/\s+/).filter(Boolean);
+                clearSelection();
+                results.replaceChildren();
+
+                if (terms.length === 0) {
+                    hideResults();
+                    if (status) status.textContent = 'Escribe al menos dos letras para buscar la pieza.';
+                    return;
                 }
+
+                const matches = noMatchMaterials
+                    .filter((material) => {
+                        const searchable = normalizeSearch(material.label);
+                        return terms.every((term) => searchable.includes(term));
+                    })
+                    .slice(0, 8);
+
+                if (matches.length === 0) {
+                    hideResults();
+                    if (status) status.textContent = 'No encontramos una pieza con ese texto. Prueba con otra palabra o número de parte.';
+                    return;
+                }
+
+                matches.forEach((material) => {
+                    const option = document.createElement('button');
+                    option.type = 'button';
+                    option.className = 'learning-result';
+                    const title = document.createElement('strong');
+                    title.textContent = material.label;
+                    const helper = document.createElement('small');
+                    helper.textContent = 'Toca para seleccionar esta pieza exacta';
+                    option.append(title, helper);
+                    option.addEventListener('click', () => chooseMaterial(material));
+                    results.append(option);
+                });
+
+                results.hidden = false;
+                input.setAttribute('aria-expanded', 'true');
+                if (status) status.textContent = 'Toca una opción para seleccionar la pieza exacta.';
+            };
+
+            input?.addEventListener('input', renderResults);
+            input?.addEventListener('focus', () => {
+                if (input.value.trim()) renderResults();
+            });
+            input?.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') hideResults();
+            });
+            document.addEventListener('click', (event) => {
+                if (!panel.contains(event.target)) hideResults();
             });
 
             save?.addEventListener('click', async () => {
                 const materialId = selectedId();
                 if (!materialId) {
-                    if (status) status.textContent = 'Selecciona una pieza válida de la lista.';
+                    if (status) status.textContent = 'Busca y toca una pieza de la lista antes de guardar.';
                     return;
                 }
 
