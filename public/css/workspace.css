@@ -444,9 +444,15 @@ kbd { padding: 3px 6px; color: #61778d; background: #fff; border: 1px solid #d9e
 .workspace-popover > header strong { font-size: 15px; }
 .workspace-popover > header small { color: var(--ws-muted); font-size: 11px; }
 .workspace-popover > header button { width: 30px; height: 30px; color: #50677e; background: #f3f6f9; border: 0; border-radius: 6px; font-size: 20px; cursor: pointer; }
+.workspace-popover > header .notification-read-all { width: auto; min-width: 0; padding: 0 9px; color: #087149; background: #ecfdf5; border: 1px solid #a7f3d0; font-size: 11px; font-weight: 850; }
+.workspace-popover > header .notification-read-all:disabled { cursor: default; opacity: .55; }
 .notification-list { padding: 7px; }
+.notification-section-title { padding: 11px 10px 5px; color: #698097; font-size: 10px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
 .notification-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px; color: var(--ws-ink); border-radius: 7px; text-decoration: none; }
 .notification-item:hover { background: #f4f7fb; }
+.notification-item.is-unread { background: #eff8ff; box-shadow: inset 3px 0 0 #0877d1; }
+.notification-item.is-read { opacity: .58; }
+.notification-item.is-read .notification-dot { width: 7px; height: 7px; flex-basis: 7px; background: #a7b8c7; box-shadow: none; }
 .notification-item > span:last-child { min-width: 0; display: grid; gap: 3px; }
 .notification-item strong { font-size: 12px; }
 .notification-item small { color: var(--ws-muted); font-size: 11px; line-height: 1.4; }

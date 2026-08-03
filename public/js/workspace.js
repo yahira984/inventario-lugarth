@@ -240,11 +240,31 @@
     const notificationsContainer = document.getElementById('workspaceDatabaseNotifications');
     const notificationCount = document.getElementById('workspaceNotificationCount');
     const notificationSummary = document.getElementById('workspaceNotificationSummary');
+    const notificationDatabaseTitle = document.getElementById('workspaceDatabaseNotificationTitle');
     const notificationReadAll = document.getElementById('workspaceReadAllNotifications');
     const notificationUrl = window.InventoryWorkspace?.notificationsUrl || '';
     const notificationReadUrlTemplate = window.InventoryWorkspace?.notificationReadUrlTemplate || '';
     const staticNotificationCount = Number(window.InventoryWorkspace?.staticNotificationCount || 0);
     let notificationRequestActive = false;
+
+    const updateNotificationSummary = (unread) => {
+        const pending = staticNotificationCount;
+        if (notificationCount) {
+            notificationCount.hidden = unread === 0;
+            notificationCount.textContent = unread > 99 ? '99+' : String(unread);
+        }
+        if (notificationSummary) {
+            const newLabel = unread === 1 ? '1 nueva' : `${unread} nuevas`;
+            const pendingLabel = pending === 1 ? '1 pendiente operativo' : `${pending} pendientes operativos`;
+            notificationSummary.textContent = `${newLabel} · ${pendingLabel}`;
+        }
+        if (notificationDatabaseTitle) {
+            notificationDatabaseTitle.textContent = unread === 1
+                ? 'Avisos del sistema · 1 sin leer'
+                : `Avisos del sistema · ${unread} sin leer`;
+        }
+        if (notificationReadAll) notificationReadAll.disabled = unread === 0;
+    };
 
     const notificationNode = (item) => {
         const link = document.createElement('a');
@@ -302,6 +322,7 @@
                     ? '1 asunto requiere atención'
                     : `${total} asuntos requieren atención`;
             }
+            updateNotificationSummary(unread);
             if (notificationsContainer) {
                 notificationsContainer.replaceChildren(...(data.notifications || []).map(notificationNode));
             }
@@ -328,16 +349,23 @@
     notificationReadAll?.addEventListener('click', async () => {
         const url = window.InventoryWorkspace?.notificationReadAllUrl;
         if (!url) return;
-        await fetch(url, {
-            method: 'PATCH',
-            headers: {
-                Accept: 'application/json',
-                'X-CSRF-TOKEN': window.InventoryWorkspace?.csrfToken || '',
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-            credentials: 'same-origin',
-        });
-        await refreshNotifications();
+        notificationReadAll.disabled = true;
+        try {
+            const response = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': window.InventoryWorkspace?.csrfToken || '',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                credentials: 'same-origin',
+            });
+            if (!response.ok) throw new Error('Unable to mark notifications as read.');
+            await refreshNotifications();
+        } catch {
+            notificationReadAll.disabled = false;
+            showWorkspaceToast('No se pudieron marcar las notificaciones. Intenta nuevamente.', 'red');
+        }
     });
     document.addEventListener('click', (event) => {
         if (!notifications?.hidden && !notifications.contains(event.target) && !notificationsButton?.contains(event.target)) closeNotifications();
@@ -354,7 +382,7 @@
         if (notificationsContainer && item.id) {
             notificationsContainer.prepend(notificationNode(item));
         }
-        const currentTotal = Number(notificationCount?.textContent || staticNotificationCount);
+        const currentTotal = Number(notificationCount?.textContent || 0);
         const total = currentTotal + 1;
         if (notificationCount) {
             notificationCount.hidden = false;
@@ -365,6 +393,7 @@
                 ? '1 asunto requiere atención'
                 : `${total} asuntos requieren atención`;
         }
+        updateNotificationSummary(total);
         showWorkspaceToast(item.message || 'Tienes una nueva notificación.', item.tone || 'blue', 7000, {
             title: item.title || 'Notificación',
             onClick: item.url ? () => { window.location.href = item.url; } : null,

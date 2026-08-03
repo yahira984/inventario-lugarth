@@ -134,6 +134,7 @@
         .critical-actions { display: grid; gap: 7px; justify-items: stretch; }
         .request-stock-button { min-height: 34px; padding: 0 10px; color: #fff; background: #d97706; border: 0; border-radius: 8px; font-size: 11px; font-weight: 850; cursor: pointer; }
         .request-stock-button:hover { background: #b85f05; }
+        .request-stock-help { max-width: 150px; color: var(--muted); font-size: 10px; font-weight: 700; line-height: 1.35; text-align: center; }
         .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 150px; padding: 20px; background: rgba(16, 185, 129, 0.055); border: 1px dashed rgba(16, 185, 129, 0.24); border-radius: 13px; color: #6ee7b7; text-align: center; }
         .empty-state svg { width: 37px; height: 37px; margin-bottom: 9px; }
         .empty-state strong { font-size: 14px; }
@@ -381,11 +382,12 @@
                             <!-- Etiqueta de stock original -->
                             <div class="critical-actions">
                                 <div class="badge-red">{{ number_format($material->stock) }} / mín. {{ number_format($material->stock_minimo) }}</div>
-                                <form method="POST" action="{{ route('admin.compras.requests.quick', $material) }}">
+                                <form method="POST" action="{{ route('admin.compras.requests.quick', $material) }}" onsubmit="return confirm('Se creará una solicitud de compra por {{ number_format(max(1, (int) $material->cantidad_sugerida)) }} piezas de {{ e($material->descripcion) }}. La solicitud se enviará a Compras para revisión: no suma stock ni realiza una compra todavía. ¿Deseas continuar?');">
                                     @csrf
                                     <input type="hidden" name="cantidad" value="{{ max(1, (int) $material->cantidad_sugerida) }}">
-                                    <button class="request-stock-button" type="submit">Solicitar {{ number_format(max(1, (int) $material->cantidad_sugerida)) }} pzas</button>
+                                    <button class="request-stock-button" type="submit">Crear solicitud de compra</button>
                                 </form>
+                                <span class="request-stock-help">Se envía a Compras para revisión. El stock no cambia hasta recibir el material.</span>
                             </div>
                         </div>
                     @empty

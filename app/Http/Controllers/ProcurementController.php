@@ -41,7 +41,12 @@ class ProcurementController extends Controller
         return view('admin.compras.index', [
             'sugerencias' => $this->suggestions->suggestions(60),
             'solicitudes' => PurchaseRequest::query()
-                ->with(['items.material', 'requester', 'reviewer', 'order'])
+                ->with([
+                    'items.material.supplierPrices' => fn ($query) => $query->latest('registrado_en')->latest('id'),
+                    'requester',
+                    'reviewer',
+                    'order',
+                ])
                 ->when(! $isAdmin, fn ($query) => $query->where('requested_by', $request->user()->id))
                 ->latest()
                 ->paginate(15, ['*'], 'solicitudes_page')
@@ -159,7 +164,7 @@ class ProcurementController extends Controller
 
         return redirect()
             ->route('admin.compras.index')
-            ->with('success', 'Solicitud enviada. El administrador ya puede revisarla y autorizarla.');
+            ->with('success', "Solicitud #{$purchaseRequest->id} creada y enviada a Compras para revisión. No modifica el stock ni realiza una compra hasta que sea autorizada y recibida.");
     }
 
     public function quickRequest(Request $request, Material $material): RedirectResponse
@@ -248,9 +253,13 @@ class ProcurementController extends Controller
         abort_unless($solicitud->estado === 'autorizada', 409, 'La solicitud debe estar autorizada.');
         abort_if($solicitud->order()->exists(), 409, 'Esta solicitud ya tiene una orden.');
 
-        $solicitud->load('items.material.latestSupplierPrice');
+        $solicitud->load(['items.material.latestSupplierPrice', 'items.material.supplierPrices']);
+        if ($request->input('proveedor') === '__otro__') {
+            $request->merge(['proveedor' => $request->input('proveedor_otro')]);
+        }
         $data = $request->validate([
             'proveedor' => ['required', 'string', 'max:255'],
+            'proveedor_otro' => ['nullable', 'string', 'max:255'],
             'referencia' => ['nullable', 'string', 'max:120', 'unique:purchase_orders,referencia'],
             'fecha_esperada' => ['nullable', 'date', 'after_or_equal:today'],
             'costo_unitario' => ['nullable', 'array'],
@@ -275,10 +284,18 @@ class ProcurementController extends Controller
 
             $total = 0.0;
             foreach ($solicitud->items as $item) {
-                $cost = (float) ($data['costo_unitario'][$item->id]
-                    ?? $item->material?->latestSupplierPrice?->precio_unitario
-                    ?? $item->material?->costo_unitario
-                    ?? 0);
+                $supplierPrices = $item->material?->supplierPrices ?? collect();
+                $supplierPrice = $supplierPrices
+                    ->filter(fn (MaterialSupplierPrice $price): bool => mb_strtolower(trim($price->proveedor)) === mb_strtolower(trim($data['proveedor'])))
+                    ->sortByDesc(fn (MaterialSupplierPrice $price): int => $price->registrado_en?->getTimestamp() ?? 0)
+                    ->first();
+                $submittedCost = $data['costo_unitario'][$item->id] ?? null;
+                $cost = $submittedCost !== null && $submittedCost !== ''
+                    ? (float) $submittedCost
+                    : (float) ($supplierPrice?->precio_unitario
+                        ?? $item->material?->latestSupplierPrice?->precio_unitario
+                        ?? $item->material?->costo_unitario
+                        ?? 0);
                 $quantity = (float) ($item->cantidad_autorizada ?: $item->cantidad_solicitada);
                 $subtotal = round($quantity * $cost, 2);
                 $total += $subtotal;
