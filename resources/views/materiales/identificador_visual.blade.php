@@ -78,6 +78,7 @@
         .diagnostic-action { min-height: 34px; padding: 0 11px; color: #fff; background: #d97706; border: 1px solid #c26705; border-radius: 6px; font-size: 10px; font-weight: 850; cursor: pointer; }
         .visual-alert { padding: 13px 15px; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid var(--visual-red); border-radius: 7px; font-size: 13px; font-weight: 750; }
         .visual-alert.is-warning { color: #71420a; background: #fff9ec; border-color: #f3d59b; border-left-color: #e67e00; }
+        .visual-alert.is-success { color: #075e47; background: #eafbf4; border-color: #a7ebd1; border-left-color: var(--visual-green); }
         .capture-card, .results-card { padding: 0; background: transparent; border: 0; box-shadow: none; }
         .capture-grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; }
         .upload-stage {
@@ -234,6 +235,12 @@
         .feedback-response { min-height: 14px; color: #06734f; font-size: 9px; font-weight: 800; }
         .feedback-target { min-height:29px; max-width:100%; padding:0 7px; color:#35536e; background:#fff; border:1px solid #c8d8e6; border-radius:6px; font-size:9px; font-weight:750; }
         .empty-result { padding: 28px 18px; color: var(--visual-muted); background: #f8fbfd; border: 1px dashed #b8cddd; border-radius: 8px; text-align: center; font-size: 12px; font-weight: 700; line-height: 1.55; }
+        .learning-card { display:grid; gap:11px; margin-top:12px; padding:16px; background:#f0f9ff; border:1px solid #b7d8ef; border-radius:8px; }
+        .learning-card h3 { margin:0; color:var(--visual-ink); font-size:15px; }
+        .learning-card p { margin:0; color:var(--visual-muted); font-size:12px; font-weight:650; line-height:1.5; }
+        .learning-controls { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; }
+        .learning-controls input { min-width:0; min-height:40px; padding:8px 10px; color:var(--visual-ink); background:#fff; border:1px solid #b8cede; border-radius:7px; font:inherit; }
+        .learning-status { min-height:16px; color:#087149; font-size:11px; font-weight:800; }
         .camera-modal { position: fixed; z-index: 2600; inset: 0; display: grid; place-items: center; padding: 18px; background: rgba(5, 20, 34, .88); backdrop-filter: blur(8px); }
         .camera-dialog { width: min(760px, 100%); max-height: calc(100dvh - 36px); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; background: #fff; border: 1px solid #b7cad9; border-radius: 8px; box-shadow: 0 28px 80px rgba(0, 0, 0, .34); }
         .camera-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--visual-line); }
@@ -308,6 +315,7 @@
             .side-panel { grid-template-columns: 1fr 1fr; gap: 8px; }
             .status-box { padding: 13px; }
             .result-grid { grid-template-columns: 1fr; }
+            .learning-controls { grid-template-columns:1fr; }
             .result-card { grid-template-columns: 108px minmax(0, 1fr); padding: 11px; }
             .result-photo-button { width: 108px; height: 118px; }
             .result-title { font-size: 14px; }
@@ -387,6 +395,12 @@
                 @endif
             </section>
 
+            @if(session('success'))
+                <div class="visual-alert is-success" role="status">{{ session('success') }}</div>
+            @endif
+            @if(session('warning'))
+                <div class="visual-alert is-warning" role="status">{{ session('warning') }}</div>
+            @endif
             @if($errors->any())
                 <div class="visual-alert" role="alert">{{ $errors->first() }}</div>
             @endif
@@ -498,6 +512,30 @@
                     <div class="empty-result">
                         No encontramos una pieza con suficiente confianza. Acércate un poco más, encierra solamente el objeto e intenta de nuevo.
                     </div>
+                    @php
+                        $emptyFeedbackContext = [
+                            'predicted_category' => data_get($analisis, 'categoria_directa.label'),
+                            'category_confidence' => data_get($analisis, 'categoria_directa.confidence'),
+                            'color' => data_get($analisis, 'descriptor.color'),
+                            'shape' => data_get($analisis, 'descriptor.forma'),
+                        ];
+                    @endphp
+                    <section class="learning-card" data-no-match-feedback data-feedback-context='@json($emptyFeedbackContext)'>
+                        <div>
+                            <h3>¿Sabes cuál era la pieza?</h3>
+                            <p>Selecciónala para registrar la corrección. No guardamos las fotos de esta búsqueda; solo la relación para mejorar futuras sugerencias.</p>
+                        </div>
+                        <div class="learning-controls">
+                            <input type="search" list="visualMaterialOptions" data-no-match-material placeholder="Escribe nombre, no. de parte o apodo" autocomplete="off">
+                            <button type="button" class="visual-button visual-button-green" data-no-match-save disabled>Guardar corrección</button>
+                        </div>
+                        <span class="learning-status" data-no-match-status aria-live="polite">Selecciona una pieza de la lista.</span>
+                    </section>
+                    <datalist id="visualMaterialOptions">
+                        @foreach($materialOptions as $option)
+                            <option value="{{ $option['label'] }}"></option>
+                        @endforeach
+                    </datalist>
                 @elseif(!$busquedaRealizada)
                     <div class="empty-result">
                         Las piezas parecidas aparecerán aquí después de tomar o seleccionar una fotografía.
@@ -1059,6 +1097,65 @@
         });
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        const noMatchMaterialMap = @json($materialOptions->pluck('id', 'label'));
+
+        document.querySelectorAll('[data-no-match-feedback]').forEach((panel) => {
+            const input = panel.querySelector('[data-no-match-material]');
+            const save = panel.querySelector('[data-no-match-save]');
+            const status = panel.querySelector('[data-no-match-status]');
+            const selectedId = () => Number(noMatchMaterialMap[input?.value || ''] || 0);
+
+            input?.addEventListener('input', () => {
+                const validSelection = selectedId() > 0;
+                if (save) save.disabled = !validSelection;
+                if (status) {
+                    status.textContent = validSelection
+                        ? 'Pieza seleccionada. Puedes guardar la corrección.'
+                        : 'Elige una pieza de la lista para guardar la corrección.';
+                }
+            });
+
+            save?.addEventListener('click', async () => {
+                const materialId = selectedId();
+                if (!materialId) {
+                    if (status) status.textContent = 'Selecciona una pieza válida de la lista.';
+                    return;
+                }
+
+                save.disabled = true;
+                save.textContent = 'Guardando...';
+                if (status) status.textContent = 'Registrando corrección...';
+
+                try {
+                    const response = await fetch(@json(route('materiales.visual.feedback')), {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                        },
+                        body: JSON.stringify({
+                            suggested_material_id: null,
+                            selected_material_id: materialId,
+                            query_signature: @json($searchSignature),
+                            was_correct: false,
+                            confidence: 0,
+                            context: JSON.parse(panel.dataset.feedbackContext || '{}'),
+                        }),
+                    });
+                    const payload = await response.json();
+                    if (!response.ok) throw new Error(payload.message || 'No se pudo guardar la corrección.');
+
+                    if (status) status.textContent = payload.message || 'Corrección guardada.';
+                    save.textContent = 'Corrección guardada';
+                } catch (error) {
+                    save.disabled = false;
+                    save.textContent = 'Guardar corrección';
+                    if (status) status.textContent = error.message || 'Intenta nuevamente.';
+                }
+            });
+        });
+
         document.querySelectorAll('[data-visual-feedback]').forEach((button) => {
             button.addEventListener('click', async () => {
                 const group = button.closest('[data-feedback-group]');
