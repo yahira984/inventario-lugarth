@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de equipos - Inventario Lugarth</title>
+        <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
+
 </head>
 <body>
 <div class="app-shell">

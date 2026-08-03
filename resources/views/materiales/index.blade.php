@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control de Inventario - Almacen</title>
 
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2875/2875878.png" type="image/png">
+    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
         
     <style>
         /* --- ESTILOS ULTRA-FUTURISTAS & CREATIVOS --- */
