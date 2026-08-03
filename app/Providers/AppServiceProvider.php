@@ -15,6 +15,7 @@ use App\Support\VisualEmbeddingService;
 use App\Support\VisualImageDescriptor;
 use App\Support\VisualImagePreprocessor;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -35,6 +36,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $forwardedScheme = request()->header('x-forwarded-proto');
+        if ($forwardedScheme === 'https' || str_starts_with(ltrim((string) config('app.url')), 'https://')) {
+            URL::forceScheme('https');
+        }
+
         Material::observe(MaterialObserver::class);
 
         Gate::define('mover-stock', fn ($user) => $user->puedeMoverStock());
