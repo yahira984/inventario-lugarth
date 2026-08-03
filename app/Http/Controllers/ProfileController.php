@@ -66,7 +66,7 @@ class ProfileController extends Controller
         }
 
         if ($newAvatar && $previousAvatar !== $newAvatar) {
-            ImageStorage::delete($previousAvatar);
+            $this->deleteAvatarFile($previousAvatar);
         }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
@@ -86,11 +86,26 @@ class ProfileController extends Controller
         Auth::logout();
 
         $user->delete();
-        ImageStorage::delete($user->avatar);
+        $this->deleteAvatarFile($user->avatar);
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    private function deleteAvatarFile(?string $avatar): void
+    {
+        $path = trim((string) $avatar);
+        if ($path === '') {
+            return;
+        }
+
+        // Compatibilidad con avatares guardados antes como URL o /storage/ruta.
+        $urlPath = parse_url($path, PHP_URL_PATH);
+        $path = ltrim((string) ($urlPath ?: $path), '/');
+        $path = preg_replace('#^storage/#', '', $path) ?: $path;
+
+        ImageStorage::delete($path);
     }
 }

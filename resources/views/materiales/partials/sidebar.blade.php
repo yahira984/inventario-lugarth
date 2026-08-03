@@ -6,8 +6,8 @@
     $workspaceStaticNotificationCount = ($workspaceStockAlerts ?? 0)
         + ($workspacePendingEntries ?? 0)
         + ($workspacePendingUsers ?? 0);
-    $workspaceNotificationCount = $workspaceStaticNotificationCount
-        + ($workspaceUnreadDatabaseNotifications ?? 0);
+    // La campana cuenta avisos nuevos. Las tareas operativas se muestran aparte.
+    $workspaceNotificationCount = $workspaceUnreadDatabaseNotifications ?? 0;
 
     $workspaceItem = static fn (
         string $label,
@@ -319,13 +319,14 @@
 
 <section class="workspace-popover notification-popover" id="notificationPopover" hidden aria-label="Centro de notificaciones">
     <header>
-        <div><strong>Notificaciones</strong><small id="workspaceNotificationSummary">{{ $workspaceNotificationCount }} asuntos requieren atención</small></div>
+        <div><strong>Notificaciones</strong><small id="workspaceNotificationSummary">{{ $workspaceNotificationCount }} nuevas · {{ $workspaceStaticNotificationCount }} pendientes operativos</small></div>
         <div style="display:flex;gap:6px;">
-            <button type="button" id="workspaceReadAllNotifications" aria-label="Marcar todas como leídas" title="Marcar todas como leídas">✓</button>
+            <button type="button" class="notification-read-all" id="workspaceReadAllNotifications" aria-label="Marcar todas las notificaciones como leídas" title="Marcar todas las notificaciones como leídas">Marcar leídas</button>
             <button type="button" data-close-popover aria-label="Cerrar">×</button>
         </div>
     </header>
     <div class="notification-list" id="workspaceNotificationList">
+        <div class="notification-section-title" id="workspaceDatabaseNotificationTitle">Avisos del sistema · {{ $workspaceNotificationCount }} sin leer</div>
         <div id="workspaceDatabaseNotifications">
             @foreach(($workspaceDatabaseNotifications ?? collect()) as $notification)
                 <a
@@ -341,6 +342,9 @@
                 </a>
             @endforeach
         </div>
+        @if($workspaceStaticNotificationCount > 0)
+            <div class="notification-section-title">Pendientes operativos</div>
+        @endif
         @if(($workspacePendingEntries ?? 0) > 0)
             <a href="{{ route('admin.entradas.index') }}" class="notification-item tone-amber"><span class="notification-dot"></span><span><strong>{{ $workspacePendingEntries }} entradas por aprobar</strong><small>Revisa evidencias y corrige los datos antes de sumar stock.</small></span></a>
         @endif
@@ -350,11 +354,9 @@
         @if(($workspacePendingUsers ?? 0) > 0)
             <a href="{{ route('usuarios.roles.index') }}" class="notification-item tone-indigo"><span class="notification-dot"></span><span><strong>{{ $workspacePendingUsers }} usuarios pendientes</strong><small>Aprueba sus correos y asigna el rol correcto.</small></span></a>
         @endif
-        @forelse(($workspaceRecentActivity ?? collect())->take(3) as $activity)
-            <a href="{{ route('admin.auditoria.index', ['buscar' => $activity->accion]) }}" class="notification-item"><span class="notification-dot"></span><span><strong>{{ $activity->accion }}</strong><small>{{ $activity->user?->name ?? 'Sistema' }} · {{ $activity->created_at?->diffForHumans() }}</small></span></a>
-        @empty
-            @if($workspaceNotificationCount === 0)<div class="workspace-empty"><strong>Todo está al día</strong><span>No hay asuntos pendientes en este momento.</span></div>@endif
-        @endforelse
+        @if($workspaceNotificationCount === 0 && $workspaceStaticNotificationCount === 0)
+            <div class="workspace-empty"><strong>Todo está al día</strong><span>No hay avisos nuevos ni pendientes operativos.</span></div>
+        @endif
     </div>
 </section>
 
