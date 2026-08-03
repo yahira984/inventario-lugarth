@@ -30,14 +30,18 @@
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .app-shell { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
+        .app-shell { display: flex; min-height: 100dvh; height: auto; width: 100%; overflow: visible; }
         
         /* AQUI ESTÁ EL CAMBIO CLAVE: display: block para evitar aplastamientos */
         .app-content { 
             flex: 1; 
             padding: 40px 20px; 
-            overflow-y: auto; 
+            min-height: 100dvh;
+            height: auto;
+            overflow: visible;
             display: block; 
+            touch-action: pan-y;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* --- CONTENEDOR DEL FORMULARIO --- */
@@ -181,6 +185,10 @@
         #reader { width: 100%; min-height: 250px; border-radius: 12px; overflow: hidden; border: 2px dashed rgba(6, 182, 212, 0.5); }
 
         @media (max-width: 768px) {
+            html, body { height: auto !important; overflow-y: auto !important; }
+            .app-shell { min-height: 100dvh !important; height: auto !important; overflow: visible !important; }
+            .app-content { min-height: 100dvh !important; height: auto !important; overflow: visible !important; padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important; touch-action: pan-y !important; }
+            .container { margin-bottom: 28px !important; }
             .form-grid { grid-template-columns: 1fr; }
             .form-group.full { grid-column: span 1; }
             .form-actions { justify-content: stretch; }

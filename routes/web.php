@@ -200,6 +200,8 @@ Route::middleware('auth')->group(function () {
         ->name('admin.ordenes.receive');
     Route::patch('admin/ordenes-compra/{orden}/factura', [PurchaseOrderController::class, 'invoice'])
         ->name('admin.ordenes.invoice');
+    Route::delete('admin/ordenes-compra/{orden}', [PurchaseOrderController::class, 'destroy'])
+        ->name('admin.ordenes.destroy');
     Route::get('compras', [ProcurementController::class, 'index'])
         ->name('admin.compras.index');
     Route::post('compras/solicitudes', [ProcurementController::class, 'storeRequest'])
@@ -210,6 +212,8 @@ Route::middleware('auth')->group(function () {
         ->name('admin.compras.requests.authorize');
     Route::patch('compras/solicitudes/{solicitud}/rechazar', [ProcurementController::class, 'rejectRequest'])
         ->name('admin.compras.requests.reject');
+    Route::delete('compras/solicitudes/{solicitud}', [ProcurementController::class, 'destroyRequest'])
+        ->name('admin.compras.requests.destroy');
     Route::post('compras/solicitudes/{solicitud}/orden', [ProcurementController::class, 'createOrder'])
         ->name('admin.compras.requests.order');
     Route::get('compras/inventario-historico', [ProcurementController::class, 'historicalInventory'])

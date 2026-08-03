@@ -548,7 +548,7 @@
         csrfToken: @json(csrf_token()),
         searchUrl: @json(route('buscar.global')),
         realtime: {
-            enabled: @json(config('broadcasting.default') === 'reverb' && filled(config('broadcasting.connections.reverb.key'))),
+            enabled: @json(filter_var(env('REVERB_ENABLED', false), FILTER_VALIDATE_BOOL) && config('broadcasting.default') === 'reverb' && filled(config('broadcasting.connections.reverb.key'))),
             key: @json(config('broadcasting.connections.reverb.key')),
             host: @json(env('REVERB_PUBLIC_HOST', request()->getHost())),
             port: @json((int) env('REVERB_PUBLIC_PORT', config('broadcasting.connections.reverb.options.port', 8080))),
