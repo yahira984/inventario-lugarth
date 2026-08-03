@@ -176,6 +176,42 @@ class PurchaseOrderController extends Controller
         return back()->with('success', 'Etapa de la orden actualizada. El stock cambia solamente al registrar la recepcion.');
     }
 
+    public function destroy(Request $request, PurchaseOrder $orden): RedirectResponse
+    {
+        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403);
+
+        DB::transaction(function () use ($orden, $request): void {
+            $locked = PurchaseOrder::query()
+                ->with(['items', 'request'])
+                ->whereKey($orden->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+            $received = (float) $locked->items->sum('cantidad_recibida');
+
+            abort_unless(in_array($locked->estado, ['borrador', 'autorizada', 'cancelada'], true), 409, 'Solo se eliminan órdenes que no fueron enviadas al proveedor.');
+            abort_if($received > 0 || filled($locked->invoice_uuid), 409, 'No se puede eliminar una orden con recepción o factura registrada.');
+
+            $reference = $locked->referencia ?: '#'.$locked->id;
+            $purchaseRequest = $locked->request;
+            $locked->items()->delete();
+            $locked->delete();
+
+            if ($purchaseRequest?->estado === 'ordenada') {
+                $purchaseRequest->update(['estado' => 'autorizada']);
+            }
+
+            AuditLogger::registrar(
+                'Compras',
+                'Orden eliminada',
+                "Eliminó la orden {$reference} antes de enviarla o recibir mercancía.",
+                ['purchase_order_reference' => $reference],
+                $request
+            );
+        });
+
+        return back()->with('success', 'Orden eliminada. La solicitud volvió a autorizada y el stock no cambió.');
+    }
+
     public function receive(Request $request, PurchaseOrder $orden): RedirectResponse
     {
         abort_unless($request->user()?->puedeMoverStock(), 403);

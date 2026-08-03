@@ -37,20 +37,40 @@ class ProcurementController extends Controller
         $isAdmin = $request->user()?->puedeAdministrarCatalogo() ?? false;
         $inactiveDays = (int) $request->integer('sin_movimiento', 90);
         $inactiveDays = in_array($inactiveDays, [30, 90, 180], true) ? $inactiveDays : 90;
+        $requestFilter = (string) $request->query('solicitudes', 'pendientes');
+        $requestFilter = in_array($requestFilter, ['pendientes', 'autorizadas', 'con_orden', 'rechazadas', 'todas'], true)
+            ? $requestFilter
+            : 'pendientes';
+
+        $requestsQuery = PurchaseRequest::query()
+            ->when(! $isAdmin, fn ($query) => $query->where('requested_by', $request->user()->id));
+        $requestCounts = [
+            'pendientes' => (clone $requestsQuery)->where('estado', 'solicitada')->count(),
+            'autorizadas' => (clone $requestsQuery)->where('estado', 'autorizada')->count(),
+            'con_orden' => (clone $requestsQuery)->whereIn('estado', ['ordenada', 'recibida', 'facturada'])->count(),
+            'rechazadas' => (clone $requestsQuery)->where('estado', 'rechazada')->count(),
+            'todas' => (clone $requestsQuery)->count(),
+        ];
+
+        $requestsQuery->when($requestFilter === 'pendientes', fn ($query) => $query->where('estado', 'solicitada'))
+            ->when($requestFilter === 'autorizadas', fn ($query) => $query->where('estado', 'autorizada'))
+            ->when($requestFilter === 'con_orden', fn ($query) => $query->whereIn('estado', ['ordenada', 'recibida', 'facturada']))
+            ->when($requestFilter === 'rechazadas', fn ($query) => $query->where('estado', 'rechazada'));
 
         return view('admin.compras.index', [
             'sugerencias' => $this->suggestions->suggestions(60),
-            'solicitudes' => PurchaseRequest::query()
+            'solicitudes' => $requestsQuery
                 ->with([
                     'items.material.supplierPrices' => fn ($query) => $query->latest('registrado_en')->latest('id'),
                     'requester',
                     'reviewer',
                     'order',
                 ])
-                ->when(! $isAdmin, fn ($query) => $query->where('requested_by', $request->user()->id))
                 ->latest()
                 ->paginate(15, ['*'], 'solicitudes_page')
                 ->withQueryString(),
+            'requestFilter' => $requestFilter,
+            'requestCounts' => $requestCounts,
             'excesos' => Material::query()
                 ->where('es_plantilla_equipo', false)
                 ->where('stock_maximo', '>', 0)
@@ -172,6 +192,19 @@ class ProcurementController extends Controller
         abort_unless($request->user()?->puedeMoverStock(), 403);
         abort_if($material->es_plantilla_equipo, 404);
 
+        $activeRequest = PurchaseRequest::query()
+            ->whereIn('estado', ['solicitada', 'autorizada', 'ordenada'])
+            ->whereHas('items', fn ($query) => $query->where('material_id', $material->id))
+            ->latest()
+            ->first();
+
+        if ($activeRequest) {
+            return back()->with(
+                'warning',
+                "No se creó otra solicitud: {$material->descripcion} ya está en la solicitud #{$activeRequest->id} (".ucfirst($activeRequest->estado)."). Revísala en Planeación de compras."
+            );
+        }
+
         $suggestion = $this->suggestions->forMaterial($material);
         $quantity = max(1, (int) $request->integer('cantidad', $suggestion['cantidad_sugerida']));
         $request->merge([
@@ -183,6 +216,37 @@ class ProcurementController extends Controller
         ]);
 
         return $this->storeRequest($request);
+    }
+
+    public function destroyRequest(Request $request, PurchaseRequest $solicitud): RedirectResponse
+    {
+        abort_unless($request->user()?->puedeAdministrarCatalogo(), 403);
+
+        DB::transaction(function () use ($solicitud, $request): void {
+            $locked = PurchaseRequest::query()
+                ->with('items')
+                ->whereKey($solicitud->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            abort_if($locked->order()->exists(), 409, 'Esta solicitud ya generó una orden. Administra o cancela la orden desde Órdenes de compra.');
+            abort_unless(in_array($locked->estado, ['solicitada', 'autorizada', 'rechazada'], true), 409, 'Solo pueden eliminarse solicitudes que no han iniciado recepción.');
+
+            $itemCount = $locked->items->count();
+            $requestId = $locked->id;
+            $locked->items()->delete();
+            $locked->delete();
+
+            AuditLogger::registrar(
+                'Compras',
+                'Solicitud eliminada',
+                "Eliminó la solicitud #{$requestId} con {$itemCount} piezas antes de crear una orden.",
+                ['purchase_request_id' => $requestId],
+                $request
+            );
+        });
+
+        return back()->with('success', 'Solicitud eliminada. No se modificó el inventario.');
     }
 
     public function authorizeRequest(Request $request, PurchaseRequest $solicitud): RedirectResponse

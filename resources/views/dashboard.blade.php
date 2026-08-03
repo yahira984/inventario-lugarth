@@ -72,6 +72,7 @@
         .money-hero strong { display:block; margin-top:6px; font-size:clamp(30px,5vw,54px); font-weight:950; line-height:1; overflow-wrap:anywhere; }
         .money-hero p { margin:8px 0 0; font-size:14px; font-weight:700; opacity:.92; }
         .money-hero-badge { padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.24); font-weight:900; text-align:center; }
+        .flash-message{display:flex;align-items:flex-start;gap:10px;margin:0 0 18px;padding:13px 15px;border:1px solid;border-radius:12px;font-size:13px;font-weight:750;line-height:1.45}.flash-message strong{display:block;margin-bottom:2px}.flash-message.success{background:rgba(6,78,59,.45);border-color:rgba(52,211,153,.55);color:#d1fae5}.flash-message.warning{background:rgba(120,53,15,.42);border-color:rgba(251,191,36,.55);color:#fef3c7}.flash-message.error{background:rgba(127,29,29,.42);border-color:rgba(252,113,113,.55);color:#fee2e2}.flash-message a{color:inherit;font-weight:900}
         .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
         .card {
             position: relative; min-width: 0; overflow: hidden; padding: 19px;
@@ -134,6 +135,9 @@
         .critical-actions { display: grid; gap: 7px; justify-items: stretch; }
         .request-stock-button { min-height: 34px; padding: 0 10px; color: #fff; background: #d97706; border: 0; border-radius: 8px; font-size: 11px; font-weight: 850; cursor: pointer; }
         .request-stock-button:hover { background: #b85f05; }
+        .request-stock-existing { display:inline-flex; align-items:center; justify-content:center; background:#0f766e; text-decoration:none; }
+        .request-stock-existing:hover { background:#0b5d57; }
+        .request-stock-button:disabled { cursor:wait; opacity:.72; }
         .request-stock-help { max-width: 150px; color: var(--muted); font-size: 10px; font-weight: 700; line-height: 1.35; text-align: center; }
         .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 150px; padding: 20px; background: rgba(16, 185, 129, 0.055); border: 1px dashed rgba(16, 185, 129, 0.24); border-radius: 13px; color: #6ee7b7; text-align: center; }
         .empty-state svg { width: 37px; height: 37px; margin-bottom: 9px; }
@@ -156,6 +160,15 @@
 
     <main class="app-content">
         <div class="container">
+            @if(session('success'))
+                <div class="flash-message success"><span>✓</span><div><strong>Acción completada</strong>{{ session('success') }}</div></div>
+            @endif
+            @if(session('warning'))
+                <div class="flash-message warning"><span>!</span><div><strong>Revisa esta información</strong>{{ session('warning') }} <a href="{{ route('admin.compras.index') }}#solicitudes">Abrir solicitudes</a></div></div>
+            @endif
+            @if($errors->any())
+                <div class="flash-message error"><span>!</span><div><strong>No se pudo completar la acción</strong>{{ $errors->first() }}</div></div>
+            @endif
             <!-- ENCABEZADO -->
             <header class="header">
                 <div class="header-title-area">
@@ -382,12 +395,25 @@
                             <!-- Etiqueta de stock original -->
                             <div class="critical-actions">
                                 <div class="badge-red">{{ number_format($material->stock) }} / mín. {{ number_format($material->stock_minimo) }}</div>
-                                <form method="POST" action="{{ route('admin.compras.requests.quick', $material) }}" onsubmit="return confirm('Se creará una solicitud de compra por {{ number_format(max(1, (int) $material->cantidad_sugerida)) }} piezas de {{ e($material->descripcion) }}. La solicitud se enviará a Compras para revisión: no suma stock ni realiza una compra todavía. ¿Deseas continuar?');">
-                                    @csrf
-                                    <input type="hidden" name="cantidad" value="{{ max(1, (int) $material->cantidad_sugerida) }}">
-                                    <button class="request-stock-button" type="submit">Crear solicitud de compra</button>
-                                </form>
-                                <span class="request-stock-help">Se envía a Compras para revisión. El stock no cambia hasta recibir el material.</span>
+                                @if($material->solicitud_activa)
+                                    @php
+                                        $solicitudActiva = $material->solicitud_activa;
+                                        $solicitudFilter = match($solicitudActiva['estado']) {
+                                            'solicitada' => 'pendientes',
+                                            'autorizada' => 'autorizadas',
+                                            default => 'con_orden',
+                                        };
+                                    @endphp
+                                    <a class="request-stock-button request-stock-existing" href="{{ route('admin.compras.index', ['solicitudes' => $solicitudFilter]) }}#solicitud-{{ $solicitudActiva['id'] }}">Solicitud #{{ $solicitudActiva['id'] }} ya creada</a>
+                                    <span class="request-stock-help">Está {{ $solicitudActiva['estado'] }}. No se puede duplicar mientras siga activa.</span>
+                                @else
+                                    <form method="POST" action="{{ route('admin.compras.requests.quick', $material) }}" onsubmit="return confirm('Se creará una solicitud de compra por {{ number_format(max(1, (int) $material->cantidad_sugerida)) }} piezas de {{ e($material->descripcion) }}. La solicitud se enviará a Compras para revisión: no suma stock ni realiza una compra todavía. ¿Deseas continuar?');">
+                                        @csrf
+                                        <input type="hidden" name="cantidad" value="{{ max(1, (int) $material->cantidad_sugerida) }}">
+                                        <button class="request-stock-button" type="submit">Crear solicitud de compra</button>
+                                    </form>
+                                    <span class="request-stock-help">Se envía a Compras para revisión. El stock no cambia hasta recibir el material.</span>
+                                @endif
                             </div>
                         </div>
                     @empty
@@ -404,6 +430,19 @@
     </main>
 </div>
 
+<script>
+    document.querySelectorAll('form[action*="/compras/solicitar/"]').forEach((form) => {
+        form.addEventListener('submit', (event) => {
+            window.setTimeout(() => {
+                if (event.defaultPrevented) return;
+                const button = form.querySelector('button[type="submit"]');
+                if (!button) return;
+                button.disabled = true;
+                button.textContent = 'Creando solicitud...';
+            }, 0);
+        });
+    });
+</script>
 <script>
     const consumoLabels = @json($consumoLabels);
     const consumoData = @json($consumoData);

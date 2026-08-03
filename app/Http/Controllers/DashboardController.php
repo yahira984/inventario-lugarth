@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Material;
 use App\Models\MaterialEntradaPendiente;
 use App\Models\MaterialMovimiento;
+use App\Models\PurchaseRequest;
 use App\Support\ProcurementSuggestionService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -57,6 +58,24 @@ class DashboardController extends Controller
                     $this->purchaseSuggestions->forMaterial($material)['cantidad_sugerida']
                 );
             });
+
+        $activeRequestsByMaterial = PurchaseRequest::query()
+            ->whereIn('estado', ['solicitada', 'autorizada', 'ordenada'])
+            ->whereHas('items', fn ($query) => $query->whereIn('material_id', $stockCritico->pluck('id')))
+            ->with('items:id,purchase_request_id,material_id')
+            ->latest()
+            ->get()
+            ->flatMap(fn (PurchaseRequest $purchaseRequest) => $purchaseRequest->items->map(fn ($item) => [
+                'material_id' => $item->material_id,
+                'id' => $purchaseRequest->id,
+                'estado' => $purchaseRequest->estado,
+            ]))
+            ->unique('material_id')
+            ->keyBy('material_id');
+
+        $stockCritico->each(function (Material $material) use ($activeRequestsByMaterial): void {
+            $material->setAttribute('solicitud_activa', $activeRequestsByMaterial->get($material->id));
+        });
 
         $salidasMes = MaterialMovimiento::query()
             ->whereHas('material', fn ($query) => $query->where('es_plantilla_equipo', false))

@@ -58,9 +58,11 @@
                     </form>
                     <div class="orders">
                         @forelse($ordenes as $orden)
-                            @php($ordered=(float)$orden->items->sum('cantidad'))
-                            @php($received=(float)$orden->items->sum('cantidad_recibida'))
-                            @php($percent=$ordered>0?min(100,round(($received/$ordered)*100)):0)
+                            @php
+                                $ordered = (float) $orden->items->sum('cantidad');
+                                $received = (float) $orden->items->sum('cantidad_recibida');
+                                $percent = $ordered > 0 ? min(100, round(($received / $ordered) * 100)) : 0;
+                            @endphp
                             <article class="order" data-state="{{ $orden->estado }}">
                                 <div class="order-top">
                                     <div><h3>{{ $orden->referencia ?: 'Orden #'.$orden->id }}</h3><div class="muted">{{ $orden->proveedor }} · {{ $orden->fecha_orden?->format('d/m/Y') }} · {{ $orden->items->count() }} renglones</div><span class="chip">{{ ucfirst(str_replace('_',' ',$orden->estado)) }}</span></div>
@@ -86,7 +88,9 @@
                                         @csrf
                                         <strong>Registrar recepcion</strong>
                                         @foreach($orden->items as $item)
-                                            @php($pending=max(0,(float)$item->cantidad-(float)$item->cantidad_recibida))
+                                            @php
+                                                $pending = max(0, (float) $item->cantidad - (float) $item->cantidad_recibida);
+                                            @endphp
                                             @if($pending>0)
                                                 <label class="receive-row"><span>{{ $item->descripcion }} <small class="muted">Pendiente {{ number_format($pending,2) }}</small></span><input type="number" name="cantidad_recibida[{{ $item->id }}]" min="0" max="{{ $pending }}" step="1" value="{{ $pending }}"></label>
                                             @endif
@@ -105,6 +109,13 @@
                                     </form>
                                 @elseif($orden->estado==='facturada')
                                     <div class="alert alert-ok">Flujo completo · Factura {{ $orden->invoice_folio ?: $orden->invoice_uuid }}</div>
+                                @endif
+                                @if($isAdmin && in_array($orden->estado, ['borrador', 'autorizada', 'cancelada'], true) && $received <= 0 && blank($orden->invoice_uuid))
+                                    <form class="stage-form" method="POST" action="{{ route('admin.ordenes.destroy', $orden) }}" onsubmit="return confirm('¿Eliminar esta orden? No se ha recibido mercancía y el stock no cambiará.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn red" type="submit">Eliminar orden</button>
+                                    </form>
                                 @endif
                             </article>
                         @empty
