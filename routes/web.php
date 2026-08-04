@@ -24,6 +24,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\SalidaMaterialController;
 use App\Http\Controllers\TeamHubController;
+use App\Http\Controllers\ToolLoanController;
 use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\UserPreferenceController;
 use Illuminate\Support\Facades\Route;
@@ -231,6 +232,17 @@ Route::middleware('auth')->group(function () {
         ->name('materiales.devoluciones.create');
     Route::post('materiales/devoluciones', [DevolucionMermaController::class, 'store'])
         ->name('materiales.devoluciones.store');
+
+    Route::get('prestamos-herramientas', [ToolLoanController::class, 'index'])
+        ->name('prestamos.index');
+    Route::post('prestamos-herramientas', [ToolLoanController::class, 'store'])
+        ->name('prestamos.store');
+    Route::patch('prestamos-herramientas/{loan}/devolver', [ToolLoanController::class, 'returnTools'])
+        ->name('prestamos.return');
+    Route::patch('prestamos-herramientas/{loan}/reparacion-finalizada', [ToolLoanController::class, 'completeRepair'])
+        ->name('prestamos.repair.complete');
+    Route::get('prestamos-herramientas/reporte.csv', [ToolLoanController::class, 'reportCsv'])
+        ->name('prestamos.report.csv');
 
     Route::resource('materiales', MaterialController::class)
         ->except(['show'])

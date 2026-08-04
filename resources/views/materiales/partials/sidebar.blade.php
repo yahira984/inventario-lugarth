@@ -51,6 +51,10 @@
                     'Devoluciones y mermas', route('materiales.devoluciones.create'), 'images/devoluciones.svg', 'green', request()->routeIs('materiales.devoluciones.*'), 0,
                     'Regresos a stock y bajas con evidencia'
                 ) : null,
+                $workspaceCanMove ? $workspaceItem(
+                    'Prestamos de herramientas', route('prestamos.index'), 'images/registro.png', 'amber', request()->routeIs('prestamos.*'), $workspaceActiveToolLoans ?? 0,
+                    'Entrega, devolucion, reparacion y control por empleado'
+                ) : null,
             ])),
         ],
         [
@@ -181,6 +185,7 @@
         str_starts_with($workspaceRouteName, 'equipos.withdrawals.create') => ['Equipos', 'Retirar equipo'],
         str_starts_with($workspaceRouteName, 'equipos.') => ['Equipos', 'Equipos y paquetes'],
         str_starts_with($workspaceRouteName, 'materiales.devoluciones.') => ['Operación', 'Devoluciones y mermas'],
+        str_starts_with($workspaceRouteName, 'prestamos.') => ['Operación', 'Prestamos de herramientas'],
         str_starts_with($workspaceRouteName, 'materiales.salidas.') => ['Operación', 'Registrar salida'],
         $workspaceRouteName === 'materiales.create' => ['Operación', 'Registrar entrada'],
         str_starts_with($workspaceRouteName, 'admin.categorias.') => ['Catálogos', 'Categorías'],

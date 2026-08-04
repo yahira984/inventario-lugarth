@@ -6,6 +6,7 @@ use App\Models\AuditLog;
 use App\Models\Material;
 use App\Models\MaterialEntradaPendiente;
 use App\Models\PurchaseRequest;
+use App\Models\ToolLoan;
 use App\Models\User;
 use App\Models\UserPreference;
 use App\Observers\MaterialObserver;
@@ -65,6 +66,9 @@ class AppServiceProvider extends ServiceProvider
                 ->whereIn('estado', ['solicitada', 'autorizada', 'ordenada'])
                 ->when(! $isAdmin, fn ($query) => $query->where('requested_by', $user?->id))
                 ->count();
+            $activeToolLoans = $user?->puedeMoverStock()
+                ? ToolLoan::query()->whereIn('status', ['activo', 'reparacion'])->count()
+                : 0;
             $databaseNotifications = $user
                 ? $user->notifications()->latest()->limit(12)->get()
                 : collect();
@@ -86,6 +90,7 @@ class AppServiceProvider extends ServiceProvider
                 'workspacePendingEntries' => $pendingEntries,
                 'workspacePendingUsers' => $pendingUsers,
                 'workspacePendingPurchases' => $pendingPurchases,
+                'workspaceActiveToolLoans' => $activeToolLoans,
                 'workspaceDatabaseNotifications' => $databaseNotifications,
                 'workspaceUnreadDatabaseNotifications' => $unreadDatabaseNotifications,
                 'workspacePreferences' => $preferences,
