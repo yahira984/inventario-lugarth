@@ -1577,6 +1577,8 @@
         const text = (button.textContent || button.getAttribute('aria-label') || '').trim().toLowerCase();
         if (/xml|importar/.test(text)) button.classList.add('workspace-action-purple');
         else if (/eliminar|borrar|rechazar|salida|retirar|vender|merma|cancelar/.test(text)) button.classList.add('workspace-action-red');
+        else if (/reparacion|reparar/.test(text)) button.classList.add('workspace-action-purple');
+        else if (/prestamo/.test(text)) button.classList.add('workspace-action-amber');
         else if (/editar|corregir|pendiente|revisar/.test(text)) button.classList.add('workspace-action-amber');
         else if (/aprobar|guardar|registrar|crear|entrada|devolver|restaurar/.test(text)) button.classList.add('workspace-action-green');
         else if (/excel/.test(text)) button.classList.add('workspace-action-green');
