@@ -67,7 +67,8 @@ class ToolLoanController extends Controller
             'taken_at' => ['required', 'date'],
             'expected_return_at' => ['nullable', 'date', 'after_or_equal:taken_at'],
             'notes' => ['nullable', 'string', 'max:1500'],
-            'evidence_out' => ['required', 'image', 'mimes:jpeg,jpg,png,webp', 'max:8192'],
+            'evidence_out' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:8192'],
+            'evidence_out_camera' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:8192'],
             'items' => ['required', 'array', 'min:1', 'max:40'],
             'items.*.tool_name' => ['required', 'string', 'max:180'],
             'items.*.tool_detail' => ['nullable', 'string', 'max:255'],
@@ -76,13 +77,19 @@ class ToolLoanController extends Controller
             'employee_name.required' => 'Escribe el nombre de quien recibe las herramientas.',
             'taken_at.required' => 'Indica la fecha y hora de entrega.',
             'expected_return_at.after_or_equal' => 'La fecha estimada de regreso no puede ser anterior a la entrega.',
-            'evidence_out.required' => 'Toma o sube una foto como evidencia de la entrega.',
+            'evidence_out.image' => 'La evidencia de entrega debe ser una imagen valida.',
+            'evidence_out_camera.image' => 'La foto tomada debe ser una imagen valida.',
             'items.required' => 'Agrega al menos una herramienta al prestamo.',
             'items.*.tool_name.required' => 'Escribe el nombre de cada herramienta.',
             'items.*.quantity.min' => 'Cada cantidad debe ser de al menos 1.',
         ]);
 
-        $evidence = ImageStorage::storeOptimized($request->file('evidence_out'), 'prestamos-herramientas/entregas', 1600, 72);
+        $evidenceFile = $request->file('evidence_out_camera') ?: $request->file('evidence_out');
+        if (! $evidenceFile) {
+            throw ValidationException::withMessages(['evidence_out' => 'Toma una foto o sube una imagen como evidencia de la entrega.']);
+        }
+
+        $evidence = ImageStorage::storeOptimized($evidenceFile, 'prestamos-herramientas/entregas', 1600, 72);
 
         try {
             $loan = DB::transaction(function () use ($data, $request, $evidence): ToolLoan {
@@ -134,6 +141,7 @@ class ToolLoanController extends Controller
             'returned_at' => ['required', 'date'],
             'return_notes' => ['nullable', 'string', 'max:1500'],
             'evidence_return' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:8192'],
+            'evidence_return_camera' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:8192'],
             'returns' => ['required', 'array'],
             'returns.*.quantity' => ['nullable', 'integer', 'min:0', 'max:100000'],
             'returns.*.condition' => ['nullable', Rule::in(['bueno', 'reparacion', 'perdida'])],
@@ -145,8 +153,9 @@ class ToolLoanController extends Controller
             throw ValidationException::withMessages(['returned_at' => 'La fecha de regreso no puede ser anterior a la entrega.']);
         }
 
-        $evidence = $request->hasFile('evidence_return')
-            ? ImageStorage::storeOptimized($request->file('evidence_return'), 'prestamos-herramientas/devoluciones', 1600, 72)
+        $returnEvidenceFile = $request->file('evidence_return_camera') ?: $request->file('evidence_return');
+        $evidence = $returnEvidenceFile
+            ? ImageStorage::storeOptimized($returnEvidenceFile, 'prestamos-herramientas/devoluciones', 1600, 72)
             : null;
 
         try {
