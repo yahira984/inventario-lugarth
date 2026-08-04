@@ -18,6 +18,17 @@
         .loan-field.full { grid-column: 1 / -1; }
         .loan-field label { font-size: 12px; font-weight: 800; color: var(--ws-ink); }
         .loan-help { margin: 0; color: var(--ws-muted); font-size: 12px; line-height: 1.45; }
+        .loan-photo-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .loan-photo-actions .btn { cursor: pointer; }
+        .loan-photo-actions input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+        .loan-photo-caption { color: var(--ws-muted); font-size: 12px; }
+        .loan-camera-modal { position: fixed; z-index: 10080; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(12, 28, 43, .72); }
+        .loan-camera-modal[hidden] { display: none; }
+        .loan-camera-dialog { width: min(620px, 100%); overflow: hidden; border-radius: 12px; background: #fff; box-shadow: 0 22px 50px rgba(5, 21, 34, .4); }
+        .loan-camera-dialog header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--ws-line); }
+        .loan-camera-dialog h3 { margin: 0; font-size: 17px; }.loan-camera-dialog p { margin: 4px 0 0; color: var(--ws-muted); font-size: 12px; }
+        .loan-camera-preview { display: block; width: 100%; max-height: min(62vh, 500px); background: #102337; object-fit: contain; }
+        .loan-camera-controls { display: flex; justify-content: flex-end; gap: 9px; padding: 14px 16px; border-top: 1px solid var(--ws-line); }
         .loan-draft { display: grid; grid-template-columns: minmax(0, 1fr) 92px; gap: 9px; }
         .loan-draft > :nth-child(1) { grid-column: 1 / -1; }
         .loan-draft > :nth-child(2) { grid-column: 1; }
@@ -117,7 +128,16 @@
                         </div>
 
                         <div id="loanToolList" class="loan-selected-list"><div class="loan-empty">Aun no agregas herramientas al prestamo.</div></div>
-                        <div class="loan-field"><label for="evidence_out">Foto de entrega *</label><input id="evidence_out" type="file" name="evidence_out" accept="image/jpeg,image/png,image/webp" capture="environment" required><p class="loan-help">En celular puedes tomarla con la camara. La imagen se comprime automaticamente.</p></div>
+                        <div class="loan-field">
+                            <label>Foto de entrega *</label>
+                            <div class="loan-photo-actions">
+                                <label class="btn workspace-action-blue">Subir imagen<input type="file" name="evidence_out" accept="image/jpeg,image/png,image/webp" data-photo-caption="deliveryPhotoCaption"></label>
+                                <button type="button" class="btn workspace-action-teal" data-open-loan-camera="deliveryCameraInput">Tomar foto</button>
+                                <input id="deliveryCameraInput" type="file" name="evidence_out_camera" accept="image/jpeg,image/png,image/webp" capture="environment" data-photo-caption="deliveryPhotoCaption">
+                                <span class="loan-photo-caption" id="deliveryPhotoCaption">Aun no seleccionas una imagen.</span>
+                            </div>
+                            <p class="loan-help">Elige una opcion: subir un archivo o abrir la camara. La imagen se comprime automaticamente.</p>
+                        </div>
                         <div class="loan-form-actions"><button class="btn workspace-action-amber" type="submit">Registrar prestamo</button></div>
                     </form>
                 </section>
@@ -201,7 +221,19 @@
                                                 <div class="loan-return-item"><label>{{ $item->tool_name }}<small>Pendientes: {{ $item->pendingQuantity() }}</small></label><input type="number" min="0" max="{{ $item->pendingQuantity() }}" name="returns[{{ $item->id }}][quantity]" value="0" aria-label="Cantidad devuelta de {{ $item->tool_name }}"><select name="returns[{{ $item->id }}][condition]" aria-label="Estado de {{ $item->tool_name }}"><option value="bueno">Buen estado</option><option value="reparacion">Requiere reparacion</option><option value="perdida">No regreso</option></select></div>
                                             @endforeach
                                         </div>
-                                        <div class="loan-return-bottom"><div class="loan-field"><label>Fecha y hora de regreso *</label><input type="datetime-local" name="returned_at" required value="{{ now()->format('Y-m-d\\TH:i') }}"></div><div class="loan-field"><label>Foto de regreso</label><input type="file" name="evidence_return" accept="image/jpeg,image/png,image/webp" capture="environment"></div><div class="loan-field full"><label>Notas de regreso o reparacion</label><textarea name="return_notes" rows="2" placeholder="Dano, envio a taller, pieza faltante o detalle util"></textarea></div></div>
+                                        <div class="loan-return-bottom">
+                                            <div class="loan-field"><label>Fecha y hora de regreso *</label><input type="datetime-local" name="returned_at" required value="{{ now()->format('Y-m-d\\TH:i') }}"></div>
+                                            <div class="loan-field">
+                                                <label>Foto de regreso</label>
+                                                <div class="loan-photo-actions">
+                                                    <label class="btn workspace-action-blue">Subir imagen<input type="file" name="evidence_return" accept="image/jpeg,image/png,image/webp" data-photo-caption="returnPhotoCaption{{ $loan->id }}"></label>
+                                                    <button type="button" class="btn workspace-action-teal" data-open-loan-camera="returnCameraInput{{ $loan->id }}">Tomar foto</button>
+                                                    <input id="returnCameraInput{{ $loan->id }}" type="file" name="evidence_return_camera" accept="image/jpeg,image/png,image/webp" capture="environment" data-photo-caption="returnPhotoCaption{{ $loan->id }}">
+                                                    <span class="loan-photo-caption" id="returnPhotoCaption{{ $loan->id }}">Sin evidencia adicional.</span>
+                                                </div>
+                                            </div>
+                                            <div class="loan-field full"><label>Notas de regreso o reparacion</label><textarea name="return_notes" rows="2" placeholder="Dano, envio a taller, pieza faltante o detalle util"></textarea></div>
+                                        </div>
                                         <div class="loan-return-actions"><button class="btn workspace-action-green" type="submit">Registrar regreso</button></div>
                                     </form>
                                 @elseif($loan->status === 'reparacion')
@@ -225,6 +257,13 @@
             </div>
         </div>
     </main>
+</div>
+<div class="loan-camera-modal" id="loanCameraModal" hidden aria-modal="true" role="dialog" aria-labelledby="loanCameraTitle">
+    <div class="loan-camera-dialog">
+        <header><div><h3 id="loanCameraTitle">Tomar foto</h3><p>Permite el uso de la camara y encuadra la evidencia.</p></div></header>
+        <video class="loan-camera-preview" id="loanCameraPreview" autoplay playsinline muted></video>
+        <div class="loan-camera-controls"><button type="button" class="btn workspace-action-red" id="cancelLoanCamera">Cancelar</button><button type="button" class="btn workspace-action-teal" id="captureLoanCamera">Capturar foto</button></div>
+    </div>
 </div>
 <script>
 (() => {
@@ -250,6 +289,63 @@
     nameInput?.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); addTool(); } });
     list?.addEventListener('click', (event) => { const button = event.target.closest('[data-remove]'); if (button) { selected.delete(button.dataset.remove); render(); } });
     list?.addEventListener('input', (event) => { const input = event.target.closest('[data-quantity]'); const item = input && selected.get(input.dataset.quantity); if (item) { item.quantity = Math.max(1, Number(input.value || 1)); input.value = item.quantity; } });
+    document.querySelectorAll('[data-photo-caption]').forEach((input) => input.addEventListener('change', () => {
+        const caption = document.getElementById(input.dataset.photoCaption);
+        if (caption && input.files?.[0]) caption.textContent = input.files[0].name;
+    }));
+
+    const cameraModal = document.getElementById('loanCameraModal');
+    const cameraPreview = document.getElementById('loanCameraPreview');
+    const captureCamera = document.getElementById('captureLoanCamera');
+    const cancelCamera = document.getElementById('cancelLoanCamera');
+    let cameraStream = null;
+    let targetCameraInput = null;
+    const closeCamera = () => {
+        cameraStream?.getTracks().forEach((track) => track.stop());
+        cameraStream = null;
+        cameraPreview.srcObject = null;
+        cameraModal.hidden = true;
+        targetCameraInput = null;
+    };
+    const openCamera = async (input) => {
+        if (!navigator.mediaDevices?.getUserMedia) {
+            input.click();
+            return;
+        }
+        try {
+            targetCameraInput = input;
+            cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1600 }, height: { ideal: 1200 } }, audio: false });
+            cameraPreview.srcObject = cameraStream;
+            cameraModal.hidden = false;
+        } catch (error) {
+            targetCameraInput = null;
+            input.click();
+        }
+    };
+    document.querySelectorAll('[data-open-loan-camera]').forEach((button) => button.addEventListener('click', () => {
+        const input = document.getElementById(button.dataset.openLoanCamera);
+        if (input) openCamera(input);
+    }));
+    cancelCamera?.addEventListener('click', closeCamera);
+    cameraModal?.addEventListener('click', (event) => { if (event.target === cameraModal) closeCamera(); });
+    captureCamera?.addEventListener('click', () => {
+        if (!targetCameraInput || !cameraPreview.videoWidth) return;
+        const largestSide = Math.max(cameraPreview.videoWidth, cameraPreview.videoHeight);
+        const scale = Math.min(1, 1600 / largestSide);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(cameraPreview.videoWidth * scale);
+        canvas.height = Math.round(cameraPreview.videoHeight * scale);
+        canvas.getContext('2d').drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob) => {
+            if (!blob || !targetCameraInput) return;
+            const selectedInput = targetCameraInput;
+            const transfer = new DataTransfer();
+            transfer.items.add(new File([blob], `evidencia_${Date.now()}.jpg`, { type: 'image/jpeg' }));
+            selectedInput.files = transfer.files;
+            selectedInput.dispatchEvent(new Event('change', { bubbles: true }));
+            closeCamera();
+        }, 'image/jpeg', .82);
+    });
 })();
 </script>
 </body>
