@@ -56,6 +56,21 @@
         .selected-preview .preview-empty { display:flex; align-items:center; justify-content:center; color:#58718a; font-size:11px; font-weight:900; text-transform:uppercase; border-style:dashed; }
         .selected-preview strong { display:block; color:#08233f; font-weight:950; line-height:1.15; }
         .selected-preview span { display:block; margin-top:4px; color:#58718a; font-size:12px; font-weight:800; }
+        .piece-picker { position:relative; margin-bottom:12px; }
+        .piece-picker-search { width:100%; min-height:44px; padding:10px 12px 10px 38px; border:1px solid #9fc6e8; border-radius:10px; background:#fff; color:#08233f; font:inherit; }
+        .piece-picker::before { content:'⌕'; position:absolute; z-index:1; top:8px; left:13px; color:#1475b6; font-size:23px; line-height:1; pointer-events:none; }
+        .piece-picker-summary { margin:8px 0 0; color:#58718a; font-size:11px; font-weight:750; line-height:1.35; }
+        .piece-picker-results { display:grid; gap:7px; max-height:270px; margin-top:8px; padding:8px; overflow:auto; border:1px solid #cfe0f2; border-radius:12px; background:#f8fbff; }
+        .piece-picker-option { width:100%; display:grid; grid-template-columns:48px minmax(0,1fr) auto; gap:10px; align-items:center; padding:8px; color:#173b59; background:#fff; border:1px solid #d8e8f7; border-radius:9px; cursor:pointer; text-align:left; font:inherit; }
+        .piece-picker-option:hover, .piece-picker-option:focus-visible { border-color:#1681cf; background:#f0f8ff; outline:2px solid transparent; }
+        .piece-picker-option.is-selected { border-color:#147bc8; background:#eaf5ff; box-shadow:inset 3px 0 #147bc8; }
+        .piece-picker-option img, .piece-picker-option .picker-no-photo { width:48px; height:48px; object-fit:contain; padding:3px; border:1px solid #d1e0ed; border-radius:7px; background:#fff; }
+        .piece-picker-option .picker-no-photo { display:grid; place-items:center; color:#70869b; border-style:dashed; font-size:9px; font-weight:900; text-align:center; text-transform:uppercase; }
+        .piece-picker-copy { min-width:0; display:grid; gap:3px; }
+        .piece-picker-copy strong { overflow:hidden; color:#08233f; font-size:12px; font-weight:950; line-height:1.25; text-overflow:ellipsis; white-space:nowrap; }
+        .piece-picker-copy span { overflow:hidden; color:#58718a; font-size:11px; font-weight:750; text-overflow:ellipsis; white-space:nowrap; }
+        .piece-picker-stock { color:#08754d; font-size:11px; font-weight:950; white-space:nowrap; }
+        .piece-picker-empty { padding:18px 12px; color:#58718a; font-size:12px; font-weight:750; text-align:center; }
         .stock-check { margin:14px 0; padding:14px; border-radius:12px; border:1px solid; }
         .stock-check strong { display:block; margin-bottom:5px; }
         .stock-check ul { margin:8px 0 0; padding-left:20px; }
@@ -215,15 +230,20 @@
                         <form method="POST" action="{{ route('equipos.items.store', $equipo) }}">
                             @csrf
                             <div class="field">
-                                <label>Pieza de inventario real</label>
-                                <select name="material_id" id="materialRealSelect">
+                                <label for="materialSearch">Pieza de inventario real</label>
+                                <select name="material_id" id="materialRealSelect" hidden aria-hidden="true" tabindex="-1">
                                     <option value="">Sin vincular por ahora</option>
                                     @foreach($materiales as $material)
                                         <option value="{{ $material->id }}">{{ $material->descripcion }} {{ $material->apodo ? '(' . $material->apodo . ')' : '' }} · {{ $material->numero_parte ?: 'N/A' }}</option>
                                     @endforeach
                                 </select>
+                                <div class="piece-picker">
+                                    <input type="search" id="materialSearch" class="piece-picker-search" autocomplete="off" placeholder="Buscar por nombre, apodo o no. de parte">
+                                    <p class="piece-picker-summary" id="materialPickerSummary"></p>
+                                    <div class="piece-picker-results" id="materialPickerResults" aria-live="polite"></div>
+                                </div>
                             </div>
-                            <p class="form-hint">Si seleccionas una pieza real, descripcion, no. parte, apodo, marca y unidad se llenan automaticamente. Solo ajusta la cantidad que usa este equipo y las notas si hacen falta.</p>
+                            <p class="form-hint">Busca y elige la pieza viendo su foto, nombre, no. de parte y stock. Al elegirla, descripcion, no. parte, apodo, marca y unidad se llenan automaticamente.</p>
                             <div class="selected-preview" id="piezaPreview">
                                 <div class="preview-empty" id="piezaPreviewFoto">Sin foto</div>
                                 <div>
@@ -289,6 +309,9 @@
     const piezasSinVincular = @json($piezasSinVincular);
 
     const materialRealSelect = document.getElementById('materialRealSelect');
+    const materialSearch = document.getElementById('materialSearch');
+    const materialPickerResults = document.getElementById('materialPickerResults');
+    const materialPickerSummary = document.getElementById('materialPickerSummary');
     const camposAuto = [
         document.getElementById('piezaDescripcion'),
         document.getElementById('piezaNumeroParte'),
@@ -305,6 +328,56 @@
         const nodo = document.createElement('div');
         nodo.textContent = String(valor ?? '');
         return nodo.innerHTML;
+    }
+
+    function nombreMaterialParaBusqueda(material) {
+        return [material.descripcion, material.apodo, material.numero_parte, material.marca]
+            .filter(Boolean)
+            .join(' ')
+            .toLocaleLowerCase('es-MX');
+    }
+
+    function dibujarSelectorDePiezas() {
+        if (!materialPickerResults) return;
+
+        const consulta = (materialSearch?.value || '').trim().toLocaleLowerCase('es-MX');
+        const todasLasCoincidencias = Object.entries(materialesEquipo)
+            .filter(([, material]) => !consulta || nombreMaterialParaBusqueda(material).includes(consulta));
+        const coincidencias = todasLasCoincidencias.slice(0, 20);
+
+        if (materialPickerSummary) {
+            materialPickerSummary.textContent = consulta
+                ? `Mostrando ${coincidencias.length} de ${todasLasCoincidencias.length} coincidencias.`
+                : `Mostrando las primeras ${coincidencias.length} de ${todasLasCoincidencias.length} piezas. Escribe para encontrar cualquier pieza.`;
+        }
+
+        if (coincidencias.length === 0) {
+            materialPickerResults.innerHTML = '<div class="piece-picker-empty">No encontramos una pieza con esa búsqueda.</div>';
+            return;
+        }
+
+        materialPickerResults.innerHTML = coincidencias.map(([id, material]) => {
+            const foto = material.fotografia_url
+                ? `<img src="${escapeHtml(material.fotografia_url)}" alt="Foto de ${escapeHtml(material.descripcion || 'pieza')}">`
+                : '<span class="picker-no-photo">Sin foto</span>';
+            const meta = [material.numero_parte || 'Sin no. parte', material.apodo ? `Apodo: ${material.apodo}` : '', material.marca || 'Sin marca']
+                .filter(Boolean)
+                .join(' · ');
+
+            return `<button class="piece-picker-option ${String(materialRealSelect?.value) === String(id) ? 'is-selected' : ''}" type="button" data-material-id="${id}">
+                ${foto}
+                <span class="piece-picker-copy"><strong>${escapeHtml(material.descripcion || 'Sin descripción')}</strong><span>${escapeHtml(meta)}</span></span>
+                <span class="piece-picker-stock">${Number(material.stock || 0).toLocaleString('es-MX')} ${escapeHtml(material.unidad || 'pza')}</span>
+            </button>`;
+        }).join('');
+
+        materialPickerResults.querySelectorAll('[data-material-id]').forEach((button) => {
+            button.addEventListener('click', () => {
+                materialRealSelect.value = button.dataset.materialId;
+                llenarDatosDeMaterial();
+                dibujarSelectorDePiezas();
+            });
+        });
     }
 
     function revisarStockEquipo() {
@@ -365,6 +438,7 @@
             return;
         }
 
+        if (materialSearch) materialSearch.value = material.descripcion || '';
         document.getElementById('piezaDescripcion').value = material.descripcion || '';
         document.getElementById('piezaNumeroParte').value = material.numero_parte || '';
         document.getElementById('piezaApodo').value = material.apodo || '';
@@ -381,9 +455,14 @@
         aplicarEstadoAutomatico(true);
     }
 
-    materialRealSelect?.addEventListener('change', llenarDatosDeMaterial);
+    materialRealSelect?.addEventListener('change', () => {
+        llenarDatosDeMaterial();
+        dibujarSelectorDePiezas();
+    });
+    materialSearch?.addEventListener('input', dibujarSelectorDePiezas);
     cantidadEquipos?.addEventListener('input', revisarStockEquipo);
     tipoMovimientoEquipo?.addEventListener('change', actualizarTipoMovimiento);
+    dibujarSelectorDePiezas();
     llenarDatosDeMaterial();
     revisarStockEquipo();
     actualizarTipoMovimiento();

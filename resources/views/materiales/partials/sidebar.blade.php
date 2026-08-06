@@ -259,7 +259,7 @@
                                         <svg class="nav-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
                                     @endif
                                 </a>
-                                <button type="button" class="nav-favorite" aria-label="Fijar {{ $item['label'] }}" title="Agregar a favoritos">
+                                <button type="button" class="nav-favorite" aria-label="Fijar {{ $item['label'] }}" aria-pressed="false" title="Agregar a favoritos">
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.2L5.8 21 7 14.2 2 9.3l6.9-1L12 2Z"/></svg>
                                 </button>
                             </div>

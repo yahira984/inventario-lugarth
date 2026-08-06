@@ -325,6 +325,7 @@ kbd { padding: 3px 6px; color: #61778d; background: #fff; border: 1px solid #d9e
 .sidebar-group[open] > summary svg { transform: rotate(90deg); }
 .sidebar-group-items { display: grid; gap: 3px; }
 .sidebar-item-row { position: relative; min-width: 0; }
+.sidebar-item-row .sidebar-link { padding-right: 44px; }
 .sidebar-link, .sidebar-profile, .sidebar-logout {
     position: relative;
     width: 100%; min-height: 50px; display: flex; align-items: center; gap: 10px; padding: 6px 10px;
@@ -355,11 +356,11 @@ kbd { padding: 3px 6px; color: #61778d; background: #fff; border: 1px solid #d9e
 .tone-orange { --tone: var(--ws-orange); --tone-soft: #fff2ea; }
 .tone-slate { --tone: var(--ws-slate); --tone-soft: #eef2f6; }
 .nav-favorite {
-    position: absolute; z-index: 2; right: 34px; top: 50%; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;
+    position: absolute; z-index: 4; right: 7px; top: 50%; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;
     color: #607990; background: #fff; border: 1px solid #cbdbe8; border-radius: 7px; opacity: 0; transform: translateY(-50%); cursor: pointer;
     box-shadow: 0 2px 5px rgba(24, 54, 82, .12); transition: opacity .16s ease, color .16s ease, background .16s ease, transform .16s ease;
 }
-.sidebar-item-row:hover .nav-favorite, .nav-favorite.is-favorite { opacity: 1; }
+.sidebar-item-row:hover .nav-favorite, .sidebar-item-row:focus-within .nav-favorite, .nav-favorite.is-favorite { opacity: 1; }
 .nav-favorite:hover { color: #8a5700; background: #fff7df; border-color: #f3c458; transform: translateY(-50%) scale(1.06); }
 .nav-favorite svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
 .nav-favorite svg path { fill: none; stroke: currentColor; }

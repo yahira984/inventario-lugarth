@@ -94,7 +94,11 @@
         const rows = [...document.querySelectorAll('.sidebar-item-row[data-nav-url]')];
         rows.forEach((row) => {
             const url = row.dataset.navUrl;
-            row.querySelector('.nav-favorite')?.classList.toggle('is-favorite', favorites.has(url));
+            const favoriteButton = row.querySelector('.nav-favorite');
+            favoriteButton?.classList.toggle('is-favorite', favorites.has(url));
+            favoriteButton?.setAttribute('aria-pressed', favorites.has(url) ? 'true' : 'false');
+            favoriteButton?.setAttribute('aria-label', favorites.has(url) ? `Quitar ${row.dataset.navLabel} de favoritos` : `Fijar ${row.dataset.navLabel}`);
+            favoriteButton?.setAttribute('title', favorites.has(url) ? 'Quitar de favoritos' : 'Agregar a favoritos');
             if (!favorites.has(url)) return;
             const source = row.querySelector('.sidebar-link');
             if (!source) return;
@@ -108,7 +112,9 @@
     };
 
     document.querySelectorAll('.nav-favorite').forEach((button) => {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
             const url = button.closest('.sidebar-item-row')?.dataset.navUrl;
             if (!url) return;
             favorites.has(url) ? favorites.delete(url) : favorites.add(url);
