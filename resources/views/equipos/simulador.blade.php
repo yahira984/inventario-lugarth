@@ -40,11 +40,25 @@
             <div class="simulator-layout">
                 <aside class="simulator-panel">
                     <h2>Equipos disponibles</h2><p>Selecciona un equipo para revisar su capacidad.</p>
-                    <form class="simulator-form" method="GET" action="{{ route('equipos.simulator') }}"><select name="equipo" aria-label="Equipo a simular" onchange="this.form.submit()">@foreach($equipos as $option)<option value="{{ $option->id }}" {{ $equipo?->id === $option->id ? 'selected' : '' }}>{{ $option->nombre }}</option>@endforeach</select><button class="btn btn-blue" type="submit">Ver</button></form>
+                    <form class="simulator-form" method="GET" action="{{ route('equipos.simulator') }}">
+                        <select name="equipo" aria-label="Equipo a simular" onchange="this.form.submit()">
+                            @foreach($equipos as $option)
+                                <option value="{{ $option->id }}" {{ $equipo?->id === $option->id ? 'selected' : '' }}>{{ $option->nombre }}</option>
+                            @endforeach
+                        </select>
+                        <button class="btn btn-blue" type="submit">Ver</button>
+                    </form>
                     <div class="simulator-list">
                         @forelse($equipos as $option)
-                            @php($optionPlan = $planes->get($option->id))
-                            <a class="simulator-equipment {{ $equipo?->id === $option->id ? 'active' : '' }}" href="{{ route('equipos.simulator', ['equipo' => $option->id]) }}"><strong>{{ $option->nombre }}</strong>@if($optionPlan['listo'])<span>{{ number_format($optionPlan['fabricables']) }} equipos fabricables</span>@else<span class="bad">Receta incompleta</span>@endif</a>
+                            <?php $optionPlan = $planes->get($option->id); ?>
+                            <a class="simulator-equipment {{ $equipo?->id === $option->id ? 'active' : '' }}" href="{{ route('equipos.simulator', ['equipo' => $option->id]) }}">
+                                <strong>{{ $option->nombre }}</strong>
+                                @if($optionPlan['listo'])
+                                    <span>{{ number_format($optionPlan['fabricables']) }} equipos fabricables</span>
+                                @else
+                                    <span class="bad">Receta incompleta</span>
+                                @endif
+                            </a>
                         @empty
                             <div class="empty">Aun no hay equipos activos.</div>
                         @endforelse
@@ -52,25 +66,69 @@
                 </aside>
 
                 <section class="simulator-panel">
-                    @if(!$equipo || !$planeacion)
+                    <?php if (!$equipo || !$planeacion): ?>
                         <div class="empty"><strong>No hay equipo para simular.</strong><br>Registra un equipo y vincula sus piezas reales.</div>
-                    @elseif(!$planeacion['listo'])
-                        <div class="incomplete"><h2>Este equipo aun no se puede calcular</h2><p>La receta necesita al menos una pieza real vinculada y no puede tener renglones pendientes.</p>@if($planeacion['sin_vincular']->isNotEmpty())<strong>Piezas pendientes de vincular:</strong><ul>@foreach($planeacion['sin_vincular'] as $pieza)<li>{{ $pieza }}</li>@endforeach</ul>@endif</div>
-                    @else
-                        @php
+                    <?php elseif (!$planeacion['listo']): ?>
+                        <div class="incomplete">
+                            <h2>Este equipo aun no se puede calcular</h2>
+                            <p>La receta necesita al menos una pieza real vinculada y no puede tener renglones pendientes.</p>
+                            @if($planeacion['sin_vincular']->isNotEmpty())
+                                <strong>Piezas pendientes de vincular:</strong>
+                                <ul>
+                                    @foreach($planeacion['sin_vincular'] as $pieza)
+                                        <li>{{ $pieza }}</li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+                    <?php else: ?>
+                        <?php
                             $requirementsForJs = $planeacion['requisitos']->map(fn (array $requisito): array => [
                                 'descripcion' => $requisito['descripcion'], 'unidad' => $requisito['material']?->unidad ?: 'pza', 'stock' => (int) $requisito['stock'], 'cantidad' => (float) $requisito['cantidad_por_equipo'],
                             ])->values();
-                        @endphp
+                        ?>
                         <h2>{{ $equipo->nombre }}</h2><p>Capacidad calculada con las piezas vinculadas y el stock que existe en este momento.</p>
                         <p class="formula-note">La capacidad corresponde solamente a este equipo. Si planeas fabricar equipos distintos al mismo tiempo, las piezas compartidas deben revisarse por separado porque el simulador no reserva stock.</p>
-                        <div class="summary-grid"><div class="summary-card green"><small>Equipos fabricables hoy</small><strong>{{ number_format($planeacion['fabricables']) }}</strong></div><div class="summary-card"><small>Costo aproximado por equipo</small><strong>${{ number_format($planeacion['costo_unitario'], 2) }}</strong></div><div class="summary-card amber"><small>Valor fabricable estimado</small><strong>${{ number_format($planeacion['valor_stock_fabricable'], 2) }}</strong></div></div>
+                        <div class="summary-grid">
+                            <div class="summary-card green"><small>Equipos fabricables hoy</small><strong>{{ number_format($planeacion['fabricables']) }}</strong></div>
+                            <div class="summary-card"><small>Costo aproximado por equipo</small><strong>${{ number_format($planeacion['costo_unitario'], 2) }}</strong></div>
+                            <div class="summary-card amber"><small>Valor fabricable estimado</small><strong>${{ number_format($planeacion['valor_stock_fabricable'], 2) }}</strong></div>
+                        </div>
                         @if($planeacion['limitantes']->isNotEmpty())
-                            <div class="limit-box"><div><strong>Pieza{{ $planeacion['limitantes']->count() > 1 ? 's' : '' }} limitante{{ $planeacion['limitantes']->count() > 1 ? 's' : '' }}</strong><span>{{ $planeacion['limitantes']->map(fn (array $limitante) => $limitante['descripcion'].' (permite '.number_format($limitante['fabricables']).')')->implode(', ') }}</span></div><a class="btn btn-soft" href="{{ route('equipos.show', $equipo) }}">Ver receta</a></div>
+                            <div class="limit-box">
+                                <div>
+                                    <strong>Pieza{{ $planeacion['limitantes']->count() > 1 ? 's' : '' }} limitante{{ $planeacion['limitantes']->count() > 1 ? 's' : '' }}</strong>
+                                    <span>{{ $planeacion['limitantes']->map(fn (array $limitante) => $limitante['descripcion'].' (permite '.number_format($limitante['fabricables']).')')->implode(', ') }}</span>
+                                </div>
+                                <a class="btn btn-soft" href="{{ route('equipos.show', $equipo) }}">Ver receta</a>
+                            </div>
                         @endif
                         <div class="quantity-control"><div><label for="desiredEquipmentCount">Quiero fabricar o vender</label><input id="desiredEquipmentCount" type="number" min="1" value="1" inputmode="numeric"></div><p class="quantity-status" id="quantityStatus" aria-live="polite"></p></div>
-                        <table class="requirements"><thead><tr><th>Pieza</th><th>Stock actual</th><th>Usa por equipo</th><th>Necesario ahora</th><th>Quedarian</th><th>Estado</th></tr></thead><tbody id="requirementsBody">@foreach($planeacion['requisitos'] as $requisito)<tr><td><div class="piece">@if($requisito['material']?->fotografia)<img data-workspace-lightbox data-lightbox-title="{{ $requisito['descripcion'] }}" src="{{ asset('storage/'.$requisito['material']->fotografia) }}" alt="Foto de {{ $requisito['descripcion'] }}">@else<div class="piece-placeholder">Sin foto</div>@endif<div><strong>{{ $requisito['descripcion'] }}</strong><span>{{ $requisito['material']?->numero_parte ?: 'Sin no. parte' }}</span></div></div></td><td data-label="Stock actual">{{ number_format($requisito['stock']) }} {{ $requisito['material']?->unidad ?: 'pza' }}</td><td data-label="Usa por equipo">{{ rtrim(rtrim(number_format($requisito['cantidad_por_equipo'], 2), '0'), '.') }}</td><td data-label="Necesario ahora" data-needed></td><td data-label="Quedarian" data-remaining></td><td data-label="Estado" data-state></td></tr>@endforeach</tbody></table>
-                    @endif
+                        <table class="requirements">
+                            <thead><tr><th>Pieza</th><th>Stock actual</th><th>Usa por equipo</th><th>Necesario ahora</th><th>Quedarian</th><th>Estado</th></tr></thead>
+                            <tbody id="requirementsBody">
+                                @foreach($planeacion['requisitos'] as $requisito)
+                                    <tr>
+                                        <td>
+                                            <div class="piece">
+                                                @if($requisito['material']?->fotografia)
+                                                    <img data-workspace-lightbox data-lightbox-title="{{ $requisito['descripcion'] }}" src="{{ asset('storage/'.$requisito['material']->fotografia) }}" alt="Foto de {{ $requisito['descripcion'] }}">
+                                                @else
+                                                    <div class="piece-placeholder">Sin foto</div>
+                                                @endif
+                                                <div><strong>{{ $requisito['descripcion'] }}</strong><span>{{ $requisito['material']?->numero_parte ?: 'Sin no. parte' }}</span></div>
+                                            </div>
+                                        </td>
+                                        <td data-label="Stock actual">{{ number_format($requisito['stock']) }} {{ $requisito['material']?->unidad ?: 'pza' }}</td>
+                                        <td data-label="Usa por equipo">{{ rtrim(rtrim(number_format($requisito['cantidad_por_equipo'], 2), '0'), '.') }}</td>
+                                        <td data-label="Necesario ahora" data-needed></td>
+                                        <td data-label="Quedarian" data-remaining></td>
+                                        <td data-label="Estado" data-state></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
                 </section>
             </div>
         </div>
