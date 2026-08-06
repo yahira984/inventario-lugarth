@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Material extends Model
@@ -87,6 +88,19 @@ class Material extends Model
     public function visualFeedback()
     {
         return $this->hasMany(VisualSearchFeedback::class, 'suggested_material_id');
+    }
+
+    /**
+     * A material is linkable when it is real inventory, including legacy catalog
+     * rows that later received actual stock after being imported as a template.
+     */
+    public function scopeVinculableParaEquipo(Builder $query): void
+    {
+        $query->where(function (Builder $materials): void {
+            $materials->where('es_plantilla_equipo', false)
+                ->orWhereNull('es_plantilla_equipo')
+                ->orWhere('stock', '>', 0);
+        });
     }
 
     public function nombreBusqueda(): string

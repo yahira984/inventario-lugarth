@@ -83,9 +83,8 @@ class EquipmentPackageController extends Controller
         $equipo->load(['items.material', 'withdrawals.user']);
 
         $materiales = Material::query()
-            ->where('es_plantilla_equipo', false)
+            ->vinculableParaEquipo()
             ->orderBy('descripcion')
-            ->limit(500)
             ->get(['id', 'descripcion', 'apodo', 'numero_parte', 'marca', 'unidad', 'fotografia', 'stock']);
 
         return view('equipos.show', [
@@ -120,6 +119,7 @@ class EquipmentPackageController extends Controller
                     'apodo' => $material->apodo,
                     'marca' => $material->marca,
                     'unidad' => $material->unidad ?: 'pza',
+                    'stock' => (int) $material->stock,
                     'fotografia_url' => $material->fotografia ? asset('storage/' . $material->fotografia) : null,
                 ];
             }),
@@ -217,7 +217,7 @@ class EquipmentPackageController extends Controller
         if (! empty($datos['material_id'])) {
             $material = Material::query()
                 ->whereKey($datos['material_id'])
-                ->where('es_plantilla_equipo', false)
+                ->vinculableParaEquipo()
                 ->firstOrFail();
 
             $datos['descripcion'] = $material->descripcion;
@@ -458,12 +458,12 @@ class EquipmentPackageController extends Controller
 
         $esReal = Material::query()
             ->whereKey($materialId)
-            ->where('es_plantilla_equipo', false)
+            ->vinculableParaEquipo()
             ->exists();
 
         if (! $esReal) {
             throw ValidationException::withMessages([
-                'material_id' => 'Selecciona una pieza del inventario real, no una plantilla importada del Excel.',
+                'material_id' => 'Selecciona una pieza de inventario real o una pieza con existencias registradas.',
             ]);
         }
     }

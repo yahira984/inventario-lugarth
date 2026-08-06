@@ -80,6 +80,27 @@ class EquipmentPackageStockTest extends TestCase
         $this->assertSame(1, MaterialMovimiento::where('material_id', $material->id)->count());
     }
 
+    public function test_legacy_template_with_actual_stock_can_be_linked_to_an_equipment(): void
+    {
+        $templateWithStock = Material::create([
+            'descripcion' => 'Tornillo legado con existencia',
+            'stock' => 1,
+            'es_plantilla_equipo' => true,
+        ]);
+        $templateWithoutStock = Material::create([
+            'descripcion' => 'Plantilla sin existencia',
+            'stock' => 0,
+            'es_plantilla_equipo' => true,
+        ]);
+
+        $availableIds = Material::query()
+            ->vinculableParaEquipo()
+            ->pluck('id');
+
+        $this->assertTrue($availableIds->contains($templateWithStock->id));
+        $this->assertFalse($availableIds->contains($templateWithoutStock->id));
+    }
+
     private function material(string $descripcion, int $stock): Material
     {
         return Material::create([
