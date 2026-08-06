@@ -479,8 +479,8 @@
         }
 
         if (response.status === 401) {
-            window.setTimeout(() => window.location.assign('/login'), 900);
-            throw new Error('Tu sesión terminó. Te llevaremos al inicio de sesión para que vuelvas a entrar.');
+            // A failed background request must not abruptly redirect the user.
+            throw new Error('No se pudo confirmar la sesión en este momento. La página seguirá abierta; si vuelve a ocurrir, recárgala e inicia sesión solo si te lo solicita.');
         }
 
         if (response.status === 419) {
