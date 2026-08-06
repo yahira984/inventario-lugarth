@@ -35,7 +35,9 @@ class EquipmentPlanningService
                 $material = $items->first()->material;
                 $required = (float) $items->sum('cantidad_por_paquete');
                 $stock = (int) ($material?->stock ?? 0);
-                $possible = $required > 0 ? (int) floor($stock / $required) : 0;
+                // Keep this capacity calculation consistent with withdraw(), which
+                // rounds the total material requirement up to whole stock units.
+                $possible = $this->maximumPackagesForStock($stock, $required);
                 $invoicePrice = $material?->latestInvoicePrice;
                 $unitCost = (float) (
                     $invoicePrice?->precio_unitario
@@ -90,5 +92,28 @@ class EquipmentPlanningService
             'requisitos' => $requirements,
             'costos_sin_factura' => $missingInvoiceCosts,
         ];
+    }
+
+    private function maximumPackagesForStock(int $stock, float $requiredPerPackage): int
+    {
+        if ($stock <= 0 || $requiredPerPackage <= 0) {
+            return 0;
+        }
+
+        $low = 0;
+        $high = max(1, (int) floor($stock / $requiredPerPackage) + 1);
+
+        while ($low < $high) {
+            $middle = intdiv($low + $high + 1, 2);
+            $needed = (int) ceil($requiredPerPackage * $middle);
+
+            if ($needed <= $stock) {
+                $low = $middle;
+            } else {
+                $high = $middle - 1;
+            }
+        }
+
+        return $low;
     }
 }
