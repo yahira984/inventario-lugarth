@@ -66,6 +66,10 @@
                     'Recetas de piezas por equipo'
                 ) : null,
                 $workspaceCanMove ? $workspaceItem(
+                    'Simulador de equipos', route('equipos.simulator'), 'images/dashboard.png', 'teal', request()->routeIs('equipos.simulator'), 0,
+                    'Capacidad de fabricacion y pieza limitante'
+                ) : null,
+                $workspaceCanMove ? $workspaceItem(
                     'Retirar equipo', route('equipos.withdrawals.create'), 'images/salida.jpg', 'red', request()->routeIs('equipos.withdrawals.create'), 0,
                     'Venta o retiro con validación de stock'
                 ) : null,
@@ -183,6 +187,7 @@
         str_starts_with($workspaceRouteName, 'admin.ordenes.') => ['Compras', 'Órdenes de compra'],
         str_starts_with($workspaceRouteName, 'equipos.withdrawals.history') => ['Equipos', 'Historial'],
         str_starts_with($workspaceRouteName, 'equipos.withdrawals.create') => ['Equipos', 'Retirar equipo'],
+        $workspaceRouteName === 'equipos.simulator' => ['Equipos', 'Simulador'],
         str_starts_with($workspaceRouteName, 'equipos.') => ['Equipos', 'Equipos y paquetes'],
         str_starts_with($workspaceRouteName, 'materiales.devoluciones.') => ['Operación', 'Devoluciones y mermas'],
         str_starts_with($workspaceRouteName, 'prestamos.') => ['Operación', 'Prestamos de herramientas'],

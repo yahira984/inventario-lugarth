@@ -123,6 +123,8 @@ Route::middleware('auth')->group(function () {
         ->name('equipos.withdrawals.create');
     Route::get('equipos/historial', [EquipmentPackageController::class, 'withdrawalsHistory'])
         ->name('equipos.withdrawals.history');
+    Route::get('equipos/simulador', [EquipmentPackageController::class, 'simulator'])
+        ->name('equipos.simulator');
     Route::get('equipos/{equipo}', [EquipmentPackageController::class, 'show'])
         ->name('equipos.show');
     Route::post('equipos/{equipo}/piezas', [EquipmentPackageController::class, 'addItem'])

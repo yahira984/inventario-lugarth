@@ -148,6 +148,27 @@ class EquipmentPackageController extends Controller
         return view('equipos.retirar', compact('equipos', 'buscar'));
     }
 
+    public function simulator(Request $request): View
+    {
+        abort_unless($request->user()?->puedeMoverStock(), 403, 'No tienes permiso para consultar el simulador de equipos.');
+
+        $equipos = EquipmentPackage::query()
+            ->where('activo', true)
+            ->with(['items.material.latestInvoicePrice'])
+            ->orderBy('nombre')
+            ->get();
+
+        $planes = $equipos->mapWithKeys(function (EquipmentPackage $equipo): array {
+            return [$equipo->id => $this->planning->analyze($equipo)];
+        });
+
+        $equipoId = (int) $request->query('equipo', $equipos->first()?->id ?? 0);
+        $equipo = $equipos->firstWhere('id', $equipoId) ?? $equipos->first();
+        $planeacion = $equipo ? $planes->get($equipo->id) : null;
+
+        return view('equipos.simulador', compact('equipos', 'equipo', 'planeacion', 'planes'));
+    }
+
     public function withdrawalsHistory(Request $request): View
     {
         abort_unless($request->user()?->puedeMoverStock(), 403, 'No tienes permiso para consultar el historial de equipos.');

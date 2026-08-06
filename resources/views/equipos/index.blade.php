@@ -54,12 +54,15 @@
                     <h1>Equipos y paquetes</h1>
                     <p class="muted">Aqui van las recetas: cuantas piezas ocupa cada tipo de equipo. Al retirar o vender un paquete, el sistema descuenta las piezas vinculadas del inventario real.</p>
                 </div>
+                <div class="actions">
+                    <a class="btn btn-soft" href="{{ route('equipos.simulator') }}">Simular fabricacion</a>
                 @if(auth()->user()?->puedeAdministrarCatalogo())
                     <form method="POST" action="{{ route('equipos.importar-materiales') }}">
                         @csrf
                         <button class="btn btn-amber" type="submit">Importar categorias actuales</button>
                     </form>
                 @endif
+                </div>
             </section>
 
             @if(session('success')) <div class="alert alert-ok">{{ session('success') }}</div> @endif
